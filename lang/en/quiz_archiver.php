@@ -26,3 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Quiz Archiver';
+$string['archiver'] = $string['pluginname'];
+$string['archiverreport'] = $string['pluginname'];
