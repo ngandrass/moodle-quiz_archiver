@@ -15,17 +15,22 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Web service function declarations for the quiz_archiver plugin.
  *
  * @package     quiz_archiver
  * @copyright   2023 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'quiz_archiver';
-$plugin->release = '0.1.0';
-$plugin->version = 2023061200;
-$plugin->requires = 2022112800;
-$plugin->maturity = MATURITY_ALPHA;
+$functions = [
+    'quiz_archiver_generate_attempt_report' => [
+        'classname' => 'quiz_archiver\external\generate_attempt_report',
+        'description' => 'Generates a full HTML DOM containing all report data on the specified attempt',
+        'type' => 'read',
+        'ajax' => true,
+        'services' => [
+            MOODLE_OFFICIAL_MOBILE_SERVICE,
+        ],
+        'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
+    ],
+];

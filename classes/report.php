@@ -26,6 +26,13 @@ namespace quiz_archiver;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport.php');
+require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
+require_once($CFG->dirroot . '/mod/quiz/report/default.php');
+require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
+require_once($CFG->libdir . '/pagelib.php');
+
 class Report {
 
     /** @var object Moodle course this report is part of */
@@ -124,6 +131,22 @@ class Report {
     }
 
     /**
+     * Checks if an attempt with the given ID exists inside this quiz
+     *
+     * @param int $attemptid ID of the attempt to check for existence
+     * @return bool True if an attempt with the given ID exists inside this quiz
+     * @throws \dml_exception
+     */
+    public function attempt_exists(int $attemptid): bool {
+        global $DB;
+
+        return $DB->count_records_sql(
+            "SELECT COUNT(id) FROM {quiz_attempts} WHERE preview = 0 AND id = :attemptid",
+            ['attemptid' => $attemptid]
+        ) > 0;
+    }
+
+    /**
      * Generates a HTML representation of the quiz attempt
      *
      * @param int $attemptid ID of the attempt this report is for
@@ -136,7 +159,6 @@ class Report {
      */
     public function generate(int $attemptid): string {
         global $DB, $PAGE;
-
         $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
 
         // Summary table start.

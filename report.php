@@ -39,9 +39,6 @@ class quiz_archiver_report extends quiz_default_report {
     /** @var students the students having attempted the quiz. */
     protected $students;
 
-
-
-
     protected Report $report;
 
     /**
@@ -81,7 +78,11 @@ class quiz_archiver_report extends quiz_default_report {
         if (!quiz_has_questions($quiz->id)) {
             echo quiz_no_questions_message($quiz, $cm, $this->context);
         } else {
+            echo "Course-ID: $course->id <br>";
+            echo "CM-ID: $cm->id <br>";
+            echo "Quiz-ID: $quiz->id <br>";
             echo "Users with attempts: " . implode(", ", $this->report->get_users_with_attempts()) . "<br>";
+            echo "Attempts: "; print_r($this->report->get_attempts()); echo "<br>";
 
             if ($userid > 0) {
                 echo "DISPLAY STUFF FOR USER: $userid <br>";
