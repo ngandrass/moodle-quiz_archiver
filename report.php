@@ -23,14 +23,9 @@
  */
 
 use mod_quiz\local\reports\report_base;
+use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport.php');
-require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
-require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
-require_once($CFG->libdir . '/pagelib.php');
 
 class quiz_archiver_report extends quiz_default_report {
     /** @var object the questions that comprise this quiz.. */
@@ -43,6 +38,11 @@ class quiz_archiver_report extends quiz_default_report {
     protected $context;
     /** @var students the students having attempted the quiz. */
     protected $students;
+
+
+
+
+    protected Report $report;
 
     /**
      * Display the report.
@@ -59,21 +59,37 @@ class quiz_archiver_report extends quiz_default_report {
         $this->quiz = $quiz;
         $this->cm = $cm;
         $this->course = $course;
+        $this->report = new Report($this->course, $this->cm, $this->quiz);
 
         // Get the URL options.
         $slot = optional_param('slot', null, PARAM_INT);
-        $questionid = optional_param('qid', null, PARAM_INT);
-        $grade = optional_param('grade', null, PARAM_ALPHA);
-        $page = optional_param('page', 0, PARAM_INT);
+        $userid = optional_param('userid', null, PARAM_INT);
 
         // Check permissions.
         $this->context = context_module::instance($cm->id);
         require_capability('mod/quiz:grade', $this->context);
+        require_capability('quiz/grading:viewstudentnames', $this->context);
+        require_capability('quiz/grading:viewidnumber', $this->context);
+
+        // Get the list of questions in this quiz.
+        $this->questions = quiz_report_get_significant_questions($quiz);
 
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
 
-        echo "Foo Bar Baz!";
+        // What sort of page to display?
+        if (!quiz_has_questions($quiz->id)) {
+            echo quiz_no_questions_message($quiz, $cm, $this->context);
+        } else {
+            echo "Users with attempts: " . implode(", ", $this->report->get_users_with_attempts()) . "<br>";
+
+            if ($userid > 0) {
+                echo "DISPLAY STUFF FOR USER: $userid <br>";
+                echo $this->report->generate($this->report->get_latest_attempt_for_user($userid));
+            } else {
+                echo "No userid given D:";
+            }
+        }
 
         return true;
     }
