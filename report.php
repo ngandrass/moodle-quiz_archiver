@@ -28,17 +28,16 @@ use quiz_archiver\report;
 defined('MOODLE_INTERNAL') || die();
 
 class quiz_archiver_report extends quiz_default_report {
-    /** @var object the questions that comprise this quiz.. */
-    protected $questions;
+
+    /** @var object course object. */
+    protected $course;
     /** @var object course module object. */
     protected $cm;
     /** @var object the quiz settings object. */
     protected $quiz;
     /** @var context the quiz context. */
     protected $context;
-    /** @var students the students having attempted the quiz. */
-    protected $students;
-
+    /** @var report internal report instance */
     protected Report $report;
 
     /**
@@ -50,26 +49,14 @@ class quiz_archiver_report extends quiz_default_report {
      * @return bool
      * @throws moodle_exception
      */
-    public function display($quiz, $cm, $course) {
-        global $PAGE;
-
-        $this->quiz = $quiz;
-        $this->cm = $cm;
-        $this->course = $course;
+    public function display($quiz, $cm, $course): bool {
         $this->report = new Report($this->course, $this->cm, $this->quiz);
-
-        // Get the URL options.
-        $slot = optional_param('slot', null, PARAM_INT);
-        $userid = optional_param('userid', null, PARAM_INT);
 
         // Check permissions.
         $this->context = context_module::instance($cm->id);
         require_capability('mod/quiz:grade', $this->context);
         require_capability('quiz/grading:viewstudentnames', $this->context);
         require_capability('quiz/grading:viewidnumber', $this->context);
-
-        // Get the list of questions in this quiz.
-        $this->questions = quiz_report_get_significant_questions($quiz);
 
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
@@ -83,13 +70,6 @@ class quiz_archiver_report extends quiz_default_report {
             echo "Quiz-ID: $quiz->id <br>";
             echo "Users with attempts: " . implode(", ", $this->report->get_users_with_attempts()) . "<br>";
             echo "Attempts: "; print_r($this->report->get_attempts()); echo "<br>";
-
-            if ($userid > 0) {
-                echo "DISPLAY STUFF FOR USER: $userid <br>";
-                echo $this->report->generate($this->report->get_latest_attempt_for_user($userid));
-            } else {
-                echo "No userid given D:";
-            }
         }
 
         return true;
