@@ -23,6 +23,7 @@
  */
 
 use mod_quiz\local\reports\report_base;
+use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -50,6 +51,11 @@ class quiz_archiver_report extends quiz_default_report {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course): bool {
+        global $OUTPUT;
+
+        $this->course = $course;
+        $this->cm = $cm;
+        $this->quiz = $quiz;
         $this->report = new Report($this->course, $this->cm, $this->quiz);
 
         // Check permissions.
@@ -68,11 +74,33 @@ class quiz_archiver_report extends quiz_default_report {
             echo "Course-ID: $course->id <br>";
             echo "CM-ID: $cm->id <br>";
             echo "Quiz-ID: $quiz->id <br>";
-            echo "Users with attempts: " . implode(", ", $this->report->get_users_with_attempts()) . "<br>";
-            echo "Attempts: "; print_r($this->report->get_attempts()); echo "<br>";
+
+            echo $OUTPUT->render_from_template("quiz_archiver/overview", [
+                "num_users_with_attempts" => sizeof($this->report->get_users_with_attempts()),
+                "num_attempts" => sizeof($this->report->get_attempts())
+            ]);
+
+            $archive_quiz_form = new archive_quiz_form();
+            if ($archive_quiz_form->is_submitted()) {
+                print_r($archive_quiz_form->get_data());
+            } else {
+                $archive_quiz_form->display();
+            }
+
+            $config = get_config('quiz_archiver');
+            echo "CONFIG: "; print_r($config);
         }
 
         return true;
+    }
+
+    protected function initiate_archive_job(bool $export_attempts, bool $export_course_backup) {
+        // Create temporary webservice token
+        external_generate_token(EXTERNAL_TOKEN_PERMANENT, $data->service, $data->user, context_system::instance(), $data->validuntil, $data->iprestriction);
+
+
+
+        // ...
     }
 
     /**

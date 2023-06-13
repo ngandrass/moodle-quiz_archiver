@@ -25,11 +25,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $DB;
+
 if ($hassiteconfig) {
     $settings = new admin_settingpage('quiz_archiver_settings', new lang_string('pluginname', 'quiz_archiver'));
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
-        // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
+        $settings->add(new admin_setting_configselect('quiz_archiver/webservice_id',
+            get_string('webservice', 'webservice'),
+            get_string('setting_webservice_desc', 'quiz_archiver'),
+            null,
+            [-1 => ''] + $DB->get_records_menu('external_services', null, 'name ASC', 'id, name')
+        ));
     }
 }

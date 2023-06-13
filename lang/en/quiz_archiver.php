@@ -28,3 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Quiz Archiver';
 $string['archiver'] = $string['pluginname'];
 $string['archiverreport'] = $string['pluginname'];
+
+// Template: Overview
+$string['users_with_attempts'] = 'Users with quiz attempts';
+$string['archive_quiz'] = 'Archive Quiz';
+$string['export_attempts'] = 'Export quiz attempts';
+$string['export_course_backup'] = 'Export full course backup';
+
+// Settings
+$string['setting_webservice_desc'] = 'The webservice that is allowed to execute the "generate_attempt_report" webservice function';
