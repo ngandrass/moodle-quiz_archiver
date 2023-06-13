@@ -23,7 +23,7 @@
  */
 
 use mod_quiz\local\reports\report_base;
-use quiz_archiver\Report;
+use quiz_archiver\report;
 
 defined('MOODLE_INTERNAL') || die();
 

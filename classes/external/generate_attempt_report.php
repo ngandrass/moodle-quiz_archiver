@@ -3,10 +3,9 @@ namespace quiz_archiver\external;
 
 use external_api;
 use external_function_parameters;
-use external_multiple_structure as external_multiple_structureAlias;
 use external_single_structure;
 use external_value;
-use quiz_archiver\Report;
+use quiz_archiver\report;
 
 class generate_attempt_report extends external_api {
 
@@ -81,7 +80,6 @@ class generate_attempt_report extends external_api {
 
         // Generate report
         $report = new Report($course, $cm, $quiz);
-        # FIXME: The above call to the constructor of report causes the webservice to produce the following error: Class 'quiz_default_report' not found
         if (!$report->attempt_exists($params['attemptid'])) {
             throw new \invalid_parameter_exception("No attempt with given attemptid found");
         }
