@@ -89,7 +89,7 @@ class generate_attempt_report extends external_api {
             'cmid' => $params['cmid'],
             'quizid' => $params['quizid'],
             'attemptid' => $params['attemptid'],
-            'report' => $report->generate($params['attemptid'])
+            'report' => $report->generate_full_page($params['attemptid'])
         ];
     }
 
