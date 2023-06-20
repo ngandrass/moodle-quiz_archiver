@@ -39,8 +39,17 @@ class quiz_archiver_report extends quiz_default_report {
     protected $quiz;
     /** @var context the quiz context. */
     protected $context;
-    /** @var report internal report instance */
+    /** @var object Moodle admin settings object */
+    protected $config;
+    /** @var Report internal report instance */
     protected Report $report;
+
+    /** @var int Number of seconds a webservice token is valid */
+    protected static int $WEBSERVICE_TOKEN_VALIDITY_SEC = 7200;
+
+    public function __construct() {
+        $this->config = get_config('quiz_archiver');
+    }
 
     /**
      * Display the report.
@@ -83,13 +92,15 @@ class quiz_archiver_report extends quiz_default_report {
 
             $archive_quiz_form = new archive_quiz_form();
             if ($archive_quiz_form->is_submitted()) {
-                print_r($archive_quiz_form->get_data());
+                $formdata = $archive_quiz_form->get_data();
+
+                print_r($formdata);
+                $this->initiate_archive_job($formdata->export_attempts, $formdata->export_course_backup);
             } else {
                 $archive_quiz_form->display();
             }
 
-            $config = get_config('quiz_archiver');
-            echo "CONFIG: "; print_r($config);
+            echo "CONFIG: "; print_r($this->config);
         }
 
         return true;
@@ -97,11 +108,69 @@ class quiz_archiver_report extends quiz_default_report {
 
     protected function initiate_archive_job(bool $export_attempts, bool $export_course_backup) {
         // Create temporary webservice token
-        external_generate_token(EXTERNAL_TOKEN_PERMANENT, $data->service, $data->user, context_system::instance(), $data->validuntil, $data->iprestriction);
+        $wstoken = external_generate_token(
+            EXTERNAL_TOKEN_PERMANENT,
+            $this->config->webservice_id,
+            $this->config->webservice_userid,
+            context_system::instance(),
+            time() + self::$WEBSERVICE_TOKEN_VALIDITY_SEC,
+            0
+        );
+        echo "<p>Created WsToken: $wstoken</p>";
 
+        // Prepare task: Export quiz attempts
+        $task_archive_quiz_attempts = null;
+        if ($export_attempts) {
+            $task_archive_quiz_attempts = [
+                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
+            ];
+        }
 
+        // TODO: Prepare task: Export course backup
+        $task_moodle_course_backup = null;
+        if ($export_course_backup) {
+
+        }
+
+        // Request archive worker
+        $worker = new RemoteArchiveWorker("", 10, 20);
+        try {
+            $job_metadata = $worker->enqueue_archive_job(
+                $wstoken,
+                $this->course->id,
+                $this->cm->id,
+                $this->quiz->id,
+                $task_archive_quiz_attempts,
+                $task_moodle_course_backup
+            );
+        } catch (UnexpectedValueException $e) {
+            echo "Comminucation with archive worker failed: $e"; // TODO
+        } catch (RuntimeException $e) {
+            echo "Archive worker reportet an error: $e"; // TODO
+        } catch (Exception $e) {
+            echo "Unknown error occured while creating archive job: $e"; // TODO
+        }
+
+        echo "<br/><br/><p>Created job:</p><pre>"; print_r($job_metadata); echo "</pre></br>";
+
+        $this->delete_webservice_token($wstoken);
+        echo "<p>DELETED WsToken: $wstoken</p>";
 
         // ...
+
+        // Test, move somewhere else!
+    }
+
+    /**
+     * Removes / invalidates the given webservice token
+     *
+     * @param $wstoken Webservice token to remove
+     * @return void
+     * @throws dml_exception
+     */
+    protected function delete_webservice_token($wstoken) {
+        global $DB;
+        $DB->delete_records('external_tokens', array('token' => $wstoken, 'tokentype' => EXTERNAL_TOKEN_PERMANENT));
     }
 
     /**
