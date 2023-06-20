@@ -24,7 +24,8 @@
 
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\form\archive_quiz_form;
-use quiz_archiver\report;
+use quiz_archiver\RemoteArchiveWorker;
+use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
 

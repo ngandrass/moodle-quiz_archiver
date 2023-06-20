@@ -5,7 +5,7 @@ use external_api;
 use external_function_parameters;
 use external_single_structure;
 use external_value;
-use quiz_archiver\report;
+use quiz_archiver\Report;
 
 class generate_attempt_report extends external_api {
 
