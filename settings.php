@@ -32,11 +32,26 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
+        $settings->add(new admin_setting_configtext('quiz_archiver/worker_url',
+            get_string('setting_worker_url', 'quiz_archiver'),
+            get_string('setting_worker_url_desc', 'quiz_archiver'),
+            '',
+            PARAM_TEXT
+        ));
+
         $settings->add(new admin_setting_configselect('quiz_archiver/webservice_id',
             get_string('webservice', 'webservice'),
             get_string('setting_webservice_desc', 'quiz_archiver'),
             null,
             [-1 => ''] + $DB->get_records_menu('external_services', null, 'name ASC', 'id, name')
         ));
+
+        $settings->add(new admin_setting_configtext('quiz_archiver/webservice_userid',
+            get_string('setting_webservice_userid', 'quiz_archiver'),
+            get_string('setting_webservice_userid_desc', 'quiz_archiver'),
+            '',
+            PARAM_INT
+        ));
+
     }
 }
