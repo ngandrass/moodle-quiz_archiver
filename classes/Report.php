@@ -193,6 +193,17 @@ class Report {
                 fullname($student, true)),
         );
 
+        // Quiz metadata
+        $summarydata['course'] = [
+            'title' => get_string('course'),
+            'content' => $this->course->fullname.' (Course-ID: '.$this->course->id.')'
+        ];
+
+        $summarydata['quiz'] = [
+            'title' => get_string('modulename', 'quiz'),
+            'content' => $this->quiz->name.' (Quiz-ID: '.$this->quiz->id.')'
+        ];
+
         // Timing information.
         $summarydata['startedon'] = array(
             'title'   => get_string('startedon', 'quiz'),
