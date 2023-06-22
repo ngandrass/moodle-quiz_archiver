@@ -27,8 +27,6 @@ namespace quiz_archiver;
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/quiz/locallib.php");  # Required for legacy mod_quiz functions ...
-//require_once("$CFG->dirroot/lib/filelib.php");
-
 
 class Report {
 
@@ -390,116 +388,9 @@ class Report {
 
         // Convert all local images to base64 if desired
         if ($inline_images) {
-            // TODO: Remove debug attributea
             foreach ($dom->getElementsByTagName('img') as $img) {
-                if ($img_src = $img->getAttribute('src')) {
-                    $img->setAttribute('x-debug-original-url', $img_src);
-
-                    // Remove any parameters and anchors from URL
-                    $img_src = preg_replace('/^([^\?\&\#]+).*$/', '${1}', $img_src);
-
-                    // Convert relative URLs to absolute URLs
-                    $moodle_baseurl = $CFG->wwwroot;
-                    if (getenv('VIAMINT_MOODLE_INTERNAL_HOST')) {
-                        $moodle_baseurl = 'http://'.getenv('VIAMINT_MOODLE_INTERNAL_HOST');
-                        $img_src = str_replace(parse_url($CFG->wwwroot, PHP_URL_HOST), getenv('VIAMINT_MOODLE_INTERNAL_HOST'), $img_src);
-                    }
-                    $img_src_url = $this->ensure_absolute_url($img_src, $moodle_baseurl);
-
-                    $img->setAttribute("x-debug-absolute-url", $img_src_url);
-
-                    # Make sure to only process web URLs
-                    if (substr($img_src_url, 0, 4) === "http") {
-                        $img_type = pathinfo($img_src_url, PATHINFO_EXTENSION);
-                        # Whitelist images to inline
-                        $image_mime_types = [
-                            'png' => 'image/png',
-                            'jpg' => 'image/jpeg',
-                            'jpeg' => 'image/jpeg',
-                            'svg' => 'image/svg+xml',
-                            'gif' => 'image/gif',
-                            'webp' => 'image/webp',
-                            'bmp' => 'image/bmp',
-                            'ico' => 'image/x-icon',
-                            'tiff' => 'image/tiff'
-                        ];
-
-                        if (array_key_exists($img_type, $image_mime_types)) {
-                            $img_data = null;
-
-                            // Check if image can easily be loaded from moodledata
-                            $regex_matches = null;
-                            if (preg_match('/^(https?:\/\/[^\/]+)?(\/question\/type\/stack\/plot\.php\/)(?P<filename>[^\/\#\?\&]+\.(png|svg))/m', $img_src_url, $regex_matches)) {
-                                // Get STACK plot file
-                                $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
-                                $img->setAttribute("x-debug-stack-plotfile", $filename);
-                                if (is_readable($filename)) {
-                                    $img_data = file_get_contents($filename);
-                                }
-                            } elseif (preg_match('/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))/m', $img_src_url, $regex_matches)) {
-                                                                // Edge case: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
-                                if ($regex_matches['component'] == 'question' || strpos($regex_matches['component'], 'qtype_') === 0) {
-                                    $regex_matches = null;
-                                    $img->setAttribute("x-debug-moodle-question-rule", "true");
-                                    if (!preg_match('/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))/m', $img_src_url, $regex_matches)) {
-                                        $img->setAttribute("x-debug-moodle-question-match-failed", "true");
-                                        continue;
-                                    }
-                                    $img->setAttribute("x-debug-moodle-question-match-failed", "false");
-                                }
-
-                                // Get file via Moodle File API
-                                $fs = get_file_storage();
-                                $file = $fs->get_file(
-                                    $regex_matches['contextid'],
-                                    $regex_matches['component'],
-                                    $regex_matches['filearea'],
-                                    !empty($regex_matches['itemid']) ? $regex_matches['itemid'] : 0,
-                                    '/',  // Dirty simplification but works for now *sigh*
-                                    $regex_matches['filename']
-                                );
-                                if ($file) {
-                                    $img_data = $file->get_content();
-                                } else {
-                                    $img->setAttribute("x-debug-moodle-filestore-path", $regex_matches['fullpath']);
-                                    $img->setAttribute("x-debug-moodle-filestore-file", $file);
-                                    $img->setAttribute("x-debug-moodle-filestore-hash", sha1($regex_matches['fullpath']));
-                                }
-                            } else {
-                                // Try to download
-                                $curl = curl_init();
-                                curl_setopt($curl, CURLOPT_URL, $img_src_url);
-                                curl_setopt($curl, CURLOPT_HEADER, false);
-                                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-                                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-                                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-
-                                // Pass current session cookie to request
-                                $session_cookies = '';
-                                foreach (["MoodleSession", "MOODLEID1_$CFG->sessioncookie", "PHPSESSID", "csrftoken", "sfcsrftoken"] as $cookie) {
-                                    $session_cookies .= "$cookie=$_COOKIE[$cookie];";
-                                    // FIXME: This fails because the API call is not authenticated. We need to somehow perform a login here...
-                                    // IDEA: Let the archive worker call the login-endpoint and generate a valid session cookie to use for all requests.
-                                }
-                                curl_setopt($curl, CURLOPT_COOKIE, $session_cookies." path=/");
-
-                                $img_data = curl_exec($curl);
-                                if ($img_data === false) {
-                                    $img->setAttribute('x-debug-curl-status', curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
-                                }
-                                curl_close($curl);
-                            }
-
-                            // Encode and replace image
-                            if ($img_data) {
-                                $img_base64 = base64_encode($img_data);
-                                $img->setAttribute('src', "data:$image_mime_types[$img_type];base64,$img_base64");
-                            } else {
-                                $img->setAttribute('x-debug-failed-to-encode-from', $img_src_url);
-                            }
-                        }
-                    }
+                if (!$this->convert_image_to_base64($img)) {
+                    $img->setAttribute('x-debug-inlining-failed', 'true');
                 }
             }
         }
@@ -507,6 +398,112 @@ class Report {
         return $dom->saveHTML();
     }
 
+    /** @var string Regex for URLs of qtype_stack plots */
+    const REGEX_MOODLE_URL_STACKPLOT = '/^(https?:\/\/[^\/]+)?(\/question\/type\/stack\/plot\.php\/)(?P<filename>[^\/\#\?\&]+\.(png|svg))/m';
+
+    /** @var string Regex for Moodle file API URLs */
+    const REGEX_MOODLE_URL_PLUGINFILE = '/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))/m';
+
+    /** @var string Regex for Moodle file API URLs of specific types: component=(question|qtype_.*) */
+    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))/m';
+
+    /** @var string[] Mapping of file extensions to file types that are allowed to process */
+    const ALLOWED_IMAGE_TYPES = [
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'svg' => 'image/svg+xml',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/x-icon',
+            'tiff' => 'image/tiff'
+        ];
+
+    /**
+     * Tries to download and inline images of <img> tags with src attributes as base64 encoded strings. Replacement
+     * happens in-place.
+     *
+     * @param \DOMElement $img The <img> element to process
+     * @return bool true on success
+     */
+    protected function convert_image_to_base64(\DOMElement $img): bool {
+        global $CFG;
+
+        // Only process images with src attribute
+        if (!$img->getAttribute('src')) return false;
+
+        // Remove any parameters and anchors from URL
+        $img_src = preg_replace('/^([^\?\&\#]+).*$/', '${1}', $img->getAttribute('src'));
+
+        // Convert relative URLs to absolute URLs
+        $moodle_baseurl = $CFG->wwwroot;
+        if (getenv('VIAMINT_MOODLE_INTERNAL_HOST')) {
+            $moodle_baseurl = 'http://' . getenv('VIAMINT_MOODLE_INTERNAL_HOST');
+            $img_src = str_replace(parse_url($CFG->wwwroot, PHP_URL_HOST), getenv('VIAMINT_MOODLE_INTERNAL_HOST'), $img_src);
+        }
+        $img_src_url = $this->ensure_absolute_url($img_src, $moodle_baseurl);
+
+        # Make sure to only process web URLs and nothing that somehow remained a valid local filepath
+        if (!substr($img_src_url, 0, 4) === "http") return false;
+
+        // Only process allowed image types
+        $img_ext = pathinfo($img_src_url, PATHINFO_EXTENSION);
+        if (!array_key_exists($img_ext, self::ALLOWED_IMAGE_TYPES)) return false;
+
+        // Try to get image content based on link type
+        $regex_matches = null;
+        $img_data = null;
+        if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $img_src_url, $regex_matches)) {
+            // ### Link type: Moodle pluginfile URL ### //
+            // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
+            if ($regex_matches['component'] == 'question' || strpos($regex_matches['component'], 'qtype_') === 0) {
+                $regex_matches = null;
+                if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $img_src_url, $regex_matches)) return false;
+            }
+
+            // Get file content via Moodle File API
+            $fs = get_file_storage();
+            $file = $fs->get_file(
+                $regex_matches['contextid'],
+                $regex_matches['component'],
+                $regex_matches['filearea'],
+                !empty($regex_matches['itemid']) ? $regex_matches['itemid'] : 0,
+                '/',  // Dirty simplification but works for now *sigh*
+                $regex_matches['filename']
+            );
+
+            if (!$file) return false;
+            $img_data = $file->get_content();
+        } elseif (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
+            // ### Link type: qtype_stack plotfile ### //
+            // Get STACK plot file from disk
+            $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
+            if (!is_readable($filename)) return false;
+            $img_data = file_get_contents($filename);
+        } else {
+            // ### Link type: Generic ### //
+            // No special local file access. Try to download via HTTP request
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $img_src_url);
+            curl_setopt($curl, CURLOPT_HEADER, false);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+
+            $img_data = curl_exec($curl);
+            curl_close($curl);
+            if ($img_data === false) return false;
+        }
+
+        // Encode and replace image if present
+        if (!$img_data) return false;
+        $img_base64 = base64_encode($img_data);
+        $img->setAttribute('src', 'data:'.self::ALLOWED_IMAGE_TYPES[$img_ext].';base64,'.$img_base64);
+
+        return true;
+    }
 
     /**
      * Takes any URL and ensures that if will become an absolute URL. Relative
@@ -517,7 +514,7 @@ class Report {
      * @param string $base Base to prepend to relative URLs
      * @return string Absolute URL
      */
-    function ensure_absolute_url(string $url, string $base): string {
+    protected static function ensure_absolute_url(string $url, string $base): string {
         /* return if already absolute URL */
         if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
 
