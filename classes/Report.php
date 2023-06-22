@@ -27,6 +27,8 @@ namespace quiz_archiver;
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/quiz/locallib.php");  # Required for legacy mod_quiz functions ...
+//require_once("$CFG->dirroot/lib/filelib.php");
+
 
 class Report {
 
@@ -328,6 +330,8 @@ class Report {
      * forcefully mapped to the Moodle base URL
      * @param bool $minimal If true, unneccessary elements (e.g. navbar) are
      * stripped from the generated HTML DOM
+     * @param bool $inline_images If true, all images will be inlined as base64
+     * to prevent rendering issues on user side
      *
      * @return string HTML DOM of the rendered quiz attempt report
      *
@@ -335,7 +339,7 @@ class Report {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function generate_full_page(int $attemptid, bool $fix_relative_urls = true, bool $minimal = true): string {
+    public function generate_full_page(int $attemptid, bool $fix_relative_urls = true, bool $minimal = true, bool $inline_images = true): string {
         global $CFG, $OUTPUT;
 
         // Build HTML tree
@@ -343,8 +347,12 @@ class Report {
         $html .= $OUTPUT->header();
         $html .= self::generate($attemptid);
         $html .= $OUTPUT->footer();
+
+        // Parse HTML as DOMDocument but supress consistency check warnings
+        libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
         $dom->loadHTML($html);
+        libxml_clear_errors();
 
         // Patch relative URLs
         if ($fix_relative_urls) {
@@ -372,11 +380,168 @@ class Report {
                     padding-right: 0 !important;
                     height: initial !important;
                 }
+                
+                div#page-wrapper {
+                    height: initial !important;
+                }
             ");
             $dom->getElementsByTagName('head')[0]->appendChild($cssHacksNode);
         }
 
+        // Convert all local images to base64 if desired
+        if ($inline_images) {
+            // TODO: Remove debug attributea
+            foreach ($dom->getElementsByTagName('img') as $img) {
+                if ($img_src = $img->getAttribute('src')) {
+                    $img->setAttribute('x-debug-original-url', $img_src);
+
+                    // Remove any parameters and anchors from URL
+                    $img_src = preg_replace('/^([^\?\&\#]+).*$/', '${1}', $img_src);
+
+                    // Convert relative URLs to absolute URLs
+                    $moodle_baseurl = $CFG->wwwroot;
+                    if (getenv('VIAMINT_MOODLE_INTERNAL_HOST')) {
+                        $moodle_baseurl = 'http://'.getenv('VIAMINT_MOODLE_INTERNAL_HOST');
+                        $img_src = str_replace(parse_url($CFG->wwwroot, PHP_URL_HOST), getenv('VIAMINT_MOODLE_INTERNAL_HOST'), $img_src);
+                    }
+                    $img_src_url = $this->ensure_absolute_url($img_src, $moodle_baseurl);
+
+                    $img->setAttribute("x-debug-absolute-url", $img_src_url);
+
+                    # Make sure to only process web URLs
+                    if (substr($img_src_url, 0, 4) === "http") {
+                        $img_type = pathinfo($img_src_url, PATHINFO_EXTENSION);
+                        # Whitelist images to inline
+                        $image_mime_types = [
+                            'png' => 'image/png',
+                            'jpg' => 'image/jpeg',
+                            'jpeg' => 'image/jpeg',
+                            'svg' => 'image/svg+xml',
+                            'gif' => 'image/gif',
+                            'webp' => 'image/webp',
+                            'bmp' => 'image/bmp',
+                            'ico' => 'image/x-icon',
+                            'tiff' => 'image/tiff'
+                        ];
+
+                        if (array_key_exists($img_type, $image_mime_types)) {
+                            $img_data = null;
+
+                            // Check if image can easily be loaded from moodledata
+                            $regex_matches = null;
+                            if (preg_match('/^(https?:\/\/[^\/]+)?(\/question\/type\/stack\/plot\.php\/)(?P<filename>[^\/\#\?\&]+\.(png|svg))/m', $img_src_url, $regex_matches)) {
+                                // Get STACK plot file
+                                $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
+                                $img->setAttribute("x-debug-stack-plotfile", $filename);
+                                if (is_readable($filename)) {
+                                    $img_data = file_get_contents($filename);
+                                }
+                            } elseif (preg_match('/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))/m', $img_src_url, $regex_matches)) {
+                                                                // Edge case: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
+                                if ($regex_matches['component'] == 'question' || strpos($regex_matches['component'], 'qtype_') === 0) {
+                                    $regex_matches = null;
+                                    $img->setAttribute("x-debug-moodle-question-rule", "true");
+                                    if (!preg_match('/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))/m', $img_src_url, $regex_matches)) {
+                                        $img->setAttribute("x-debug-moodle-question-match-failed", "true");
+                                        continue;
+                                    }
+                                    $img->setAttribute("x-debug-moodle-question-match-failed", "false");
+                                }
+
+                                // Get file via Moodle File API
+                                $fs = get_file_storage();
+                                $file = $fs->get_file(
+                                    $regex_matches['contextid'],
+                                    $regex_matches['component'],
+                                    $regex_matches['filearea'],
+                                    !empty($regex_matches['itemid']) ? $regex_matches['itemid'] : 0,
+                                    '/',  // Dirty simplification but works for now *sigh*
+                                    $regex_matches['filename']
+                                );
+                                if ($file) {
+                                    $img_data = $file->get_content();
+                                } else {
+                                    $img->setAttribute("x-debug-moodle-filestore-path", $regex_matches['fullpath']);
+                                    $img->setAttribute("x-debug-moodle-filestore-file", $file);
+                                    $img->setAttribute("x-debug-moodle-filestore-hash", sha1($regex_matches['fullpath']));
+                                }
+                            } else {
+                                // Try to download
+                                $curl = curl_init();
+                                curl_setopt($curl, CURLOPT_URL, $img_src_url);
+                                curl_setopt($curl, CURLOPT_HEADER, false);
+                                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+                                curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+
+                                // Pass current session cookie to request
+                                $session_cookies = '';
+                                foreach (["MoodleSession", "MOODLEID1_$CFG->sessioncookie", "PHPSESSID", "csrftoken", "sfcsrftoken"] as $cookie) {
+                                    $session_cookies .= "$cookie=$_COOKIE[$cookie];";
+                                    // FIXME: This fails because the API call is not authenticated. We need to somehow perform a login here...
+                                    // IDEA: Let the archive worker call the login-endpoint and generate a valid session cookie to use for all requests.
+                                }
+                                curl_setopt($curl, CURLOPT_COOKIE, $session_cookies." path=/");
+
+                                $img_data = curl_exec($curl);
+                                if ($img_data === false) {
+                                    $img->setAttribute('x-debug-curl-status', curl_getinfo($curl, CURLINFO_RESPONSE_CODE));
+                                }
+                                curl_close($curl);
+                            }
+
+                            // Encode and replace image
+                            if ($img_data) {
+                                $img_base64 = base64_encode($img_data);
+                                $img->setAttribute('src', "data:$image_mime_types[$img_type];base64,$img_base64");
+                            } else {
+                                $img->setAttribute('x-debug-failed-to-encode-from', $img_src_url);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return $dom->saveHTML();
+    }
+
+
+    /**
+     * Takes any URL and ensures that if will become an absolute URL. Relative
+     * URLs will be prefixed with $base. Already absolute URLs will be returned
+     * as they are.
+     *
+     * @param string $url URL to ensure to be absolute
+     * @param string $base Base to prepend to relative URLs
+     * @return string Absolute URL
+     */
+    function ensure_absolute_url(string $url, string $base): string {
+        /* return if already absolute URL */
+        if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
+
+        /* queries and anchors */
+        if ($url[0]=='#' || $url[0]=='?') return $base.$url;
+
+        /* parse base URL and convert to local variables: $scheme, $host, $path */
+        extract(parse_url($base));
+
+        /* remove non-directory element from path */
+        $path = preg_replace('#/[^/]*$#', '', $path);
+
+        /* destroy path if relative url points to root */
+        if ($rel[0] == '/') $path = '';
+
+        /* dirty absolute URL */
+        $abs = "$host$path/$rel";
+
+        /* replace '//' or '/./' or '/foo/../' with '/' */
+        $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
+        for ($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
+
+        /* absolute URL is ready! */
+        return $scheme.'://'.$abs;
     }
 
 }
