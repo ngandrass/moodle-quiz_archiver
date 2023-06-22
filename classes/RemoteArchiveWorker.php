@@ -84,6 +84,7 @@ class RemoteArchiveWorker {
         $request_payload = json_encode([
             "api_version" => self::API_VERSION,
             "moodle_ws_url" => (string) new \moodle_url('/webservice/rest/server.php'),
+            "moodle_upload_url" => (string) new \moodle_url('/webservice/upload.php'),
             "wstoken" => $wstoken,
             "courseid" => $courseid,
             "cmid" => $cmid,

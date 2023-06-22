@@ -33,4 +33,14 @@ $functions = [
         ],
         'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
     ],
+    'quiz_archiver_process_uploaded_artifact' => [
+        'classname' => 'quiz_archiver\external\process_uploaded_artifact',
+        'description' => 'Called by the quiz archiver worker to process a previously uploaded artifact',
+        'type' => 'write',
+        'ajax' => true,
+        'services' => [
+            MOODLE_OFFICIAL_MOBILE_SERVICE,
+        ],
+        'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
+    ]
 ];
