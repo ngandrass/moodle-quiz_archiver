@@ -23,6 +23,7 @@
  */
 
 use mod_quiz\local\reports\report_base;
+use quiz_archiver\ArchiveJob;
 use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
@@ -101,12 +102,17 @@ class quiz_archiver_report extends quiz_default_report {
             }
 
             echo "CONFIG: "; print_r($this->config);
+
+            echo "<br><br>";
+            print_r(ArchiveJob::get_jobs($this->course->id, $this->course->id, $this->quiz->id));
         }
 
         return true;
     }
 
     protected function initiate_archive_job(bool $export_attempts, bool $export_course_backup) {
+        global $USER;
+
         // Create temporary webservice token
         $wstoken = external_generate_token(
             EXTERNAL_TOKEN_PERMANENT,
@@ -134,6 +140,7 @@ class quiz_archiver_report extends quiz_default_report {
 
         // Request archive worker
         $worker = new RemoteArchiveWorker("", 10, 20);
+        $job = null;
         try {
             $job_metadata = $worker->enqueue_archive_job(
                 $wstoken,
@@ -143,6 +150,17 @@ class quiz_archiver_report extends quiz_default_report {
                 $task_archive_quiz_attempts,
                 $task_moodle_course_backup
             );
+
+            // Persist job in database
+            $job = ArchiveJob::create(
+                $job_metadata['jobid'],
+                $this->course->id,
+                $this->cm->id,
+                $this->quiz->id,
+                $USER->id,
+                $job_metadata['status']
+            );
+
         } catch (UnexpectedValueException $e) {
             echo "Comminucation with archive worker failed: $e"; // TODO
         } catch (RuntimeException $e) {
@@ -151,7 +169,7 @@ class quiz_archiver_report extends quiz_default_report {
             echo "Unknown error occured while creating archive job: $e"; // TODO
         }
 
-        echo "<br/><br/><p>Created job:</p><pre>"; print_r($job_metadata); echo "</pre></br>";
+        echo "<br/><br/><p>Created job:</p><pre>"; print_r($job); echo "</pre></br>";
 
         $this->delete_webservice_token($wstoken);
         echo "<p>DELETED WsToken: $wstoken</p>";
