@@ -5,6 +5,7 @@ use external_api;
 use external_function_parameters;
 use external_single_structure;
 use external_value;
+use quiz_archiver\FileManager;
 
 class process_uploaded_artifact extends external_api {
 
@@ -63,6 +64,7 @@ class process_uploaded_artifact extends external_api {
             'artifact_itemid' => $artifact_itemid_raw
         ]);
 
+        // Store uploaded file
         // TODO
 
         return [
