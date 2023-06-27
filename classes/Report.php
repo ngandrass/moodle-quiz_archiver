@@ -393,6 +393,10 @@ class Report {
                 div#page-wrapper {
                     height: initial !important;
                 }
+                
+                .stackinputerror {
+                    display: none !important;
+                }
             ");
             $dom->getElementsByTagName('head')[0]->appendChild($cssHacksNode);
         }
