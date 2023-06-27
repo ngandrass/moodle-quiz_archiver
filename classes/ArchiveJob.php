@@ -128,34 +128,6 @@ class ArchiveJob {
     }
 
     /**
-     * Updates the status of this ArchiveJob
-     *
-     * @param string $status New job status
-     * @return void
-     * @throws \dml_exception on failure
-     */
-    public function set_status(string $status) {
-        global $DB;
-        $DB->update_record(self::JOB_TABLE_NAME, (object) [
-            'id' => $this->id,
-            'status' => $status,
-            'timemodified' => time()
-        ]);
-    }
-
-    /**
-     * @return string Status of this job
-     */
-    public function get_status(): string {
-        global $DB;
-        try {
-            return $DB->get_field(self::JOB_TABLE_NAME, 'status', ['jobid' => $this->jobid], MUST_EXIST);
-        } catch (\dml_exception $e) {
-            return self::STATUS_UNKNOWN;
-        }
-    }
-
-    /**
      * Determines whether a job with the given job UUID exists inside the database
      *
      * @return bool True if this job is persisted inside the database
@@ -194,6 +166,98 @@ class ArchiveJob {
             $dbdata->quizid,
             $dbdata->userid
         ), $records);
+    }
+
+    /**
+     * Generates an array containing all jobs that match the given selector
+     * containing: jobid, status, timecreated, timemodified.
+     *
+     * This is the preferred way to access status of ALL jobs, instead of using
+     * ArchiveJob::get_jobs() and call get_status() on each job individually!
+     *
+     * @param int $course_id
+     * @param int $cm_id
+     * @param int $quiz_id
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_job_status_overview(int $course_id, int $cm_id, int $quiz_id): array {
+        global $DB;
+        $records = $DB->get_records(self::JOB_TABLE_NAME, [
+            'courseid' => $course_id,
+            'cmid' => $cm_id,
+            'quizid' => $quiz_id
+        ]);
+
+        return array_map(fn($j): array => [
+            'jobid' => $j->jobid,
+            'status' => $j->status,
+            'timecreated' => $j->timecreated,
+            'timemodified' => $j->timemodified
+        ], $records);
+    }
+
+    /**
+     * @return string UUID of the job, as assigned by the archive worker
+     */
+    public function get_jobid(): string {
+        return $this->jobid;
+    }
+
+    /**
+     * @return int ID of the course this job is associated with
+     */
+    public function get_course_id(): int {
+        return $this->course_id;
+    }
+
+    /**
+     * @return int ID of the course module this job is associated with
+     */
+    public function get_cm_id(): int {
+        return $this->cm_id;
+    }
+
+    /**
+     * @return int ID of the quiz this job is associated with
+     */
+    public function get_quiz_id(): int {
+        return $this->quiz_id;
+    }
+
+    /**
+     * @return int ID of the user that owns this job
+     */
+    public function get_user_id(): int {
+        return $this->user_id;
+    }
+
+    /**
+     * Updates the status of this ArchiveJob
+     *
+     * @param string $status New job status
+     * @return void
+     * @throws \dml_exception on failure
+     */
+    public function set_status(string $status) {
+        global $DB;
+        $DB->update_record(self::JOB_TABLE_NAME, (object) [
+            'id' => $this->id,
+            'status' => $status,
+            'timemodified' => time()
+        ]);
+    }
+
+    /**
+     * @return string Status of this job
+     */
+    public function get_status(): string {
+        global $DB;
+        try {
+            return $DB->get_field(self::JOB_TABLE_NAME, 'status', ['jobid' => $this->jobid], MUST_EXIST);
+        } catch (\dml_exception $e) {
+            return self::STATUS_UNKNOWN;
+        }
     }
 
 }
