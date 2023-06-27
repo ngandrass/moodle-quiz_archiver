@@ -5,6 +5,7 @@ use external_api;
 use external_function_parameters;
 use external_single_structure;
 use external_value;
+use quiz_archiver\ArchiveJob;
 use quiz_archiver\FileManager;
 
 class process_uploaded_artifact extends external_api {
@@ -37,8 +38,20 @@ class process_uploaded_artifact extends external_api {
         ]);
     }
 
-    /**
 
+    /**
+     * Execute the webservice function
+     *
+     * @param string $jobid_raw
+     * @param string $artifact_component_raw
+     * @param int $artifact_contextid_raw
+     * @param int $artifact_userid_raw
+     * @param string $artifact_filearea_raw
+     * @param string $artifact_filename_raw
+     * @param string $artifact_filepath_raw
+     * @param int $artifact_itemid_raw
+     * @return array
+     * @throws \invalid_parameter_exception
      */
     public static function execute(
         string $jobid_raw,
@@ -50,8 +63,6 @@ class process_uploaded_artifact extends external_api {
         string $artifact_filepath_raw,
         int $artifact_itemid_raw
     ): array {
-        global $DB;
-
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobid_raw,
@@ -64,9 +75,56 @@ class process_uploaded_artifact extends external_api {
             'artifact_itemid' => $artifact_itemid_raw
         ]);
 
-        // Store uploaded file
-        // TODO
+        // Validate that the jobid exists and no artifact was uploaded previously
+        $job = null;
+        try {
+            $job = ArchiveJob::get_by_jobid($params['jobid']);
+            switch ($job->get_status()) {
+                case ArchiveJob::STATUS_UNKNOWN:
+                case ArchiveJob::STATUS_FINISHED:
+                case ArchiveJob::STATUS_FAILED:
+                    return [
+                        'jobid' => $params['jobid'],
+                        'status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'
+                    ];
+                default:
+                    break;
+            }
+        } catch (\dml_exception $e) {
+            return [
+                'jobid' => $params['jobid'],
+                'status' => 'E_JOB_NOT_FOUND'
+            ];
+        }
 
+        // Store uploaded file
+        $draftfile = FileManager::get_draft_file(
+            $params['artifact_contextid'],
+            $params['artifact_itemid'],
+            $params['artifact_filepath'],
+            $params['artifact_filename']
+        );
+        if (!$draftfile) {
+            $job->set_status(ArchiveJob::STATUS_FAILED);
+            return [
+                'jobid' => $params['jobid'],
+                'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'
+            ];
+        }
+
+        $fm = new FileManager($job->get_course_id(), $job->get_cm_id(), $job->get_quiz_id());
+        try {
+            $fm->store_uploaded_artifact($draftfile);
+        } catch (\Exception $e) {
+            $job->set_status(ArchiveJob::STATUS_FAILED);
+            return [
+                'jobid' => $params['jobid'],
+                'status' => 'E_STORE_ARTIFACT_FAILED'
+            ];
+        }
+
+        // Report success
+        $job->set_status(ArchiveJob::STATUS_FINISHED);
         return [
             'jobid' => $params['jobid'],
             'status' => 'OK'
