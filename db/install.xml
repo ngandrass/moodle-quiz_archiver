@@ -10,8 +10,8 @@
           <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the quiz this job is associated with"/>
           <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the user that initiated this job"/>
           <FIELD NAME="status" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Status of this job"/>
-          <FIELD NAME="timecreated" TYPE="datetime" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was created"/>
-          <FIELD NAME="timemodified" TYPE="datetime" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was updated"/>
+          <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was created"/>
+          <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was updated"/>
         </FIELDS>
         <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id" />
