@@ -104,7 +104,7 @@ class quiz_archiver_report extends quiz_default_report {
             echo "CONFIG: "; print_r($this->config);
 
             echo "<br><br>";
-            print_r(ArchiveJob::get_jobs($this->course->id, $this->course->id, $this->quiz->id));
+            print_r(ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id));
         }
 
         return true;
@@ -139,7 +139,7 @@ class quiz_archiver_report extends quiz_default_report {
         }
 
         // Request archive worker
-        $worker = new RemoteArchiveWorker("", 10, 20);
+        $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/').'/archive', 10, 20);
         $job = null;
         try {
             $job_metadata = $worker->enqueue_archive_job(
@@ -153,12 +153,12 @@ class quiz_archiver_report extends quiz_default_report {
 
             // Persist job in database
             $job = ArchiveJob::create(
-                $job_metadata['jobid'],
+                $job_metadata->jobid,
                 $this->course->id,
                 $this->cm->id,
                 $this->quiz->id,
                 $USER->id,
-                $job_metadata['status']
+                $job_metadata->status
             );
 
         } catch (UnexpectedValueException $e) {
@@ -171,8 +171,8 @@ class quiz_archiver_report extends quiz_default_report {
 
         echo "<br/><br/><p>Created job:</p><pre>"; print_r($job); echo "</pre></br>";
 
-        $this->delete_webservice_token($wstoken);
-        echo "<p>DELETED WsToken: $wstoken</p>";
+        //$this->delete_webservice_token($wstoken);
+        //echo "<p>DELETED WsToken: $wstoken</p>";
 
         // ...
 

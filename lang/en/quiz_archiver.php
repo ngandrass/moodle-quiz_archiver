@@ -36,6 +36,8 @@ $string['export_attempts'] = 'Export quiz attempts';
 $string['export_course_backup'] = 'Export full course backup';
 
 // Settings
+$string['setting_internal_wwwroot'] = 'Custom Moodle Base URL';
+$string['setting_internal_wwwroot_desc'] = 'Overwrites the default Moodle base URL (i.e. $CFG->wwwroot). This can be useful if you are running the archive worker service inside a private network (e.g. Docker).';
 $string['setting_webservice_desc'] = 'The webservice that is allowed to execute the "generate_attempt_report" webservice function';
 $string['setting_webservice_userid'] = 'Webservice user ID';
 $string['setting_webservice_userid_desc'] = 'ID of the Moodle user that will be used by the archive worker to access quiz data';
