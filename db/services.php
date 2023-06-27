@@ -33,6 +33,16 @@ $functions = [
         ],
         'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
     ],
+    'quiz_archiver_update_job_status' => [
+        'classname' => 'quiz_archiver\external\update_job_status',
+        'description' => 'Called by the quiz archiver worker to update the status of a job',
+        'type' => 'write',
+        'ajax' => true,
+        'services' => [
+            MOODLE_OFFICIAL_MOBILE_SERVICE,
+        ],
+        'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
+    ],
     'quiz_archiver_process_uploaded_artifact' => [
         'classname' => 'quiz_archiver\external\process_uploaded_artifact',
         'description' => 'Called by the quiz archiver worker to process a previously uploaded artifact',
@@ -42,5 +52,5 @@ $functions = [
             MOODLE_OFFICIAL_MOBILE_SERVICE,
         ],
         'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
-    ]
+    ],
 ];
