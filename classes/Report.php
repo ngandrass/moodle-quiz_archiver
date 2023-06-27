@@ -448,15 +448,15 @@ class Report {
         $img_src = preg_replace('/^([^\?\&\#]+).*$/', '${1}', $img->getAttribute('src'));
 
         // Convert relative URLs to absolute URLs
-        $moodle_baseurl = $CFG->wwwroot;
-        if (getenv('VIAMINT_MOODLE_INTERNAL_HOST')) {
-            $moodle_baseurl = 'http://' . getenv('VIAMINT_MOODLE_INTERNAL_HOST');
-            $img_src = str_replace(parse_url($CFG->wwwroot, PHP_URL_HOST), getenv('VIAMINT_MOODLE_INTERNAL_HOST'), $img_src);
+        $config = get_config('quiz_archiver');
+        $moodle_baseurl = rtrim($config->internal_wwwroot ?: $CFG->wwwroot, '/').'/';
+        if ($config->internal_wwwroot) {
+            $img_src = str_replace(rtrim($CFG->wwwroot, '/'), rtrim($config->internal_wwwroot, '/'), $img_src);
         }
         $img_src_url = $this->ensure_absolute_url($img_src, $moodle_baseurl);
 
         # Make sure to only process web URLs and nothing that somehow remained a valid local filepath
-        if (!substr($img_src_url, 0, 4) === "http") return false;
+        if (!substr($img_src_url, 0, 4) === "http") return false;  // Yes, this includes https as well ;)
 
         // Only process allowed image types
         $img_ext = pathinfo($img_src_url, PATHINFO_EXTENSION);
@@ -539,10 +539,10 @@ class Report {
         $path = preg_replace('#/[^/]*$#', '', $path);
 
         /* destroy path if relative url points to root */
-        if ($rel[0] == '/') $path = '';
+        if ($url[0] == '/') $path = '';
 
         /* dirty absolute URL */
-        $abs = "$host$path/$rel";
+        $abs = "$host$path/$url";
 
         /* replace '//' or '/./' or '/foo/../' with '/' */
         $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');

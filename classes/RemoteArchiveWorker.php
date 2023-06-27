@@ -28,24 +28,16 @@ defined('MOODLE_INTERNAL') || die();
 
 class RemoteArchiveWorker {
 
-    /**
-     * @var string URL of the remote Quiz Archive Worker instance
-     */
-    private string $server_url;
+    /** @var string URL of the remote Quiz Archive Worker instance */
+    protected string $server_url;
+    /** @var int Seconds to wait until a connection can be established before aborting */
+    protected int $connection_timeout;
+    /** @var int Seconds to wait for the request to complete before aborting */
+    protected int $request_timeout;
+    /** @var \stdClass Moodle config object for this plugin */
+    protected \stdClass $config;
 
-    /**
-     * @var int Seconds to wait until a connection can be established before aborting
-     */
-    private int $connection_timeout;
-
-    /**
-     * @var int Seconds to wait for the request to complete before aborting
-     */
-    private int $request_timeout;
-
-    /**
-     * @var int Version of the used API
-     */
+    /** @var int Version of the used API */
     public const API_VERSION = 1;
 
     /**
@@ -55,16 +47,17 @@ class RemoteArchiveWorker {
      * @param $connection_timeout int Seconds to wait until a connection can be established before aborting
      * @param $request_timeout int Seconds to wait for the request to complete before aborting
      */
-    public function __construct($server_url, $connection_timeout, $request_timeout) {
+    public function __construct(string $server_url, int $connection_timeout, int $request_timeout) {
         $this->server_url = $server_url;
         $this->connection_timeout = $connection_timeout;
         $this->request_timeout = $request_timeout;
+        $this->config = get_config('quiz_archiver');
     }
 
     /**
      * Tries to enqueue a new archive job at the archive worker service
      *
-     * @param $wstoken str Moodle webervice token to use
+     * @param $wstoken string Moodle webervice token to use
      * @param $courseid int Moodle course id
      * @param $cmid int Moodle course module id
      * @param $quizid int Moodle quiz id
@@ -79,12 +72,15 @@ class RemoteArchiveWorker {
      *
      * @return mixed Job information returned from the archive worker on success
      */
-    public function enqueue_archive_job($wstoken, $courseid, $cmid, $quizid, $task_archive_quiz_attempts, $task_moodle_course_backup) {
-        # Prepare and execute request
+    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, $task_archive_quiz_attempts, $task_moodle_course_backup) {
+        global $CFG;
+        $moodle_url_base = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
+
+        // Prepare and execute request
         $request_payload = json_encode([
             "api_version" => self::API_VERSION,
-            "moodle_ws_url" => (string) new \moodle_url('/webservice/rest/server.php'),
-            "moodle_upload_url" => (string) new \moodle_url('/webservice/upload.php'),
+            "moodle_ws_url" => $moodle_url_base.'/webservice/rest/server.php',
+            "moodle_upload_url" => $moodle_url_base.'/webservice/upload.php',
             "wstoken" => $wstoken,
             "courseid" => $courseid,
             "cmid" => $cmid,
@@ -93,26 +89,25 @@ class RemoteArchiveWorker {
             "task_moodle_course_backup" => $task_moodle_course_backup
         ]);
 
-        die(print_r($request_payload));
-
-        $request = $this->prepare_curl_request($request_payload);
-        $result = curl_exec($request);
-        $http_status = curl_getinfo($request, CURLINFO_HTTP_CODE);
+        $ch = $this->prepare_curl_request($request_payload);
+        $result = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
         $data = json_decode($result);
 
-        # Handle errors
+        // Handle errors
         if ($http_status != 200) {
             if ($data === null) {
                 throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $http_status");
             }
-            throw new \RuntimeException($data['error']);
+            throw new \RuntimeException($data->error);
         } else {
             if ($data === null) {
                 throw new \UnexpectedValueException("Decoding of the archive worker response failed.");
             }
         }
 
-        # Decoded JSON data containing jobid and job_status returned on success
+        // Decoded JSON data containing jobid and job_status returned on success
         return $data;
     }
 
@@ -124,24 +119,24 @@ class RemoteArchiveWorker {
      * @return resource Preconfigured CURL resource
      */
     private function prepare_curl_request($json_data) {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $this->server_url);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_VERBOSE, 0);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $json_data);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $this->connection_timeout);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $this->request_timeout);
-        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->server_url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connection_timeout);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->request_timeout);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
             'Content-Length: ' . strlen($json_data)
         ]);
 
-        return $curl;
+        return $ch;
     }
 
 }

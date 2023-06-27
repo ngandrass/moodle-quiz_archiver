@@ -92,6 +92,7 @@ class ArchiveJob {
         }
 
         // Create database entry and return ArchiveJob object to represent it
+        $now = time();
         $id = $DB->insert_record(self::JOB_TABLE_NAME, [
             'jobid' => $jobid,
             'courseid' => $course_id,
@@ -99,8 +100,8 @@ class ArchiveJob {
             'quizid' => $quiz_id,
             'userid' => $user_id,
             'status' => $status,
-            'timecreated' => time(),
-            'timemodified' => time(),
+            'timecreated' => $now,
+            'timemodified' => $now
         ]);
 
         return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id);
@@ -179,7 +180,7 @@ class ArchiveJob {
      */
     public static function get_jobs(int $course_id, int $cm_id, int $quiz_id): array {
         global $DB;
-        $records =  $DB->get_records(self::JOB_TABLE_NAME, [
+        $records = $DB->get_records(self::JOB_TABLE_NAME, [
             'courseid' => $course_id,
             'cmid' => $cm_id,
             'quizid' => $quiz_id

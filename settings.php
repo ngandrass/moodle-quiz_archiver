@@ -53,5 +53,12 @@ if ($hassiteconfig) {
             PARAM_INT
         ));
 
+        $settings->add(new admin_setting_configtext('quiz_archiver/internal_wwwroot',
+            get_string('setting_internal_wwwroot', 'quiz_archiver'),
+            get_string('setting_internal_wwwroot_desc', 'quiz_archiver'),
+            '',
+            PARAM_TEXT
+        ));
+
     }
 }
