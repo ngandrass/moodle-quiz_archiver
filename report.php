@@ -24,6 +24,7 @@
 
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
+use quiz_archiver\FileManager;
 use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
@@ -103,8 +104,24 @@ class quiz_archiver_report extends quiz_default_report {
 
             echo "CONFIG: "; print_r($this->config);
 
-            echo "<br><br>";
-            print_r(ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id));
+            echo "<br><br>Jobs:";
+            print_r(ArchiveJob::get_job_status_overview($this->course->id, $this->cm->id, $this->quiz->id));
+
+            echo "<br><br>Files:";
+            $fm = new FileManager($this->course->id, $this->cm->id, $this->quiz->id);
+            foreach ($fm->get_stored_artifacts() as $file) {
+                $url = moodle_url::make_pluginfile_url(
+                    $file->get_contextid(),
+                    $file->get_component(),
+                    $file->get_filearea(),
+                    $file->get_itemid(),
+                    $file->get_filepath(),
+                    $file->get_filename(),
+                    true
+                );
+                echo '<br><a href="'.$url.'" target="_blank">'.$file->get_filename().'</a>';
+                // TODO: Implement callback function for pluginfile. See: https://moodledev.io/docs/apis/subsystems/files#serving-your-file-to-the-user
+            }
         }
 
         return true;
@@ -128,7 +145,7 @@ class quiz_archiver_report extends quiz_default_report {
         $task_archive_quiz_attempts = null;
         if ($export_attempts) {
             $task_archive_quiz_attempts = [
-                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
+                'attemptids' => [4] # FIXME TODO Remove DEBUG # array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
             ];
         }
 

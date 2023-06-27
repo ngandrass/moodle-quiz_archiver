@@ -40,7 +40,7 @@ class FileManager {
     /** @var string Name of the component passed to the Moodle File API */
     const COMPONENT_NAME = 'quiz_archiver';
     /** @var string Name of the filearea all artifact files should be stored in */
-    const ARTIFACTS_FILEAREA_NAME = 'quiz_archiver';
+    const ARTIFACTS_FILEAREA_NAME = 'artifact';
 
     /** @var int ID of the course this FileManager is associated with */
     protected int $course_id;
@@ -90,7 +90,7 @@ class FileManager {
             }
         }
 
-        return $path ?: '/';
+        return $path . '/';
     }
 
     /**
@@ -145,8 +145,28 @@ class FileManager {
      * @return stored_file[]
      * @throws \coding_exception
      */
-    public function get_stored_artifacts() {
-        return get_file_storage()->get_area_files($this->context->id, self::COMPONENT_NAME, self::ARTIFACTS_FILEAREA_NAME);
+    public function get_stored_artifacts(): array {
+        return get_file_storage()->get_area_files(
+            $this->context->id,
+            self::COMPONENT_NAME,
+            self::ARTIFACTS_FILEAREA_NAME,
+            false,
+            "itemid, filepath, filename",
+            false
+        );
+    }
+
+    /**
+     * Retrieves the given file from the draft area
+     *
+     * @param int $contextid
+     * @param int $itemid
+     * @param string $filepath
+     * @param string $filename
+     * @return stored_file|null
+     */
+    public static function get_draft_file(int $contextid, int $itemid, string $filepath, string $filename): ?stored_file {
+        return get_file_storage()->get_file($contextid, 'user', 'draft', $itemid, $filepath, $filename) ?: null;
     }
 
 }
