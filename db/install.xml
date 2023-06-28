@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="20230626" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
+  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="20230628" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
     <TABLES>
       <TABLE NAME="quiz_report_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
         <FIELDS>
@@ -12,6 +12,7 @@
           <FIELD NAME="status" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Status of this job"/>
           <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was created"/>
           <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was updated"/>
+          <FIELD NAME="wstoken" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="Webservice token that is allowed to write this job via the Moodle API"/>
         </FIELDS>
         <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id" />

@@ -40,6 +40,8 @@ class ArchiveJob {
     protected int $quiz_id;
     /** @var int ID of the user that owns this job */
     protected int $user_id;
+    /** @var string The webservice token that is allowed to write to this job via API */
+    protected string $wstoken;
 
     /** @var string Name of the job status table */
     const JOB_TABLE_NAME = 'quiz_report_archiver_jobs';
@@ -60,14 +62,16 @@ class ArchiveJob {
      * @param int $course_id ID of the course this job is associated with
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
+     * @param string $wstoken The webservice token that is allowed to write to this job via API
      */
-    protected function __construct(int $id, string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id) {
+    protected function __construct(int $id, string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $wstoken) {
         $this->id = $id;
         $this->jobid = $jobid;
         $this->course_id = $course_id;
         $this->cm_id = $cm_id;
         $this->quiz_id = $quiz_id;
         $this->user_id = $user_id;
+        $this->wstoken = $wstoken;
     }
 
     /**
@@ -79,11 +83,12 @@ class ArchiveJob {
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that initiated this job
      * @param string $status (optional) Initial status of the job. Default to STATUS_UNKNOWN
+     * @param string $wstoken The webservice token that is allowed to write to this job via API
      * @return ArchiveJob
      * @throws \dml_exception On database error
      * @throws \moodle_exception If the job already exists inside the database
      */
-    public static function create(string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $status = self::STATUS_UNKNOWN): ArchiveJob {
+    public static function create(string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $wstoken, string $status = self::STATUS_UNKNOWN): ArchiveJob {
         global $DB;
 
         // Do not re-created jobs!
@@ -101,10 +106,11 @@ class ArchiveJob {
             'userid' => $user_id,
             'status' => $status,
             'timecreated' => $now,
-            'timemodified' => $now
+            'timemodified' => $now,
+            'wstoken' => $wstoken
         ]);
 
-        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id);
+        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $wstoken);
     }
 
     /**
@@ -123,7 +129,8 @@ class ArchiveJob {
             $jobdata->courseid,
             $jobdata->cmid,
             $jobdata->quizid,
-            $jobdata->userid
+            $jobdata->userid,
+            $jobdata->wstoken
         );
     }
 
@@ -164,7 +171,8 @@ class ArchiveJob {
             $dbdata->courseid,
             $dbdata->cmid,
             $dbdata->quizid,
-            $dbdata->userid
+            $dbdata->userid,
+            $dbdata->wstoken
         ), $records);
     }
 
