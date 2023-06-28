@@ -31,11 +31,15 @@ $string['archiverreport'] = $string['pluginname'];
 
 // Template: Overview
 $string['users_with_attempts'] = 'Users with quiz attempts';
-$string['archive_quiz'] = 'Archive Quiz';
+$string['archive_quiz'] = 'Archive quiz';
+$string['create_quiz_archive'] = 'Create new quiz archive';
+$string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page.';
 $string['export_attempts'] = 'Export quiz attempts';
 $string['export_course_backup'] = 'Export full course backup';
+$string['job_overview'] = 'Archives';
 
 // Job
+$string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';
 $string['jobid'] = 'Job ID';
 $string['job_status_UNKNOWN'] = 'Unknown';
 $string['job_status_UNINITIALIZED'] = 'Uninitialized';

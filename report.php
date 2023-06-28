@@ -26,6 +26,7 @@ use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\FileManager;
 use quiz_archiver\form\archive_quiz_form;
+use quiz_archiver\form\job_delete_form;
 use quiz_archiver\output\job_overview_table;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
@@ -77,49 +78,61 @@ class quiz_archiver_report extends quiz_default_report {
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
 
-        // What sort of page to display?
+        // Handle job delete form
+        if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
+            $job_delete_form = new job_delete_form();
+            if ($job_delete_form->is_submitted()) {
+                $formdata = $job_delete_form->get_data();
+                ArchiveJob::get_by_jobid($formdata->jobid)->delete();
+            } else {
+                $job_delete_form->display();
+                return true;
+            }
+        }
+
+        // Determine page to display
         if (!quiz_has_questions($quiz->id)) {
             echo quiz_no_questions_message($quiz, $cm, $this->context);
         } else {
-            echo "Course-ID: $course->id <br>";
-            echo "CM-ID: $cm->id <br>";
-            echo "Quiz-ID: $quiz->id <br>";
-
-            echo $OUTPUT->render_from_template("quiz_archiver/overview", [
-                "num_users_with_attempts" => sizeof($this->report->get_users_with_attempts()),
-                "num_attempts" => sizeof($this->report->get_attempts())
-            ]);
-
+            // Archive quiz form
+            echo '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>';
+            echo '<div>';
             $archive_quiz_form = new archive_quiz_form();
             if ($archive_quiz_form->is_submitted()) {
                 $formdata = $archive_quiz_form->get_data();
-
-                print_r($formdata);
                 $this->initiate_archive_job($formdata->export_attempts, $formdata->export_course_backup);
+                return true;
             } else {
                 $archive_quiz_form->display();
             }
+            echo '</div>';
 
-            echo "CONFIG: "; print_r($this->config);
-
-            echo "<br><br>Jobs:";
+            // Job overview table
+            echo '<h1>'.get_string('job_overview', 'quiz_archiver').'<a href="'.new moodle_url('', ['id' => optional_param('id', null, PARAM_INT), 'mode' => 'archiver']).'" class="small mx-2" alt="'.get_string('refresh', 'moodle').'"><i class="fa fa-rotate-right"></i></a></h1>';
+            echo '<div>';
             $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
             $jobtbl->define_baseurl("$CFG->wwwroot/mod/quiz/report.php?mode=archiver&id=".optional_param('id', 0, PARAM_INT));
             $jobtbl->out(10, true);
+            echo '</div>';
 
-            $fm = new FileManager($this->course->id, $this->cm->id, $this->quiz->id);
-            foreach ($fm->get_stored_artifacts() as $file) {
-                $url = moodle_url::make_pluginfile_url(
-                    $file->get_contextid(),
-                    $file->get_component(),
-                    $file->get_filearea(),
-                    $file->get_itemid(),
-                    $file->get_filepath(),
-                    $file->get_filename(),
-                    true
-                );
-                echo '<br><a href="'.$url.'" target="_blank">'.$file->get_filename().'</a>';
-            }
+            // echo "CONFIG: "; print_r($this->config);
+            // echo "Course-ID: $course->id <br>";
+            // echo "CM-ID: $cm->id <br>";
+            // echo "Quiz-ID: $quiz->id <br>";
+
+            // $fm = new FileManager($this->course->id, $this->cm->id, $this->quiz->id);
+            // foreach ($fm->get_stored_artifacts() as $file) {
+            //     $url = moodle_url::make_pluginfile_url(
+            //         $file->get_contextid(),
+            //         $file->get_component(),
+            //         $file->get_filearea(),
+            //         $file->get_itemid(),
+            //         $file->get_filepath(),
+            //         $file->get_filename(),
+            //         true
+            //     );
+            //     echo '<br><a href="'.$url.'" target="_blank">'.$file->get_filename().'</a>';
+            // }
         }
 
         return true;
@@ -185,14 +198,8 @@ class quiz_archiver_report extends quiz_default_report {
             echo "Unknown error occured while creating archive job: $e"; // TODO
         }
 
+        // TODO: Make better message!
         echo "<br/><br/><p>Created job:</p><pre>"; print_r($job); echo "</pre></br>";
-
-        //$this->delete_webservice_token($wstoken);
-        //echo "<p>DELETED WsToken: $wstoken</p>";
-
-        // ...
-
-        // Test, move somewhere else!
     }
 
     /**

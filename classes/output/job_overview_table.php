@@ -139,7 +139,13 @@ class job_overview_table extends \table_sql {
         }
 
         // Action: Delete
-        $html .= '<a href="#" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
+        $deleteurl = new \moodle_url('', [
+            'id' => optional_param('id', null, PARAM_INT),
+            'mode' => 'archiver',
+            'action' => 'delete_job',
+            'jobid' => $values->jobid
+        ]);
+        $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
 
         return $html;
     }
