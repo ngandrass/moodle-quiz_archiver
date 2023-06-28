@@ -97,7 +97,10 @@ class quiz_archiver_report extends quiz_default_report {
             // Archive quiz form
             echo '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>';
             echo '<div>';
-            $archive_quiz_form = new archive_quiz_form();
+            $archive_quiz_form = new archive_quiz_form(
+                $this->quiz->name,
+                sizeof($this->report->get_attempts())
+            );
             if ($archive_quiz_form->is_submitted()) {
                 $formdata = $archive_quiz_form->get_data();
                 $this->initiate_archive_job($formdata->export_attempts, $formdata->export_course_backup);

@@ -24,11 +24,27 @@
 
 namespace quiz_archiver\form;
 
+use quiz_archiver\Report;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 
 class archive_quiz_form extends \moodleform {
+
+    /** @var string Name of the quiz to be exportet */
+    protected string $quiz_name;
+    /** @var int Number of attempts to be exported */
+    protected int $num_attempts;
+
+    /**
+     * @param int $num_attempts Number of attempts to be exported
+     */
+    public function __construct(string $quiz_name, int $num_attempts) {
+        $this->quiz_name = $quiz_name;
+        $this->num_attempts = $num_attempts;
+        parent::__construct();
+    }
 
     /**
      * Form definiton.
@@ -46,11 +62,17 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('mode', PARAM_TEXT);
 
         // Options
-        $mform->addElement('header', 'options_header', get_string('options'));
-        $mform->addElement('advcheckbox', 'export_attempts', get_string('export_attempts', 'quiz_archiver'), '', ['disabled' => 'disabled'], ['1', '1']);
+        $mform->addElement('header', 'header', get_string('settings'));
+
+        $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quiz_name);
+
+        $mform->addElement('advcheckbox', 'export_attempts', get_string('content'), get_string('export_attempts', 'quiz_archiver'), ['disabled' => 'disabled'], ['1', '1']);
         $mform->setDefault('export_attempts', true);
+
         $mform->addElement('advcheckbox', 'export_course_backup', get_string('export_course_backup', 'quiz_archiver'));
         $mform->setDefault('export_course_backup', true);
+
+        $mform->addElement('static', 'num_attempts', get_string('attempts', 'mod_quiz'), $this->num_attempts);
 
         // Submit
         $mform->addElement('submit', 'submitbutton', get_string('archive_quiz', 'quiz_archiver'));
