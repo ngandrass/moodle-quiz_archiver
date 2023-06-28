@@ -26,6 +26,7 @@ use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\FileManager;
 use quiz_archiver\form\archive_quiz_form;
+use quiz_archiver\output\job_overview_table;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
 
@@ -60,7 +61,7 @@ class quiz_archiver_report extends quiz_default_report {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course): bool {
-        global $OUTPUT;
+        global $CFG, $OUTPUT;
 
         $this->course = $course;
         $this->cm = $cm;
@@ -102,9 +103,10 @@ class quiz_archiver_report extends quiz_default_report {
             echo "CONFIG: "; print_r($this->config);
 
             echo "<br><br>Jobs:";
-            print_r(ArchiveJob::get_job_status_overview($this->course->id, $this->cm->id, $this->quiz->id));
+            $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
+            $jobtbl->define_baseurl("$CFG->wwwroot/mod/quiz/report.php?mode=archiver&id=".optional_param('id', 0, PARAM_INT));
+            $jobtbl->out(10, true);
 
-            echo "<br><br>Files:";
             $fm = new FileManager($this->course->id, $this->cm->id, $this->quiz->id);
             foreach ($fm->get_stored_artifacts() as $file) {
                 $url = moodle_url::make_pluginfile_url(
