@@ -44,18 +44,25 @@ class job_overview_table extends \table_sql {
      */
     function __construct(string $uniqueid, int $courseid, int $cmid, int $quizid) {
         parent::__construct($uniqueid);
-        // Define the list of columns to show.
-        $columns = ['timecreated', 'status', 'jobid', 'actions'];
-        $this->define_columns($columns);
-
-        // Define the titles of columns to show in header.
-        $headers = ['timecreated', 'status', 'jobid', 'actions'];
-        $this->define_headers($headers);
+        $this->define_columns([
+            'timecreated',
+            'status',
+            'user',
+            'jobid',
+            'actions']
+        );
+        $this->define_headers([
+            get_string('task_starttime', 'admin'),
+            get_string('status', 'moodle'),
+            get_string('user', 'moodle'),
+            get_string('jobid', 'quiz_archiver'),
+            ''
+        ]);
 
         $this->set_sql(
-            'jobs.jobid, jobs.timecreated, jobs.timemodified, jobs.status, files.pathnamehash',
-            '{'.ArchiveJob::JOB_TABLE_NAME.'} AS jobs LEFT JOIN {files} as files ON jobs.artifactfileid = files.id',
-            'jobs.courseid = :courseid AND jobs.cmid = :cmid AND jobs.quizid = :quizid',
+            'j.jobid, j.timecreated, j.timemodified, j.status, f.pathnamehash, j.userid, u.username',
+            '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id',
+            'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
                 'courseid' => $courseid,
                 'cmid' => $cmid,
@@ -66,18 +73,49 @@ class job_overview_table extends \table_sql {
         $this->sortable(true, 'timecreated', SORT_DESC);
         $this->no_sorting('jobid');
         $this->no_sorting('actions');
+        $this->collapsible(false);
     }
 
     function col_timecreated($values) {
-        return date("Y-m-d H:i:s", $values->timecreated);
+        return date('Y-m-d\<\b\r\\>H:i:s', $values->timecreated);
     }
 
     function col_status($values) {
         switch ($values->status) {
-            case ArchiveJob::STATUS_RUNNING: return "Running";
+            case ArchiveJob::STATUS_UNKNOWN:
+                $color = 'warning';
+                $text = get_string('job_status_UNKNOWN', 'quiz_archiver');
+                break;
+            case ArchiveJob::STATUS_UNINITIALIZED:
+                $color = 'secondary';
+                $text = get_string('job_status_UNINITIALIZED', 'quiz_archiver');
+                break;
+            case ArchiveJob::STATUS_AWAITING_PROCESSING:
+                $color = 'secondary';
+                $text = get_string('job_status_AWAITING_PROCESSING', 'quiz_archiver');
+                break;
+            case ArchiveJob::STATUS_RUNNING:
+                $color = 'primary';
+                $text = get_string('job_status_RUNNING', 'quiz_archiver');
+                break;
+            case ArchiveJob::STATUS_FINISHED:
+                $color = 'success';
+                $text = get_string('job_status_FINISHED', 'quiz_archiver');
+                break;
+            case ArchiveJob::STATUS_FAILED:
+                $color = 'danger';
+                $text = get_string('job_status_FAILED', 'quiz_archiver');
+                break;
             default:
-                return $values->status;
+                $color = 'light';
+                $text = $values->state;
         }
+
+        return '<span class="badge badge-'.$color.'">'.$text.'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
+    }
+
+    function col_user($values) {
+        return '<a href="'.new \moodle_url('/user/profile.php', ['id' => $values->userid]).'">'.$values->username.'</a>';
     }
 
     function col_actions($values) {
@@ -95,13 +133,13 @@ class job_overview_table extends \table_sql {
                 $artifactfile->get_filename(),
                 true
             );
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" alt="Download"><i class="fa fa-download"></i></a>';
+            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" alt="'.get_string('download', 'moodle').'"><i class="fa fa-download"></i></a>';
         } else {
-            $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="Download" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
+            $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download', 'moodle').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }
 
         // Action: Delete
-        $html .= '<a href="#" class="btn btn-danger mx-1" role="button" alt="Delete"><i class="fa fa-times"></i></a>';
+        $html .= '<a href="#" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
 
         return $html;
     }

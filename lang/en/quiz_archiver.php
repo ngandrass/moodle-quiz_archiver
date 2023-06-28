@@ -35,6 +35,15 @@ $string['archive_quiz'] = 'Archive Quiz';
 $string['export_attempts'] = 'Export quiz attempts';
 $string['export_course_backup'] = 'Export full course backup';
 
+// Job
+$string['jobid'] = 'Job ID';
+$string['job_status_UNKNOWN'] = 'Unknown';
+$string['job_status_UNINITIALIZED'] = 'Uninitialized';
+$string['job_status_AWAITING_PROCESSING'] = 'Queued';
+$string['job_status_RUNNING'] = 'Running';
+$string['job_status_FINISHED'] = 'Finished';
+$string['job_status_FAILED'] = 'Failed';
+
 // Settings
 $string['setting_internal_wwwroot'] = 'Custom Moodle Base URL';
 $string['setting_internal_wwwroot_desc'] = 'Overwrites the default Moodle base URL (i.e. $CFG->wwwroot). This can be useful if you are running the archive worker service inside a private network (e.g. Docker).';
