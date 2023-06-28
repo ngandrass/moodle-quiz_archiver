@@ -97,6 +97,14 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
+        // Check access rights
+        if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
+            return [
+                'jobid' => $params['jobid'],
+                'status' => 'E_ACCESS_DENIED'
+            ];
+        }
+
         // Store uploaded file
         $draftfile = FileManager::get_draft_file(
             $params['artifact_contextid'],

@@ -24,12 +24,16 @@
 
 namespace quiz_archiver;
 
+use ZipStream\Option\Archive;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/quiz/locallib.php");  # Required for legacy mod_quiz functions ...
 
 class Report {
 
+    /** @var object Moodle admin settings object */
+    protected object $config;
     /** @var object Moodle course this report is part of */
     protected object $course;
     /** @var object Course module the quiz is part of */
@@ -46,6 +50,42 @@ class Report {
         $this->course = $course;
         $this->cm = $cm;
         $this->quiz = $quiz;
+        $this->config = get_config('quiz_archiver');
+    }
+
+    /**
+     * Determines if the given webservice token is allowed to generate reports
+     * for this quiz
+     *
+     * @param string $wstoken Webservice token to test
+     * @return bool True if the given webservice token is allowed to export reports
+     */
+    public function has_access(string $wstoken): bool {
+        global $DB;
+
+        try {
+            // Check if job with given wstoken exists for this quiz
+            $jobdata = $DB->get_record(ArchiveJob::JOB_TABLE_NAME, [
+                'courseid' => $this->course->id,
+                'cmid' => $this->cm->id,
+                'quizid' => $this->quiz->id,
+                'wstoken' => $wstoken
+            ], 'status, timecreated', MUST_EXIST);
+
+            // Completed / aborted jobs invalidate access
+            if ($jobdata->status == ArchiveJob::STATUS_FINISHED || $jobdata->status == ArchiveJob::STATUS_FAILED) {
+                return false;
+            }
+
+            // Job must still be valid
+            if (($jobdata->timecreated + ($this->config->job_timeout_min * 60)) > time()) {
+                return true;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return false;
     }
 
     /**

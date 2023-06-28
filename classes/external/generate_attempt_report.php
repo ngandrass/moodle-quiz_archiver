@@ -28,11 +28,12 @@ class generate_attempt_report extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'courseid' => new external_value(PARAM_INT, 'ID of course'),
-            'cmid' => new external_value(PARAM_INT, 'ID of the course module'),
-            'quizid' => new external_value(PARAM_INT, 'ID of the quiz'),
-            'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt'),
-            'report' => new external_value(PARAM_RAW, 'HTML DOM of the generated quiz attempt report')
+            'courseid' => new external_value(PARAM_INT, 'ID of course', VALUE_OPTIONAL),
+            'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_OPTIONAL),
+            'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_OPTIONAL),
+            'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_OPTIONAL),
+            'report' => new external_value(PARAM_RAW, 'HTML DOM of the generated quiz attempt report', VALUE_OPTIONAL),
+            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction', VALUE_REQUIRED)
         ]);
     }
 
@@ -80,6 +81,11 @@ class generate_attempt_report extends external_api {
 
         // Generate report
         $report = new Report($course, $cm, $quiz);
+        if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
+            return [
+                'status' => 'E_ACCESS_DENIED'
+            ];
+        }
         if (!$report->attempt_exists($params['attemptid'])) {
             throw new \invalid_parameter_exception("No attempt with given attemptid found");
         }
@@ -89,7 +95,8 @@ class generate_attempt_report extends external_api {
             'cmid' => $params['cmid'],
             'quizid' => $params['quizid'],
             'attemptid' => $params['attemptid'],
-            'report' => $report->generate_full_page($params['attemptid'])
+            'report' => $report->generate_full_page($params['attemptid']),
+            'status' => 'OK'
         ];
     }
 

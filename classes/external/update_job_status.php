@@ -51,6 +51,14 @@ class update_job_status extends external_api {
 
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
+
+            if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
+                return [
+                    'jobid' => $params['jobid'],
+                    'status' => 'E_ACCESS_DENIED'
+                ];
+            }
+
             $job->set_status($params['status']);
         } catch (\dml_exception $e) {
             return [

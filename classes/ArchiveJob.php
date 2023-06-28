@@ -206,6 +206,17 @@ class ArchiveJob {
     }
 
     /**
+     * Determines if the given webservice token is allowed to write to this job
+     * via the Moodle API
+     *
+     * @param string $wstoken Webservice token to test access rights for
+     * @return bool True if $wstoken permits write operations to this job
+     */
+    public function has_write_access(string $wstoken): bool {
+        return $wstoken === $this->wstoken;
+    }
+
+    /**
      * @return string UUID of the job, as assigned by the archive worker
      */
     public function get_jobid(): string {
