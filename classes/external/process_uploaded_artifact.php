@@ -122,7 +122,8 @@ class process_uploaded_artifact extends external_api {
 
         $fm = new FileManager($job->get_course_id(), $job->get_cm_id(), $job->get_quiz_id());
         try {
-            $fm->store_uploaded_artifact($draftfile);
+            $artifact = $fm->store_uploaded_artifact($draftfile);
+            $job->link_artifact($artifact->get_id());
         } catch (\Exception $e) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [

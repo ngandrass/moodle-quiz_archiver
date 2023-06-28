@@ -109,12 +109,12 @@ class FileManager {
      * @param stored_file $draftfile Archive artifact file, residing inside
      * 'draft' filearea of the webservice user
      *
-     * @return bool True on success
+     * @return stored_file|null Stored file on success, null on error
      *
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    public function store_uploaded_artifact(stored_file $draftfile): bool {
+    public function store_uploaded_artifact(stored_file $draftfile): ?\stored_file {
         // Check draftfile
         if ($draftfile->get_filearea() != "draft" || $draftfile->get_component() != "user") {
             throw new \file_exception('Passed draftfile does not reside inside the draft area of the webservice user. Aborting');
@@ -122,7 +122,7 @@ class FileManager {
 
         // Create the final stored archive file from draft file
         $fs = get_file_storage();
-        $fs->create_file_from_storedfile([
+        $artifactfile = $fs->create_file_from_storedfile([
             'contextid'    => $this->context->id,
             'component'    => self::COMPONENT_NAME,
             'filearea'     => self::ARTIFACTS_FILEAREA_NAME,
@@ -136,7 +136,7 @@ class FileManager {
         // Unlink old draft file
         $draftfile->delete();
 
-        return true;
+        return $artifactfile;
     }
 
     /**

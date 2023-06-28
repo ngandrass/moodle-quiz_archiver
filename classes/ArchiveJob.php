@@ -279,4 +279,47 @@ class ArchiveJob {
         }
     }
 
+    /**
+     * Retrieves the artifact file if present
+     *
+     * @return \stored_file|null Artifact file if present, else null
+     */
+    public function get_artifact(): ?\stored_file {
+        global $DB;
+        try {
+            $file = $DB->get_record_sql(
+                'SELECT pathnamehash FROM {files} AS files JOIN {'.self::JOB_TABLE_NAME.'} AS jobs ON files.id = jobs.artifactfileid WHERE jobs.id = :id',
+                ['id' => $this->id]
+            );
+
+            if (!$file) return null;
+
+            return get_file_storage()->get_file_by_hash($file->pathnamehash);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Links the moodle file with the given ID to this job as the artifact
+     *
+     * @param int $artifactfile_id ID of the file from {files} to link to this
+     * job as the artifact
+     * @return bool True on success
+     * @throws \dml_exception
+     */
+    public function link_artifact(int $artifactfile_id): bool {
+        global $DB;
+
+        if ($artifactfile_id < 1) return false;
+
+        $DB->update_record(self::JOB_TABLE_NAME, (object) [
+            'id' => $this->id,
+            'artifactfileid' => $artifactfile_id,
+            'timemodified' => time()
+        ]);
+
+        return true;
+    }
+
 }
