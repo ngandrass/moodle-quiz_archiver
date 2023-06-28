@@ -117,7 +117,6 @@ class quiz_archiver_report extends quiz_default_report {
                     true
                 );
                 echo '<br><a href="'.$url.'" target="_blank">'.$file->get_filename().'</a>';
-                // TODO: Implement callback function for pluginfile. See: https://moodledev.io/docs/apis/subsystems/files#serving-your-file-to-the-user
             }
         }
 
