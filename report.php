@@ -46,9 +46,6 @@ class quiz_archiver_report extends quiz_default_report {
     /** @var Report internal report instance */
     protected Report $report;
 
-    /** @var int Number of seconds a webservice token is valid */
-    protected static int $WEBSERVICE_TOKEN_VALIDITY_SEC = 7200;
-
     public function __construct() {
         $this->config = get_config('quiz_archiver');
     }
@@ -136,7 +133,7 @@ class quiz_archiver_report extends quiz_default_report {
             $this->config->webservice_id,
             $this->config->webservice_userid,
             context_system::instance(),
-            time() + self::$WEBSERVICE_TOKEN_VALIDITY_SEC,
+            time() + ($this->config->job_timeout_min * 60),
             0
         );
         echo "<p>Created WsToken: $wstoken</p>";
@@ -175,6 +172,7 @@ class quiz_archiver_report extends quiz_default_report {
                 $this->cm->id,
                 $this->quiz->id,
                 $USER->id,
+                $wstoken,
                 $job_metadata->status
             );
 
