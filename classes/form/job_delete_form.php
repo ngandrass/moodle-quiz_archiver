@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the job task process form
+ * Defines the editing form for artifacts
  *
  * @package    quiz_archiver
  * @copyright  2023 Niels Gandraß <niels@gandrass.de>
@@ -28,7 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 
-class archive_quiz_form extends \moodleform {
+
+class job_delete_form extends \moodleform {
 
     /**
      * Form definiton.
@@ -36,24 +37,33 @@ class archive_quiz_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // Add description text
-        $mform->addElement('html', '<p>'.get_string('archive_quiz_form_desc', 'quiz_archiver').'</p>');
+        // Warning message
+        $warn_head = get_string('areyousure', 'moodle');
+        $warn_msg = get_string('delete_job_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
+        $warn_details = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
+        $mform->addElement('html', <<<EOD
+            <div class="alert alert-warning" role="alert">
+                <h4>$warn_head</h4>
+                $warn_msg
+                <hr/>
+                $warn_details
+            </div>
+        EOD);
 
-        // Internal information of mod_quiz
+        // Preserve internal information of mod_quiz
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', 'archiver');
         $mform->setType('mode', PARAM_TEXT);
 
         // Options
-        $mform->addElement('header', 'options_header', get_string('options'));
-        $mform->addElement('advcheckbox', 'export_attempts', get_string('export_attempts', 'quiz_archiver'), '', ['disabled' => 'disabled'], ['1', '1']);
-        $mform->setDefault('export_attempts', true);
-        $mform->addElement('advcheckbox', 'export_course_backup', get_string('export_course_backup', 'quiz_archiver'));
-        $mform->setDefault('export_course_backup', true);
+        $mform->addElement('hidden', 'action', 'delete_job');
+        $mform->setType('action', PARAM_TEXT);
+        $mform->addElement('hidden', 'jobid', $this->optional_param('jobid', null, PARAM_TEXT));
+        $mform->setType('jobid', PARAM_TEXT);
 
-        // Submit
-        $mform->addElement('submit', 'submitbutton', get_string('archive_quiz', 'quiz_archiver'));
+        // Action buttons
+        $this->add_action_buttons(true, get_string('delete', 'moodle'));
     }
 
 }

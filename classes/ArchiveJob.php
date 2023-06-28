@@ -206,6 +206,33 @@ class ArchiveJob {
     }
 
     /**
+     * Deletes this job and all associated data
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function delete(): void {
+        global $DB;
+
+        // Delete artifact if present
+        if ($artifact = $this->get_artifact()) {
+            $artifact->delete();
+        }
+
+        // Delete job from DB
+        $DB->delete_records(self::JOB_TABLE_NAME, ['id' => $this->id]);
+
+        // Invalidate self
+        $this->id = -1;
+        $this->jobid = '';
+        $this->course_id = -1;
+        $this->cm_id = -1;
+        $this->quiz_id = -1;
+        $this->user_id = -1;
+        $this->wstoken = '';
+    }
+
+    /**
      * Determines if the given webservice token is allowed to write to this job
      * via the Moodle API
      *
