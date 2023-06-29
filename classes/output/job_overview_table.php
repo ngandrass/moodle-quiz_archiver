@@ -49,18 +49,20 @@ class job_overview_table extends \table_sql {
             'status',
             'user',
             'jobid',
+            'filesize',
             'actions']
         );
         $this->define_headers([
             get_string('task_starttime', 'admin'),
-            get_string('status', 'moodle'),
-            get_string('user', 'moodle'),
+            get_string('status'),
+            get_string('user'),
             get_string('jobid', 'quiz_archiver'),
+            get_string('size'),
             ''
         ]);
 
         $this->set_sql(
-            'j.jobid, j.timecreated, j.timemodified, j.status, f.pathnamehash, j.userid, u.username',
+            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, f.pathnamehash, f.filesize, u.username',
             '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id',
             'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
@@ -106,9 +108,13 @@ class job_overview_table extends \table_sql {
                 $color = 'danger';
                 $text = get_string('job_status_FAILED', 'quiz_archiver');
                 break;
+            case ArchiveJob::STATUS_TIMEOUT:
+                $color = 'danger';
+                $text = get_string('job_status_TIMEOUT', 'quiz_archiver');
+                break;
             default:
                 $color = 'light';
-                $text = $values->state;
+                $text = $values->status;
         }
 
         return '<span class="badge badge-'.$color.'">'.$text.'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
@@ -116,6 +122,10 @@ class job_overview_table extends \table_sql {
 
     function col_user($values) {
         return '<a href="'.new \moodle_url('/user/profile.php', ['id' => $values->userid]).'">'.$values->username.'</a>';
+    }
+
+    function col_filesize($values) {
+        return $values->filesize !== null ? display_size($values->filesize) : '';
     }
 
     function col_actions($values) {
