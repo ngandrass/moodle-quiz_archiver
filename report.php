@@ -24,11 +24,12 @@
 
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
+use quiz_archiver\BackupManager;
+use quiz_archiver\RemoteArchiveWorker;
+use quiz_archiver\Report;
 use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\form\job_delete_form;
 use quiz_archiver\output\job_overview_table;
-use quiz_archiver\RemoteArchiveWorker;
-use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -198,10 +199,18 @@ class quiz_archiver_report extends quiz_default_report {
             ];
         }
 
-        // TODO: Prepare task: Export course backup
-        $task_moodle_course_backup = null;
-        if ($export_course_backup) {
+        $task_moodle_backups = null;
+        if ($export_quiz_backup || $export_course_backup) {
+            // TODO: Prepare task: Export quiz backup
+            if ($export_quiz_backup) {
+                $backupid = BackupManager::initiate_quiz_backup($this->cm->id, $this->config->webservice_userid);
+                die("Backup: ".print_r($backupid));
+            }
 
+            // TODO: Prepare task: Export course backup
+            if ($export_course_backup) {
+
+            }
         }
 
         // Request archive worker
