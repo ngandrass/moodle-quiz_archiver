@@ -63,8 +63,8 @@ class RemoteArchiveWorker {
      * @param $quizid int Moodle quiz id
      * @param $task_archive_quiz_attempts mixed Array containing payload data for
      * the archive quiz attempts task, or null if it should not be executed
-     * @param $task_moodle_course_backup mixed Array containing payload data for
-     * the moodle course backup task, or null if it should not be executed
+     * @param $task_moodle_backups mixed Array containing payload data for
+     * the moodle backups task, or null if it should not be executed
      *
      * @throws \UnexpectedValueException if the communication to the archive worker
      * service or decoding of the response failed
@@ -72,7 +72,7 @@ class RemoteArchiveWorker {
      *
      * @return mixed Job information returned from the archive worker on success
      */
-    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, $task_archive_quiz_attempts, $task_moodle_course_backup) {
+    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, $task_archive_quiz_attempts, $task_moodle_backups) {
         global $CFG;
         $moodle_url_base = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
@@ -86,7 +86,7 @@ class RemoteArchiveWorker {
             "cmid" => $cmid,
             "quizid" => $quizid,
             "task_archive_quiz_attempts" => $task_archive_quiz_attempts,
-            "task_moodle_course_backup" => $task_moodle_course_backup
+            "task_moodle_backups" => $task_moodle_backups
         ]);
 
         $ch = $this->prepare_curl_request($request_payload);

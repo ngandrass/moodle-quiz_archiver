@@ -35,7 +35,8 @@ $string['archive_quiz'] = 'Archive quiz';
 $string['create_quiz_archive'] = 'Create new quiz archive';
 $string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page.';
 $string['export_attempts'] = 'Export quiz attempts';
-$string['export_course_backup'] = 'Export full course backup';
+$string['export_course_backup'] = 'Export full Moodle course backup (.mbz)';
+$string['export_quiz_backup'] = 'Export Moodle quiz backup (.mbz)';
 $string['job_overview'] = 'Archives';
 
 // Job
@@ -63,5 +64,5 @@ $string['setting_worker_url_desc'] = 'URL of the archive worker service to call 
 
 // Errors
 $string['error_worker_connection_failed'] = 'Establishing a connection to the archive worker failed.';
-$string['error_worker_reportet_error'] = 'The archive worker reported an error: {$a}';
+$string['error_worker_reported_error'] = 'The archive worker reported an error: {$a}';
 $string['error_worker_unknown'] = 'An unknown error occurred while enqueueing the job at the remote archive worker.';

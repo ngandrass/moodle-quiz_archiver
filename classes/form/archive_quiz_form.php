@@ -69,8 +69,11 @@ class archive_quiz_form extends \moodleform {
         $mform->addElement('advcheckbox', 'export_attempts', get_string('content'), get_string('export_attempts', 'quiz_archiver'), ['disabled' => 'disabled'], ['1', '1']);
         $mform->setDefault('export_attempts', true);
 
-        $mform->addElement('advcheckbox', 'export_course_backup', get_string('export_course_backup', 'quiz_archiver'));
-        $mform->setDefault('export_course_backup', true);
+        $mform->addElement('advcheckbox', 'export_quiz_backup', '&nbsp;', get_string('export_quiz_backup', 'quiz_archiver'));
+        $mform->setDefault('export_quiz_backup', true);
+
+        $mform->addElement('advcheckbox', 'export_course_backup', '&nbsp;', get_string('export_course_backup', 'quiz_archiver'));
+        $mform->setDefault('export_course_backup', false);
 
         $mform->addElement('static', 'num_attempts', get_string('attempts', 'mod_quiz'), $this->num_attempts);
 
