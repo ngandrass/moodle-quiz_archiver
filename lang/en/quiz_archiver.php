@@ -41,6 +41,7 @@ $string['job_overview'] = 'Archives';
 // Job
 $string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';
 $string['jobid'] = 'Job ID';
+$string['job_created_successfully'] = 'New archive job created successfully: {$a}';
 $string['job_status_UNKNOWN'] = 'Unknown';
 $string['job_status_UNINITIALIZED'] = 'Uninitialized';
 $string['job_status_AWAITING_PROCESSING'] = 'Queued';
@@ -58,3 +59,8 @@ $string['setting_webservice_userid'] = 'Webservice user ID';
 $string['setting_webservice_userid_desc'] = 'ID of the Moodle user that will be used by the archive worker to access quiz data';
 $string['setting_worker_url'] = 'Archive worker URL';
 $string['setting_worker_url_desc'] = 'URL of the archive worker service to call for quiz archive task execution';
+
+// Errors
+$string['error_worker_connection_failed'] = 'Establishing a connection to the archive worker failed.';
+$string['error_worker_reportet_error'] = 'The archive worker reported an error: {$a}';
+$string['error_worker_unknown'] = 'An unknown error occurred while enqueueing the job at the remote archive worker.';

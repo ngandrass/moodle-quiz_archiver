@@ -24,7 +24,6 @@
 
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
-use quiz_archiver\FileManager;
 use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\form\job_delete_form;
 use quiz_archiver\output\job_overview_table;
@@ -102,19 +101,39 @@ class quiz_archiver_report extends quiz_default_report {
                 sizeof($this->report->get_attempts())
             );
             if ($archive_quiz_form->is_submitted()) {
-                $formdata = $archive_quiz_form->get_data();
-                $this->initiate_archive_job($formdata->export_attempts, $formdata->export_course_backup);
-                return true;
+                $job = null;
+                try {
+                    $formdata = $archive_quiz_form->get_data();
+                    $job = $this->initiate_archive_job($formdata->export_attempts, $formdata->export_course_backup);
+                    $initiation_status_color = 'success';
+                    $initiation_status_msg = get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid());
+                    $initiation_status_back_msg = get_string('continue');
+                } catch (RuntimeException $e) {
+                    $initiation_status_color = 'danger';
+                    $initiation_status_msg = $e->getMessage();
+                    $initiation_status_back_msg = get_string('retry');
+                }
+                echo <<<EOD
+                    <div class="alert alert-$initiation_status_color" role="alert">
+                        $initiation_status_msg
+                        <br/>
+                        <br/>
+                        <a href="{$this->base_url()}">$initiation_status_back_msg</a>
+                    </div>
+                EOD;
+
+                // Stop printing rest of the page if job creation failed
+                if ($job == null) return false;
             } else {
                 $archive_quiz_form->display();
             }
             echo '</div>';
 
             // Job overview table
-            echo '<h1>'.get_string('job_overview', 'quiz_archiver').'<a href="'.new moodle_url('', ['id' => optional_param('id', null, PARAM_INT), 'mode' => 'archiver']).'" class="small mx-2" alt="'.get_string('refresh', 'moodle').'"><i class="fa fa-rotate-right"></i></a></h1>';
+            echo '<h1>'.get_string('job_overview', 'quiz_archiver').'<a href="'.$this->base_url().'" class="small mx-2" alt="'.get_string('refresh', 'moodle').'"><i class="fa fa-rotate-right"></i></a></h1>';
             echo '<div>';
             $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
-            $jobtbl->define_baseurl("$CFG->wwwroot/mod/quiz/report.php?mode=archiver&id=".optional_param('id', 0, PARAM_INT));
+            $jobtbl->define_baseurl($this->base_url());
             $jobtbl->out(10, true);
             echo '</div>';
 
@@ -141,7 +160,18 @@ class quiz_archiver_report extends quiz_default_report {
         return true;
     }
 
-    protected function initiate_archive_job(bool $export_attempts, bool $export_course_backup) {
+    /**
+     * Initiates a new archive job for this quiz
+     *
+     * @param bool $export_attempts Quiz attempts will be archives if true
+     * @param bool $export_course_backup Complete course backup will be archived if true
+     * @return ArchiveJob|null Created ArchiveJob on success
+     * @throws coding_exception Handled by Moodle
+     * @throws dml_exception Handled by Moodle
+     * @throws moodle_exception Handled by Moodle
+     * @throws RuntimeException Used to signal a soft failure to calling context
+     */
+    protected function initiate_archive_job(bool $export_attempts, bool $export_course_backup): ?ArchiveJob {
         global $USER;
 
         // Create temporary webservice token
@@ -153,7 +183,6 @@ class quiz_archiver_report extends quiz_default_report {
             time() + ($this->config->job_timeout_min * 60),
             0
         );
-        echo "<p>Created WsToken: $wstoken</p>";
 
         // Prepare task: Export quiz attempts
         $task_archive_quiz_attempts = null;
@@ -192,17 +221,15 @@ class quiz_archiver_report extends quiz_default_report {
                 $wstoken,
                 $job_metadata->status
             );
-
         } catch (UnexpectedValueException $e) {
-            echo "Comminucation with archive worker failed: $e"; // TODO
+            throw new \RuntimeException(get_string('error_worker_connection_failed', 'quiz_archiver'));
         } catch (RuntimeException $e) {
-            echo "Archive worker reportet an error: $e"; // TODO
+            throw new \RuntimeException(get_string('error_worker_reported_error', 'quiz_archiver', $e->getMessage()));
         } catch (Exception $e) {
-            echo "Unknown error occured while creating archive job: $e"; // TODO
+            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver'));
         }
 
-        // TODO: Make better message!
-        echo "<br/><br/><p>Created job:</p><pre>"; print_r($job); echo "</pre></br>";
+        return $job;
     }
 
     /**
@@ -222,8 +249,7 @@ class quiz_archiver_report extends quiz_default_report {
      * @return string the URL.
      */
     protected function base_url() {
-        return new moodle_url('/mod/quiz/report.php',
-            array('id' => $this->cm->id, 'mode' => 'archiver'));
+        return new moodle_url('/mod/quiz/report.php', ['id' => $this->cm->id, 'mode' => 'archiver']);
     }
 
 }
