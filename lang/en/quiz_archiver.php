@@ -48,6 +48,7 @@ $string['job_status_AWAITING_PROCESSING'] = 'Queued';
 $string['job_status_RUNNING'] = 'Running';
 $string['job_status_FINISHED'] = 'Finished';
 $string['job_status_FAILED'] = 'Failed';
+$string['job_status_TIMEOUT'] = 'Timeout';
 
 // Settings
 $string['setting_internal_wwwroot'] = 'Custom Moodle Base URL';

@@ -79,16 +79,11 @@ class process_uploaded_artifact extends external_api {
         $job = null;
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
-            switch ($job->get_status()) {
-                case ArchiveJob::STATUS_UNKNOWN:
-                case ArchiveJob::STATUS_FINISHED:
-                case ArchiveJob::STATUS_FAILED:
-                    return [
-                        'jobid' => $params['jobid'],
-                        'status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'
-                    ];
-                default:
-                    break;
+            if ($job->is_complete()) {
+                return [
+                    'jobid' => $params['jobid'],
+                    'status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'
+                ];
             }
         } catch (\dml_exception $e) {
             return [

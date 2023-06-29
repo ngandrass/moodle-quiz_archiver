@@ -129,6 +129,11 @@ class quiz_archiver_report extends quiz_default_report {
             }
             echo '</div>';
 
+            // Housekeeping for jobs associated with this quiz
+            foreach (ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id) as $job) {
+                $job->timeout_if_overdue($this->config->job_timeout_min);
+            }
+
             // Job overview table
             echo '<h1>'.get_string('job_overview', 'quiz_archiver').'<a href="'.$this->base_url().'" class="small mx-2" alt="'.get_string('refresh', 'moodle').'"><i class="fa fa-rotate-right"></i></a></h1>';
             echo '<div>';

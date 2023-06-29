@@ -52,6 +52,13 @@ class update_job_status extends external_api {
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
 
+            if ($job->is_complete()) {
+                return [
+                    'jobid' => $params['jobid'],
+                    'status' => 'E_JOB_ALREADY_COMPLETED'
+                ];
+            }
+
             if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
                 return [
                     'jobid' => $params['jobid'],

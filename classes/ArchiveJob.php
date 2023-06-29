@@ -40,6 +40,8 @@ class ArchiveJob {
     protected int $quiz_id;
     /** @var int ID of the user that owns this job */
     protected int $user_id;
+    /** @var int Unix timestamp of job creation */
+    protected int $timecreated;
     /** @var string The webservice token that is allowed to write to this job via API */
     protected string $wstoken;
 
@@ -53,6 +55,7 @@ class ArchiveJob {
     const STATUS_RUNNING = 'RUNNING';
     const STATUS_FINISHED = 'FINISHED';
     const STATUS_FAILED = 'FAILED';
+    const STATUS_TIMEOUT = 'TIMEOUT';
 
     /**
      * Creates a new ArchiveJob. This does **NOT** enqueue the job anywhere.
@@ -62,15 +65,18 @@ class ArchiveJob {
      * @param int $course_id ID of the course this job is associated with
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
+     * @param int $user_id ID of the user that owns this job
+     * @param int $timecreated Unix timestamp of job creation
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      */
-    protected function __construct(int $id, string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $wstoken) {
+    protected function __construct(int $id, string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, int $timecreated, string $wstoken) {
         $this->id = $id;
         $this->jobid = $jobid;
         $this->course_id = $course_id;
         $this->cm_id = $cm_id;
         $this->quiz_id = $quiz_id;
         $this->user_id = $user_id;
+        $this->timecreated = $timecreated;
         $this->wstoken = $wstoken;
     }
 
@@ -110,7 +116,7 @@ class ArchiveJob {
             'wstoken' => $wstoken
         ]);
 
-        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $wstoken);
+        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $now, $wstoken);
     }
 
     /**
@@ -130,6 +136,7 @@ class ArchiveJob {
             $jobdata->cmid,
             $jobdata->quizid,
             $jobdata->userid,
+            $jobdata->timecreated,
             $jobdata->wstoken
         );
     }
@@ -154,7 +161,7 @@ class ArchiveJob {
      * @param int $course_id
      * @param int $cm_id
      * @param int $quiz_id
-     * @return array
+     * @return array<ArchiveJob>
      * @throws \dml_exception
      */
     public static function get_jobs(int $course_id, int $cm_id, int $quiz_id): array {
@@ -172,6 +179,7 @@ class ArchiveJob {
             $dbdata->cmid,
             $dbdata->quizid,
             $dbdata->userid,
+            $dbdata->timecreated,
             $dbdata->wstoken
         ), $records);
     }
@@ -233,6 +241,25 @@ class ArchiveJob {
     }
 
     /**
+     * Marks this job as timeouted if it is overdue
+     *
+     * @param int $timeout_min Minutes until a job is considered as timeouted after creation
+     * @return bool True if the job was overdue
+     * @throws \dml_exception
+     */
+    public function timeout_if_overdue(int $timeout_min): bool {
+        if ($this->is_complete()) return false;
+
+        // Check if job is overdue
+        if ($this->timecreated < (time() - ($timeout_min * 60))) {
+            $this->set_status(self::STATUS_TIMEOUT);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Determines if the given webservice token is allowed to write to this job
      * via the Moodle API
      *
@@ -241,6 +268,23 @@ class ArchiveJob {
      */
     public function has_write_access(string $wstoken): bool {
         return $wstoken === $this->wstoken;
+    }
+
+    /**
+     * Determines if the job as reached one of its final states and is considered
+     * as completed
+     *
+     * @return bool True if job is completed, regardless of success or error
+     */
+    public function is_complete(): bool {
+        switch ($this->get_status()) {
+            case self::STATUS_FINISHED:
+            case self::STATUS_FAILED:
+            case self::STATUS_TIMEOUT:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
