@@ -204,6 +204,7 @@ class quiz_archiver_report extends quiz_default_report {
             ];
         }
 
+        // Prepare task: Moodle backups
         $task_moodle_backups = null;
         if ($export_quiz_backup || $export_course_backup) {
             $task_moodle_backups = [];
@@ -212,15 +213,13 @@ class quiz_archiver_report extends quiz_default_report {
                 $task_moodle_backups[] = BackupManager::initiate_quiz_backup($this->cm->id, $this->config->webservice_userid);
             }
 
-            // TODO: Prepare task: Export course backup
             if ($export_course_backup) {
-
+                $task_moodle_backups[] = BackupManager::initiate_course_backup($this->course->id, $this->config->webservice_userid);
             }
         }
 
         // Request archive worker
         $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/').'/archive', 10, 20);
-        $job = null;
         try {
             $job_metadata = $worker->enqueue_archive_job(
                 $wstoken,

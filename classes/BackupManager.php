@@ -26,6 +26,7 @@ namespace quiz_archiver;
 
 use backup;
 use backup_controller;
+use context_course;
 use context_module;
 
 defined('MOODLE_INTERNAL') || die();
@@ -124,18 +125,32 @@ class BackupManager {
     /**
      * Initiates a new quiz backup
      *
-     * @param int $cm_id ID of the course module for the quiz
+     * @param string $type Type of the backup, based on backup::TYPE_*
+     * @param int $id ID of the backup object
      * @param int $user_id User-ID to associate this backup with
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
      */
-    public static function initiate_quiz_backup(int $cm_id, int $user_id): object {
+    protected static function initiate_backup(string $type, int $id, int $user_id): object {
         global $CFG;
 
+        // Validate type and set variables accordingly
+        switch ($type) {
+            case backup::TYPE_1COURSE:
+                $contextid = context_course::instance($id)->id;
+                break;
+            case backup::TYPE_1ACTIVITY:
+                $contextid = context_module::instance($id)->id;
+                break;
+            default:
+                throw new \ValueError("Backup type not supported");
+        }
+
+        // Initialize backup
         $bc = new backup_controller(
-            backup::TYPE_1ACTIVITY,
-            $cm_id,
+            $type,
+            $id,
             backup::FORMAT_MOODLE,
             backup::INTERACTIVE_NO,
             backup::MODE_ASYNC,
@@ -143,7 +158,7 @@ class BackupManager {
             backup::RELEASESESSION_YES
         );
         $backupid = $bc->get_backupid();
-        $filename = 'quiz_archiver-quiz-backup-'.$cm_id.'-'.date("Ymd-His").'.mbz';
+        $filename = 'quiz_archiver-'.$type.'-backup-'.$id.'-'.date("Ymd-His").'.mbz';
 
         // Configure backup
         $tasks = $bc->get_plan()->get_tasks();
@@ -166,11 +181,10 @@ class BackupManager {
         \core\task\manager::queue_adhoc_task($asynctask);
 
         // Generate backup file url
-        $contextid = context_module::instance($cm_id)->id;
         $url = \moodle_url::make_webservice_pluginfile_url(
             $contextid,
             'backup',
-            'activity',
+            $type,
             null,  # The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
             '/',
             $filename
@@ -186,12 +200,39 @@ class BackupManager {
             'userid' => $user_id,
             'context' => $contextid,
             'component' => 'backup',
-            'filearea' => 'activity',
+            'filearea' => $type,
             'filepath' => '/',
             'filename' => $filename,
             'itemid' => null,
             'file_download_url' => $url
         ];
+    }
+
+
+    /**
+     * Initiates a new quiz backup
+     *
+     * @param int $cm_id ID of the course module for the quiz
+     * @param int $user_id User-ID to associate this backup with
+     * @return object Backup metadata object
+     * @throws \base_setting_exception
+     * @throws \base_task_exception
+     */
+    public static function initiate_quiz_backup(int $cm_id, int $user_id): object {
+        return self::initiate_backup(backup::TYPE_1ACTIVITY, $cm_id, $user_id);
+    }
+
+    /**
+     * Initiates a new course backup
+     *
+     * @param int $course_id ID of the course module for the quiz
+     * @param int $user_id User-ID to associate this backup with
+     * @return object Backup metadata object
+     * @throws \base_setting_exception
+     * @throws \base_task_exception
+     */
+    public static function initiate_course_backup(int $course_id, int $user_id): object {
+        return self::initiate_backup(backup::TYPE_1COURSE, $course_id, $user_id);
     }
 
 }
