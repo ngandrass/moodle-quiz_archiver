@@ -252,18 +252,6 @@ class quiz_archiver_report extends quiz_default_report {
     }
 
     /**
-     * Removes / invalidates the given webservice token
-     *
-     * @param $wstoken Webservice token to remove
-     * @return void
-     * @throws dml_exception
-     */
-    protected function delete_webservice_token($wstoken) {
-        global $DB;
-        $DB->delete_records('external_tokens', array('token' => $wstoken, 'tokentype' => EXTERNAL_TOKEN_PERMANENT));
-    }
-
-    /**
      * Get the URL of the front page of the report that lists all the questions.
      * @return string the URL.
      */

@@ -337,16 +337,22 @@ class ArchiveJob {
      * Updates the status of this ArchiveJob
      *
      * @param string $status New job status
+     * @param bool $delete_wstoken_if_completed If true, delete associated wstoken
+     * if this status change completed the job
      * @return void
      * @throws \dml_exception on failure
      */
-    public function set_status(string $status) {
+    public function set_status(string $status, bool $delete_wstoken_if_completed = true) {
         global $DB;
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
             'id' => $this->id,
             'status' => $status,
             'timemodified' => time()
         ]);
+
+        if ($delete_wstoken_if_completed && $this->is_complete()) {
+            $this->delete_webservice_token();
+        }
     }
 
     /**
@@ -402,6 +408,17 @@ class ArchiveJob {
         ]);
 
         return true;
+    }
+
+    /**
+     * Removes / invalidates the webservice token that is associated with this ArchiveJob
+     *
+     * @return void
+     * @throws dml_exception
+     */
+    public function delete_webservice_token(): void {
+        global $DB;
+        $DB->delete_records('external_tokens', array('token' => $this->wstoken, 'tokentype' => EXTERNAL_TOKEN_PERMANENT));
     }
 
 }
