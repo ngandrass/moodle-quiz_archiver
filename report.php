@@ -200,7 +200,7 @@ class quiz_archiver_report extends quiz_default_report {
         $task_archive_quiz_attempts = null;
         if ($export_attempts) {
             $task_archive_quiz_attempts = [
-                'attemptids' => [4] # FIXME TODO Remove DEBUG # array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
+                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
             ];
         }
 
