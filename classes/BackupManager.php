@@ -26,6 +26,7 @@ namespace quiz_archiver;
 
 use backup;
 use backup_controller;
+use context_module;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,6 +36,9 @@ require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php');
  * Manages everything related to backups via the Moodle Backup API
  */
 class BackupManager {
+
+    /** @var \stdClass Backup controller metadata from DB */
+    protected \stdClass $backup_metadata;
 
     /** @var array Define what to include and exclude in backups */
     const BACKUP_SETTINGS = [
@@ -57,7 +61,78 @@ class BackupManager {
         'legacyfiles' => true
     ];
 
+    /**
+     * @param string $backupid ID of the backup_controller associated with this backup
+     * @throws \dml_exception
+     */
+    public function __construct(string $backupid) {
+        global $DB;
+
+        $this->backup_metadata = $DB->get_record('backup_controllers', ['backupid' => $backupid], 'id, backupid, operation, type, itemid, userid');
+        if ($this->backup_metadata->operation != 'backup') {
+            throw new \ValueError('Only backup operations are supported.');
+        }
+    }
+
+    /**
+     * @return bool True if backup finished successfully
+     */
+    public function is_finished_successfully(): bool {
+        return $this->get_status() === backup_controller::STATUS_FINISHED_OK;
+    }
+
+    /**
+     * @return bool True if backup finished with error
+     */
+    public function is_failed(): bool {
+        return $this->get_status() === backup_controller::STATUS_FINISHED_ERR;
+    }
+
+    /**
+     * @return int Raw backup status value according to backup_controller::STATUS_*
+     * @throws \dml_exception
+     */
+    public function get_status(): int {
+        global $DB;
+        return $DB->get_record('backup_controllers', ['id' => $this->backup_metadata->id], 'status')->status;
+    }
+
+    /**
+     * @return string Type of this backup controller (e.g. course, activity)
+     */
+    public function get_type(): string {
+        return $this->backup_metadata->type;
+    }
+
+    /**
+     * Determines if this BackupManager is associated with the given ArchiveJob
+     *
+     * @param ArchiveJob $job Job to probe relationship to
+     * @return bool True if this BackupManager is related to the given ArchiveJob
+     */
+    public function is_associated_with_job(ArchiveJob $job): bool {
+        switch ($this->get_type()) {
+            case backup_controller::TYPE_1ACTIVITY:
+                return $this->backup_metadata->itemid == $job->get_cm_id();
+            case backup_controller::TYPE_1COURSE:
+                return $this->backup_metadata->itemid == $job->get_course_id();
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Initiates a new quiz backup
+     *
+     * @param int $cm_id ID of the course module for the quiz
+     * @param int $user_id User-ID to associate this backup with
+     * @return object Backup metadata object
+     * @throws \base_setting_exception
+     * @throws \base_task_exception
+     */
     public static function initiate_quiz_backup(int $cm_id, int $user_id): object {
+        global $CFG;
+
         $bc = new backup_controller(
             backup::TYPE_1ACTIVITY,
             $cm_id,
@@ -90,9 +165,32 @@ class BackupManager {
         $asynctask->set_userid($user_id);
         \core\task\manager::queue_adhoc_task($asynctask);
 
+        // Generate backup file url
+        $contextid = context_module::instance($cm_id)->id;
+        $url = \moodle_url::make_webservice_pluginfile_url(
+            $contextid,
+            'backup',
+            'activity',
+            null,  # The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
+            '/',
+            $filename
+        );
+
+        $internal_wwwroot = get_config('quiz_archiver')->internal_wwwroot;
+        if ($internal_wwwroot) {
+            $url = str_replace(rtrim($CFG->wwwroot, '/'), rtrim($internal_wwwroot, '/'), $url);
+        }
+
         return (object) [
             'backupid' => $backupid,
+            'userid' => $user_id,
+            'context' => $contextid,
+            'component' => 'backup',
+            'filearea' => 'activity',
+            'filepath' => '/',
             'filename' => $filename,
+            'itemid' => null,
+            'file_download_url' => $url
         ];
     }
 
