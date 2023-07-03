@@ -81,6 +81,11 @@ class quiz_archiver_report extends quiz_default_report {
         // Handle job delete form
         if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
             $job_delete_form = new job_delete_form();
+
+            if ($job_delete_form->is_cancelled()) {
+                redirect($this->base_url());
+            }
+
             if ($job_delete_form->is_submitted()) {
                 $formdata = $job_delete_form->get_data();
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete();
