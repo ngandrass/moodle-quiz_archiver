@@ -201,10 +201,10 @@ class quiz_archiver_report extends quiz_default_report {
 
         $task_moodle_backups = null;
         if ($export_quiz_backup || $export_course_backup) {
-            // TODO: Prepare task: Export quiz backup
+            $task_moodle_backups = [];
+
             if ($export_quiz_backup) {
-                $backupid = BackupManager::initiate_quiz_backup($this->cm->id, $this->config->webservice_userid);
-                die("Backup: ".print_r($backupid));
+                $task_moodle_backups[] = BackupManager::initiate_quiz_backup($this->cm->id, $this->config->webservice_userid);
             }
 
             // TODO: Prepare task: Export course backup

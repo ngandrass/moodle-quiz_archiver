@@ -53,4 +53,14 @@ $functions = [
         ],
         'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
     ],
+    'quiz_archiver_get_backup_status' => [
+        'classname' => 'quiz_archiver\external\get_backup_status',
+        'description' => 'Called by the quiz archiver worker to retrieve Moodle backup information',
+        'type' => 'read',
+        'ajax' => true,
+        'services' => [
+            MOODLE_OFFICIAL_MOBILE_SERVICE,
+        ],
+        'capabilities' => 'moodle/backup:downloadfile',
+    ],
 ];
