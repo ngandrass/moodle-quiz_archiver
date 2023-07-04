@@ -47,6 +47,8 @@ class ArchiveJob {
 
     /** @var string Name of the job status table */
     const JOB_TABLE_NAME = 'quiz_report_archiver_jobs';
+    /** @var string Name of the table to store temporary file associations */
+    const FILES_TABLE_NAME = 'quiz_report_archiver_files';
 
     // Job status values
     const STATUS_UNKNOWN = 'UNKNOWN';
@@ -222,7 +224,9 @@ class ArchiveJob {
     public function delete(): void {
         global $DB;
 
-        // Delete artifact if present
+        // Delete additional data
+        $this->delete_webservice_token();
+        $this->delete_temporary_files();
         if ($artifact = $this->get_artifact()) {
             $artifact->delete();
         }
@@ -339,10 +343,12 @@ class ArchiveJob {
      * @param string $status New job status
      * @param bool $delete_wstoken_if_completed If true, delete associated wstoken
      * if this status change completed the job
+     * @param bool $delete_temporary_files_if_completed If true, all linked
+     * temporary files will be deleted if this status change completed the job
      * @return void
      * @throws \dml_exception on failure
      */
-    public function set_status(string $status, bool $delete_wstoken_if_completed = true) {
+    public function set_status(string $status, bool $delete_wstoken_if_completed = true, $delete_temporary_files_if_completed = true) {
         global $DB;
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
             'id' => $this->id,
@@ -350,8 +356,14 @@ class ArchiveJob {
             'timemodified' => time()
         ]);
 
-        if ($delete_wstoken_if_completed && $this->is_complete()) {
-            $this->delete_webservice_token();
+        if ($this->is_complete()) {
+            if ($delete_wstoken_if_completed) {
+                $this->delete_webservice_token();
+            }
+
+            if ($delete_temporary_files_if_completed) {
+                $this->delete_temporary_files();
+            }
         }
     }
 
@@ -408,6 +420,46 @@ class ArchiveJob {
         ]);
 
         return true;
+    }
+
+    /**
+     * Links a temporary file by its future $pathnamehash to this job. Temporary
+     * files will be deleted once this job completes.
+     *
+     * @param string $pathnamehash Pathnamehash of the file
+     * @return void
+     */
+    public function link_temporary_file(string $pathnamehash): void {
+        global $DB;
+
+        $DB->insert_record(self::FILES_TABLE_NAME, [
+            'jobid' => $this->id,
+            'pathnamehash' => $pathnamehash
+        ]);
+    }
+
+    /**
+     * Deletes all temporary files that are associated with this job
+     *
+     * @return int Number of deleted files
+     * @throws \dml_exception
+     */
+    public function delete_temporary_files(): int {
+        global $DB;
+        $fs = get_file_storage();
+
+        $num_deleted_files = 0;
+        $tempfiles = $DB->get_records(self::FILES_TABLE_NAME, ['jobid' => $this->id]);
+        foreach ($tempfiles as $tempfile) {
+            $f = $fs->get_file_by_hash($tempfile->pathnamehash);
+            if ($f) {
+                $f->delete();
+                $DB->delete_records(self::FILES_TABLE_NAME, ['jobid' => $this->id, 'pathnamehash' => $tempfile->pathnamehash]);
+                $num_deleted_files++;
+            }
+        }
+
+        return $num_deleted_files;
     }
 
     /**

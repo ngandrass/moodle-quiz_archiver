@@ -204,6 +204,7 @@ class BackupManager {
             'filepath' => '/',
             'filename' => $filename,
             'itemid' => null,
+            'pathnamehash' => \file_storage::get_pathname_hash($contextid, 'backup', $type, 0, '/', $filename),
             'file_download_url' => $url
         ];
     }

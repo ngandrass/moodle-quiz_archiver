@@ -240,12 +240,17 @@ class quiz_archiver_report extends quiz_default_report {
                 $wstoken,
                 $job_metadata->status
             );
+
+            // Link all temporary files to be created, if present
+            foreach ($task_moodle_backups as $task) {
+                $job->link_temporary_file($task->pathnamehash);
+            }
         } catch (UnexpectedValueException $e) {
             throw new \RuntimeException(get_string('error_worker_connection_failed', 'quiz_archiver'));
         } catch (RuntimeException $e) {
             throw new \RuntimeException(get_string('error_worker_reported_error', 'quiz_archiver', $e->getMessage()));
         } catch (Exception $e) {
-            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver'));
+            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver'). $e->getMessage());
         }
 
         return $job;
