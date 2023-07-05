@@ -62,7 +62,7 @@ class job_overview_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, f.pathnamehash, f.filesize, u.username',
+            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
             '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id',
             'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
@@ -143,9 +143,11 @@ class job_overview_table extends \table_sql {
                 $artifactfile->get_filename(),
                 true
             );
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" alt="'.get_string('download', 'moodle').'"><i class="fa fa-download"></i></a>';
+
+            $download_title = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('checksum', 'quiz_archiver').': '.$values->artifactfilechecksum.')';
+            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" title="'.$download_title.'" alt="'.$download_title.'"><i class="fa fa-download"></i></a>';
         } else {
-            $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download', 'moodle').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
+            $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }
 
         // Action: Delete

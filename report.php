@@ -200,7 +200,7 @@ class quiz_archiver_report extends quiz_default_report {
         $task_archive_quiz_attempts = null;
         if ($export_attempts) {
             $task_archive_quiz_attempts = [
-                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
+                'attemptids' => [4] # DEBUG TODO FIXME REMOVE array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts()))
             ];
         }
 
@@ -242,8 +242,10 @@ class quiz_archiver_report extends quiz_default_report {
             );
 
             // Link all temporary files to be created, if present
-            foreach ($task_moodle_backups as $task) {
-                $job->link_temporary_file($task->pathnamehash);
+            if ($task_moodle_backups) {
+                foreach ($task_moodle_backups as $task) {
+                    $job->link_temporary_file($task->pathnamehash);
+                }
             }
         } catch (UnexpectedValueException $e) {
             throw new \RuntimeException(get_string('error_worker_connection_failed', 'quiz_archiver'));

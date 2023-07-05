@@ -53,5 +53,19 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023070400, 'quiz', 'archiver');
     }
 
+    if ($oldversion < 2023070500) {
+        // Define field artifactfilechecksum to be added to quiz_report_archiver_jobs.
+        $table = new xmldb_table('quiz_report_archiver_jobs');
+        $field = new xmldb_field('artifactfilechecksum', XMLDB_TYPE_CHAR, '64', null, null, null, null, 'artifactfileid');
+
+        // Conditionally launch add field artifactfilechecksum.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2023070500, 'quiz', 'archiver');
+    }
+
     return true;
 }

@@ -23,7 +23,8 @@ class process_uploaded_artifact extends external_api {
             'artifact_filearea' => new external_value(PARAM_TEXT, 'File API filearea', VALUE_REQUIRED),
             'artifact_filename' => new external_value(PARAM_TEXT, 'File API filename', VALUE_REQUIRED),
             'artifact_filepath' => new external_value(PARAM_TEXT, 'File API filepath', VALUE_REQUIRED),
-            'artifact_itemid' => new external_value(PARAM_INT, 'File API itemid', VALUE_REQUIRED)
+            'artifact_itemid' => new external_value(PARAM_INT, 'File API itemid', VALUE_REQUIRED),
+            'artifact_sha256sum' => new external_value(PARAM_TEXT, 'SHA256 checksum of the file', VALUE_REQUIRED)
         ]);
     }
 
@@ -38,7 +39,6 @@ class process_uploaded_artifact extends external_api {
         ]);
     }
 
-
     /**
      * Execute the webservice function
      *
@@ -50,7 +50,10 @@ class process_uploaded_artifact extends external_api {
      * @param string $artifact_filename_raw
      * @param string $artifact_filepath_raw
      * @param int $artifact_itemid_raw
+     * @param string $artifact_sha256sum_raw
      * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
      * @throws \invalid_parameter_exception
      */
     public static function execute(
@@ -61,7 +64,8 @@ class process_uploaded_artifact extends external_api {
         string $artifact_filearea_raw,
         string $artifact_filename_raw,
         string $artifact_filepath_raw,
-        int $artifact_itemid_raw
+        int $artifact_itemid_raw,
+        string $artifact_sha256sum_raw
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
@@ -72,11 +76,11 @@ class process_uploaded_artifact extends external_api {
             'artifact_filearea' => $artifact_filearea_raw,
             'artifact_filename' => $artifact_filename_raw,
             'artifact_filepath' => $artifact_filepath_raw,
-            'artifact_itemid' => $artifact_itemid_raw
+            'artifact_itemid' => $artifact_itemid_raw,
+            'artifact_sha256sum' => $artifact_sha256sum_raw
         ]);
 
         // Validate that the jobid exists and no artifact was uploaded previously
-        $job = null;
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
             if ($job->is_complete()) {
@@ -100,7 +104,9 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
-        // Store uploaded file
+        // Validate uploaded file
+        // Note: We use SHA256 instead of Moodle sha1, since SHA1 is prone to
+        // hash collisions!
         $draftfile = FileManager::get_draft_file(
             $params['artifact_contextid'],
             $params['artifact_itemid'],
@@ -115,10 +121,20 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
+        if ($params['artifact_sha256sum'] != FileManager::hash_file($draftfile)) {
+            $job->set_status(ArchiveJob::STATUS_FAILED);
+            $draftfile->delete();
+            return [
+                'jobid' => $params['jobid'],
+                'status' => 'E_ARTIFACT_CHECKSUM_INVALID'
+            ];
+        }
+
+        // Store uploaded file
         $fm = new FileManager($job->get_course_id(), $job->get_cm_id(), $job->get_quiz_id());
         try {
             $artifact = $fm->store_uploaded_artifact($draftfile);
-            $job->link_artifact($artifact->get_id());
+            $job->link_artifact($artifact->get_id(), $params['artifact_sha256sum']);
         } catch (\Exception $e) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [

@@ -14,6 +14,7 @@
           <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was updated"/>
           <FIELD NAME="wstoken" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="Webservice token that is allowed to write this job via the Moodle API"/>
           <FIELD NAME="artifactfileid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID of the artifact file from {files}, if present in Moodle storage"/>
+          <FIELD NAME="artifactfilechecksum" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="Content hash of the artifact file, if present in Moodle storage"/>
         </FIELDS>
         <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id" />

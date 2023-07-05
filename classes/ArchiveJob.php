@@ -403,19 +403,23 @@ class ArchiveJob {
     /**
      * Links the moodle file with the given ID to this job as the artifact
      *
-     * @param int $artifactfile_id ID of the file from {files} to link to this
+     * @param int $file_id ID of the file from {files} to link to this
      * job as the artifact
+     * @param string $checksum Hash of the artifact file contents to store in
+     * the database
+     *
      * @return bool True on success
      * @throws \dml_exception
      */
-    public function link_artifact(int $artifactfile_id): bool {
+    public function link_artifact(int $file_id, string $checksum): bool {
         global $DB;
 
-        if ($artifactfile_id < 1) return false;
+        if ($file_id < 1) return false;
 
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
             'id' => $this->id,
-            'artifactfileid' => $artifactfile_id,
+            'artifactfileid' => $file_id,
+            'artifactfilechecksum' => $checksum,
             'timemodified' => time()
         ]);
 

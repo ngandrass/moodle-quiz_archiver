@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Quiz Archiver';
 $string['archiver'] = $string['pluginname'];
 $string['archiverreport'] = $string['pluginname'];
+$string['checksum'] = 'Checksum';
 
 // Template: Overview
 $string['users_with_attempts'] = 'Users with quiz attempts';
