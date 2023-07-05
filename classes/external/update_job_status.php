@@ -44,6 +44,7 @@ class update_job_status extends external_api {
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
+            'jobid' => $jobid_raw,
             'status' => $status_raw,
         ]);
 
