@@ -169,4 +169,27 @@ class FileManager {
         return get_file_storage()->get_file($contextid, 'user', 'draft', $itemid, $filepath, $filename) ?: null;
     }
 
+    /**
+     * Calculates the contenthash of a large file chunk-wise.
+     *
+     * @param stored_file $file File which contents should be hashed
+     * @param string $algo Hashing algorithm. Must be one of hash_algos()
+     * @return string|null Hexadecimal hash
+     */
+    public static function hash_file(stored_file $file, string $algo = 'sha256'): ?string {
+        // Validate requested hash algorithm
+        if (!array_search($algo, hash_algos())) {
+            return null;
+        }
+
+        // Calculate file hash chunk-wise
+        $fh = $file->get_content_file_handle(stored_file::FILE_HANDLE_FOPEN);
+        $hash_ctx = hash_init($algo);
+        while (!feof($fh)) {
+            hash_update($hash_ctx, fgets($fh, 4096));
+        }
+
+        return hash_final($hash_ctx);
+    }
+
 }
