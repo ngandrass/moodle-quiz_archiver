@@ -26,7 +26,6 @@ class update_job_status extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'jobid' => new external_value(PARAM_TEXT, 'UUID of the job this artifact was associated with'),
             'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction')
         ]);
     }
@@ -45,7 +44,6 @@ class update_job_status extends external_api {
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'jobid' => $jobid_raw,
             'status' => $status_raw,
         ]);
 
@@ -54,14 +52,12 @@ class update_job_status extends external_api {
 
             if ($job->is_complete()) {
                 return [
-                    'jobid' => $params['jobid'],
                     'status' => 'E_JOB_ALREADY_COMPLETED'
                 ];
             }
 
             if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
                 return [
-                    'jobid' => $params['jobid'],
                     'status' => 'E_ACCESS_DENIED'
                 ];
             }
@@ -69,14 +65,12 @@ class update_job_status extends external_api {
             $job->set_status($params['status']);
         } catch (\dml_exception $e) {
             return [
-                'jobid' => $params['jobid'],
                 'status' => 'E_UPDATE_FAILED'
             ];
         }
 
         // Report success
         return [
-            'jobid' => $params['jobid'],
             'status' => 'OK'
         ];
     }

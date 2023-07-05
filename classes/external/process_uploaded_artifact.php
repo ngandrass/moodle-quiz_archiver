@@ -34,7 +34,6 @@ class process_uploaded_artifact extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'jobid' => new external_value(PARAM_TEXT, 'UUID of the job this artifact was associated with'),
             'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction')
         ]);
     }
@@ -85,13 +84,11 @@ class process_uploaded_artifact extends external_api {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
             if ($job->is_complete()) {
                 return [
-                    'jobid' => $params['jobid'],
                     'status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'
                 ];
             }
         } catch (\dml_exception $e) {
             return [
-                'jobid' => $params['jobid'],
                 'status' => 'E_JOB_NOT_FOUND'
             ];
         }
@@ -99,7 +96,6 @@ class process_uploaded_artifact extends external_api {
         // Check access rights
         if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
-                'jobid' => $params['jobid'],
                 'status' => 'E_ACCESS_DENIED'
             ];
         }
@@ -116,7 +112,6 @@ class process_uploaded_artifact extends external_api {
         if (!$draftfile) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [
-                'jobid' => $params['jobid'],
                 'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'
             ];
         }
@@ -125,7 +120,6 @@ class process_uploaded_artifact extends external_api {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             $draftfile->delete();
             return [
-                'jobid' => $params['jobid'],
                 'status' => 'E_ARTIFACT_CHECKSUM_INVALID'
             ];
         }
@@ -138,7 +132,6 @@ class process_uploaded_artifact extends external_api {
         } catch (\Exception $e) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [
-                'jobid' => $params['jobid'],
                 'status' => 'E_STORE_ARTIFACT_FAILED'
             ];
         }
@@ -146,7 +139,6 @@ class process_uploaded_artifact extends external_api {
         // Report success
         $job->set_status(ArchiveJob::STATUS_FINISHED);
         return [
-            'jobid' => $params['jobid'],
             'status' => 'OK'
         ];
     }
