@@ -146,25 +146,6 @@ class quiz_archiver_report extends quiz_default_report {
             $jobtbl->define_baseurl($this->base_url());
             $jobtbl->out(10, true);
             echo '</div>';
-
-            // echo "CONFIG: "; print_r($this->config);
-            // echo "Course-ID: $course->id <br>";
-            // echo "CM-ID: $cm->id <br>";
-            // echo "Quiz-ID: $quiz->id <br>";
-
-            // $fm = new FileManager($this->course->id, $this->cm->id, $this->quiz->id);
-            // foreach ($fm->get_stored_artifacts() as $file) {
-            //     $url = moodle_url::make_pluginfile_url(
-            //         $file->get_contextid(),
-            //         $file->get_component(),
-            //         $file->get_filearea(),
-            //         $file->get_itemid(),
-            //         $file->get_filepath(),
-            //         $file->get_filename(),
-            //         true
-            //     );
-            //     echo '<br><a href="'.$url.'" target="_blank">'.$file->get_filename().'</a>';
-            // }
         }
 
         return true;
