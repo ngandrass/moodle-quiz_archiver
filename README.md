@@ -1,16 +1,39 @@
 # Quiz Archiver
 
-Archives quiz attempts as PDF and HTML files for long-term storage in an Moodle
-independent fashion. Optionally Moodle backups (`.mbz`) of both the quiz and the
-whole course can be included. A checksum is calculated for every file to allow
-verification of file integrity.
+Archives quiz attempts as PDF and HTML files for long-term storage independent
+of Moodle. Moodle backups (`.mbz`) of both the quiz and the whole course can be
+included if desired. A checksum is calculated for every file within the archive
+as well as the archive itself, to allow verification of file integrity.
 
 Quiz archives are created by an external quiz archive worker service to remove
 load from Moodle and to eliminate the need to install a large number of software
 dependencies on the webserver.
 
 
-## Installing via uploaded ZIP file
+## Concept
+
+Archive jobs are execute via an external quiz archive worker service. It uses the
+Moodle webservice API to query the required data and to upload the created archive.
+
+This plugin prepares the archive job within Moodle, provides quiz data to the
+archive worker, handles data validation, and stores the created quiz archives
+inside the Moodle filestore. Created archives can be managed and downloaded via
+the Moodle web interface. A unique webservice access token is generated for every
+archive job. Each token has a limited validity and is invalidated either after
+job completion or after a specified timeout. This process requires a dedicated
+webservice user to be created (see [Configuration](#configuration). A single job
+webservice token can only be used for the specific quiz that is associated with
+the job to restrict queryable data to the required minimum.
+
+
+## Installation
+
+You can install this plugin like any other Moodle plugin, as described below.
+However, keep in mind that you additionally need to deploy the external quiz
+archive worker service for this plugin to work.
+
+
+### Installing via uploaded ZIP file
 
 1. Log in to your Moodle site as an admin and go to _Site administration >
    Plugins > Install plugins_.
@@ -19,13 +42,13 @@ dependencies on the webserver.
 3. Check the plugin validation report and finish the installation.
 
 
-## Installing manually
+### Installing manually
 
 The plugin can be also installed by putting the contents of this directory to
 
     {your/moodle/dirroot}/mod/quiz/report/archiver
 
-Afterwards, log in to your Moodle site as an admin and go to _Site administration >
+Afterward, log in to your Moodle site as an admin and go to _Site administration >
 Notifications_ to complete the installation.
 
 Alternatively, you can run
@@ -35,27 +58,12 @@ Alternatively, you can run
 to complete the installation from the command line.
 
 
-## Concept
-
-Archive jobs are execute via an external quiz archive worker service. It uses the
-Moodle webservice API to query the required data and to upload the created archive.
-
-This plugin prepares the archive job within Moodle, provides quiz data to the
-archive worker, handles data validation, and stores the created quiz archives.
-A unique webservice access token is generated for every archive job. Each token
-has a limited validity and is invalidated either after job completion or after a
-specified timeout. This process requires a dedicated webservice user to be
-created (see [Configuration](#configuration). A single job webservice token can
-only be used for the specific quiz that is associated with the job to restrict
-queryable data to the required minimum. 
-
-
 ## Configuration
 
-To setup this plugin execute the following steps:
+To set this plugin up, execute the following steps:
 
-1. Create a designated Moodle user for the quiz archiver webservice with the
-   following rights:
+1. Create a designated Moodle user for the quiz archiver webservice
+   (e.g., `quiz_archiver`) with the following rights:
    - `webservice/rest:use`
    - `mod/quiz:grade`
    - `quiz/grading:viewstudentnames`
@@ -76,7 +84,36 @@ To setup this plugin execute the following steps:
       Docker. If this setting is present, the public Moodle `wwwroot` will be
       replaced by the `internal_wwwroot` setting.
       Example: `https://your.public.moodle/` will be replaced by `http://moodle.local/`.
-5. Save all settings and create your first quiz archive :)
+5. Save all settings and create your first quiz archive (see [Usage](#usage)).
+
+
+## Usage
+
+Once installed and set up, quizzes can be archived by performing the following
+steps:
+
+1. Navigate to a Moodle quiz
+2. Inside the `Quiz administration` menu expand the `Results` section and click
+   on `Quiz Archiver`
+3. Select the desired options and start the archive job by clicking the `Archive 
+   quiz` button
+4. Wait until the archive job is completed. You can now download the archive
+   from the `Quiz Archiver` page using the `Download archive` button.
+
+Created archives can be deleted by clicking the `Delete archive` button.
+
+
+## Screenshots
+
+### Quiz Archiver overview page
+![Image of quiz archiver overview page](./doc/screenshots/quiz_archiver_overview_page.png)
+
+### New job queued while another job is running
+![Image of new job queued while another job is running](./doc/screenshots/quiz_archiver_new_job_queued.png)
+
+### Example of PDF report (extract)
+![Image of example of PDF report (extract): Header](./doc/screenshots/quiz_archiver_report_example_pdf_header.png)
+![Image of example of PDF report (extract): Question](./doc/screenshots/quiz_archiver_report_example_pdf_question.png)
 
 
 ## License
