@@ -62,8 +62,6 @@ class quiz_archiver_report extends quiz_default_report {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course): bool {
-        global $CFG, $OUTPUT;
-
         $this->course = $course;
         $this->cm = $cm;
         $this->quiz = $quiz;
@@ -101,6 +99,7 @@ class quiz_archiver_report extends quiz_default_report {
         } else {
             // Archive quiz form
             echo '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>';
+            echo '<div class="alert alert-info" role="alert">'.get_string('beta_version_warning', 'quiz_archiver').'</div>';
             echo '<div>';
             $archive_quiz_form = new archive_quiz_form(
                 $this->quiz->name,

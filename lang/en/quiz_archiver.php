@@ -29,6 +29,7 @@ $string['pluginname'] = 'Quiz Archiver';
 $string['archiver'] = $string['pluginname'];
 $string['archiverreport'] = $string['pluginname'];
 $string['checksum'] = 'Checksum';
+$string['beta_version_warning'] = 'This plugin is currently in beta stage. Please report any problems and bugs you experience to the site administrator.';
 
 // Template: Overview
 $string['users_with_attempts'] = 'Users with quiz attempts';
