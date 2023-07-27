@@ -64,11 +64,14 @@ To set this plugin up, execute the following steps:
 
 1. Create a designated Moodle user for the quiz archiver webservice
    (e.g., `quiz_archiver`) with the following rights:
-   - `webservice/rest:use`
    - `mod/quiz:grade`
+   - `mod/quiz:view`
+   - `moodle/backup:*`
+   - `moodle/course:view`
+   - `moodle/course:viewhiddencourses`
    - `quiz/grading:viewstudentnames`
    - `quiz/grading:viewidnumber`
-   - `moodle/backup:*`
+   - `webservice/rest:use`
 2. Create a new `quiz_archiver` external service at `$CFG->wwwroot/admin/settings.php?section=externalservices`
    - Enable file download and upload for this service
 3. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
