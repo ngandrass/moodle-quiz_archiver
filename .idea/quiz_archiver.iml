@@ -4,6 +4,79 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../../moodle">
       <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/admin/presets/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/admin/roles/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/analytics/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/auth/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/availability/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/backup/controller/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/backup/converter/moodle1/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/backup/moodle2/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/backup/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/backup/util" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/badges/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/blocks/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/blog/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/cache/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/calendar/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/cohort/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/comment/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/competency/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/completion/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/contentbank/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/course/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/customfield/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/enrol/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/favourites/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/files/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/filter/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/grade/grading/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/grade/import/csv/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/grade/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/group/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/h5p/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/iplookup/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/behat/extension" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/ddl/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/dml/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/editor/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/external/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/filebrowser/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/filestorage/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/form/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/grade/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/maxmind/MaxMind/src/MaxMind/Db" isTestSource="false" packagePrefix="MaxMind\Db\" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/maxmind/MaxMind/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/maxmind/MaxMind/tests/MaxMind/Db/Test/Reader" isTestSource="true" packagePrefix="MaxMind\Db\Test\Reader\" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/php-jwt/src" isTestSource="false" packagePrefix="Firebase\JWT\" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/php-jwt/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/phpunit/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/table/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/testing" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/userkey/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/lib/xapi/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/login/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/message/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/mnet/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/my/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/notes/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/payment/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/plagiarism/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/portfolio/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/privacy/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/question/engine/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/question/engine/upgrade/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/question/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/question/type/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/rating/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/reportbuilder/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/repository/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/rss/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/search/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/tag/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/user/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../../../moodle/webservice/tests" isTestSource="true" />
     </content>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
