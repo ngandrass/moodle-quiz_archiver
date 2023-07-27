@@ -67,8 +67,10 @@ To set this plugin up, execute the following steps:
    - `mod/quiz:grade`
    - `mod/quiz:view`
    - `moodle/backup:*`
+   - `moodle/course:ignoreavailabilityrestrictions`
    - `moodle/course:view`
    - `moodle/course:viewhiddencourses`
+   - `moodle/user:ignoreuserquota`
    - `quiz/grading:viewstudentnames`
    - `quiz/grading:viewidnumber`
    - `webservice/rest:use`
@@ -88,6 +90,26 @@ To set this plugin up, execute the following steps:
       replaced by the `internal_wwwroot` setting.
       Example: `https://your.public.moodle/` will be replaced by `http://moodle.local/`.
 5. Save all settings and create your first quiz archive (see [Usage](#usage)).
+
+
+### Known pitfalls
+
+- **Access to (some) webservice functions fails**
+  - Ensure that all required webservice functions are enabled for the 
+    `quiz_archiver` webservice.
+  - Ensure that the `quiz_archiver` webservice has the rights to download and
+    upload files.
+  - Ensure that the `quiz_archiver` webservice user has accepted all site policies
+    (e.g., privacy policy).
+- **Upload of the final archive fails**
+  - Ensure you have configured `php` to accept large file uploads. The
+    `upload_max_filesize` and `post_max_size` settings in your `php.ini` should
+    be set to a value that is large enough to allow the upload of the largest
+    quiz archive file that you expect to be created.
+  - Ensure that your antivirus plugin is capable of handling large files. When
+    using ClamAV you can control maximum file sizes by setting `MaxFileSize`,
+    `MaxScanSize`, and `StreamMaxLength` (when using a TCP socket) inside
+    `clamd.conf`.
 
 
 ## Usage
