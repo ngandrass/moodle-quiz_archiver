@@ -21,7 +21,7 @@ inside the Moodle filestore. Created archives can be managed and downloaded via
 the Moodle web interface. A unique webservice access token is generated for every
 archive job. Each token has a limited validity and is invalidated either after
 job completion or after a specified timeout. This process requires a dedicated
-webservice user to be created (see [Configuration](#configuration). A single job
+webservice user to be created (see [Configuration](#configuration)). A single job
 webservice token can only be used for the specific quiz that is associated with
 the job to restrict queryable data to the required minimum.
 
