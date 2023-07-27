@@ -181,14 +181,14 @@ class BackupManager {
         \core\task\manager::queue_adhoc_task($asynctask);
 
         // Generate backup file url
-        $url = \moodle_url::make_webservice_pluginfile_url(
+        $url = strval(\moodle_url::make_webservice_pluginfile_url(
             $contextid,
             'backup',
             $type,
             null,  # The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
             '/',
             $filename
-        );
+        ));
 
         $internal_wwwroot = get_config('quiz_archiver')->internal_wwwroot;
         if ($internal_wwwroot) {
