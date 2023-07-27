@@ -232,7 +232,7 @@ class quiz_archiver_report extends quiz_default_report {
         } catch (RuntimeException $e) {
             throw new \RuntimeException(get_string('error_worker_reported_error', 'quiz_archiver', $e->getMessage()));
         } catch (Exception $e) {
-            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver'). $e->getMessage());
+            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver')." ".$e->getMessage());
         }
 
         return $job;
