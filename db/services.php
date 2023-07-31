@@ -33,6 +33,16 @@ $functions = [
         ],
         'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
     ],
+    'quiz_archiver_get_attempts_metadata' => [
+        'classname' => 'quiz_archiver\external\get_attempts_metadata',
+        'description' => 'Returns metadata about attempts of a quiz',
+        'type' => 'read',
+        'ajax' => true,
+        'services' => [
+            MOODLE_OFFICIAL_MOBILE_SERVICE,
+        ],
+        'capabilities' => 'mod/quiz:grade,quiz/grading:viewstudentnames,quiz/grading:viewidnumber',
+    ],
     'quiz_archiver_update_job_status' => [
         'classname' => 'quiz_archiver\external\update_job_status',
         'description' => 'Called by the quiz archiver worker to update the status of a job',

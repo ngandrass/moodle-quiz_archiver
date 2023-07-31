@@ -38,7 +38,7 @@ class RemoteArchiveWorker {
     protected \stdClass $config;
 
     /** @var int Version of the used API */
-    public const API_VERSION = 1;
+    public const API_VERSION = 2;
 
     /**
      * RemoteArchiveWorker constructor
