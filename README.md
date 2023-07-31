@@ -106,6 +106,13 @@ To set this plugin up, execute the following steps:
     `upload_max_filesize` and `post_max_size` settings in your `php.ini` should
     be set to a value that is large enough to allow the upload of the largest
     quiz archive file that you expect to be created.
+  - Ensure that your Moodle is configured to allow large file uploads.
+    `$CFG->maxbytes` should be set to the same value as PHP `upload_max_filesize`.
+  - If you are using an ingress webserver and `php-fpm` via FastCGI, ensure that
+    the `fastcgi_send_timeout` and `fastcgi_read_timeout` settings are long
+    enough to allow the upload of the largest quiz archive file that you expect.
+    Nginx usually signals this problem by returning a '504 Gateway Time-out'
+    after 60 seconds (default).
   - Ensure that your antivirus plugin is capable of handling large files. When
     using ClamAV you can control maximum file sizes by setting `MaxFileSize`,
     `MaxScanSize`, and `StreamMaxLength` (when using a TCP socket) inside
