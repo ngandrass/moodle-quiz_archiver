@@ -110,6 +110,34 @@ class Report {
     }
 
     /**
+     * Gets the metadata of all attempts made inside this quiz, excluding previews.
+     *
+     * @param array|null $filter_attemptids If given, only attempts with the given
+     * IDs will be returned.
+     *
+     * @return array
+     * @throws \dml_exception
+     */
+    public function get_attempts_metadata(array $filter_attemptids = null): array {
+        global $DB;
+
+        // Handle attempt ID filter
+        if ($filter_attemptids) {
+            $filter_where_clause = "AND qa.id IN (".implode(', ', array_map(fn ($v): string => intval($v), $filter_attemptids)). ")";
+        }
+
+        // Get all requested attempts
+        return $DB->get_records_sql(
+            "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, u.username, u.firstname, u.lastname ".
+            "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id ".
+            "WHERE qa.preview = 0 AND qa.quiz = :quizid " . ($filter_where_clause ?? ''),
+            [
+                "quizid" => $this->quiz->id
+            ]
+        );
+    }
+
+    /**
      * Returns a list of IDs of all users that made at least one attempt on this
      * quiz, excluding previews
      *
