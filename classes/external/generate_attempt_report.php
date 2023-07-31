@@ -18,7 +18,18 @@ class generate_attempt_report extends external_api {
             'courseid' => new external_value(PARAM_INT, 'ID of course', VALUE_REQUIRED),
             'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_REQUIRED),
             'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_REQUIRED),
-            'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_REQUIRED)
+            'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_REQUIRED),
+            'sections' => new external_single_structure(
+                array_combine(Report::SECTIONS,
+                    array_map(fn ($section): external_value => new external_value(
+                        PARAM_BOOL,
+                        'Whether to include the '.$section.' section',
+                        VALUE_REQUIRED
+                    ), Report::SECTIONS)
+                ),
+                'Sections to include in the report',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -44,6 +55,7 @@ class generate_attempt_report extends external_api {
      * @param int $cmid_raw ID of the course module
      * @param int $quizid_raw ID of the quiz
      * @param int $attemptid_raw ID of the quiz attempt
+     * @param array $sections_raw Sections to include in the report
      *
      * @return array According to execute_returns()
      *
@@ -52,7 +64,7 @@ class generate_attempt_report extends external_api {
      * @throws \moodle_exception
      * @throws \required_capability_exception
      */
-    public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, int $attemptid_raw): array {
+    public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, int $attemptid_raw, $sections_raw): array {
         global $DB;
 
         // Validate request
@@ -60,7 +72,8 @@ class generate_attempt_report extends external_api {
             'courseid' => $courseid_raw,
             'cmid' => $cmid_raw,
             'quizid' => $quizid_raw,
-            'attemptid' => $attemptid_raw
+            'attemptid' => $attemptid_raw,
+            'sections' => $sections_raw
         ]);
 
         $context = \context_module::instance($params['cmid']);
@@ -95,7 +108,7 @@ class generate_attempt_report extends external_api {
             'cmid' => $params['cmid'],
             'quizid' => $params['quizid'],
             'attemptid' => $params['attemptid'],
-            'report' => $report->generate_full_page($params['attemptid']),
+            'report' => $report->generate_full_page($params['attemptid'], $params['sections']),
             'status' => 'OK'
         ];
     }

@@ -414,6 +414,7 @@ class Report {
      * footer
      *
      * @param int $attemptid ID of the attempt this report is for
+     * @param array $sections Array of Report::SECTIONS to include in the report
      * @param bool $fix_relative_urls If true, all relative URLs will be
      * forcefully mapped to the Moodle base URL
      * @param bool $minimal If true, unneccessary elements (e.g. navbar) are
@@ -427,7 +428,7 @@ class Report {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function generate_full_page(int $attemptid, bool $fix_relative_urls = true, bool $minimal = true, bool $inline_images = true): string {
+    public function generate_full_page(int $attemptid, array $sections, bool $fix_relative_urls = true, bool $minimal = true, bool $inline_images = true): string {
         global $CFG, $OUTPUT;
 
         // Build HTML tree

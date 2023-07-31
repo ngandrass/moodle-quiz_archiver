@@ -109,7 +109,16 @@ class quiz_archiver_report extends quiz_default_report {
                 $job = null;
                 try {
                     $formdata = $archive_quiz_form->get_data();
-                    $job = $this->initiate_archive_job($formdata->export_attempts, $formdata->export_quiz_backup, $formdata->export_course_backup);
+                    $report_sections = [];
+                    foreach (Report::SECTIONS as $section) {
+                        $report_sections[$section] = $formdata->{'export_report_section_'.$section};
+                    }
+                    $job = $this->initiate_archive_job(
+                        $formdata->export_attempts,
+                        $report_sections,
+                        $formdata->export_quiz_backup,
+                        $formdata->export_course_backup
+                    );
                     $initiation_status_color = 'success';
                     $initiation_status_msg = get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid());
                     $initiation_status_back_msg = get_string('continue');
@@ -155,6 +164,7 @@ class quiz_archiver_report extends quiz_default_report {
      * Initiates a new archive job for this quiz
      *
      * @param bool $export_attempts Quiz attempts will be archives if true
+     * @param array $report_sections Sections to export during attempt report generation
      * @param bool $export_quiz_backup Complete quiz backup will be archived if true
      * @param bool $export_course_backup Complete course backup will be archived if true
      * @return ArchiveJob|null Created ArchiveJob on success
@@ -163,7 +173,7 @@ class quiz_archiver_report extends quiz_default_report {
      * @throws moodle_exception Handled by Moodle
      * @throws RuntimeException Used to signal a soft failure to calling context
      */
-    protected function initiate_archive_job(bool $export_attempts, bool $export_quiz_backup, bool $export_course_backup): ?ArchiveJob {
+    protected function initiate_archive_job(bool $export_attempts, array $report_sections, bool $export_quiz_backup, bool $export_course_backup): ?ArchiveJob {
         global $USER;
 
         // Create temporary webservice token
@@ -182,6 +192,7 @@ class quiz_archiver_report extends quiz_default_report {
             $task_archive_quiz_attempts = [
                 'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts())),
                 'fetch_metadata' => True,
+                'sections' => $report_sections,
             ];
         }
 
