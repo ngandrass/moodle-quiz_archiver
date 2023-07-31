@@ -44,12 +44,23 @@ class Report {
     /** @var array Sections that can be included in the report */
     public const SECTIONS = [
         "header",
-        "question",
-        "rightanswer",
         "quiz_feedback",
+        "question",
         "question_feedback",
         "general_feedback",
+        "rightanswer",
         "history",
+    ];
+
+    /** @var array Dependencies of report sections */
+    public const SECTION_DEPENDENCIES = [
+        "header" => [],
+        "question" => [],
+        "quiz_feedback" => ["header"],
+        "question_feedback" => ["question"],
+        "general_feedback" => ["question"],
+        "rightanswer" => ["question"],
+        "history" => ["question"]
     ];
 
     /**

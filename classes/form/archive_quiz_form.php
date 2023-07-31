@@ -74,6 +74,10 @@ class archive_quiz_form extends \moodleform {
         foreach (Report::SECTIONS as $section) {
             $mform->addElement('advcheckbox', 'export_report_section_'.$section, '&nbsp;', get_string('export_report_section_'.$section, 'quiz_archiver'));
             $mform->setDefault('export_report_section_'.$section, true);
+
+            foreach (REPORT::SECTION_DEPENDENCIES[$section] as $dependency) {
+                $mform->disabledIf('export_report_section_'.$section, 'export_report_section_'.$dependency, 'notchecked');
+            }
         }
 
         // Options: Backups
