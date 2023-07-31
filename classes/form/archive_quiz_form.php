@@ -64,18 +64,24 @@ class archive_quiz_form extends \moodleform {
         // Options
         $mform->addElement('header', 'header', get_string('settings'));
 
+        // Options: Test
         $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quiz_name);
 
-        $mform->addElement('advcheckbox', 'export_attempts', get_string('content'), get_string('export_attempts', 'quiz_archiver'), ['disabled' => 'disabled'], ['1', '1']);
+        // Options: Attempts
+        $mform->addElement('advcheckbox', 'export_attempts', get_string('attempts', 'mod_quiz'), get_string('export_attempts_num', 'quiz_archiver', $this->num_attempts), ['disabled' => 'disabled'], ['1', '1']);
         $mform->setDefault('export_attempts', true);
 
-        $mform->addElement('advcheckbox', 'export_quiz_backup', '&nbsp;', get_string('export_quiz_backup', 'quiz_archiver'));
+        foreach (Report::SECTIONS as $section) {
+            $mform->addElement('advcheckbox', 'export_report_section_'.$section, '&nbsp;', get_string('export_report_section_'.$section, 'quiz_archiver'));
+            $mform->setDefault('export_report_section_'.$section, true);
+        }
+
+        // Options: Backups
+        $mform->addElement('advcheckbox', 'export_quiz_backup', get_string('backups', 'admin'), get_string('export_quiz_backup', 'quiz_archiver'));
         $mform->setDefault('export_quiz_backup', true);
 
         $mform->addElement('advcheckbox', 'export_course_backup', '&nbsp;', get_string('export_course_backup', 'quiz_archiver'));
         $mform->setDefault('export_course_backup', false);
-
-        $mform->addElement('static', 'num_attempts', get_string('attempts', 'mod_quiz'), $this->num_attempts);
 
         // Submit
         $mform->addElement('submit', 'submitbutton', get_string('archive_quiz', 'quiz_archiver'));

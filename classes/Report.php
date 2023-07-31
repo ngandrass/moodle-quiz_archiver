@@ -41,10 +41,21 @@ class Report {
     /** @var object Quiz the attempt is part of */
     protected object $quiz;
 
+    /** @var array Sections that can be included in the report */
+    public const SECTIONS = [
+        "header",
+        "question",
+        "quiz_feedback",
+        "question_feedback",
+        "general_feedback",
+        "history",
+    ];
+
     /**
      * @param object $course
      * @param object $cm
      * @param object $quiz
+     * @throws \dml_exception
      */
     public function __construct(object $course, object $cm, object $quiz) {
         $this->course = $course;

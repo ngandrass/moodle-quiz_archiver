@@ -37,8 +37,15 @@ $string['archive_quiz'] = 'Archive quiz';
 $string['create_quiz_archive'] = 'Create new quiz archive';
 $string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page.';
 $string['export_attempts'] = 'Export quiz attempts';
+$string['export_attempts_num'] = 'Export quiz attempts ({$a})';
 $string['export_course_backup'] = 'Export full Moodle course backup (.mbz)';
 $string['export_quiz_backup'] = 'Export Moodle quiz backup (.mbz)';
+$string['export_report_section_header'] = 'Include quiz header';
+$string['export_report_section_question'] = 'Include questions';
+$string['export_report_section_quiz_feedback'] = 'Include overall quiz feedback';
+$string['export_report_section_question_feedback'] = 'Include individual question feedback';
+$string['export_report_section_general_feedback'] = 'Include general question feedback';
+$string['export_report_section_history'] = 'Include answer history';
 $string['job_overview'] = 'Archives';
 
 // Job

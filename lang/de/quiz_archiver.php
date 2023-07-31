@@ -37,8 +37,15 @@ $string['archive_quiz'] = 'Test archivieren';
 $string['create_quiz_archive'] = 'Neues Archiv erstellen';
 $string['archive_quiz_form_desc'] = 'Füllen Sie dieses Formular aus, um den Test zu archivieren. Die Archivierung findet asynchron statt und kann einige Zeit in Anspruch nehmen. Sie können den aktuellen Status jederzeit auf dieser Seite überprüfen und fertige Archive herunterladen.';
 $string['export_attempts'] = 'Testversuche exportieren';
+$string['export_attempts_num'] = 'Testversuche ({$a}) exportieren';
 $string['export_course_backup'] = 'Vollständiges Moodle Kursbackup (.mbz) erzeugen';
 $string['export_quiz_backup'] = 'Moodle Testbackup (.mbz) erzeugen';
+$string['export_report_section_header'] = 'Test-Metadaten einschließen';
+$string['export_report_section_question'] = 'Fragen einschließen';
+$string['export_report_section_quiz_feedback'] = 'Testfeedback einschließen';
+$string['export_report_section_question_feedback'] = 'Individuelles Fragenfeedback einschließen';
+$string['export_report_section_general_feedback'] = 'Allgemeines Fragenfeedback einschließen';
+$string['export_report_section_history'] = 'Bearbeitungsverlauf einschließen';
 $string['job_overview'] = 'Testarchive';
 
 // Job
