@@ -2,8 +2,11 @@
 
 Archives quiz attempts as PDF and HTML files for long-term storage independent
 of Moodle. Moodle backups (`.mbz`) of both the quiz and the whole course can be
-included if desired. A checksum is calculated for every file within the archive
+included, if desired. A checksum is calculated for every file within the archive
 as well as the archive itself, to allow verification of file integrity.
+Comprehensive archive settings allow to select what should be included in the
+generated reports on a fine-granular level (e.g., exclude example solutions,
+include answer history, ...).
 
 Quiz archives are created by an external quiz archive worker service to remove
 load from Moodle and to eliminate the need to install a large number of software
