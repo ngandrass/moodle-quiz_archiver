@@ -37,16 +37,27 @@ $string['archive_quiz'] = 'Archive quiz';
 $string['create_quiz_archive'] = 'Create new quiz archive';
 $string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page.';
 $string['export_attempts'] = 'Export quiz attempts';
+$string['export_attempts_help'] = 'Quiz attempts will always be exported';
 $string['export_attempts_num'] = 'Export quiz attempts ({$a})';
+$string['export_attempts_num_help'] = $string['export_attempts_help'];
 $string['export_course_backup'] = 'Export full Moodle course backup (.mbz)';
+$string['export_course_backup_help'] = 'This will export a full Moodle course backup (.mbz) including everything inside this course. This can be useful if you want to import this course into another Moodle instance.';
 $string['export_quiz_backup'] = 'Export Moodle quiz backup (.mbz)';
+$string['export_quiz_backup_help'] = 'This will export a Moodle quiz backup (.mbz) including questions used inside this quiz. This can be useful if you want to import this quiz independent of this course into another Moodle instance.';
 $string['export_report_section_header'] = 'Include quiz header';
+$string['export_report_section_header_help'] = 'Display quiz metadata (e.g., user, time taken, grade, ...) inside the report.';
 $string['export_report_section_question'] = 'Include questions';
+$string['export_report_section_question_help'] = 'Display all questions that are part of this attempt inside the report.';
 $string['export_report_section_rightanswer'] = 'Include correct answers';
+$string['export_report_section_rightanswer_help'] = 'Display the correct answers for each question inside the report.';
 $string['export_report_section_quiz_feedback'] = 'Include overall quiz feedback';
+$string['export_report_section_quiz_feedback_help'] = 'Display the overall quiz feedback inside the report header.';
 $string['export_report_section_question_feedback'] = 'Include individual question feedback';
+$string['export_report_section_question_feedback_help'] = 'Display the individual feedback for each question inside the report.';
 $string['export_report_section_general_feedback'] = 'Include general question feedback';
+$string['export_report_section_general_feedback_help'] = 'Display the general feedback for each question inside the report.';
 $string['export_report_section_history'] = 'Include answer history';
+$string['export_report_section_history_help'] = 'Display the answer history for each question inside the report.';
 $string['job_overview'] = 'Archives';
 
 // Job
