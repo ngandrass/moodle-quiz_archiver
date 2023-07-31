@@ -42,6 +42,7 @@ $string['export_course_backup'] = 'Vollständiges Moodle Kursbackup (.mbz) erzeu
 $string['export_quiz_backup'] = 'Moodle Testbackup (.mbz) erzeugen';
 $string['export_report_section_header'] = 'Test-Metadaten einschließen';
 $string['export_report_section_question'] = 'Fragen einschließen';
+$string['export_report_section_rightanswer'] = 'Richtige Antworten einschließen';
 $string['export_report_section_quiz_feedback'] = 'Testfeedback einschließen';
 $string['export_report_section_question_feedback'] = 'Individuelles Fragenfeedback einschließen';
 $string['export_report_section_general_feedback'] = 'Allgemeines Fragenfeedback einschließen';

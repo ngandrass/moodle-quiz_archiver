@@ -42,6 +42,7 @@ $string['export_course_backup'] = 'Export full Moodle course backup (.mbz)';
 $string['export_quiz_backup'] = 'Export Moodle quiz backup (.mbz)';
 $string['export_report_section_header'] = 'Include quiz header';
 $string['export_report_section_question'] = 'Include questions';
+$string['export_report_section_rightanswer'] = 'Include correct answers';
 $string['export_report_section_quiz_feedback'] = 'Include overall quiz feedback';
 $string['export_report_section_question_feedback'] = 'Include individual question feedback';
 $string['export_report_section_general_feedback'] = 'Include general question feedback';
