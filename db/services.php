@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $functions = [
     'quiz_archiver_generate_attempt_report' => [
         'classname' => 'quiz_archiver\external\generate_attempt_report',

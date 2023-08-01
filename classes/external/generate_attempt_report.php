@@ -7,6 +7,8 @@ use external_single_structure;
 use external_value;
 use quiz_archiver\Report;
 
+defined('MOODLE_INTERNAL') || die();
+
 class generate_attempt_report extends external_api {
 
     /**

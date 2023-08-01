@@ -8,6 +8,8 @@ use external_value;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\FileManager;
 
+defined('MOODLE_INTERNAL') || die();
+
 class process_uploaded_artifact extends external_api {
 
     /**

@@ -7,6 +7,8 @@ use external_single_structure;
 use external_value;
 use quiz_archiver\ArchiveJob;
 
+defined('MOODLE_INTERNAL') || die();
+
 class update_job_status extends external_api {
 
     /**
