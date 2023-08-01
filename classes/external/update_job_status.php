@@ -53,6 +53,10 @@ class update_job_status extends external_api {
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
 
+            // Check capabilities
+            $context = \context_module::instance($job->get_cm_id());
+            require_capability('mod/quiz_archiver:use_webservice', $context);
+
             if ($job->is_complete()) {
                 return [
                     'status' => 'E_JOB_ALREADY_COMPLETED'

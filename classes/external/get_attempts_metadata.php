@@ -66,7 +66,6 @@ class get_attempts_metadata extends external_api {
      * @throws \dml_exception
      * @throws \dml_transaction_exception
      * @throws \moodle_exception
-     * @throws \required_capability_exception
      */
     public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, array $attemptids_raw): array {
         global $DB;
@@ -79,10 +78,9 @@ class get_attempts_metadata extends external_api {
             'attemptids' => $attemptids_raw
         ]);
 
+        // Check capabilities
         $context = \context_module::instance($params['cmid']);
-        require_capability('mod/quiz:grade', $context);
-        require_capability('quiz/grading:viewstudentnames', $context);
-        require_capability('quiz/grading:viewidnumber', $context);
+        require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Acquire required data objects
         if (!$course = $DB->get_record('course', array('id' => $params['courseid']))) {

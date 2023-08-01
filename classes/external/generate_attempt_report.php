@@ -64,7 +64,6 @@ class generate_attempt_report extends external_api {
      * @throws \dml_exception
      * @throws \dml_transaction_exception
      * @throws \moodle_exception
-     * @throws \required_capability_exception
      */
     public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, int $attemptid_raw, $sections_raw): array {
         global $DB;
@@ -78,10 +77,9 @@ class generate_attempt_report extends external_api {
             'sections' => $sections_raw
         ]);
 
+        // Check capabilities
         $context = \context_module::instance($params['cmid']);
-        require_capability('mod/quiz:grade', $context);
-        require_capability('quiz/grading:viewstudentnames', $context);
-        require_capability('quiz/grading:viewidnumber', $context);
+        require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Acquire required data objects
         if (!$course = $DB->get_record('course', array('id' => $params['courseid']))) {

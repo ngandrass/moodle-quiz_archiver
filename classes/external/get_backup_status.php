@@ -42,6 +42,7 @@ class get_backup_status extends external_api {
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
      */
     public static function execute(
         string $jobid_raw,
@@ -64,6 +65,10 @@ class get_backup_status extends external_api {
         if (!$job->has_read_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return ['status' => 'E_ACCESS_DENIED'];
         }
+
+        // Check capabilities
+        $context = \context_module::instance($job->get_cm_id());
+        require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Get backup
         try {
