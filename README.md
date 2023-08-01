@@ -67,15 +67,12 @@ To set this plugin up, execute the following steps:
 
 1. Create a designated Moodle user for the quiz archiver webservice
    (e.g., `quiz_archiver`) with the following rights:
-   - `mod/quiz:grade`
-   - `mod/quiz:view`
+   - `mod/quiz_archiver:use_webservice`
    - `moodle/backup:*`
    - `moodle/course:ignoreavailabilityrestrictions`
    - `moodle/course:view`
    - `moodle/course:viewhiddencourses`
    - `moodle/user:ignoreuserquota`
-   - `quiz/grading:viewstudentnames`
-   - `quiz/grading:viewidnumber`
    - `webservice/rest:use`
 2. Create a new `quiz_archiver` external service at `$CFG->wwwroot/admin/settings.php?section=externalservices`
    - Enable file download and upload for this service
@@ -93,6 +90,7 @@ To set this plugin up, execute the following steps:
       replaced by the `internal_wwwroot` setting.
       Example: `https://your.public.moodle/` will be replaced by `http://moodle.local/`.
 5. Save all settings and create your first quiz archive (see [Usage](#usage)).
+6. (Optional) Adjust the default (capability)[#capabilities] assignments.
 
 
 ### Known pitfalls
@@ -122,6 +120,23 @@ To set this plugin up, execute the following steps:
     `clamd.conf`.
 
 
+## Capabilities
+
+The following capabilities are required for the following actions:
+
+- `mod/quiz_archiver:view` (context: Module): Required to view the quiz archiver
+  overview page. It allows to download all created archives but does not allow do
+  create new or delete existing archives (read-only access). By default, assigned
+  to: `teacher`, `editingteacher`, `manager`.
+- `mod/quiz_archiver:archive` (context: Module): Allows creation and deletion of
+  quiz archives (read-write access). By default, assigned to: `editingteacher`,
+  `manager`.
+- `mod/quiz_archiver:use_webservice` (context: System): Required to use any of
+  the webservice functions this plugin provides. The webservice user (created in
+  [Configuration](#configuration)) needs to have this capability in order to
+  create new quiz archives.
+
+
 ## Usage
 
 Once installed and set up, quizzes can be archived by performing the following
@@ -136,6 +151,9 @@ steps:
    from the `Quiz Archiver` page using the `Download archive` button.
 
 Created archives can be deleted by clicking the `Delete archive` button.
+
+If you encounter permission errors, ensure that the user has the required
+(Capabilities)[#capabilities] assigned.
 
 
 ## Screenshots
