@@ -46,9 +46,9 @@ class ArchiveJob {
     protected string $wstoken;
 
     /** @var string Name of the job status table */
-    const JOB_TABLE_NAME = 'quiz_report_archiver_jobs';
+    const JOB_TABLE_NAME = 'quiz_archiver_jobs';
     /** @var string Name of the table to store temporary file associations */
-    const FILES_TABLE_NAME = 'quiz_report_archiver_files';
+    const FILES_TABLE_NAME = 'quiz_archiver_files';
 
     // Job status values
     const STATUS_UNKNOWN = 'UNKNOWN';

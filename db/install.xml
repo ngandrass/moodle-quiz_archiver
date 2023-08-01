@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="20230727" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
+  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2023080104" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
     <TABLES>
-      <TABLE NAME="quiz_report_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
+      <TABLE NAME="quiz_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
         <FIELDS>
           <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
           <FIELD NAME="jobid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false" COMMENT="UUID of the job. Assigned by the archive worker."/>
@@ -26,15 +26,15 @@
           <INDEX NAME="courseid_cmid_quizid" UNIQUE="false" FIELDS="courseid, cmid, quizid"/>
         </INDEXES>
       </TABLE>
-      <TABLE NAME="quiz_report_archiver_files" COMMENT="Assigns temporary Moodle files to quiz archiver jobs">
+      <TABLE NAME="quiz_archiver_files" COMMENT="Assigns temporary Moodle files to quiz archiver jobs">
         <FIELDS>
           <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" />
-          <FIELD NAME="jobid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Internal ID of the job inside quiz_report_archiver_jobs table"/>
+          <FIELD NAME="jobid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Internal ID of the job inside quiz_archiver_jobs table"/>
           <FIELD NAME="pathnamehash" TYPE="char" LENGTH="40" NOTNULL="true" SEQUENCE="false" COMMENT="Pathnamehash (SHA1) of the file that is associated with the job"/>
         </FIELDS>
         <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id" />
-          <KEY NAME="jobid" TYPE="foreign" FIELDS="jobid" REFTABLE="quiz_report_archiver_jobs" REFFIELDS="id"/>
+          <KEY NAME="jobid" TYPE="foreign" FIELDS="jobid" REFTABLE="quiz_archiver_jobs" REFFIELDS="id"/>
         </KEYS>
       </TABLE>
     </TABLES>
