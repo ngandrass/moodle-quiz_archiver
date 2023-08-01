@@ -23,13 +23,16 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 $string['pluginname'] = 'Quiz Archiver';
 $string['archiver'] = $string['pluginname'];
 $string['archiverreport'] = $string['pluginname'];
 $string['checksum'] = 'Checksum';
 $string['beta_version_warning'] = 'This plugin is currently in beta stage. Please report any problems and bugs you experience to the site administrator.';
+
+// Capabilities
+$string['quiz_archiver:view'] = 'View quiz archiver report page';
+$string['quiz_archiver:archive'] = 'Create and delete quiz archives';
+$string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
 
 // Template: Overview
 $string['users_with_attempts'] = 'Users with quiz attempts';
