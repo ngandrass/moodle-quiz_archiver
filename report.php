@@ -69,9 +69,7 @@ class quiz_archiver_report extends quiz_default_report {
 
         // Check permissions.
         $this->context = context_module::instance($cm->id);
-        require_capability('mod/quiz:grade', $this->context);
-        require_capability('quiz/grading:viewstudentnames', $this->context);
-        require_capability('quiz/grading:viewidnumber', $this->context);
+        require_capability('mod/quiz_archiver:view', $this->context);
 
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
@@ -85,6 +83,10 @@ class quiz_archiver_report extends quiz_default_report {
             }
 
             if ($job_delete_form->is_submitted()) {
+                // Check permissions.
+                require_capability('mod/quiz_archiver:archive', $this->context);
+
+                // Execute deletion
                 $formdata = $job_delete_form->get_data();
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete();
             } else {
@@ -175,6 +177,9 @@ class quiz_archiver_report extends quiz_default_report {
      */
     protected function initiate_archive_job(bool $export_attempts, array $report_sections, bool $export_quiz_backup, bool $export_course_backup): ?ArchiveJob {
         global $USER;
+
+        // Check permissions.
+        require_capability('mod/quiz_archiver:archive', $this->context);
 
         // Create temporary webservice token
         $wstoken = external_generate_token(
