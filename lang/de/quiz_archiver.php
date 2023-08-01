@@ -35,6 +35,7 @@ $string['quiz_archiver:archive'] = 'Erstellen und Löschen von Testarchiven';
 $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen (lesend und schreibend)';
 
 // Template: Overview
+$string['archived'] = 'Archiviert';
 $string['users_with_attempts'] = 'Nutzende mit Versuchen';
 $string['archive_quiz'] = 'Test archivieren';
 $string['create_quiz_archive'] = 'Neues Archiv erstellen';

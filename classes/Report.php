@@ -380,6 +380,12 @@ class Report {
                 }
             }
 
+            // Add export date
+            $quiz_header_data['exportdate'] = [
+                'title' => get_string('archived', 'quiz_archiver'),
+                'content' => userdate(time()),
+            ];
+
             // Add summary table to the html
             $html .= $renderer->review_summary_table($quiz_header_data, 0);
         }

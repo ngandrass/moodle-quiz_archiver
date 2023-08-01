@@ -35,6 +35,7 @@ $string['quiz_archiver:archive'] = 'Create and delete quiz archives';
 $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
 
 // Template: Overview
+$string['archived'] = 'Archived';
 $string['users_with_attempts'] = 'Users with quiz attempts';
 $string['archive_quiz'] = 'Archive quiz';
 $string['create_quiz_archive'] = 'Create new quiz archive';
