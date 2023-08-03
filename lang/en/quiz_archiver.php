@@ -77,15 +77,16 @@ $string['job_status_FAILED'] = 'Failed';
 $string['job_status_TIMEOUT'] = 'Timeout';
 
 // Settings
-$string['setting_internal_wwwroot'] = 'Custom Moodle Base URL';
-$string['setting_internal_wwwroot_desc'] = 'Overwrites the default Moodle base URL (i.e. $CFG->wwwroot). This can be useful if you are running the archive worker service inside a private network (e.g. Docker).';
+$string['setting_header_docs_desc'] = 'This plugin archives quiz attempts as PDF and HTML files for long-term storage, independent of Moodle. It <b>requires a separate <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">worker service</a></b> to be installed for the actual archiving process to work. Please refer to the <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">documentation</a> for more details and setup instructions.';
+$string['setting_internal_wwwroot'] = 'Custom Moodle base URL';
+$string['setting_internal_wwwroot_desc'] = 'Overwrites the default Moodle base URL (<code>$CFG->wwwroot</code>) inside generated reports. This can be useful if you are running the archive worker service inside a private network (e.g., Docker) and want it to access Moodle directly.<br/>Example: <code>http://moodle/</code>';
 $string['setting_job_timeout_min'] = 'Job timeout (minutes)';
-$string['setting_job_timeout_min_desc'] = 'The number of minutes a single archive job is allowed to run at max';
-$string['setting_webservice_desc'] = 'The webservice that is allowed to execute the "generate_attempt_report" webservice function';
-$string['setting_webservice_userid'] = 'Webservice user ID';
-$string['setting_webservice_userid_desc'] = 'ID of the Moodle user that will be used by the archive worker to access quiz data';
+$string['setting_job_timeout_min_desc'] = 'The number of minutes a single archive job is allowed to run before it is aborted by Moodle. Job web service access tokens become invalid after this timeout.';
+$string['setting_webservice_desc'] = 'The webservice that is allowed to execute all <code>quiz_archiver_*</code> webservice functions. It must also have permission to up- and download files.';
+$string['setting_webservice_userid'] = 'Web service user-ID';
+$string['setting_webservice_userid_desc'] = 'User-ID of the Moodle user that is used by the archive worker service to access quiz data. It must have all capabilities that are listed in the <a href="https://github.com/ngandrass/moodle-quiz_archiver#configuration" target="_blank">documentation</a> to work properly. For security reasons, this should be a dedicated user account without full administrative privileges.';
 $string['setting_worker_url'] = 'Archive worker URL';
-$string['setting_worker_url_desc'] = 'URL of the archive worker service to call for quiz archive task execution';
+$string['setting_worker_url_desc'] = 'URL of the archive worker service to call for quiz archive task execution.<br/>Example: <code>http://127.0.0.1:8080</code> or <code>http://moodle-quiz-archive-worker:8080</code>';
 
 // Errors
 $string['error_worker_connection_failed'] = 'Establishing a connection to the archive worker failed.';

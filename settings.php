@@ -32,6 +32,12 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
+        $settings->add(new admin_setting_heading(
+            'quiz_archiver/header_docs',
+            null,
+            get_string('setting_header_docs_desc', 'quiz_archiver'))
+        );
+
         $settings->add(new admin_setting_configtext('quiz_archiver/worker_url',
             get_string('setting_worker_url', 'quiz_archiver'),
             get_string('setting_worker_url_desc', 'quiz_archiver'),
