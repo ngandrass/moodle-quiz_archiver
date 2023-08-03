@@ -178,9 +178,11 @@ If you encounter permission errors, ensure that the user has the required
 ### New job queued while another job is running
 ![Image of new job queued while another job is running](./doc/screenshots/quiz_archiver_new_job_queued.png)
 
-### Example of PDF report (extract)
+### Example of PDF report (excerpts)
 ![Image of example of PDF report (extract): Header](./doc/screenshots/quiz_archiver_report_example_pdf_header.png)
-![Image of example of PDF report (extract): Question](./doc/screenshots/quiz_archiver_report_example_pdf_question.png)
+![Image of example of PDF report (extract): Question 1](./doc/screenshots/quiz_archiver_report_example_pdf_question_1.png)
+![Image of example of PDF report (extract): Question 2](./doc/screenshots/quiz_archiver_report_example_pdf_question_2.png)
+![Image of example of PDF report (extract): Question 3](./doc/screenshots/quiz_archiver_report_example_pdf_question_3.png)
 
 
 ## License
