@@ -83,41 +83,8 @@ class job_overview_table extends \table_sql {
     }
 
     function col_status($values) {
-        switch ($values->status) {
-            case ArchiveJob::STATUS_UNKNOWN:
-                $color = 'warning';
-                $text = get_string('job_status_UNKNOWN', 'quiz_archiver');
-                break;
-            case ArchiveJob::STATUS_UNINITIALIZED:
-                $color = 'secondary';
-                $text = get_string('job_status_UNINITIALIZED', 'quiz_archiver');
-                break;
-            case ArchiveJob::STATUS_AWAITING_PROCESSING:
-                $color = 'secondary';
-                $text = get_string('job_status_AWAITING_PROCESSING', 'quiz_archiver');
-                break;
-            case ArchiveJob::STATUS_RUNNING:
-                $color = 'primary';
-                $text = get_string('job_status_RUNNING', 'quiz_archiver');
-                break;
-            case ArchiveJob::STATUS_FINISHED:
-                $color = 'success';
-                $text = get_string('job_status_FINISHED', 'quiz_archiver');
-                break;
-            case ArchiveJob::STATUS_FAILED:
-                $color = 'danger';
-                $text = get_string('job_status_FAILED', 'quiz_archiver');
-                break;
-            case ArchiveJob::STATUS_TIMEOUT:
-                $color = 'danger';
-                $text = get_string('job_status_TIMEOUT', 'quiz_archiver');
-                break;
-            default:
-                $color = 'light';
-                $text = $values->status;
-        }
-
-        return '<span class="badge badge-'.$color.'">'.$text.'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
+        $s = ArchiveJob::get_status_display_args($values->status);
+        return '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
     }
 
     function col_user($values) {

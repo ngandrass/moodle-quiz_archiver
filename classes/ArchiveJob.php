@@ -380,6 +380,31 @@ class ArchiveJob {
     }
 
     /**
+     * @return array Status of this job, translated for display
+     * @throws \coding_exception
+     */
+    public static function get_status_display_args(string $status): array {
+        switch ($status) {
+            case ArchiveJob::STATUS_UNKNOWN:
+                return ['color' => 'warning', 'text' => get_string('job_status_UNKNOWN', 'quiz_archiver')];
+            case ArchiveJob::STATUS_UNINITIALIZED:
+                return ['color' => 'secondary', 'text' => get_string('job_status_UNINITIALIZED', 'quiz_archiver')];
+            case ArchiveJob::STATUS_AWAITING_PROCESSING:
+                return ['color' => 'secondary', 'text' => get_string('job_status_AWAITING_PROCESSING', 'quiz_archiver')];
+            case ArchiveJob::STATUS_RUNNING:
+                return ['color' => 'primary', 'text' => get_string('job_status_RUNNING', 'quiz_archiver')];
+            case ArchiveJob::STATUS_FINISHED:
+                return ['color' => 'success', 'text' => get_string('job_status_FINISHED', 'quiz_archiver')];
+            case ArchiveJob::STATUS_FAILED:
+                return ['color' => 'danger', 'text' => get_string('job_status_FAILED', 'quiz_archiver')];
+            case ArchiveJob::STATUS_TIMEOUT:
+                return ['color' => 'danger', 'text' => get_string('job_status_TIMEOUT', 'quiz_archiver')];
+            default:
+                return ['color' => 'light', 'text' => $status];
+        }
+    }
+
+    /**
      * Retrieves the artifact file if present
      *
      * @return \stored_file|null Artifact file if present, else null
