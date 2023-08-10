@@ -52,7 +52,8 @@ class archive_quiz_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // Add description text
+        // Title and description
+        $mform->addElement('html', '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>');
         $mform->addElement('html', '<p>'.get_string('archive_quiz_form_desc', 'quiz_archiver').'</p>');
 
         // Internal information of mod_quiz

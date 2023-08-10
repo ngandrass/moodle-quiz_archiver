@@ -62,6 +62,8 @@ class quiz_archiver_report extends quiz_default_report {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course): bool {
+        global $OUTPUT;
+
         $this->course = $course;
         $this->cm = $cm;
         $this->quiz = $quiz;
@@ -73,6 +75,9 @@ class quiz_archiver_report extends quiz_default_report {
 
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
+        $tplCtx = [
+            'baseurl' => $this->base_url(),
+        ];
 
         // Handle job delete form
         if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
@@ -97,67 +102,65 @@ class quiz_archiver_report extends quiz_default_report {
 
         // Determine page to display
         if (!quiz_has_questions($quiz->id)) {
-            echo quiz_no_questions_message($quiz, $cm, $this->context);
-        } else {
-            // Archive quiz form
-            echo '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>';
-            echo '<div class="alert alert-info" role="alert">'.get_string('beta_version_warning', 'quiz_archiver').'</div>';
-            echo '<div>';
-            $archive_quiz_form = new archive_quiz_form(
-                $this->quiz->name,
-                sizeof($this->report->get_attempts())
-            );
-            if ($archive_quiz_form->is_submitted()) {
-                $job = null;
-                try {
-                    $formdata = $archive_quiz_form->get_data();
-                    $report_sections = [];
-                    foreach (Report::SECTIONS as $section) {
-                        $report_sections[$section] = $formdata->{'export_report_section_'.$section};
-                    }
-                    $job = $this->initiate_archive_job(
-                        $formdata->export_attempts,
-                        $report_sections,
-                        $formdata->export_quiz_backup,
-                        $formdata->export_course_backup
-                    );
-                    $initiation_status_color = 'success';
-                    $initiation_status_msg = get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid());
-                    $initiation_status_back_msg = get_string('continue');
-                } catch (RuntimeException $e) {
-                    $initiation_status_color = 'danger';
-                    $initiation_status_msg = $e->getMessage();
-                    $initiation_status_back_msg = get_string('retry');
-                }
-                echo <<<EOD
-                    <div class="alert alert-$initiation_status_color" role="alert">
-                        $initiation_status_msg
-                        <br/>
-                        <br/>
-                        <a href="{$this->base_url()}">$initiation_status_back_msg</a>
-                    </div>
-                EOD;
-
-                // Stop printing rest of the page if job creation failed
-                if ($job == null) return false;
-            } else {
-                $archive_quiz_form->display();
-            }
-            echo '</div>';
-
-            // Housekeeping for jobs associated with this quiz
-            foreach (ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id) as $job) {
-                $job->timeout_if_overdue($this->config->job_timeout_min);
-            }
-
-            // Job overview table
-            echo '<h1>'.get_string('job_overview', 'quiz_archiver').'<a href="'.$this->base_url().'" class="small mx-2" alt="'.get_string('refresh', 'moodle').'"><i class="fa fa-rotate-right"></i></a></h1>';
-            echo '<div>';
-            $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
-            $jobtbl->define_baseurl($this->base_url());
-            $jobtbl->out(10, true);
-            echo '</div>';
+            $tplCtx['quizHasNoQuestionsWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
+            echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplCtx);
+            return false;
         }
+
+        // Job overview table
+        $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
+        $jobtbl->define_baseurl($this->base_url());
+        ob_start();
+        $jobtbl->out(10, true);
+        $jobtbl_html = ob_get_contents();
+        ob_end_clean();
+        $tplCtx['jobOverviewTable'] = $jobtbl_html;
+
+        // Archive quiz form
+        $archive_quiz_form = new archive_quiz_form(
+            $this->quiz->name,
+            sizeof($this->report->get_attempts())
+        );
+        if ($archive_quiz_form->is_submitted()) {
+            $job = null;
+            try {
+                $formdata = $archive_quiz_form->get_data();
+                $report_sections = [];
+                foreach (Report::SECTIONS as $section) {
+                    $report_sections[$section] = $formdata->{'export_report_section_'.$section};
+                }
+                $job = $this->initiate_archive_job(
+                    $formdata->export_attempts,
+                    $report_sections,
+                    $formdata->export_quiz_backup,
+                    $formdata->export_course_backup
+                );
+                $tplCtx['jobInitiationStatusAlert'] = [
+                    "color" => "success",
+                    "message" => get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid()),
+                    "returnMessage" => get_string('continue'),
+                ];
+            } catch (RuntimeException $e) {
+                $tplCtx['jobInitiationStatusAlert'] = [
+                    "color" => "danger",
+                    "message" => $e->getMessage(),
+                    "returnMessage" => get_string('retry'),
+                ];
+            }
+
+            // Do not print job overview table if job creation failed
+            if ($job == null) unset($tplCtx['jobOverviewTable']);
+        } else {
+            $tplCtx['jobInitiationForm'] = $archive_quiz_form->render();
+        }
+
+        // Housekeeping for jobs associated with this quiz
+        foreach (ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id) as $job) {
+            $job->timeout_if_overdue($this->config->job_timeout_min);
+        }
+
+        // Render output
+        echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplCtx);
 
         return true;
     }
