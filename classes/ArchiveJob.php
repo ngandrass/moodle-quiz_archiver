@@ -199,20 +199,81 @@ class ArchiveJob {
      * @return array
      * @throws \dml_exception
      */
-    public static function get_job_status_overview(int $course_id, int $cm_id, int $quiz_id): array {
+    public static function get_metadata_for_jobs(int $course_id, int $cm_id, int $quiz_id): array {
         global $DB;
-        $records = $DB->get_records(self::JOB_TABLE_NAME, [
-            'courseid' => $course_id,
-            'cmid' => $cm_id,
-            'quizid' => $quiz_id
-        ]);
+        $records = $DB->get_records_sql(
+            'SELECT '.
+            '    j.*, '.
+            '    u.firstname AS userfirstname, u.lastname AS userlastname, u.username, '.
+            '    c.fullname AS coursename, '.
+            '    q.name as quizname '.
+            'FROM mdl_quiz_archiver_jobs AS j '.
+            '    LEFT JOIN mdl_user u ON j.userid = u.id '.
+            '    LEFT JOIN mdl_course c ON j.courseid = c.id '.
+            '    LEFT JOIN mdl_quiz q ON j.quizid = q.id '.
+            'WHERE '.
+            '    j.courseid = :courseid AND '.
+            '    j.cmid = :cmid AND '.
+            '    j.quizid = :quizid ',
+            [
+                'courseid' => $course_id,
+                'cmid' => $cm_id,
+                'quizid' => $quiz_id
+            ]
+        );
 
-        return array_map(fn($j): array => [
-            'jobid' => $j->jobid,
-            'status' => $j->status,
-            'timecreated' => $j->timecreated,
-            'timemodified' => $j->timemodified
-        ], $records);
+        return array_values(array_map(function($j): array {
+            // Get artifactfile metadata if available
+            $artifactfile_metadata = null;
+            if ($j->artifactfileid) {
+                $artifactfile = get_file_storage()->get_file_by_id($j->artifactfileid);
+                if ($artifactfile) {
+                    $artifactfileurl = \moodle_url::make_pluginfile_url(
+                        $artifactfile->get_contextid(),
+                        $artifactfile->get_component(),
+                        $artifactfile->get_filearea(),
+                        $artifactfile->get_itemid(),
+                        $artifactfile->get_filepath(),
+                        $artifactfile->get_filename(),
+                        true
+                    );
+
+                    $artifactfile_metadata = [
+                        'name' => $artifactfile->get_filename(),
+                        'downloadurl' => $artifactfileurl->out(),
+                        'size' => $artifactfile->get_filesize(),
+                        'size_human' => display_size($artifactfile->get_filesize()),
+                        'checksum' => $j->artifactfilechecksum
+                    ];
+                }
+            }
+
+            // Build job metadata array
+            return [
+                'id' => $j->id,
+                'jobid' => $j->jobid,
+                'status' => $j->status,
+                'status_display_args' => self::get_status_display_args($j->status),
+                'timecreated' => $j->timecreated,
+                'timemodified' => $j->timemodified,
+                'user' => [
+                    'id' => $j->userid,
+                    'firstname' => $j->userfirstname,
+                    'lastname' => $j->userlastname,
+                    'username' => $j->username
+                ],
+                'course' => [
+                    'id' => $j->courseid,
+                    'name' => $j->coursename
+                ],
+                'quiz' => [
+                    'id' => $j->quizid,
+                    'cmid' => $j->cmid,
+                    'name' => $j->quizname
+                ],
+                'artifactfile' => $artifactfile_metadata
+            ];
+        }, $records));
     }
 
     /**

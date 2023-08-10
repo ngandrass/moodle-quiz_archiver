@@ -34,6 +34,12 @@ $string['quiz_archiver:view'] = 'Quiz Archiver Berichtsseite anzeigen';
 $string['quiz_archiver:archive'] = 'Erstellen und Löschen von Testarchiven';
 $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen (lesend und schreibend)';
 
+// General
+$string['quiz_archive'] = 'Testarchiv';
+$string['quiz_archive_details'] = 'Details des Testarchivs';
+$string['quiz_archive_not_found'] = 'Testarchiv nicht gefunden';
+$string['quiz_archive_not_ready'] = 'Testarchiv noch nicht bereit';
+
 // Template: Overview
 $string['archived'] = 'Archiviert';
 $string['users_with_attempts'] = 'Nutzende mit Versuchen';

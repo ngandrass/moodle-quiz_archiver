@@ -1,0 +1,149 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template quiz_archiver/job_details
+
+    Template purpose and description.
+
+    Example context (json):
+    [
+      {
+        "id":"60",
+        "jobid":"32979c0a-2b97-11ee-b5db-0242ac150004",
+        "status":"FINISHED",
+        "status_display_args": {
+            "color":"success",
+            "text":"Finished"
+        },
+        "timecreated":"1690363888",
+        "timemodified":"1690364031",
+        "user":{
+          "id":"2",
+          "firstname":"Admin",
+          "lastname":"User",
+          "username":"admin"
+        },
+        "course":{
+          "id":"31",
+          "name":"Example Moodle Course for Quiz Archiver"
+        },
+        "quiz":{
+          "id":"36",
+          "cmid":"108",
+          "name":"Example Quiz"
+        },
+        "artifactfile":{
+          "name":"quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz",
+          "downloadurl":"http:\/\/127.0.0.1\/pluginfile.php\/201\/quiz_archiver\/artifact\/0\/31\/108\/36\/quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz?forcedownload=1",
+          "size":"86915632",
+          "size_human":"82.89 MB",
+          "checksum":"3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
+        }
+      },
+      {
+        "id":"79",
+        "jobid":"23008fc4-2f9b-11ee-afb0-0242ac150004",
+        "status":"FAILED",
+        "status_display_args": {
+            "color":"danger",
+            "text":"Failed"
+        },
+        "timecreated":"1690805384",
+        "timemodified":"1690805388",
+        "user":{
+          "id":"2",
+          "firstname":"Admin",
+          "lastname":"User",
+          "username":"admin"
+        },
+        "course":{
+          "id":"31",
+          "name":"Example Moodle Course for Quiz Archiver"
+        },
+        "quiz":{
+          "id":"36",
+          "cmid":"108",
+          "name":"Example Quiz"
+        },
+        "artifactfile":null
+      },
+    ]
+
+}}
+
+<table class="table w-100">
+    <tr>
+        <td class="border-top-0">{{#str}} jobid, quiz_archiver {{/str}}</td>
+        <td class="border-top-0">{{jobid}}</td>
+    </tr>
+    <tr>
+        <td>{{#str}} status {{/str}}</td>
+        <td>
+            <span class="badge badge-{{status_display_args.color}}">
+                {{status_display_args.text}}
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>{{#str}} course {{/str}}</td>
+        <td>{{course.name}}</td>
+    </tr>
+    <tr>
+        <td>{{#str}} modulename, mod_quiz {{/str}}</td>
+        <td>{{quiz.name}}</td>
+    </tr>
+    <tr>
+        <td>{{#str}} user {{/str}}</td>
+        <td>{{user.firstname}} {{user.lastname}} ({{user.username}})</td>
+    </tr>
+    <tr>
+        <td>{{#str}} timecreated {{/str}}</td>
+        <td>{{#userdate}} {{timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
+    </tr>
+    <tr>
+        <td>{{#str}} timemodified, reportbuilder {{/str}} </td>
+        <td>{{#userdate}} {{timemodified}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
+    </tr>
+    <tr>
+        <td class="align-middle">{{#str}} quiz_archive, quiz_archiver {{/str}}</td>
+        <td>
+            {{#artifactfile}}
+                <table>
+                    <tr>
+                        <td class="border-top-0">{{#str}} filename, backup {{/str}}</td>
+                        <td class="border-top-0">{{artifactfile.name}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}} size {{/str}}</td>
+                        <td>{{artifactfile.size_human}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}} checksum, quiz_archiver {{/str}}</td>
+                        <td class="word-break-all">sha256:{{artifactfile.checksum}}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><a href="{{{artifactfile.downloadurl}}}" target="_blank">{{#str}} downloadfile {{/str}}</a></td>
+                    </tr>
+                </table>
+            {{/artifactfile}}
+            {{^artifactfile}}
+                {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
+            {{/artifactfile}}
+        </td>
+    </tr>
+</table>

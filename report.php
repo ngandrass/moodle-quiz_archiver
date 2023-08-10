@@ -77,6 +77,7 @@ class quiz_archiver_report extends quiz_default_report {
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
         $tplCtx = [
             'baseurl' => $this->base_url(),
+            'jobOverviewTable' => ""
         ];
 
         // Handle job delete form
@@ -106,15 +107,6 @@ class quiz_archiver_report extends quiz_default_report {
             echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplCtx);
             return false;
         }
-
-        // Job overview table
-        $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
-        $jobtbl->define_baseurl($this->base_url());
-        ob_start();
-        $jobtbl->out(10, true);
-        $jobtbl_html = ob_get_contents();
-        ob_end_clean();
-        $tplCtx['jobOverviewTable'] = $jobtbl_html;
 
         // Archive quiz form
         $archive_quiz_form = new archive_quiz_form(
@@ -152,6 +144,24 @@ class quiz_archiver_report extends quiz_default_report {
             if ($job == null) unset($tplCtx['jobOverviewTable']);
         } else {
             $tplCtx['jobInitiationForm'] = $archive_quiz_form->render();
+        }
+
+        // Job overview table
+        if (array_key_exists('jobOverviewTable', $tplCtx)) {
+            // Generate table
+            $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
+            $jobtbl->define_baseurl($this->base_url());
+            ob_start();
+            $jobtbl->out(10, true);
+            $jobtbl_html = ob_get_contents();
+            ob_end_clean();
+            $tplCtx['jobOverviewTable'] = $jobtbl_html;
+
+            // Prepare job metadata for job detail modals
+            $tplCtx['jobs'] = array_map(fn($jm): array => [
+                'jobid' => $jm['jobid'],
+                'json' => json_encode($jm)
+            ], ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
         }
 
         // Housekeeping for jobs associated with this quiz

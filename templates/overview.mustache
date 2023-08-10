@@ -28,7 +28,18 @@
             "message": "Job initiated successfully.",
             "returnMessage": "Return to the overview page."
         },
-        "jobOverviweTable": "<table>[...]</table>",
+        "jobOverviewTable": "<table>[...]</table>",
+        "jobs": [
+            {
+                "jobid": "3e6273fe-3784-11ee-be56-0242ac120002",
+                "json": "{...}"
+            },
+            {
+                "jobid": "45edd9f6-3784-11ee-be56-0242ac120002",
+                "json": "{...}"
+            },
+            ...
+        },
         "quizHasNoQuestionsWarning": "<div>[...]</div>"
     }
 }}
@@ -61,4 +72,20 @@
 <div>
     {{{jobOverviewTable}}}
 </div>
+
+{{#js}}
+    require(['core/modal_factory', 'core/templates'], function(ModalFactory, Templates) {
+        {{#jobs}}
+            $('#job-details-{{jobid}}').click(async () => {
+                var modal = await ModalFactory.create({
+                    type: ModalFactory.types.DEFAULT,
+                    title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
+                    body: Templates.render('quiz_archiver/job_details', JSON.parse('{{{json}}}')),
+                    large: true,
+                });
+                modal.show();
+            });
+        {{/jobs}}
+    });
+{{/js}}
 {{/jobOverviewTable}}

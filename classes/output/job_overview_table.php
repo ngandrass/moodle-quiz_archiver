@@ -98,6 +98,9 @@ class job_overview_table extends \table_sql {
     function col_actions($values) {
         $html = '';
 
+        // Action: Show details
+        $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
+
         // Action: Download
         if ($values->pathnamehash) {
             $artifactfile = get_file_storage()->get_file_by_hash($values->pathnamehash);

@@ -34,6 +34,12 @@ $string['quiz_archiver:view'] = 'View quiz archiver report page';
 $string['quiz_archiver:archive'] = 'Create and delete quiz archives';
 $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
 
+// General
+$string['quiz_archive'] = 'Quiz archive';
+$string['quiz_archive_details'] = 'Quiz archive details';
+$string['quiz_archive_not_found'] = 'Quiz archive not found';
+$string['quiz_archive_not_ready'] = 'Quiz archive not ready yet';
+
 // Template: Overview
 $string['archived'] = 'Archived';
 $string['users_with_attempts'] = 'Users with quiz attempts';
