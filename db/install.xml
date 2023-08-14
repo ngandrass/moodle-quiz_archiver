@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2023080104" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
+  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2023081400" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
     <TABLES>
       <TABLE NAME="quiz_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
         <FIELDS>
@@ -34,6 +34,18 @@
         </FIELDS>
         <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+          <KEY NAME="jobid" TYPE="foreign" FIELDS="jobid" REFTABLE="quiz_archiver_jobs" REFFIELDS="id"/>
+        </KEYS>
+      </TABLE>
+      <TABLE NAME="quiz_archiver_job_settings" COMMENT="Logs archive settings during job creation">
+        <FIELDS>
+          <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+          <FIELD NAME="jobid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the associated job inside the quiz_archiver_jobs table"/>
+          <FIELD NAME="key" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+          <FIELD NAME="value" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        </FIELDS>
+        <KEYS>
+          <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
           <KEY NAME="jobid" TYPE="foreign" FIELDS="jobid" REFTABLE="quiz_archiver_jobs" REFFIELDS="id"/>
         </KEYS>
       </TABLE>
