@@ -228,6 +228,18 @@ class quiz_archiver_report extends quiz_default_report {
             }
         }
 
+        // Generate job settings array
+        $job_settings = [];
+        $job_settings['num_attempts'] = count($this->report->get_attempts());
+        $job_settings['export_attempts'] = $export_attempts;
+        if ($export_attempts) {
+            foreach ($report_sections as $section_name => $section_value) {
+                $job_settings["export_report_section_$section_name"] = $section_value;
+            }
+        }
+        $job_settings['export_quiz_backup'] = $export_quiz_backup ? '1' : '0';
+        $job_settings['export_course_backup'] = $export_course_backup ? '1' : '0';
+
         // Request archive worker
         $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/').'/archive', 10, 20);
         try {
@@ -248,6 +260,7 @@ class quiz_archiver_report extends quiz_default_report {
                 $this->quiz->id,
                 $USER->id,
                 $wstoken,
+                $job_settings,
                 $job_metadata->status
             );
 

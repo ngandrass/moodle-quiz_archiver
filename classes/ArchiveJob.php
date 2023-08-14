@@ -49,6 +49,8 @@ class ArchiveJob {
     const JOB_TABLE_NAME = 'quiz_archiver_jobs';
     /** @var string Name of the table to store temporary file associations */
     const FILES_TABLE_NAME = 'quiz_archiver_files';
+    /** @var string Name of the table to store archive job settings */
+    const JOB_SETTINGS_TABLE_NAME = 'quiz_archiver_job_settings';
 
     // Job status values
     const STATUS_UNKNOWN = 'UNKNOWN';
@@ -90,13 +92,14 @@ class ArchiveJob {
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that initiated this job
+     * @param array $settings Map of settings to store for this job and display in the report interface
      * @param string $status (optional) Initial status of the job. Default to STATUS_UNKNOWN
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      * @return ArchiveJob
      * @throws \dml_exception On database error
      * @throws \moodle_exception If the job already exists inside the database
      */
-    public static function create(string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $wstoken, string $status = self::STATUS_UNKNOWN): ArchiveJob {
+    public static function create(string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $wstoken, array $settings, string $status = self::STATUS_UNKNOWN): ArchiveJob {
         global $DB;
 
         // Do not re-created jobs!
@@ -117,6 +120,15 @@ class ArchiveJob {
             'timemodified' => $now,
             'wstoken' => $wstoken
         ]);
+
+        // Store job settings
+        $DB->insert_records(self::JOB_SETTINGS_TABLE_NAME, array_map(function($key, $value) use ($id): array {
+            return [
+                'jobid' => $id,
+                'key' => strval($key),
+                'value' => $value === null ? null : strval($value)
+            ];
+        }, array_keys($settings), $settings));
 
         return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $now, $wstoken);
     }
@@ -198,6 +210,7 @@ class ArchiveJob {
      * @param int $quiz_id
      * @return array
      * @throws \dml_exception
+     * @throws \coding_exception
      */
     public static function get_metadata_for_jobs(int $course_id, int $cm_id, int $quiz_id): array {
         global $DB;
@@ -277,6 +290,24 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the archive settings memorized for this job
+     *
+     * @return array Key value pairs of archive settings
+     * @throws \dml_exception
+     */
+    public function get_settings(): array {
+        global $DB;
+        return array_reduce(
+            $DB->get_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]),
+            function($res, $item): array {
+                $res[$item->key] = $item->value;
+                return $res;
+            },
+            []
+        );
+    }
+
+    /**
      * Deletes this job and all associated data
      *
      * @return void
@@ -291,6 +322,7 @@ class ArchiveJob {
         if ($artifact = $this->get_artifact()) {
             $artifact->delete();
         }
+        $DB->delete_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]);
 
         // Delete job from DB
         $DB->delete_records(self::JOB_TABLE_NAME, ['id' => $this->id]);
