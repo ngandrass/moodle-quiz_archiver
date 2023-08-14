@@ -164,10 +164,12 @@ steps:
 4. Wait until the archive job is completed. You can now download the archive
    from the `Quiz Archiver` page using the `Download archive` button.
 
-Created archives can be deleted by clicking the `Delete archive` button.
+Created archives can be deleted by clicking the `Delete archive` button. Details,
+including all selected settings during archive creation, e.g. number of attempts
+or included components, can be viewed by clicking the `Details` button.
 
 If you encounter permission errors, ensure that the user has the required
-(Capabilities)[#capabilities] assigned.
+[Capabilities](#capabilities) assigned.
 
 
 ## Screenshots
@@ -177,6 +179,9 @@ If you encounter permission errors, ensure that the user has the required
 
 ### New job queued while another job is running
 ![Image of new job queued while another job is running](./doc/screenshots/quiz_archiver_new_job_queued.png)
+
+### Quiz archive job details
+![Image of quiz archive job details](./doc/screenshots/quiz_archiver_job_details_modal.png)
 
 ### Example of PDF report (excerpts)
 ![Image of example of PDF report (extract): Header](./doc/screenshots/quiz_archiver_report_example_pdf_header.png)
