@@ -284,7 +284,10 @@ class ArchiveJob {
                     'cmid' => $j->cmid,
                     'name' => $j->quizname
                 ],
-                'artifactfile' => $artifactfile_metadata
+                'artifactfile' => $artifactfile_metadata,
+                'settings' => self::convert_archive_settings_for_display(
+                    (new self($j->id, '', -1, -1, -1, -1, -1, ''))->get_settings()
+                ),
             ];
         }, $records));
     }
@@ -495,6 +498,27 @@ class ArchiveJob {
             default:
                 return ['color' => 'light', 'text' => $status];
         }
+    }
+
+    /**
+     * Exports a archive settings array for display rendering via mustache
+     *
+     * @param array $settings Archive settings to convert
+     * @return array List of title and value pairs based on given $settings
+     * @throws \coding_exception
+     */
+    public static function convert_archive_settings_for_display(array $settings): array {
+        $ret = [];
+
+        foreach($settings as $key => $value) {
+            $ret[] = [
+                'title' => get_string($key, 'quiz_archiver'),
+                'value' => $value,
+                'color' => $value ? 'primary' : 'secondary'
+            ];
+        }
+
+        return $ret;
     }
 
     /**

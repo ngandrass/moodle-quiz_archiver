@@ -69,6 +69,7 @@ $string['export_report_section_general_feedback_help'] = 'Display the general fe
 $string['export_report_section_history'] = 'Include answer history';
 $string['export_report_section_history_help'] = 'Display the answer history for each question inside the report.';
 $string['job_overview'] = 'Archives';
+$string['num_attempts'] = 'Number of attempts';
 
 // Job
 $string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';

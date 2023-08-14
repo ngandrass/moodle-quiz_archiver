@@ -52,7 +52,19 @@
           "size":"86915632",
           "size_human":"82.89 MB",
           "checksum":"3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
-        }
+        },
+        "settings":[
+            {
+                "title":"Demo Title 1",
+                "value":"Demo Value 1",
+                "color":"primary"
+            },
+            {
+                "title":"Demo Title 2",
+                "value":"Demo Value 2",
+                "color":"secondary"
+            },
+        ],
       },
       {
         "id":"79",
@@ -79,10 +91,21 @@
           "cmid":"108",
           "name":"Example Quiz"
         },
-        "artifactfile":null
+        "artifactfile":null,
+        "settings":[
+            {
+                "title":"Demo Title 1",
+                "value":"Demo Value 1",
+                "color":"primary"
+            },
+            {
+                "title":"Demo Title 2",
+                "value":"Demo Value 2",
+                "color":"secondary"
+            },
+        ],
       },
     ]
-
 }}
 
 <table class="table w-100">
@@ -144,6 +167,22 @@
             {{^artifactfile}}
                 {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
             {{/artifactfile}}
+        </td>
+    </tr>
+    <tr>
+        <td class="align-middle">{{#str}} settings {{/str}}</td>
+        <td>
+            <ul class="list-group small">
+                {{#settings}}
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-2">
+                        {{title}}
+                        <span class="badge badge-{{color}} badge-pill">{{value}}</span>
+                    </li>
+                {{/settings}}
+                {{^settings}}
+                    <li class="list-group-item">{{#str}} notavailable {{/str}}</li>
+                {{/settings}}
+            </ul>
         </td>
     </tr>
 </table>

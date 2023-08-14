@@ -69,6 +69,7 @@ $string['export_report_section_general_feedback_help'] = 'Allgemeines Fragenfeed
 $string['export_report_section_history'] = 'Bearbeitungsverlauf einschließen';
 $string['export_report_section_history_help'] = 'Bearbeitungsverlauf der Testfragen im Bericht einschließen';
 $string['job_overview'] = 'Testarchive';
+$string['num_attempts'] = 'Anzahl Testversuche';
 
 // Job
 $string['delete_job_warning'] = 'Sind Sie sicher, dass Sie diesen Archivierungsauftrag <b>inklusive aller archivierten Daten</b> löschen möchten?';
