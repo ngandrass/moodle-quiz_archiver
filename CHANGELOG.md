@@ -1,7 +1,8 @@
 # Changelog
 
-## Version 0.4.5 (WIP, unreleased)
+## Version 0.5.0 (WIP, unreleased)
 
+- Add support for paper size selection to work together with new PDF export method
 - Provide XML definition for quiz archive user role
 - Create highly detailed configuration instructions
 
