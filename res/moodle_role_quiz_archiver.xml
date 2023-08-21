@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role>
+	<shortname>quiz_archiver</shortname>
+	<name>Quiz Archiver Service Account</name>
+	<description>Role for the Quiz Archiver service account</description>
+	<archetype/>
+	<contextlevels>
+		<level>system</level>
+	</contextlevels>
+	<allowassign/>
+	<allowoverride/>
+	<allowswitch/>
+	<allowview/>
+	<permissions>
+		<allow>mod/quiz:view</allow>
+		<allow>mod/quiz_archiver:use_webservice</allow>
+		<allow>moodle/backup:anonymise</allow>
+		<allow>moodle/backup:backupactivity</allow>
+		<allow>moodle/backup:backupcourse</allow>
+		<allow>moodle/backup:backupsection</allow>
+		<allow>moodle/backup:backuptargetimport</allow>
+		<allow>moodle/backup:configure</allow>
+		<allow>moodle/backup:downloadfile</allow>
+		<allow>moodle/backup:userinfo</allow>
+		<allow>moodle/course:ignoreavailabilityrestrictions</allow>
+		<allow>moodle/course:view</allow>
+		<allow>moodle/course:viewhiddenactivities</allow>
+		<allow>moodle/course:viewhiddencourses</allow>
+		<allow>moodle/course:viewhiddensections</allow>
+		<allow>moodle/user:ignoreuserquota</allow>
+		<allow>webservice/rest:use</allow>
+	</permissions>
+</role>
