@@ -124,6 +124,7 @@ class quiz_archiver_report extends quiz_default_report {
                 $job = $this->initiate_archive_job(
                     $formdata->export_attempts,
                     $report_sections,
+                    $formdata->export_attempts_paper_format,
                     $formdata->export_quiz_backup,
                     $formdata->export_course_backup
                 );
@@ -180,6 +181,7 @@ class quiz_archiver_report extends quiz_default_report {
      *
      * @param bool $export_attempts Quiz attempts will be archives if true
      * @param array $report_sections Sections to export during attempt report generation
+     * @param string $paper_format Paper format to use for attempt report generation
      * @param bool $export_quiz_backup Complete quiz backup will be archived if true
      * @param bool $export_course_backup Complete course backup will be archived if true
      * @return ArchiveJob|null Created ArchiveJob on success
@@ -188,7 +190,7 @@ class quiz_archiver_report extends quiz_default_report {
      * @throws moodle_exception Handled by Moodle
      * @throws RuntimeException Used to signal a soft failure to calling context
      */
-    protected function initiate_archive_job(bool $export_attempts, array $report_sections, bool $export_quiz_backup, bool $export_course_backup): ?ArchiveJob {
+    protected function initiate_archive_job(bool $export_attempts, array $report_sections, string $paper_format, bool $export_quiz_backup, bool $export_course_backup): ?ArchiveJob {
         global $USER;
 
         // Check permissions.
@@ -211,6 +213,7 @@ class quiz_archiver_report extends quiz_default_report {
                 'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts())),
                 'fetch_metadata' => True,
                 'sections' => $report_sections,
+                'paper_format' => $paper_format,
             ];
         }
 

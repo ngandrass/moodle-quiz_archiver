@@ -63,7 +63,7 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('mode', PARAM_TEXT);
 
         // Options
-        $mform->addElement('header', 'header', get_string('settings'));
+        $mform->addElement('header', 'header_settings', get_string('settings'));
 
         // Options: Test
         $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quiz_name);
@@ -92,7 +92,16 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_course_backup', 'export_course_backup', 'quiz_archiver');
         $mform->setDefault('export_course_backup', false);
 
+        // Advanced options
+        $mform->addElement('header', 'header_advanced_settings', get_string('advancedsettings'));
+        $mform->setExpanded('header_advanced_settings', false);
+
+        $mform->addElement('select', 'export_attempts_paper_format', get_string('export_attempts_paper_format', 'quiz_archiver'), array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS));
+        $mform->addHelpButton('export_attempts_paper_format', 'export_attempts_paper_format', 'quiz_archiver');
+        $mform->setDefault('export_attempts_paper_format', 'A4');
+
         // Submit
+        $mform->closeHeaderBefore('submitbutton');
         $mform->addElement('submit', 'submitbutton', get_string('archive_quiz', 'quiz_archiver'));
     }
 

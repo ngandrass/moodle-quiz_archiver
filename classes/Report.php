@@ -63,6 +63,12 @@ class Report {
         "history" => ["question"]
     ];
 
+    /** @var string[] Available paper formats for attempt PDFs */
+    public const PAPER_FORMATS = [
+        'A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6',
+        'Letter', 'Legal', 'Tabloid', 'Ledger'
+    ];
+
     /**
      * @param object $course
      * @param object $cm
