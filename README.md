@@ -78,21 +78,26 @@ to complete the installation from the command line.
 To set this plugin up, execute the following steps:
 
 1. Install the [quiz archive worker service](https://github.com/ngandrass/moodle-quiz-archive-worker).
-   This is mandatory for this plugin to work!
-2. Create a designated Moodle user for the quiz archiver webservice
-   (e.g., `quiz_archiver`) with the following rights:
-   - `mod/quiz_archiver:use_webservice`
-   - `moodle/backup:*`
-   - `moodle/course:ignoreavailabilityrestrictions`
-   - `moodle/course:view`
-   - `moodle/course:viewhiddencourses`
-   - `moodle/user:ignoreuserquota`
-   - `webservice/rest:use`
-3. Create a new `quiz_archiver` external service at `$CFG->wwwroot/admin/settings.php?section=externalservices`
+   It is mandatory for this plugin to work!
+2. Create a designated Moodle user for the quiz archiver webservice (e.g., `quiz_archiver`).
+3. Create a global role:
+   1. Set `Role archetype` to `None`
+   2. Set `Context types where this role may be assigned` to `System`
+   3. Assign the following rights:
+      - `mod/quiz_archiver:use_webservice`
+      - `mod/quiz:view`
+      - `moodle/backup:*`
+      - `moodle/course:ignoreavailabilityrestrictions`
+      - `moodle/course:view`
+      - `moodle/course:viewhiddencourses`
+      - `moodle/user:ignoreuserquota`
+      - `webservice/rest:use`
+4. Assign the `quiz_archiver` Moodle user to the created role.
+5. Create a new `quiz_archiver` external service at `$CFG->wwwroot/admin/settings.php?section=externalservices`
    - Enable file download and upload for this service
-4. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
+6. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
    service.
-5. Configure `quiz_archiver` plugin settings at `$CFG->wwwroot/admin/settings.php?section=quiz_archiver_settings`
+7. Configure `quiz_archiver` plugin settings at `$CFG->wwwroot/admin/settings.php?section=quiz_archiver_settings`
    1. Set `worker_url` to the URL under which the quiz archive worker can be
       reached (e.g., `http://quiz-archive-worker:5000` or `http://127.0.0.1:5000`)
    2. Select the in step (2.) created `quiz_archiver` webservice for `webservice_id`
@@ -103,8 +108,8 @@ To set this plugin up, execute the following steps:
       Docker. If this setting is present, the public Moodle `wwwroot` will be
       replaced by the `internal_wwwroot` setting.
       Example: `https://your.public.moodle/` will be replaced by `http://moodle.local/`.
-6. Save all settings and create your first quiz archive (see [Usage](#usage)).
-7. (Optional) Adjust the default (capability)[#capabilities] assignments.
+8. Save all settings and create your first quiz archive (see [Usage](#usage)).
+9. (Optional) Adjust the default (capability)[#capabilities] assignments.
 
 
 ### Known pitfalls
