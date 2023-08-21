@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.4.5 (WIP, unreleased)
+
+- Provide XML definition for quiz archive user role
+- Create highly detailed configuration instructions
+
+
 ## Version 0.4.4
 
 - Create modal to display all information about an archive job
