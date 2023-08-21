@@ -93,77 +93,79 @@ is mandatory for this plugin to work.
 
 ### 2. Create Moodle User and Role
 
-1. Create a designated Moodle user for the quiz archiver webservice (e.g., `quiz_archiver`).
-   1. Navigate to `Site Administration` > `Users` (1) > `Accounts` > `Add a new user` (2).
+1. Create a designated Moodle user for the quiz archiver webservice
+   1. Navigate to _Site Administration_ > _Users_ (1) > _Accounts_ > _Add a new user_ (2)
    2. Set a username (e.g. `quiz_archiver`) (3), a password (4), first and
-      lastname (5), and a hidden email address (6).
-   3. Create the user (7).
+      lastname (5), and a hidden email address (6)
+   3. Create the user (7)
    
-   ![TODO](doc/configuration/configuration_create_moodle_user_1.png)
-   ![TODO](doc/configuration/configuration_create_moodle_user_2.png)
+   [![TODO](doc/configuration/configuration_create_moodle_user_1_thumb.png)](doc/configuration/configuration_create_moodle_user_1.png)
+   [![TODO](doc/configuration/configuration_create_moodle_user_2_thumb.png)](doc/configuration/configuration_create_moodle_user_2.png)
 
-2. Create a global role to define permissions of the `quiz_archiver` Moodle user.
-   1. Navigate to `Site Administration` > `Users` (1) > `Permissions` > `Define roles` (2)
-   2. Select `Add a new role` (3)
-   3. Set `Use role or archetype` (4) to `No role`
+2. Create a global role to handle permissions for the `quiz_archiver` Moodle user
+   1. Navigate to _Site Administration_ > _Users_ (1) > _Permissions_ > _Define roles_ (2)
+   2. Select _Add a new role_ (3)
+   3. Set _Use role or archetype_ (4) to `No role`
    4. Upload the role definitions file from [res/moodle_role_quiz_archiver.xml](res/moodle_role_quiz_archiver.xml) (5).
       This will automatically assign all required capabilities. You can check all
-      capabilities in the next step or by manually inspecting the [role definition XML file](res/moodle_role_quiz_archiver.xml).
-   5. Click on `Continue` (6) to import the role definitions for review
+      capabilities prior to role creation in the next step or by manually
+      inspecting the [role definition XML file](res/moodle_role_quiz_archiver.xml).
+   5. Click on _Continue_ (6) to import the role definitions for review
    6. Optionally change the role name or description and create the role (7)
    
-   ![TODO](doc/configuration/configuration_create_role_1.png)
-   ![TODO](doc/configuration/configuration_create_role_2.png)
-   ![TODO](doc/configuration/configuration_create_role_3.png)
-   ![TODO](doc/configuration/configuration_create_role_4.png)
+   [![TODO](doc/configuration/configuration_create_role_1_thumb.png)](doc/configuration/configuration_create_role_1.png)
+   [![TODO](doc/configuration/configuration_create_role_2_thumb.png)](doc/configuration/configuration_create_role_2.png)
+   [![TODO](doc/configuration/configuration_create_role_3_thumb.png)](doc/configuration/configuration_create_role_3.png)
+   [![TODO](doc/configuration/configuration_create_role_4_thumb.png)](doc/configuration/configuration_create_role_4.png)
 
-3. Assign the `quiz_archiver` Moodle user to the created role.
-   1. Navigate to `Site Administration` > `Users` (1) > `Permissions` > `Assign system roles` (2)
+3. Assign the `quiz_archiver` Moodle user to the created role
+   1. Navigate to _Site Administration_ > _Users_ (1) > _Permissions_ > _Assign system roles_ (2)
    2. Select the `Quiz Archiver Service Account` role (3)
    3. Search the created `quiz_archiver` Moodle user (4), select it in the list
       of potential users (5), and add it to the role (6)
    
-   ![TODO](doc/configuration/configuration_assign_role_1.png)
-   ![TODO](doc/configuration/configuration_assign_role_2.png)
-   ![TODO](doc/configuration/configuration_assign_role_3.png)
+   [![TODO](doc/configuration/configuration_assign_role_1_thumb.png)](doc/configuration/configuration_assign_role_1.png)
+   [![TODO](doc/configuration/configuration_assign_role_2_thumb.png)](doc/configuration/configuration_assign_role_2.png)
+   [![TODO](doc/configuration/configuration_assign_role_3_thumb.png)](doc/configuration/configuration_assign_role_3.png)
 
 
 ### 3. Setup Webservice
 1. Create an external webservice for the quiz archive worker to use
-   1. Navigate to `Site Administration` > `Server` (1) > `Web services` > `External services` (2)
-   2. Under the `Custom services` section, select `Add` (3)
+   1. Navigate to _Site Administration_ > _Server_ (1) > _Web services_ > _External services_ (2)
+   2. Under the _Custom services_ section, select _Add_ (3)
    3. Enter a name (e.g. `quiz_archiver`) (4) and enable it (5)
    4. Expand the additional settings (6), enable file up- and download (7)
-   5. Create the new webservice by clicking `Add service` (8)
-   
-   ![TODO](doc/configuration/configuration_create_webservice_1.png)
-   ![TODO](doc/configuration/configuration_create_webservice_2.png)
-   ![TODO](doc/configuration/configuration_create_webservice_3.png)
-2. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
-   service.
-   1. Navigate to `Site Administration` > `Server` (1) > `Web services` > `External services` (2)
-   2. Open the `Functions` page for the `quiz_archiver` webservice (3)
-   3. Click the `Add functions` link (4)
-   4. Search for `quiz_archiver` (5) and add all `quiz_archiver_*` functions
-   5. Save the changes by clicking `Add functions` (6)
+   5. Create the new webservice by clicking _Add service_ (8)
 
-   ![TODO](doc/configuration/configuration_assign_webservice_functions_1.png)
-   ![TODO](doc/configuration/configuration_assign_webservice_functions_2.png)
-   ![TODO](doc/configuration/configuration_assign_webservice_functions_3.png)
-   ![TODO](doc/configuration/configuration_assign_webservice_functions_4.png)
+   [![TODO](doc/configuration/configuration_create_webservice_1_thumb.png)](doc/configuration/configuration_create_webservice_1.png)
+   [![TODO](doc/configuration/configuration_create_webservice_2_thumb.png)](doc/configuration/configuration_create_webservice_2.png)
+   [![TODO](doc/configuration/configuration_create_webservice_3_thumb.png)](doc/configuration/configuration_create_webservice_3.png)
+
+2. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
+   service
+   1. Navigate to _Site Administration_ > _Server_ (1) > _Web services_ > _External services_ (2)
+   2. Open the _Functions_ page for the `quiz_archiver` webservice (3)
+   3. Click the _Add functions_ link (4)
+   4. Search for `quiz_archiver` (5) and add all `quiz_archiver_*` functions
+   5. Save the changes by clicking _Add functions_ (6)
+
+   [![TODO](doc/configuration/configuration_assign_webservice_functions_1_thumb.png)](doc/configuration/configuration_assign_webservice_functions_1.png)
+   [![TODO](doc/configuration/configuration_assign_webservice_functions_2_thumb.png)](doc/configuration/configuration_assign_webservice_functions_2.png)
+   [![TODO](doc/configuration/configuration_assign_webservice_functions_3_thumb.png)](doc/configuration/configuration_assign_webservice_functions_3.png)
+   [![TODO](doc/configuration/configuration_assign_webservice_functions_4_thumb.png)](doc/configuration/configuration_assign_webservice_functions_4.png)
 
 
 ### 4. Configure Plugin Settings
 
-1. Navigate to `Site Administration` > `Plugins` (1) > `Activity modules` >
-   `Quiz` > `Quiz Archiver` (2)
+1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
+   _Quiz_ > _Quiz Archiver_ (2)
 2. Set `worker_url` (3) to the URL under which the quiz archive worker can be
   reached (e.g., `http://quiz-archive-worker:5000` or `http://127.0.0.1:5000`)
 3. Select the previously created `quiz_archiver` webservice for `webservice_id` (4)
    from the drop-down menu
 4. Enter the user ID of the previously created Moodle user for `webservice_userid` (5).
-   This can easily be found by going to the users profile page and inspecting the
-   page URL. It contains the user ID as the `id` query parameter.
+   It can easily be found by navigating to the users profile page and inspecting
+   the page URL. It contains the user ID as the `id` query parameter.
 5. (Optional) Specify a custom job timeout in minutes
 6. (Optional) Specify a custom Moodle base URL. This is only required if you run
    the quiz archive worker in an internal/private network, e.g., when using
@@ -171,10 +173,10 @@ is mandatory for this plugin to work.
    replaced by the `internal_wwwroot` setting.
    Example: `https://your.public.moodle/` will be replaced by `http://moodle.local/`.
 7. Save all settings and create your first quiz archive (see [Usage](#usage)).
-8. (Optional) Adjust the default (capability)[#capabilities] assignments.
+8. (Optional) Adjust the default [capability](#capabilities) assignments.
 
-![TODO](doc/configuration/configuration_plugin_settings_1.png)
-![TODO](doc/configuration/configuration_plugin_settings_2.png)
+[![TODO](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
+[![TODO](doc/configuration/configuration_plugin_settings_2_thumb.png)](doc/configuration/configuration_plugin_settings_2.png)
 
 
 ### Known pitfalls
