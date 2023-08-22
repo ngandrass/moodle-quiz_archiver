@@ -1,7 +1,8 @@
 # Changelog
 
-## Version 0.5.0 (WIP, unreleased)
+## Version 0.5.0
 
+- **BREAKING:** API version updated to 3. Requires `moodle-quiz-archive-worker` >= v1.1.0
 - Add support for paper size selection to work together with new PDF export method
 - Provide XML definition for quiz archive user role
 - Create highly detailed configuration instructions
