@@ -107,8 +107,8 @@ is mandatory for this plugin to work.
       lastname (5), and a hidden email address (6)
    3. Create the user (7)
    
-   [![TODO](doc/configuration/configuration_create_moodle_user_1_thumb.png)](doc/configuration/configuration_create_moodle_user_1.png)
-   [![TODO](doc/configuration/configuration_create_moodle_user_2_thumb.png)](doc/configuration/configuration_create_moodle_user_2.png)
+   [![Screenshot: Configuration - Create Moodle User 1](doc/configuration/configuration_create_moodle_user_1_thumb.png)](doc/configuration/configuration_create_moodle_user_1.png)
+   [![Screenshot: Configuration - Create Moodle User 2](doc/configuration/configuration_create_moodle_user_2_thumb.png)](doc/configuration/configuration_create_moodle_user_2.png)
 
 2. Create a global role to handle permissions for the `quiz_archiver` Moodle user
    1. Navigate to _Site Administration_ > _Users_ (1) > _Permissions_ > _Define roles_ (2)
@@ -121,10 +121,10 @@ is mandatory for this plugin to work.
    5. Click on _Continue_ (6) to import the role definitions for review
    6. Optionally change the role name or description and create the role (7)
    
-   [![TODO](doc/configuration/configuration_create_role_1_thumb.png)](doc/configuration/configuration_create_role_1.png)
-   [![TODO](doc/configuration/configuration_create_role_2_thumb.png)](doc/configuration/configuration_create_role_2.png)
-   [![TODO](doc/configuration/configuration_create_role_3_thumb.png)](doc/configuration/configuration_create_role_3.png)
-   [![TODO](doc/configuration/configuration_create_role_4_thumb.png)](doc/configuration/configuration_create_role_4.png)
+   [![Screenshot: Configuration - Create Role 1](doc/configuration/configuration_create_role_1_thumb.png)](doc/configuration/configuration_create_role_1.png)
+   [![Screenshot: Configuration - Create Role 2](doc/configuration/configuration_create_role_2_thumb.png)](doc/configuration/configuration_create_role_2.png)
+   [![Screenshot: Configuration - Create Role 3](doc/configuration/configuration_create_role_3_thumb.png)](doc/configuration/configuration_create_role_3.png)
+   [![Screenshot: Configuration - Create Role 4](doc/configuration/configuration_create_role_4_thumb.png)](doc/configuration/configuration_create_role_4.png)
 
 3. Assign the `quiz_archiver` Moodle user to the created role
    1. Navigate to _Site Administration_ > _Users_ (1) > _Permissions_ > _Assign system roles_ (2)
@@ -132,24 +132,38 @@ is mandatory for this plugin to work.
    3. Search the created `quiz_archiver` Moodle user (4), select it in the list
       of potential users (5), and add it to the role (6)
    
-   [![TODO](doc/configuration/configuration_assign_role_1_thumb.png)](doc/configuration/configuration_assign_role_1.png)
-   [![TODO](doc/configuration/configuration_assign_role_2_thumb.png)](doc/configuration/configuration_assign_role_2.png)
-   [![TODO](doc/configuration/configuration_assign_role_3_thumb.png)](doc/configuration/configuration_assign_role_3.png)
+   [![Screenshot: Configuration - Assign Role 1](doc/configuration/configuration_assign_role_1_thumb.png)](doc/configuration/configuration_assign_role_1.png)
+   [![Screenshot: Configuration - Assign Role 2](doc/configuration/configuration_assign_role_2_thumb.png)](doc/configuration/configuration_assign_role_2.png)
+   [![Screenshot: Configuration - Assign Role 3](doc/configuration/configuration_assign_role_3_thumb.png)](doc/configuration/configuration_assign_role_3.png)
 
 
 ### 3. Setup Webservice
-1. Create an external webservice for the quiz archive worker to use
+
+1. Enable webservices globally
+   1. Navigate to _Site Administration_ > _Server_ (1) > _Web services_ > _Overview_ (2)
+   2. Click on _Enable web services_ (3), check the checkbox (4), and save the
+      changes (5)
+   3. Navigate back to the _Overview_ (2) page
+   4. Click on _Enable protocols_ (6), enable the _REST protocol_ (7), and save the
+      changes (8)
+   
+   [![Screenshot: Configuration - Enable Webservices 1](doc/configuration/configuration_enable_webservices_1_thumb.png)](doc/configuration/configuration_enable_webservices_1.png)
+   [![Screenshot: Configuration - Enable Webservices 2](doc/configuration/configuration_enable_webservices_2_thumb.png)](doc/configuration/configuration_enable_webservices_2.png)
+   [![Screenshot: Configuration - Enable Webservices 3](doc/configuration/configuration_enable_webservices_3_thumb.png)](doc/configuration/configuration_enable_webservices_3.png)
+   [![Screenshot: Configuration - Enable Webservices 4](doc/configuration/configuration_enable_webservices_4_thumb.png)](doc/configuration/configuration_enable_webservices_4.png)
+
+2. Create an external webservice for the quiz archive worker to use
    1. Navigate to _Site Administration_ > _Server_ (1) > _Web services_ > _External services_ (2)
    2. Under the _Custom services_ section, select _Add_ (3)
    3. Enter a name (e.g. `quiz_archiver`) (4) and enable it (5)
    4. Expand the additional settings (6), enable file up- and download (7)
    5. Create the new webservice by clicking _Add service_ (8)
 
-   [![TODO](doc/configuration/configuration_create_webservice_1_thumb.png)](doc/configuration/configuration_create_webservice_1.png)
-   [![TODO](doc/configuration/configuration_create_webservice_2_thumb.png)](doc/configuration/configuration_create_webservice_2.png)
-   [![TODO](doc/configuration/configuration_create_webservice_3_thumb.png)](doc/configuration/configuration_create_webservice_3.png)
+   [![Screenshot: Configuration - Create Webservice 1](doc/configuration/configuration_create_webservice_1_thumb.png)](doc/configuration/configuration_create_webservice_1.png)
+   [![Screenshot: Configuration - Create Webservice 2](doc/configuration/configuration_create_webservice_2_thumb.png)](doc/configuration/configuration_create_webservice_2.png)
+   [![Screenshot: Configuration - Create Webservice 3](doc/configuration/configuration_create_webservice_3_thumb.png)](doc/configuration/configuration_create_webservice_3.png)
 
-2. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
+3. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
    service
    1. Navigate to _Site Administration_ > _Server_ (1) > _Web services_ > _External services_ (2)
    2. Open the _Functions_ page for the `quiz_archiver` webservice (3)
@@ -157,10 +171,10 @@ is mandatory for this plugin to work.
    4. Search for `quiz_archiver` (5) and add all `quiz_archiver_*` functions
    5. Save the changes by clicking _Add functions_ (6)
 
-   [![TODO](doc/configuration/configuration_assign_webservice_functions_1_thumb.png)](doc/configuration/configuration_assign_webservice_functions_1.png)
-   [![TODO](doc/configuration/configuration_assign_webservice_functions_2_thumb.png)](doc/configuration/configuration_assign_webservice_functions_2.png)
-   [![TODO](doc/configuration/configuration_assign_webservice_functions_3_thumb.png)](doc/configuration/configuration_assign_webservice_functions_3.png)
-   [![TODO](doc/configuration/configuration_assign_webservice_functions_4_thumb.png)](doc/configuration/configuration_assign_webservice_functions_4.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 1](doc/configuration/configuration_assign_webservice_functions_1_thumb.png)](doc/configuration/configuration_assign_webservice_functions_1.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 2](doc/configuration/configuration_assign_webservice_functions_2_thumb.png)](doc/configuration/configuration_assign_webservice_functions_2.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 3](doc/configuration/configuration_assign_webservice_functions_3_thumb.png)](doc/configuration/configuration_assign_webservice_functions_3.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 4](doc/configuration/configuration_assign_webservice_functions_4_thumb.png)](doc/configuration/configuration_assign_webservice_functions_4.png)
 
 
 ### 4. Configure Plugin Settings
@@ -183,13 +197,14 @@ is mandatory for this plugin to work.
 7. Save all settings and create your first quiz archive (see [Usage](#usage)).
 8. (Optional) Adjust the default [capability](#capabilities) assignments.
 
-[![TODO](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
-[![TODO](doc/configuration/configuration_plugin_settings_2_thumb.png)](doc/configuration/configuration_plugin_settings_2.png)
+[![Screenshot: Configuration - Plugin Settings 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - Plugin Settings 2](doc/configuration/configuration_plugin_settings_2_thumb.png)](doc/configuration/configuration_plugin_settings_2.png)
 
 
 ### Known pitfalls
 
 - **Access to (some) webservice functions fails**
+  - Ensure that webservices and the REST protocol are enabled globally.
   - Ensure that all required webservice functions are enabled for the 
     `quiz_archiver` webservice.
   - Ensure that the `quiz_archiver` webservice has the rights to download and
