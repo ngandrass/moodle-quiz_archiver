@@ -1,6 +1,11 @@
 # Changelog
 
-## Version 0.5.0
+## Version 0.5.1 (2023082300)
+
+- Fix hard coded database table prefix error in job metadata access function
+
+
+## Version 0.5.0 (2023082200)
 
 - **BREAKING:** API version updated to 3. Requires `moodle-quiz-archive-worker` >= v1.1.0
 - Add support for paper size selection to work together with new PDF export method
@@ -8,7 +13,7 @@
 - Create highly detailed configuration instructions
 
 
-## Version 0.4.4
+## Version 0.4.4 (2023081400)
 
 - Create modal to display all information about an archive job
 - Display archive size in archive download button title
