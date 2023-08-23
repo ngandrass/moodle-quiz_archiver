@@ -220,10 +220,10 @@ class ArchiveJob {
             '    u.firstname AS userfirstname, u.lastname AS userlastname, u.username, '.
             '    c.fullname AS coursename, '.
             '    q.name as quizname '.
-            'FROM mdl_quiz_archiver_jobs AS j '.
-            '    LEFT JOIN mdl_user u ON j.userid = u.id '.
-            '    LEFT JOIN mdl_course c ON j.courseid = c.id '.
-            '    LEFT JOIN mdl_quiz q ON j.quizid = q.id '.
+            'FROM {quiz_archiver_jobs} AS j '.
+            '    LEFT JOIN {user} u ON j.userid = u.id '.
+            '    LEFT JOIN {course} c ON j.courseid = c.id '.
+            '    LEFT JOIN {quiz} q ON j.quizid = q.id '.
             'WHERE '.
             '    j.courseid = :courseid AND '.
             '    j.cmid = :cmid AND '.
