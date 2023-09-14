@@ -239,6 +239,32 @@ class Report {
     }
 
     /**
+     * Builds the section selection array based on the given archive quiz form
+     * data.
+     *
+     * @param object $archive_quiz_form_data Data object from a submitted archive_quiz_form
+     * @return array Associative array containing the selected sections for export
+     */
+    public static function build_report_sections_from_formdata(object $archive_quiz_form_data): array {
+        // Extract section settings from form data object
+        $report_sections = [];
+        foreach (Report::SECTIONS as $section) {
+            $report_sections[$section] = $archive_quiz_form_data->{'export_report_section_'.$section};
+        }
+
+        // Disable all sections that depend on a disabled section
+        foreach (Report::SECTION_DEPENDENCIES as $section => $dependencies) {
+            foreach ($dependencies as $dependency) {
+                if (!$report_sections[$dependency]) {
+                    $report_sections[$section] = 0;
+                }
+            }
+        }
+
+        return $report_sections;
+    }
+
+    /**
      * Generates a HTML representation of the quiz attempt
      *
      * @param int $attemptid ID of the attempt this report is for

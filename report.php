@@ -117,13 +117,9 @@ class quiz_archiver_report extends quiz_default_report {
             $job = null;
             try {
                 $formdata = $archive_quiz_form->get_data();
-                $report_sections = [];
-                foreach (Report::SECTIONS as $section) {
-                    $report_sections[$section] = $formdata->{'export_report_section_'.$section};
-                }
                 $job = $this->initiate_archive_job(
                     $formdata->export_attempts,
-                    $report_sections,
+                    Report::build_report_sections_from_formdata($formdata),
                     $formdata->export_attempts_paper_format,
                     $formdata->export_quiz_backup,
                     $formdata->export_course_backup
