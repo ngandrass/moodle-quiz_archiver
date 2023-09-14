@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.5.2 (2023091400)
+
+- Fix saving of archive settings for options that should be disabled because they depend on other report sections
+
+
 ## Version 0.5.1 (2023082300)
 
 - Fix hard coded database table prefix error in job metadata access function
