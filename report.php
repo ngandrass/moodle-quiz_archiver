@@ -193,9 +193,9 @@ class quiz_archiver_report extends quiz_default_report {
         require_capability('mod/quiz_archiver:archive', $this->context);
 
         // Create temporary webservice token
-        $wstoken = external_generate_token(
+        $wstoken = core_external\util::generate_token(
             EXTERNAL_TOKEN_PERMANENT,
-            $this->config->webservice_id,
+            core_external\util::get_service_by_id($this->config->webservice_id),
             $this->config->webservice_userid,
             context_system::instance(),
             time() + ($this->config->job_timeout_min * 60),
