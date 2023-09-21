@@ -24,7 +24,7 @@
 
 namespace quiz_archiver;
 
-use ZipStream\Option\Archive;
+use mod_quiz\quiz_attempt;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -285,11 +285,11 @@ class Report {
         $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
         $attempt = $attemptobj->get_attempt();
         $quiz = $attemptobj->get_quiz();
-        $options = \mod_quiz_display_options::make_from_quiz($this->quiz, quiz_attempt_state($quiz, $attempt));
+        $options = \mod_quiz\question\display_options::make_from_quiz($this->quiz, quiz_attempt_state($quiz, $attempt));
         $options->flags = quiz_get_flag_option($attempt, \context_module::instance($this->cm->id));
         $overtime = 0;
 
-        if ($attempt->state == \quiz_attempt::FINISHED) {
+        if ($attempt->state == quiz_attempt::FINISHED) {
             if ($timetaken = ($attempt->timefinish - $attempt->timestart)) {
                 if ($quiz->timelimit && $timetaken > ($quiz->timelimit + 60)) {
                     $overtime = $timetaken - $quiz->timelimit;
@@ -337,10 +337,10 @@ class Report {
 
             $quiz_header_data['state'] = array(
                 'title' => get_string('attemptstate', 'quiz'),
-                'content' => \quiz_attempt::state_name($attempt->state),
+                'content' => quiz_attempt::state_name($attempt->state),
             );
 
-            if ($attempt->state == \quiz_attempt::FINISHED) {
+            if ($attempt->state == quiz_attempt::FINISHED) {
                 $quiz_header_data['completedon'] = array(
                     'title' => get_string('completedon', 'quiz'),
                     'content' => userdate($attempt->timefinish),
@@ -368,7 +368,7 @@ class Report {
                     );
                 }
 
-                if ($attempt->state == \quiz_attempt::FINISHED) {
+                if ($attempt->state == quiz_attempt::FINISHED) {
                     // Show raw marks only if they are different from the grade (like on the view page).
                     if ($quiz->grade != $quiz->sumgrades) {
                         $a = new \stdClass();
