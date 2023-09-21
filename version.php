@@ -28,4 +28,6 @@ $plugin->component = 'quiz_archiver';
 $plugin->release = '0.5.2';
 $plugin->version = 2023091400;
 $plugin->requires = 2022112800;
+$plugin->supported = [400, 401];
+$plugin->incompatible = 402;
 $plugin->maturity = MATURITY_BETA;
