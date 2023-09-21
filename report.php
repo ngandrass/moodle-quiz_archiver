@@ -33,7 +33,7 @@ use quiz_archiver\output\job_overview_table;
 
 defined('MOODLE_INTERNAL') || die();
 
-class quiz_archiver_report extends quiz_default_report {
+class quiz_archiver_report extends report_base {
 
     /** @var object course object. */
     protected $course;
