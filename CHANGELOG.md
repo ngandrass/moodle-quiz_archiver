@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.6.0 (2023092101)
+
+- **BREAKING**: This version requires Moodle >= 4.2
+- Adapt to Moodle 4.2 API changes. See [Moodle 4.2 Developer Update](https://docs.moodle.org/dev/Moodle_4.2_release_notes#External_API_changes) for details.
+
+
 ## Version 0.5.3 (2023092100)
 
 - **WARNING**: This is the last version that supports Moodle 4.0 and 4.1. Future releases will require Moodle >= 4.2 due to External API changes.
