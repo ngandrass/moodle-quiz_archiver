@@ -86,12 +86,22 @@ $string['job_status_FAILED'] = 'Fehler';
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
 
 // Settings
+$string['setting_header_archive_worker'] = 'Archive Worker Service';
+$string['setting_header_archive_worker_desc'] = 'Konfiguration des Archive Worker Services und des Moodle Webservices.';
 $string['setting_header_docs_desc'] = 'Dieses Plugin archiviert Testversuche als PDF- und HTML-Dateien zur langfristigen Speicherung unabhängig von Moodle. Es <b>erfordert die Installation eines separaten <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">Archive Worker Services</a></b> um korrekt zu funktionieren. Die <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">Dokumentation</a> enthält alle notwendigen Informationen und Installationsanweisungen.';
+$string['setting_header_tsp'] = 'Signierung von Testarchiven';
+$string['setting_header_tsp_desc'] = 'Testarchive und der Zeitpunkt ihrer Erstellung können von einer vertrauenswürdigen Zertifizierungsstelle mithilfe des <a href="https://en.wikipedia.org/wiki/Time_stamp_protocol" target="_blank">Time-Stamp Protocol (TSP)</a> gemäß <a href="https://www.ietf.org/rfc/rfc3161.txt" target="_blank">RFC 3161</a> digital signiert werden. Diese Signaturen können verwendet werden, um die Datenintegrität und den Zeitpunkt der Archivierung zu einem späteren Zeitpunkt kryptografisch nachzuweisen. Testarchive können automatisch bei der Erstellung oder nachträglich manuell signiert werden.';
 $string['setting_internal_wwwroot'] = 'Eigene Moodle Basis-URL';
 $string['setting_internal_wwwroot_desc'] = 'Überschreibt die Moodle Basis-URL (<code>$CFG->wwwroot</code>) in den erzeugten Versuchs-Berichten. Dies kann nützlich sein, wenn der Archive Worker Service innerhalb eines privaten Netzwerks (z.B. Docker) läuft und er über das private Netzwerk auf Moodle zugreifen soll.<br/>Beispiel: <code>http://moodle/</code>';
 $string['setting_job_timeout_min'] = 'Auftrags Zeitlimit (Minuten)';
 $string['setting_job_timeout_min_desc'] = 'The number of minutes a single archive job is allowed to run before it is aborted by Moodle. Job web service access tokens become invalid after this timeout.';
 $string['setting_job_timeout_min_desc'] = 'Die maximale Laufzeit eines einzelnen Archivierungsauftrags in Minuten, bevor er durch Moodle abgebrochen wird. Das Webservice Zugriffstoken des Auftrags wird nach diesem Zeitlimit invalidiert.';
+$string['setting_tsp_automatic_signing'] = 'Testarchive automatisch signieren';
+$string['setting_tsp_automatic_signing_desc'] = 'Testarchive automatisch bei der Erstellung signieren.';
+$string['setting_tsp_enable'] = 'Signierung aktivieren';
+$string['setting_tsp_enable_desc'] = 'Erlaubt die Signierung von Testarchiven mithilfe des Time-Stamp Protocols (TSP).';
+$string['setting_tsp_server_url'] = 'TSP server URL';
+$string['setting_tsp_server_url_desc'] = 'URL des Time-Stamp Protocol (TSP) Servers, der für die Signierung von Testarchiven genutzt wird.<br/>Beispiele: <code>https://freetsa.org/tsr</code>, <code>https://zeitstempel.dfn.de</code>, <code>http://timestamp.digicert.com</code>';
 $string['setting_webservice_desc'] = 'Der externe Service, welcher alle <code>quiz_archiver_*</code> Funktionen ausführen darf. Er muss ebenfalls die Berechtigung haben, Dateien hoch- und herunterzuladen.';
 $string['setting_webservice_userid'] = 'Webservice Nutzer-ID';
 $string['setting_webservice_userid_desc'] = 'User-ID des Moodle Nutzers, der vom Archive Worker Service genutzt wird, um auf Testdaten zuzugreifen. Er muss alle Berechtigungen besitzen, die in der <a href="https://github.com/ngandrass/moodle-quiz_archiver#configuration" target="_blank">Dokumentation</a> aufgelistet sind, um korrekt zu funktionieren. Aus Sicherheitsgründen sollte dies ein dedizierter Nutzer ohne globale Administrationsrechte sein.';

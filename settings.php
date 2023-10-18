@@ -32,11 +32,17 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
-        $settings->add(new admin_setting_heading(
-            'quiz_archiver/header_docs',
+        // Descriptive text
+        $settings->add(new admin_setting_heading('quiz_archiver/header_docs',
             null,
-            get_string('setting_header_docs_desc', 'quiz_archiver'))
-        );
+            get_string('setting_header_docs_desc', 'quiz_archiver')
+        ));
+
+        // Generic settings
+        $settings->add(new admin_setting_heading('quiz_archiver/header_archive_worker',
+            get_string('setting_header_archive_worker', 'quiz_archiver'),
+            get_string('setting_header_archive_worker_desc', 'quiz_archiver')
+        ));
 
         $settings->add(new admin_setting_configtext('quiz_archiver/worker_url',
             get_string('setting_worker_url', 'quiz_archiver'),
@@ -71,6 +77,31 @@ if ($hassiteconfig) {
             get_string('setting_internal_wwwroot_desc', 'quiz_archiver'),
             '',
             PARAM_TEXT
+        ));
+
+        // Time-Stamp Protocol settings
+        $settings->add(new admin_setting_heading('quit_archiver/header_tsp',
+            get_string('setting_header_tsp', 'quiz_archiver'),
+            get_string('setting_header_tsp_desc', 'quiz_archiver')
+        ));
+
+        $settings->add(new admin_setting_configcheckbox('quiz_archiver/tsp_enable',
+            get_string('setting_tsp_enable', 'quiz_archiver'),
+            get_string('setting_tsp_enable_desc', 'quiz_archiver'),
+            '0'
+        ));
+
+        $settings->add(new admin_setting_configcheckbox('quiz_archiver/tsp_automatic_signing',
+            get_string('setting_tsp_automatic_signing', 'quiz_archiver'),
+            get_string('setting_tsp_automatic_signing_desc', 'quiz_archiver'),
+            '1'
+        ));
+
+        $settings->add(new admin_setting_configtext('quiz_archiver/tsp_server_url',
+            get_string('setting_tsp_server_url', 'quiz_archiver'),
+            get_string('setting_tsp_server_url_desc', 'quiz_archiver'),
+            'https://freetsa.org/tsr',
+            PARAM_URL
         ));
 
     }

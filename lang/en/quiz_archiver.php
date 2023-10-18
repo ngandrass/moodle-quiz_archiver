@@ -86,11 +86,21 @@ $string['job_status_FAILED'] = 'Failed';
 $string['job_status_TIMEOUT'] = 'Timeout';
 
 // Settings
+$string['setting_header_archive_worker'] = 'Archive Worker Service';
+$string['setting_header_archive_worker_desc'] = 'Configuration of the archive worker service and the Moodle web service it uses.';
 $string['setting_header_docs_desc'] = 'This plugin archives quiz attempts as PDF and HTML files for long-term storage, independent of Moodle. It <b>requires a separate <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">worker service</a></b> to be installed for the actual archiving process to work. Please refer to the <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">documentation</a> for more details and setup instructions.';
+$string['setting_header_tsp'] = 'Archive Signing';
+$string['setting_header_tsp_desc'] = 'Quiz archives and their creation date can be digitally signed by a trusted authority using the <a href="https://en.wikipedia.org/wiki/Time_stamp_protocol" target="_blank">Time-Stamp Protocol (TSP)</a> according to <a href="https://www.ietf.org/rfc/rfc3161.txt" target="_blank">RFC 3161</a>. This can be used to cryptographically prove the integrity and creation date of the archive at a later point in time. Quiz archives can be signed automatically at creation or manually later on.';
 $string['setting_internal_wwwroot'] = 'Custom Moodle base URL';
 $string['setting_internal_wwwroot_desc'] = 'Overwrites the default Moodle base URL (<code>$CFG->wwwroot</code>) inside generated reports. This can be useful if you are running the archive worker service inside a private network (e.g., Docker) and want it to access Moodle directly.<br/>Example: <code>http://moodle/</code>';
 $string['setting_job_timeout_min'] = 'Job timeout (minutes)';
 $string['setting_job_timeout_min_desc'] = 'The number of minutes a single archive job is allowed to run before it is aborted by Moodle. Job web service access tokens become invalid after this timeout.';
+$string['setting_tsp_automatic_signing'] = 'Automatically sign quiz archives';
+$string['setting_tsp_automatic_signing_desc'] = 'Automatically sign quiz archives when they are created.';
+$string['setting_tsp_enable'] = 'Enable quiz archive signing';
+$string['setting_tsp_enable_desc'] = 'Allow quiz archives to be signed using the Time-Stamp Protocol (TSP).';
+$string['setting_tsp_server_url'] = 'TSP server URL';
+$string['setting_tsp_server_url_desc'] = 'URL of the Time-Stamp Protocol (TSP) server to use.<br/>Examples: <code>https://freetsa.org/tsr</code>, <code>https://zeitstempel.dfn.de</code>, <code>http://timestamp.digicert.com</code>';
 $string['setting_webservice_desc'] = 'The webservice that is allowed to execute all <code>quiz_archiver_*</code> webservice functions. It must also have permission to up- and download files.';
 $string['setting_webservice_userid'] = 'Web service user-ID';
 $string['setting_webservice_userid_desc'] = 'User-ID of the Moodle user that is used by the archive worker service to access quiz data. It must have all capabilities that are listed in the <a href="https://github.com/ngandrass/moodle-quiz_archiver#configuration" target="_blank">documentation</a> to work properly. For security reasons, this should be a dedicated user account without full administrative privileges.';
