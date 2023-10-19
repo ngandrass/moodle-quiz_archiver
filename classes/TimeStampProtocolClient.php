@@ -49,14 +49,22 @@ class TimeStampProtocolClient {
     }
 
     /**
-     * Signs the given binary SHA256 hash using the Time-Stamp Protocol.
+     * @return string URL of the TSP server
+     */
+    public function get_server_url() {
+        return $this->server_url;
+    }
+
+    /**
+     * Signs the given hexadecimal SHA256 hash using the Time-Stamp Protocol
      *
-     * @param string $sha256hash Binary SHA256 hash of the data to be signed
-     * @return string ASN.1 encoded TimeStampResp
+     * @param string $sha256hash Hexadecimal SHA256 hash of the data to be signed
+     * @return array Associative array containing the binary ASN.1/DER encoded
+     *               TimeStampRequest and the TimeStampReply
      * @throws \Exception If an error occurs while sending the request or
      *                    invalid data was received
      */
-    public function sign(string $sha256hash): string {
+    public function sign(string $sha256hash): array {
         // Prepare TimeStampRequest
         $nonce = self::generateNonce();
         $tsreq = self::createTimeStampReq($sha256hash, $nonce);
@@ -106,13 +114,16 @@ class TimeStampProtocolClient {
             throw new \Exception('TSP server returned unexpected content type ' . $curl_info['content_type']);
         }
 
-        return $tsresp;
+        return [
+            'query' => $tsreq,
+            'reply' => $tsresp
+        ];
     }
 
     /**
-     * Generates a 64-bit nonce.
+     * Generates a 128-bit nonce.
      *
-     * @return string 64-bit nonce
+     * @return string 128-bit nonce
      * @throws \Exception If an appropriate source of randomness cannot be found.
      */
     public static function generateNonce(): string {
@@ -125,16 +136,16 @@ class TimeStampProtocolClient {
      * @see https://github.com/edoceo/radix-rfc3161 This code is largely based
      * on the implementation of Edoceo, Inc. (Licensed under the MIT License)
      *
-     * @param string $sha256hash Binary SHA256 hash of the data to be signed
-     * @param string $nonce 64-bit nonce to be used in the TimeStampReq
+     * @param string $sha256hash Hexadecimal SHA256 hash of the data to be signed
+     * @param string $nonce 128-bit nonce to be used in the TimeStampReq
      * @param bool $requestTSAPublicKey Whether to request the TSA's public key
      * @return string ASN.1 encoded TimeStampReq
      * @throws \ValueError If the SHA256 hash or nonce are invalid
      */
     protected static function createTimeStampReq(string $sha256hash, string $nonce, bool $requestTSAPublicKey = false): string {
         // Validate input
-        if (strlen($sha256hash) !== 32) {
-            throw new \ValueError('Invalid binary SHA256 hash');
+        if (strlen($sha256hash) !== 64) {
+            throw new \ValueError('Invalid hexadecimal SHA256 hash');
         }
         if (strlen($nonce) !== 16) {
             throw new \ValueError('Invalid nonce');
@@ -159,7 +170,7 @@ class TimeStampProtocolClient {
             . chr(0x05) . chr(0x00); // OID Terminator == NULL + Length (0x00)
 
         // -> MessageImprint / Hash Value, Length 0x40
-        $asn1[5] = chr(0x04) . chr(0x20) . $sha256hash; // OCTET STRING 0x42 == 32 Bytes (SHA256) + Hash value
+        $asn1[5] = chr(0x04) . chr(0x20) . hex2bin($sha256hash); // OCTET STRING 0x42 == 32 Bytes (SHA256) + Hash value
 
         // -> Nonce
         $asn1[] = chr(0x02) . chr(0x10) . $nonce; // INTEGER + Length (16 bytes) + nonce value
