@@ -142,6 +142,19 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
+        // Timestamp artifact file using TSP
+        if ($job->TSPManager()->wants_tsp_timestamp()) {
+            try {
+                $job->TSPManager()->timestamp();
+            } catch (\Exception $e) {
+                // TODO: Fail silently for now ...
+                // $job->set_status(ArchiveJob::STATUS_FAILED);
+                // return [
+                //     'status' => 'E_TSP_TIMESTAMP_FAILED'
+                // ];
+            }
+        }
+
         // Report success
         $job->set_status(ArchiveJob::STATUS_FINISHED);
         return [

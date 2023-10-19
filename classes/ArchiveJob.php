@@ -45,6 +45,9 @@ class ArchiveJob {
     /** @var string The webservice token that is allowed to write to this job via API */
     protected string $wstoken;
 
+    /** @var ?TSPManager A Time-Stamp Protocol (TSP) manager associated with this class */
+    protected ?TSPManager $tspManager;
+
     /** @var string Name of the job status table */
     const JOB_TABLE_NAME = 'quiz_archiver_jobs';
     /** @var string Name of the table to store temporary file associations */
@@ -82,6 +85,21 @@ class ArchiveJob {
         $this->user_id = $user_id;
         $this->timecreated = $timecreated;
         $this->wstoken = $wstoken;
+        $this->tspManager = null; // Lazy initialization
+    }
+
+    /**
+     * Provides access to the TSPManager for this ArchiveJob
+     *
+     * @return TSPManager The TSPManager for this ArchiveJob
+     * @throws \dml_exception If the plugin config could not be loaded
+     */
+    public function TSPManager(): TSPManager {
+        if ($this->tspManager == null) {
+            $this->tspManager = new TSPManager($this);
+        }
+
+        return $this->tspManager;
     }
 
     /**
@@ -399,6 +417,13 @@ class ArchiveJob {
     }
 
     /**
+     * @return int Internal database ID of this job
+     */
+    public function get_id(): int {
+        return $this->id;
+    }
+
+    /**
      * @return string UUID of the job, as assigned by the archive worker
      */
     public function get_jobid(): string {
@@ -537,6 +562,18 @@ class ArchiveJob {
             if (!$file) return null;
 
             return get_file_storage()->get_file_by_hash($file->pathnamehash);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * @return string|null Artifact file SHA256 checksum if present, else null
+     */
+    public function get_artifact_checksum(): ?string {
+        global $DB;
+        try {
+            return (string) $DB->get_field(self::JOB_TABLE_NAME, 'artifactfilechecksum', ['id' => $this->id], MUST_EXIST);
         } catch (\Exception $e) {
             return null;
         }
