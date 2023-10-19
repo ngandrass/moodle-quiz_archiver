@@ -198,7 +198,7 @@
             {{/tsp}}
             {{^tsp}}
                 {{#str}} archive_not_signed, quiz_archiver {{/str}}.
-                <a href="#">{{#str}} sign_archive, quiz_archiver {{/str}} (TODO!)</a>
+                <a href="{{{action_urls.sign}}}">{{#str}} sign_archive, quiz_archiver {{/str}}</a>
             {{/tsp}}
         </td>
     </tr>
@@ -216,6 +216,14 @@
                     <li class="list-group-item">{{#str}} not_signed, quiz_archiver {{/str}}</li>
                 {{/settings}}
             </ul>
+        </td>
+    </tr>
+    <tr>
+        <td class="border-top-0 py-0"></td>
+        <td class="border-top-0 py-0 text-right">
+            <a href="{{{action_urls.delete}}}" class="btn btn-danger mx-1" role="button" alt="{{#str}} delete {{/str}}">
+                {{#str}} delete {{/str}}
+            </a>
         </td>
     </tr>
 </table>

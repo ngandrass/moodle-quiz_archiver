@@ -101,6 +101,13 @@ class quiz_archiver_report extends report_base {
             }
         }
 
+        // Handle job sign form
+        if (optional_param('action', null, PARAM_TEXT) === 'sign_job') {
+            // TODO: Implement me ;)
+            echo "Sorry, this feature is not implemented yet. Please check back later.";
+            return true;
+        }
+
         // Determine page to display
         if (!quiz_has_questions($quiz->id)) {
             $tplCtx['quizHasNoQuestionsWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
@@ -155,10 +162,28 @@ class quiz_archiver_report extends report_base {
             $tplCtx['jobOverviewTable'] = $jobtbl_html;
 
             // Prepare job metadata for job detail modals
-            $tplCtx['jobs'] = array_map(fn($jm): array => [
-                'jobid' => $jm['jobid'],
-                'json' => json_encode($jm)
-            ], ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
+            $tplCtx['jobs'] = array_map(function($jm): array {
+                // Generate action URLs
+                $jm['action_urls'] = [
+                    'delete' => (new moodle_url($this->base_url(), [
+                        'id' => optional_param('id', null, PARAM_INT),
+                        'mode' => 'archiver',
+                        'action' => 'delete_job',
+                        'jobid' => $jm['jobid']
+                    ]))->out(),
+                    'sign' => (new moodle_url('', [
+                        'id' => optional_param('id', null, PARAM_INT),
+                        'mode' => 'archiver',
+                        'action' => 'sign_job',
+                        'jobid' => $jm['jobid']
+                    ]))->out()
+                ];
+
+                return [
+                    'jobid' => $jm['jobid'],
+                    'json' => json_encode($jm)
+                ];
+            }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
         }
 
         // Housekeeping for jobs associated with this quiz
