@@ -152,6 +152,28 @@ class ArchiveJob {
     }
 
     /**
+     * Tries to retrieve an ArchiveJob by its internal ID
+     *
+     * @param int $id Internal ID of the job to query for
+     * @return ArchiveJob if found
+     * @throws \dml_exception if not found
+     */
+    public static function get_by_id(int $id): ArchiveJob {
+        global $DB;
+        $jobdata = $DB->get_record(self::JOB_TABLE_NAME, ['id' => $id], '*', MUST_EXIST);
+        return new ArchiveJob(
+            $jobdata->id,
+            $jobdata->jobid,
+            $jobdata->courseid,
+            $jobdata->cmid,
+            $jobdata->quizid,
+            $jobdata->userid,
+            $jobdata->timecreated,
+            $jobdata->wstoken
+        );
+    }
+
+    /**
      * Tries to retrieve an ArchiveJob by its UUID.
      *
      * @param string $jobid UUID to query for
@@ -235,10 +257,12 @@ class ArchiveJob {
         $records = $DB->get_records_sql(
             'SELECT '.
             '    j.*, '.
+            '    tsp.timecreated as tsp_timecreated, tsp.server AS tsp_server,'.
             '    u.firstname AS userfirstname, u.lastname AS userlastname, u.username, '.
             '    c.fullname AS coursename, '.
             '    q.name as quizname '.
             'FROM {quiz_archiver_jobs} AS j '.
+            '    LEFT JOIN {quiz_archiver_tsp} AS tsp ON j.id = tsp.jobid '.
             '    LEFT JOIN {user} u ON j.userid = u.id '.
             '    LEFT JOIN {course} c ON j.courseid = c.id '.
             '    LEFT JOIN {quiz} q ON j.quizid = q.id '.
@@ -279,6 +303,33 @@ class ArchiveJob {
                 }
             }
 
+            // Prepate TSP data
+            $tspdata = null;
+            if ($j->tsp_timecreated) {
+                $tspdata = [
+                    'timecreated' => $j->tsp_timecreated,
+                    'server' => $j->tsp_server,
+                    'queryfiledownloadurl' => \moodle_url::make_pluginfile_url(
+                        $artifactfile->get_contextid(),
+                        $artifactfile->get_component(),
+                        FileManager::TSP_DATA_FILEAREA_NAME,
+                        0,
+                        $artifactfile->get_filepath()."{$j->id}/",
+                        FileManager::TSP_DATA_QUERY_FILENAME,
+                        true
+                    )->out(),
+                    'replyfiledownloadurl' => \moodle_url::make_pluginfile_url(
+                        $artifactfile->get_contextid(),
+                        $artifactfile->get_component(),
+                        FileManager::TSP_DATA_FILEAREA_NAME,
+                        0,
+                        $artifactfile->get_filepath()."{$j->id}/",
+                        FileManager::TSP_DATA_REPLY_FILENAME,
+                        true
+                    )->out()
+                ];
+            }
+
             // Build job metadata array
             return [
                 'id' => $j->id,
@@ -303,6 +354,7 @@ class ArchiveJob {
                     'name' => $j->quizname
                 ],
                 'artifactfile' => $artifactfile_metadata,
+                'tsp' => $tspdata,
                 'settings' => self::convert_archive_settings_for_display(
                     (new self($j->id, '', -1, -1, -1, -1, -1, ''))->get_settings()
                 ),
