@@ -41,6 +41,7 @@ use quiz_archiver\FileManager;
  *
  * @throws coding_exception
  * @throws required_capability_exception
+ * @throws moodle_exception
  */
 function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     // Check permissions.
@@ -52,16 +53,26 @@ function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $for
     // Validate course
     if ($args[1] !== $course->id) {
         send_file_not_found();
-        return false;
     }
 
     // Try to serve file
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
     $fullpath = "/$context->id/".FileManager::COMPONENT_NAME."/$filearea/$relativepath";
+
+    // Catch virtual files
+    if (FileManager::filearea_is_virtual($filearea)) {
+        try {
+            $fm = new FileManager($args[1], $args[2], $args[3]);
+            $fm->send_virtual_file($filearea, $relativepath);
+        } catch (Exception $e) {
+            send_file_not_found();
+        }
+    }
+
+    // Try to serve physical files
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         send_file_not_found();
-        return false;
     }
 
     send_stored_file($file, 0, 0, $forcedownload, $options);

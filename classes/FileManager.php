@@ -41,6 +41,12 @@ class FileManager {
     const COMPONENT_NAME = 'quiz_archiver';
     /** @var string Name of the filearea all artifact files should be stored in */
     const ARTIFACTS_FILEAREA_NAME = 'artifact';
+    /** @var string Name of the virtual filearea all TSP files are served from */
+    const TSP_DATA_FILEAREA_NAME = 'tspdata';
+    /** @var string Name of the virtual TSP query file */
+    const TSP_DATA_QUERY_FILENAME = 'timestampquery';
+    /** @var string Name of the virtual TSP reply file */
+    const TSP_DATA_REPLY_FILENAME = 'timestampreply';
 
     /** @var int ID of the course this FileManager is associated with */
     protected int $course_id;
@@ -190,6 +196,117 @@ class FileManager {
         }
 
         return hash_final($hash_ctx);
+    }
+
+    /**
+     * Determines if the given filearea is virtual
+     *
+     * @param string $filearea Name of a filearea to check
+     * @return bool True if the given filearea is virtual
+     */
+    public static function filearea_is_virtual(string $filearea): bool {
+        switch ($filearea) {
+            case self::TSP_DATA_FILEAREA_NAME:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Send the requested virtual file to the client
+     *
+     * @param string $filearea Name of a valid virtual filearea
+     * @param string $relativepath Relative path to the requested file, depending
+     *                             on the virtual filearea
+     * @return void
+     */
+    public function send_virtual_file(string $filearea, string $relativepath): void {
+        if (!self::filearea_is_virtual($filearea)) {
+            throw new \InvalidArgumentException("Filearea must be virtual");
+        }
+
+        switch ($filearea) {
+            case self::TSP_DATA_FILEAREA_NAME:
+                $this->send_virtual_file_tsp($relativepath);
+                break;
+            default:
+                throw new \InvalidArgumentException("Invalid filearea {$filearea}");
+        }
+    }
+
+    /**
+     * Sends a virtual TSP file to the client
+     *
+     * @param string $relativepath Relative path to the requested file, following
+     *                             the pattern: /<courseid>/<cmid>/<quizid>/<jobid>/<filename>
+     * @return void
+     * @throws \dml_exception On database error
+     */
+    protected function send_virtual_file_tsp(string $relativepath): void {
+        // Validate relativepath
+        $args = explode('/', $relativepath);
+        if (count($args) !== 6) {
+            throw new \InvalidArgumentException("Invalid relativepath {$relativepath}");
+        }
+
+        $courseid = $args[1];
+        $cmid = $args[2];
+        $quizid = $args[3];
+        $jobid = $args[4];
+        $filename = $args[5];
+
+        if (!is_numeric($jobid)) {
+            throw new \InvalidArgumentException("Invalid jobid {$jobid}");
+        }
+
+        if ($filename !== FileManager::TSP_DATA_QUERY_FILENAME && $filename !== FileManager::TSP_DATA_REPLY_FILENAME) {
+            throw new \InvalidArgumentException("Invalid filename {$filename}");
+        }
+
+        // Get requested data from DB
+        $job = ArchiveJob::get_by_id($jobid);
+        if (!$job) {
+            throw new \InvalidArgumentException("Job with ID {$jobid} not found");
+        }
+
+        if ($courseid != $job->get_course_id() || $cmid != $job->get_cm_id() || $quizid != $job->get_quiz_id()) {
+            throw new \InvalidArgumentException("Invalid resource id in {$relativepath}");
+        }
+
+        $tspdata = $job->TSPManager()->get_tsp_data();
+        if (!$tspdata) {
+            throw new \InvalidArgumentException("No TSP data found for job with ID {$jobid}");
+        }
+
+        // Get requested file contents
+        switch ($filename) {
+            case FileManager::TSP_DATA_QUERY_FILENAME:
+                $filecontents = $tspdata->query;
+                $downloadfilename = "{$job->get_artifact_checksum()}.tsq";
+                break;
+            case FileManager::TSP_DATA_REPLY_FILENAME:
+                $filecontents = $tspdata->reply;
+                $downloadfilename = "{$job->get_artifact_checksum()}.tsr";
+                break;
+            default:
+                throw new \InvalidArgumentException("Invalid filename {$filename}");
+        }
+
+        // Send file to the client
+        \core\session\manager::write_close(); // Unlock session during file serving.
+        ob_clean();
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="'.$downloadfilename.'"');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, no-transform');
+        header('Pragma: no-cache');
+        header('Content-Length: '.strlen($filecontents));
+        echo $filecontents;
+        ob_flush();
+        die;
     }
 
 }

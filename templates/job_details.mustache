@@ -53,6 +53,10 @@
           "size_human":"82.89 MB",
           "checksum":"3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
         },
+        "tsp":[
+            "timecreated":1690805384,
+            "server":"https://example.com/tsr"
+        ],
         "settings":[
             {
                 "title":"Demo Title 1",
@@ -92,6 +96,7 @@
           "name":"Example Quiz"
         },
         "artifactfile":null,
+        "tsp":null,
         "settings":[
             {
                 "title":"Demo Title 1",
@@ -170,6 +175,19 @@
         </td>
     </tr>
     <tr>
+        <td class="align-middle">{{#str}} archive_signature, quiz_archiver {{/str}}</td>
+        <td>
+            {{#tsp}}
+                Signed on {{tsp.timecreated}} by {{tsp.server}}<br>
+                <a href="{{tsp.queryfiledownloadurl}}" target="_blank">query</a><br>
+                <a href="{{tsp.replyfiledownloadurl}}" target="_blank">reply</a><br>
+            {{/tsp}}
+            {{^tsp}}
+                {{#str}} notavailable {{/str}}
+            {{/tsp}}
+        </td>
+    </tr>
+    <tr>
         <td class="align-middle">{{#str}} settings {{/str}}</td>
         <td>
             <ul class="list-group small">
@@ -180,7 +198,7 @@
                     </li>
                 {{/settings}}
                 {{^settings}}
-                    <li class="list-group-item">{{#str}} notavailable {{/str}}</li>
+                    <li class="list-group-item">{{#str}} not_signed, quiz_archiver {{/str}}</li>
                 {{/settings}}
             </ul>
         </td>
