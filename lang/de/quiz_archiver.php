@@ -85,6 +85,15 @@ $string['job_status_FINISHED'] = 'Fertig';
 $string['job_status_FAILED'] = 'Fehler';
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
 
+// Job details
+$string['archive_not_signed'] = 'Testarchiv ist nicht signiert';
+$string['archive_signature'] = 'Signatur';
+$string['sign_archive'] = 'Testarchiv jetzt signieren';
+$string['signed_on'] = 'Signiert am';
+$string['signed_by'] = 'von';
+$string['tsp_query_filename'] = 'query.tsq';
+$string['tsp_reply_filename'] = 'reply.tsr';
+
 // Settings
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Konfiguration des Archive Worker Services und des Moodle Webservices.';

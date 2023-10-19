@@ -165,7 +165,11 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><a href="{{{artifactfile.downloadurl}}}" target="_blank">{{#str}} downloadfile {{/str}}</a></td>
+                        <td>
+                            <a href="{{{artifactfile.downloadurl}}}" target="_blank">
+                                {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} downloadfile {{/str}}
+                            </a>
+                        </td>
                     </tr>
                 </table>
             {{/artifactfile}}
@@ -178,12 +182,23 @@
         <td class="align-middle">{{#str}} archive_signature, quiz_archiver {{/str}}</td>
         <td>
             {{#tsp}}
-                Signed on {{tsp.timecreated}} by {{tsp.server}}<br>
-                <a href="{{tsp.queryfiledownloadurl}}" target="_blank">query</a><br>
-                <a href="{{tsp.replyfiledownloadurl}}" target="_blank">reply</a><br>
+                {{#str}} signed_on, quiz_archiver {{/str}}
+                <pre style="display: inline;">{{#userdate}} {{tsp.timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</pre>
+                {{#str}} signed_by, quiz_archiver {{/str}}
+                <pre style="display: inline;">{{tsp.server}}</pre>
+                <br>
+                {{#str}} download {{/str}}:
+                <a href="{{tsp.queryfiledownloadurl}}" target="_blank">
+                    {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} tsp_query_filename, quiz_archiver {{/str}}
+                </a>
+                &nbsp;&ndash;&nbsp;
+                <a href="{{tsp.replyfiledownloadurl}}" target="_blank">
+                    {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} tsp_reply_filename, quiz_archiver {{/str}}
+                </a>
             {{/tsp}}
             {{^tsp}}
-                {{#str}} notavailable {{/str}}
+                {{#str}} archive_not_signed, quiz_archiver {{/str}}.
+                <a href="#">{{#str}} sign_archive, quiz_archiver {{/str}} (TODO!)</a>
             {{/tsp}}
         </td>
     </tr>

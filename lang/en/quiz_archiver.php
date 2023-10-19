@@ -85,6 +85,15 @@ $string['job_status_FINISHED'] = 'Finished';
 $string['job_status_FAILED'] = 'Failed';
 $string['job_status_TIMEOUT'] = 'Timeout';
 
+// Job details
+$string['archive_not_signed'] = 'Archive is unsigned';
+$string['archive_signature'] = 'Signature';
+$string['sign_archive'] = 'Sign archive now';
+$string['signed_on'] = 'Signed on';
+$string['signed_by'] = 'by';
+$string['tsp_query_filename'] = 'query.tsq';
+$string['tsp_reply_filename'] = 'reply.tsr';
+
 // Settings
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Configuration of the archive worker service and the Moodle web service it uses.';
