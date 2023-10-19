@@ -88,18 +88,23 @@ class TSPManager {
     /**
      * Returns the TSP data for the associated ArchiveJob.
      *
-     * @return ?array TSP data for the associated ArchiveJob or null if no TSP
+     * @return ?\stdClass TSP data for the associated ArchiveJob or null if no TSP
      *                data was found
      * @throws \dml_exception On database error
      */
-    public function get_tsp_data(): ?array {
+    public function get_tsp_data(): ?\stdClass {
         global $DB;
 
         $tspdata = $DB->get_record(self::TSP_TABLE_NAME, [
             'jobid' => $this->job->get_id()
         ]);
 
-        return ($tspdata !== false) ? $tspdata : null;
+        return ($tspdata !== false) ? (object) [
+            'server' => $tspdata->server,
+            'timecreated' => $tspdata->timecreated,
+            'query' => $tspdata->timestampquery,
+            'reply' => $tspdata->timestampreply
+        ] : null;
     }
 
     /**
