@@ -100,18 +100,15 @@ class TimeStampProtocolClient {
 
         // Error handling
         if ($curl_error !== null) {
-            // TODO: Localize
-            throw new \Exception('Error while sending request to TSP server: ' . $curl_error);
+            throw new \Exception(get_string('tsp_client_error_curl', 'quiz_archiver', $curl_error));
         }
 
         if ($curl_info['http_code'] !== 200) {
-            // TODO: Localize
-            throw new \Exception('TSP server returned HTTP status code ' . $curl_info['http_code']);
+            throw new \Exception(get_string('tsp_client_error_http_code', 'quiz_archiver', $curl_info['http_code']));
         }
 
         if ($curl_info['content_type'] !== self::CONTENT_TYPE_TIMESTAMP_REPLY) {
-            // TODO: Localize
-            throw new \Exception('TSP server returned unexpected content type ' . $curl_info['content_type']);
+            throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curl_info['content_type']));
         }
 
         return [

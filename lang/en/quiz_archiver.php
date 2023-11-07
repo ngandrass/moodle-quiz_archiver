@@ -100,6 +100,11 @@ $string['signed_by'] = 'by';
 $string['tsp_query_filename'] = 'query.tsq';
 $string['tsp_reply_filename'] = 'reply.tsr';
 
+// TimeStampProtocolClient
+$string['tsp_client_error_content_type'] = 'TSP server returned unexpected content type {$a}';
+$string['tsp_client_error_curl'] = 'Error while sending TSP request: {$a}';
+$string['tsp_client_error_http_code'] = 'TSP server returned HTTP status code {$a}';
+
 // Settings
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Configuration of the archive worker service and the Moodle web service it uses.';

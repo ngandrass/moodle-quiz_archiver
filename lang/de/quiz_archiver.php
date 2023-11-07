@@ -100,6 +100,11 @@ $string['signed_by'] = 'von';
 $string['tsp_query_filename'] = 'query.tsq';
 $string['tsp_reply_filename'] = 'reply.tsr';
 
+// TimeStampProtocolClient
+$string['tsp_client_error_content_type'] = 'TSP Server hat einen unerwarteten Content-Type {$a} zurückgegeben';
+$string['tsp_client_error_curl'] = 'Fehler beim senden des TSP Requests: {$a}';
+$string['tsp_client_error_http_code'] = 'TSP Server hat unerwarteten HTTP Statuscode {$a} zurückgegeben';
+
 // Settings
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Konfiguration des Archive Worker Services und des Moodle Webservices.';
