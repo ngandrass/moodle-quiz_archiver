@@ -183,27 +183,32 @@
     <tr>
         <td class="align-middle">{{#str}} archive_signature, quiz_archiver {{/str}}</td>
         <td>
-            {{#tsp}}
-                {{#str}} signed_on, quiz_archiver {{/str}}
-                <pre style="display: inline;">{{#userdate}} {{tsp.timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</pre>
-                {{#str}} signed_by, quiz_archiver {{/str}}
-                <pre style="display: inline;">{{tsp.server}}</pre>
-                <br>
-                {{#str}} download {{/str}}:
-                <a href="{{tsp.queryfiledownloadurl}}" target="_blank">
-                    {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} tsp_query_filename, quiz_archiver {{/str}}
-                </a>
-                &nbsp;&ndash;&nbsp;
-                <a href="{{tsp.replyfiledownloadurl}}" target="_blank">
-                    {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} tsp_reply_filename, quiz_archiver {{/str}}
-                </a>
-            {{/tsp}}
-            {{^tsp}}
-                {{#str}} archive_not_signed, quiz_archiver {{/str}}.
-                {{#tsp_enabled}}
-                    <a href="{{{action_urls.sign}}}">{{#str}} sign_archive, quiz_archiver {{/str}}</a>
-                {{/tsp_enabled}}
-            {{/tsp}}
+            {{#artifactfile}}
+                {{#tsp}}
+                    {{#str}} signed_on, quiz_archiver {{/str}}
+                    <pre style="display: inline;">{{#userdate}} {{tsp.timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</pre>
+                    {{#str}} signed_by, quiz_archiver {{/str}}
+                    <pre style="display: inline;">{{tsp.server}}</pre>
+                    <br>
+                    {{#str}} download {{/str}}:
+                    <a href="{{tsp.queryfiledownloadurl}}" target="_blank">
+                        {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} tsp_query_filename, quiz_archiver {{/str}}
+                    </a>
+                    &nbsp;&ndash;&nbsp;
+                    <a href="{{tsp.replyfiledownloadurl}}" target="_blank">
+                        {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} tsp_reply_filename, quiz_archiver {{/str}}
+                    </a>
+                {{/tsp}}
+                {{^tsp}}
+                    {{#str}} archive_not_signed, quiz_archiver {{/str}}.
+                    {{#tsp_enabled}}
+                        <a href="{{{action_urls.sign}}}">{{#str}} sign_archive, quiz_archiver {{/str}}</a>
+                    {{/tsp_enabled}}
+                {{/tsp}}
+            {{/artifactfile}}
+            {{^artifactfile}}
+                {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
+            {{/artifactfile}}
         </td>
     </tr>
     <tr>
