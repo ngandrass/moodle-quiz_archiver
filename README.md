@@ -15,6 +15,8 @@ Archives quiz attempts as PDF and HTML files for long-term storage independent
 of Moodle. If desired, Moodle backups (`.mbz`) of both the quiz and the whole
 course can be included. A checksum is calculated for every file within the
 archive, as well as the archive itself, to allow verification of file integrity.
+Archives can optionally be cryptographically signed by a trusted authority using
+the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol).
 Comprehensive archive settings allow selecting what should be included in the
 generated reports on a fine-granular level (e.g., exclude example solutions,
 include answer history, ...).
@@ -265,6 +267,56 @@ or included components, can be viewed by clicking the `Details` button.
 
 If you encounter permission errors, ensure that the user has the required
 [Capabilities](#capabilities) assigned.
+
+
+## Advanced Topics
+
+This section discusses advanced usage of the plugin.
+
+
+### Quiz archive signing using the Time-Stamp Protocol (TSP)
+
+Quiz archives and their creation date can be digitally signed by a trusted
+authority using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol)
+according to [RFC 3161](https://www.ietf.org/rfc/rfc3161.txt). This can be used
+to cryptographically prove the integrity and creation date of the archive at a
+later point in time. Quiz archives can be signed automatically at creation or
+manually later on.
+
+#### Enable archive signing globally
+
+1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
+   _Quiz_ > _Quiz Archiver_ (2)
+2. Set `tsp_server_url` (3) to the URL of your desired TSP service
+3. Globally enable archive signing by checking `tsp_enable` (4)
+4. (Optional) Enable automatic archive signing by checking `tsp_automatic_signing` (5)
+5. Save all settings (6)
+
+[![Screenshot: Configuration - TSP Settings 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - TSP Settings 2](doc/configuration/configuration_tsp_settings_2_thumb.png)](doc/configuration/configuration_tsp_settings_2.png)
+
+
+#### Accessing TSP data
+
+Both the TSP query and the TSP response can be accessed via the job details
+dialog. To do so, navigate to the quiz archiver overview page and click the
+_Show details_ button for the desired archive job.
+
+![Image of archive job details: TSP data](doc/screenshots/quiz_archiver_job_details_modal_tsp_data.png)
+
+
+#### Automatic archive signing
+
+If enabled, new archives will be automatically signed during creation. TSP data
+can be accessed via the _Show details_ button of an archive job on the quiz
+archiver overview page. Existing archives will not be signed automatically (see
+[Manual archive signing](#manual-archive-signing)).
+
+#### Manual archive signing
+
+To manually sign a quiz archive, navigate to the quiz archiver overview page,
+click the _Show details_ button for the desired archive job, and click the
+_Sign archive now_ button.
 
 
 ## Screenshots
