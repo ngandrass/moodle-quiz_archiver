@@ -121,8 +121,7 @@ class TSPManager {
         // Get artifact checksum
         $artifactchecksum = $this->job->get_artifact_checksum();
         if ($artifactchecksum === null) {
-            // TODO: localize
-            throw new \ValueError('No artifact found for job ' . $this->job->get_id());
+            throw new \ValueError(get_string('archive_signing_failed_no_artifact', 'quiz_archiver'));
         }
 
         // Issue TSP timestamp

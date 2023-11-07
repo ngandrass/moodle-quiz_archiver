@@ -86,9 +86,14 @@ $string['job_status_FAILED'] = 'Fehler';
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
 
 // Job details
+$string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
 $string['archive_not_signed'] = 'Testarchiv ist nicht signiert';
 $string['archive_signature'] = 'Signatur';
+$string['archive_signed_successfully'] = 'Testarchiv erfolgreich signiert';
+$string['archive_signing_failed'] = 'Signierung des Testarchivs fehlgeschlagen';
+$string['archive_signing_failed_no_artifact'] = 'Signierung des Testarchivs fehlgeschlagen: Keine gültige Archivdatei gefunden';
 $string['sign_archive'] = 'Testarchiv jetzt signieren';
+$string['sign_archive_warning'] = 'Sind Sie sicher, dass Sie dieses Testarchiv jetzt signieren möchten?';
 $string['signed_on'] = 'Signiert am';
 $string['signed_by'] = 'von';
 $string['tsp_query_filename'] = 'query.tsq';

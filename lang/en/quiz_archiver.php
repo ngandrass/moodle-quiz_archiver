@@ -86,9 +86,14 @@ $string['job_status_FAILED'] = 'Failed';
 $string['job_status_TIMEOUT'] = 'Timeout';
 
 // Job details
+$string['archive_already_signed'] = 'Archive is already signed';
 $string['archive_not_signed'] = 'Archive is unsigned';
 $string['archive_signature'] = 'Signature';
+$string['archive_signed_successfully'] = 'Archive signed successfully';
+$string['archive_signing_failed'] = 'Archive signing failed';
+$string['archive_signing_failed_no_artifact'] = 'Archive signing failed: No valid artifact file found';
 $string['sign_archive'] = 'Sign archive now';
+$string['sign_archive_warning'] = 'Are you sure that you want to sign this archive now?';
 $string['signed_on'] = 'Signed on';
 $string['signed_by'] = 'by';
 $string['tsp_query_filename'] = 'query.tsq';

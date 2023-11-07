@@ -29,6 +29,7 @@ use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
 use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\form\job_delete_form;
+use quiz_archiver\form\job_sign_form;
 use quiz_archiver\output\job_overview_table;
 
 defined('MOODLE_INTERNAL') || die();
@@ -103,9 +104,52 @@ class quiz_archiver_report extends report_base {
 
         // Handle job sign form
         if (optional_param('action', null, PARAM_TEXT) === 'sign_job') {
-            // TODO: Implement me ;)
-            echo "Sorry, this feature is not implemented yet. Please check back later.";
-            return true;
+            $job_sign_form = new job_sign_form();
+
+            if ($job_sign_form->is_cancelled()) {
+                redirect($this->base_url());
+            }
+
+            if ($job_sign_form->is_submitted()) {
+                // Check permissions.
+                require_capability('mod/quiz_archiver:archive', $this->context);
+
+                // Execute signing
+                $formdata = $job_sign_form->get_data();
+                $tspManager = ArchiveJob::get_by_jobid($formdata->jobid)->TSPManager();
+                $jobid_log_str = ' ('.get_string('jobid', 'quiz_archiver').': '.$formdata->jobid.')';
+                if ($tspManager->has_tsp_timestamp()) {
+                    $tplCtx['jobInitiationStatusAlert'] = [
+                        "color" => "danger",
+                        "dismissible" => true,
+                        "message" => get_string('archive_already_signed', 'quiz_archiver').$jobid_log_str,
+                    ];
+                } else {
+                    try {
+                        $tspManager->timestamp();
+                        $tplCtx['jobInitiationStatusAlert'] = [
+                            "color" => "success",
+                            "dismissible" => true,
+                            "message" => get_string('archive_signed_successfully', 'quiz_archiver').$jobid_log_str,
+                        ];
+                    } catch (ValueError $e) {
+                        $tplCtx['jobInitiationStatusAlert'] = [
+                            "color" => "danger",
+                            "dismissible" => true,
+                            "message" => get_string('archive_signing_failed_no_artifact', 'quiz_archiver').$jobid_log_str,
+                        ];
+                    } catch (Exception $e) {
+                        $tplCtx['jobInitiationStatusAlert'] = [
+                            "color" => "danger",
+                            "dismissible" => true,
+                            "message" => get_string('archive_signing_failed', 'quiz_archiver').' '.$e->getMessage().$jobid_log_str,
+                        ];
+                    }
+                }
+            } else {
+                $job_sign_form->display();
+                return true;
+            }
         }
 
         // Determine page to display
