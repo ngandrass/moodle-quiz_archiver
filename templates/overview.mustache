@@ -54,10 +54,17 @@
 <div>
     {{{jobInitiationForm}}}
     {{#jobInitiationStatusAlert}}
-        <div class="alert alert-{{color}}" role="alert">
+        <div class="alert alert-{{color}} {{#dismissible}}alert-dismissible{{/dismissible}}" role="alert">
             {{message}}
-            <br/><br/>
-            <a href="{{{baseurl}}}">{{returnMessage}}</a>
+            {{#returnMessage}}
+                <br/><br/>
+                <a href="{{{baseurl}}}">{{returnMessage}}</a>
+            {{/returnMessage}}
+            {{#dismissible}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            {{/dismissible}}
         </div>
     {{/jobInitiationStatusAlert}}
 </div>
