@@ -142,7 +142,7 @@ class quiz_archiver_report extends report_base {
                         $tplCtx['jobInitiationStatusAlert'] = [
                             "color" => "danger",
                             "dismissible" => true,
-                            "message" => get_string('archive_signing_failed', 'quiz_archiver').' '.$e->getMessage().$jobid_log_str,
+                            "message" => get_string('archive_signing_failed', 'quiz_archiver').': '.$e->getMessage().$jobid_log_str,
                         ];
                     }
                 }
@@ -222,6 +222,9 @@ class quiz_archiver_report extends report_base {
                         'jobid' => $jm['jobid']
                     ]))->out()
                 ];
+
+                // Inject global TSP settings
+                $jm['tsp_enabled'] = ($this->config->tsp_enable == true); // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
 
                 return [
                     'jobid' => $jm['jobid'],

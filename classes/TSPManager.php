@@ -124,6 +124,11 @@ class TSPManager {
             throw new \ValueError(get_string('archive_signing_failed_no_artifact', 'quiz_archiver'));
         }
 
+        // Check if TSP signing globally is enabled
+        if (!$this->config->tsp_enable) {
+            throw new \Exception(get_string('archive_signing_failed_tsp_disabled', 'quiz_archiver'));
+        }
+
         // Issue TSP timestamp
         $tspclient = new TimeStampProtocolClient($this->config->tsp_server_url);
         $tspdata = $tspclient->sign($artifactchecksum);

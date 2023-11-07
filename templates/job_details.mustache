@@ -57,6 +57,7 @@
             "timecreated":1690805384,
             "server":"https://example.com/tsr"
         ],
+        "tsp_enabled":true,
         "settings":[
             {
                 "title":"Demo Title 1",
@@ -97,6 +98,7 @@
         },
         "artifactfile":null,
         "tsp":null,
+        "tsp_enabled":false,
         "settings":[
             {
                 "title":"Demo Title 1",
@@ -198,7 +200,9 @@
             {{/tsp}}
             {{^tsp}}
                 {{#str}} archive_not_signed, quiz_archiver {{/str}}.
-                <a href="{{{action_urls.sign}}}">{{#str}} sign_archive, quiz_archiver {{/str}}</a>
+                {{#tsp_enabled}}
+                    <a href="{{{action_urls.sign}}}">{{#str}} sign_archive, quiz_archiver {{/str}}</a>
+                {{/tsp_enabled}}
             {{/tsp}}
         </td>
     </tr>
