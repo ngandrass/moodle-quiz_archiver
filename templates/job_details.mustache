@@ -202,7 +202,8 @@
                 {{^tsp}}
                     {{#str}} archive_not_signed, quiz_archiver {{/str}}.
                     {{#tsp_enabled}}
-                        <a href="{{{action_urls.sign}}}">{{#str}} sign_archive, quiz_archiver {{/str}}</a>
+                        &nbsp;&ndash;&nbsp;
+                        <a href="{{{action_urls.sign}}}">{{#pix}} t/edit, core, {{#str}} sign_archive, quiz_archiver{{/str}} {{/pix}}{{#str}} sign_archive, quiz_archiver {{/str}}</a>
                     {{/tsp_enabled}}
                 {{/tsp}}
             {{/artifactfile}}
