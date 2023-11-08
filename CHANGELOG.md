@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.6.1 (2023110800)
+
+- Support for quiz archive signing using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol) according to [RFC 3161](https://www.ietf.org/rfc/rfc3161.txt).
+- Minor UI improvements
+- Documentation improvements
+
+
 ## Version 0.6.0 (2023092101)
 
 - **BREAKING**: This version requires Moodle >= 4.2
