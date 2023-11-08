@@ -34,6 +34,30 @@ service to remove load from Moodle and to eliminate the need to install a large
 number of software dependencies on the webserver. It can easily be [deployed
 using Docker](https://github.com/ngandrass/moodle-quiz-archive-worker#installation).
 
+-----
+
+## Features
+
+- Archiving of quiz attempts as PDF and HTML files
+- Quiz attempt reports are accessible completely independent of Moodle, hereby
+  ensuring long-term readability
+- Customization of generated PDF and HTML reports
+  - Allows creation of reduced reports, e.g., without example solutions, for
+    handing out to students during inspection
+- Support for complex content and question types, including MathJax formulas,
+  STACK plots, and other question / content types that require JavaScript processing
+- Quiz attempt reports are fully text-searchable, including mathematical formulas 
+- Moodle backups (`.mbz`) of both the quiz and the whole course are supported
+- Generation of checksums for every file within the archive and the archive itself
+- Cryptographic signing of archives and their creation date using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol)
+- Integration as Moodle quiz report
+- Support for custom quiz archive permissions / capabilities
+- Fully asynchronous archive creation to reduce load on Moodle Server
+- Data compression and vector based MathJax formulas to preserve disk space
+- Technical separation of Moodle and archive worker service
+- Data-minimising and security driven design
+
+-----
 
 ## Concept
 
@@ -50,6 +74,7 @@ webservice user to be created (see [Configuration](#configuration)). A single jo
 webservice token can only be used for the specific quiz that is associated with
 the job to restrict queryable data to the required minimum.
 
+-----
 
 ## Installation
 
@@ -203,7 +228,7 @@ is mandatory for this plugin to work.
 [![Screenshot: Configuration - Plugin Settings 2](doc/configuration/configuration_plugin_settings_2_thumb.png)](doc/configuration/configuration_plugin_settings_2.png)
 
 
-### Known pitfalls
+### Known Pitfalls
 
 - **Access to (some) webservice functions fails**
   - Ensure that webservices and the REST protocol are enabled globally.
@@ -247,6 +272,7 @@ The following capabilities are required for the listed actions:
   [Configuration](#configuration)) needs to have this capability in order to
   create new quiz archives.
 
+-----
 
 ## Usage
 
@@ -269,7 +295,7 @@ If you encounter permission errors, ensure that the user has the required
 [Capabilities](#capabilities) assigned.
 
 
-## Advanced Topics
+## Advanced Usage
 
 This section discusses advanced usage of the plugin.
 
@@ -318,6 +344,7 @@ To manually sign a quiz archive, navigate to the quiz archiver overview page,
 click the _Show details_ button for the desired archive job, and click the
 _Sign archive now_ button.
 
+-----
 
 ## Screenshots
 
@@ -336,6 +363,7 @@ _Sign archive now_ button.
 ![Image of example of PDF report (extract): Question 2](doc/screenshots/quiz_archiver_report_example_pdf_question_2.png)
 ![Image of example of PDF report (extract): Question 3](doc/screenshots/quiz_archiver_report_example_pdf_question_3.png)
 
+-----
 
 ## License
 
