@@ -344,6 +344,29 @@ To manually sign a quiz archive, navigate to the quiz archiver overview page,
 click the _Show details_ button for the desired archive job, and click the
 _Sign archive now_ button.
 
+#### Validating an archive and its signature
+
+To validate an archive and its signature, install `openssl` and follow these
+steps:
+
+1. Obtain the certificate files from your TSP authority (`.crt` and `.pem`)
+2. Navigate to the quiz archiver overview page and click the _Show details_
+   button for the desired archive job
+3. Download the archive and both TSP signature files (`.tsq` and `.tsr`)
+4. Inspect TSP response to see time stamp and signed hash value
+   1. Execute: `openssl ts -reply -in <archive>.tsr -text`
+5. Verify the quiz archive against the TSP response. This process confirms that
+   the archive was signed by the TSP authority and that the archive was not
+   modified after signing, i.e., the hash values of the file matches the TSP
+   response.
+   1. Execute: `openssl ts -verify -in <archive>.tsr -data <archive>.tar.gz -CAfile <tsa>.pem -untrusted <tsa>.crt`
+   2. Verify that the output is `Verification: OK` \
+      Errors are indicated by `Verification: FAILED`
+6. (Optional) Verify that TSP request and TSP response match
+   1. Execute: `openssl ts -verify -in <archive>.tsr -queryfile <archive>.tsq -CAfile <tsa>.pem -untrusted <tsa>.crt`
+   2. Verify that the output is `Verification: OK` \
+      Errors are indicated by `Verification: FAILED`
+
 -----
 
 ## Screenshots
