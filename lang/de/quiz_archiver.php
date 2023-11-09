@@ -24,8 +24,8 @@
  */
 
 $string['pluginname'] = 'Quiz Archiver';
-$string['archiver'] = $string['pluginname'];
-$string['archiverreport'] = $string['pluginname'];
+$string['archiver'] = 'Quiz Archiver';
+$string['archiverreport'] = 'Quiz Archiver';
 $string['checksum'] = 'Prüfsumme';
 $string['beta_version_warning'] = 'Dieses Plugin befindet sich derzeit in der Beta-Phase. Bitte melden Sie alle Probleme und Fehler dem Website-Administrator.';
 
@@ -49,7 +49,7 @@ $string['archive_quiz_form_desc'] = 'Füllen Sie dieses Formular aus, um den Tes
 $string['export_attempts'] = 'Testversuche exportieren';
 $string['export_attempts_help'] = 'Es werden stets alle Testversuche exportiert';
 $string['export_attempts_num'] = 'Testversuche ({$a}) exportieren';
-$string['export_attempts_num_help'] = $string['export_attempts_help'];
+$string['export_attempts_num_help'] = 'Es werden stets alle Testversuche exportiert';
 $string['export_attempts_paper_format'] = 'Papierformat';
 $string['export_attempts_paper_format_help'] = 'Das Papierformat für den PDF-Export. Dies hat keinen Einfluss auf HTML-Exporte.';
 $string['export_course_backup'] = 'Vollständiges Moodle Kursbackup (.mbz) erzeugen';
