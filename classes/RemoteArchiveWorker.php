@@ -89,7 +89,7 @@ class RemoteArchiveWorker {
             "cmid" => $cmid,
             "quizid" => $quizid,
             "task_archive_quiz_attempts" => $task_archive_quiz_attempts,
-            "task_moodle_backups" => $task_moodle_backups
+            "task_moodle_backups" => $task_moodle_backups,
         ]);
 
         // Execute request
@@ -100,7 +100,7 @@ class RemoteArchiveWorker {
             'CURLOPT_TIMEOUT' => $this->request_timeout,
             'CURLOPT_HTTPHEADER' => [
                 'Content-Type: application/json',
-                'Content-Length: '.strlen($request_payload)
+                'Content-Length: '.strlen($request_payload),
             ]
         ]);
 

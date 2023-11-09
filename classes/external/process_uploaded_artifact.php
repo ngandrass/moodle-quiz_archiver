@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace quiz_archiver\external;
 
 use core_external\external_api;
@@ -26,7 +41,7 @@ class process_uploaded_artifact extends external_api {
             'artifact_filename' => new external_value(PARAM_TEXT, 'File API filename', VALUE_REQUIRED),
             'artifact_filepath' => new external_value(PARAM_TEXT, 'File API filepath', VALUE_REQUIRED),
             'artifact_itemid' => new external_value(PARAM_INT, 'File API itemid', VALUE_REQUIRED),
-            'artifact_sha256sum' => new external_value(PARAM_TEXT, 'SHA256 checksum of the file', VALUE_REQUIRED)
+            'artifact_sha256sum' => new external_value(PARAM_TEXT, 'SHA256 checksum of the file', VALUE_REQUIRED),
         ]);
     }
 
@@ -36,7 +51,7 @@ class process_uploaded_artifact extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction')
+            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction'),
         ]);
     }
 
@@ -78,7 +93,7 @@ class process_uploaded_artifact extends external_api {
             'artifact_filename' => $artifact_filename_raw,
             'artifact_filepath' => $artifact_filepath_raw,
             'artifact_itemid' => $artifact_itemid_raw,
-            'artifact_sha256sum' => $artifact_sha256sum_raw
+            'artifact_sha256sum' => $artifact_sha256sum_raw,
         ]);
 
         // Validate that the jobid exists and no artifact was uploaded previously
@@ -86,19 +101,19 @@ class process_uploaded_artifact extends external_api {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
             if ($job->is_complete()) {
                 return [
-                    'status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'
+                    'status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED',
                 ];
             }
         } catch (\dml_exception $e) {
             return [
-                'status' => 'E_JOB_NOT_FOUND'
+                'status' => 'E_JOB_NOT_FOUND',
             ];
         }
 
         // Check access rights
         if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
-                'status' => 'E_ACCESS_DENIED'
+                'status' => 'E_ACCESS_DENIED',
             ];
         }
 
@@ -113,12 +128,12 @@ class process_uploaded_artifact extends external_api {
             $params['artifact_contextid'],
             $params['artifact_itemid'],
             $params['artifact_filepath'],
-            $params['artifact_filename']
+            $params['artifact_filename'],
         );
         if (!$draftfile) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [
-                'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'
+                'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND',
             ];
         }
 
@@ -126,7 +141,7 @@ class process_uploaded_artifact extends external_api {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             $draftfile->delete();
             return [
-                'status' => 'E_ARTIFACT_CHECKSUM_INVALID'
+                'status' => 'E_ARTIFACT_CHECKSUM_INVALID',
             ];
         }
 
@@ -138,7 +153,7 @@ class process_uploaded_artifact extends external_api {
         } catch (\Exception $e) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [
-                'status' => 'E_STORE_ARTIFACT_FAILED'
+                'status' => 'E_STORE_ARTIFACT_FAILED',
             ];
         }
 
@@ -158,7 +173,7 @@ class process_uploaded_artifact extends external_api {
         // Report success
         $job->set_status(ArchiveJob::STATUS_FINISHED);
         return [
-            'status' => 'OK'
+            'status' => 'OK',
         ];
     }
 

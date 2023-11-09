@@ -59,7 +59,7 @@ class BackupManager {
         'questionbank' => true,
         'groups' => true,
         'contentbankcontent' => true,
-        'legacyfiles' => true
+        'legacyfiles' => true,
     ];
 
     /**
@@ -69,7 +69,11 @@ class BackupManager {
     public function __construct(string $backupid) {
         global $DB;
 
-        $this->backup_metadata = $DB->get_record('backup_controllers', ['backupid' => $backupid], 'id, backupid, operation, type, itemid, userid');
+        $this->backup_metadata = $DB->get_record(
+            'backup_controllers',
+            ['backupid' => $backupid],
+            'id, backupid, operation, type, itemid, userid'
+        );
         if ($this->backup_metadata->operation != 'backup') {
             throw new \ValueError('Only backup operations are supported.');
         }
@@ -185,7 +189,7 @@ class BackupManager {
             $contextid,
             'backup',
             $type,
-            null,  # The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
+            null,  // The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
             '/',
             $filename
         ));
@@ -205,7 +209,7 @@ class BackupManager {
             'filename' => $filename,
             'itemid' => null,
             'pathnamehash' => \file_storage::get_pathname_hash($contextid, 'backup', $type, 0, '/', $filename),
-            'file_download_url' => $url
+            'file_download_url' => $url,
         ];
     }
 

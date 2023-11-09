@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace quiz_archiver\external;
 
 use core_external\external_api;
@@ -29,7 +44,7 @@ class get_backup_status extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'status' => new external_value(PARAM_TEXT, 'Status of the requested backup', VALUE_REQUIRED)
+            'status' => new external_value(PARAM_TEXT, 'Status of the requested backup', VALUE_REQUIRED),
         ]);
     }
 
@@ -51,7 +66,7 @@ class get_backup_status extends external_api {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobid_raw,
-            'backupid' => $backupid_raw
+            'backupid' => $backupid_raw,
         ]);
 
         // Validate that the jobid exists

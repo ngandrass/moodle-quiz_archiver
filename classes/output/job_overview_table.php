@@ -42,7 +42,7 @@ class job_overview_table extends \table_sql {
      * @param int $cmid ID of the course module
      * @param int $quizid ID of the quiz
      */
-    function __construct(string $uniqueid, int $courseid, int $cmid, int $quizid) {
+    public function __construct(string $uniqueid, int $courseid, int $cmid, int $quizid) {
         parent::__construct($uniqueid);
         $this->define_columns([
             'timecreated',
@@ -50,15 +50,16 @@ class job_overview_table extends \table_sql {
             'user',
             'jobid',
             'filesize',
-            'actions']
-        );
+            'actions',
+        ]);
+
         $this->define_headers([
             get_string('task_starttime', 'admin'),
             get_string('status'),
             get_string('user'),
             get_string('jobid', 'quiz_archiver'),
             get_string('size'),
-            ''
+            '',
         ]);
 
         $this->set_sql(
@@ -68,7 +69,7 @@ class job_overview_table extends \table_sql {
             [
                 'courseid' => $courseid,
                 'cmid' => $cmid,
-                'quizid' => $quizid
+                'quizid' => $quizid,
             ]
         );
 
@@ -78,24 +79,24 @@ class job_overview_table extends \table_sql {
         $this->collapsible(false);
     }
 
-    function col_timecreated($values) {
+    public function col_timecreated($values) {
         return date('Y-m-d\<\b\r\\>H:i:s', $values->timecreated);
     }
 
-    function col_status($values) {
+    public function col_status($values) {
         $s = ArchiveJob::get_status_display_args($values->status);
         return '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
     }
 
-    function col_user($values) {
+    public function col_user($values) {
         return '<a href="'.new \moodle_url('/user/profile.php', ['id' => $values->userid]).'">'.$values->username.'</a>';
     }
 
-    function col_filesize($values) {
+    public function col_filesize($values) {
         return $values->filesize !== null ? display_size($values->filesize) : '';
     }
 
-    function col_actions($values) {
+    public function col_actions($values) {
         $html = '';
 
         // Action: Show details
@@ -111,7 +112,7 @@ class job_overview_table extends \table_sql {
                 $artifactfile->get_itemid(),
                 $artifactfile->get_filepath(),
                 $artifactfile->get_filename(),
-                true
+                true,
             );
 
             $download_title = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
@@ -125,7 +126,7 @@ class job_overview_table extends \table_sql {
             'id' => optional_param('id', null, PARAM_INT),
             'mode' => 'archiver',
             'action' => 'delete_job',
-            'jobid' => $values->jobid
+            'jobid' => $values->jobid,
         ]);
         $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
 

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -96,14 +95,14 @@ class TSPManager {
         global $DB;
 
         $tspdata = $DB->get_record(self::TSP_TABLE_NAME, [
-            'jobid' => $this->job->get_id()
+            'jobid' => $this->job->get_id(),
         ]);
 
         return ($tspdata !== false) ? (object) [
             'server' => $tspdata->server,
             'timecreated' => $tspdata->timecreated,
             'query' => $tspdata->timestampquery,
-            'reply' => $tspdata->timestampreply
+            'reply' => $tspdata->timestampreply,
         ] : null;
     }
 

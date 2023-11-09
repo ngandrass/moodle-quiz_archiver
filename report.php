@@ -78,7 +78,7 @@ class quiz_archiver_report extends report_base {
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
         $tplCtx = [
             'baseurl' => $this->base_url(),
-            'jobOverviewTable' => ""
+            'jobOverviewTable' => "",
         ];
 
         // Handle job delete form
@@ -162,7 +162,7 @@ class quiz_archiver_report extends report_base {
         // Archive quiz form
         $archive_quiz_form = new archive_quiz_form(
             $this->quiz->name,
-            sizeof($this->report->get_attempts())
+            count($this->report->get_attempts())
         );
         if ($archive_quiz_form->is_submitted()) {
             $job = null;
@@ -189,7 +189,9 @@ class quiz_archiver_report extends report_base {
             }
 
             // Do not print job overview table if job creation failed
-            if ($job == null) unset($tplCtx['jobOverviewTable']);
+            if ($job == null) {
+                unset($tplCtx['jobOverviewTable']);
+            }
         } else {
             $tplCtx['jobInitiationForm'] = $archive_quiz_form->render();
         }
@@ -228,7 +230,7 @@ class quiz_archiver_report extends report_base {
 
                 return [
                     'jobid' => $jm['jobid'],
-                    'json' => json_encode($jm)
+                    'json' => json_encode($jm),
                 ];
             }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
         }
@@ -258,7 +260,13 @@ class quiz_archiver_report extends report_base {
      * @throws moodle_exception Handled by Moodle
      * @throws RuntimeException Used to signal a soft failure to calling context
      */
-    protected function initiate_archive_job(bool $export_attempts, array $report_sections, string $paper_format, bool $export_quiz_backup, bool $export_course_backup): ?ArchiveJob {
+    protected function initiate_archive_job(
+        bool $export_attempts,
+        array $report_sections,
+        string $paper_format,
+        bool $export_quiz_backup,
+        bool $export_course_backup
+    ): ?ArchiveJob {
         global $USER;
 
         // Check permissions.
@@ -279,7 +287,7 @@ class quiz_archiver_report extends report_base {
         if ($export_attempts) {
             $task_archive_quiz_attempts = [
                 'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts())),
-                'fetch_metadata' => True,
+                'fetch_metadata' => true,
                 'sections' => $report_sections,
                 'paper_format' => $paper_format,
             ];

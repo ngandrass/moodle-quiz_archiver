@@ -260,7 +260,7 @@ class FileManager {
             throw new \InvalidArgumentException("Invalid jobid {$jobid}");
         }
 
-        if ($filename !== FileManager::TSP_DATA_QUERY_FILENAME && $filename !== FileManager::TSP_DATA_REPLY_FILENAME) {
+        if ($filename !== self::TSP_DATA_QUERY_FILENAME && $filename !== self::TSP_DATA_REPLY_FILENAME) {
             throw new \InvalidArgumentException("Invalid filename {$filename}");
         }
 
@@ -281,11 +281,11 @@ class FileManager {
 
         // Get requested file contents
         switch ($filename) {
-            case FileManager::TSP_DATA_QUERY_FILENAME:
+            case self::TSP_DATA_QUERY_FILENAME:
                 $filecontents = $tspdata->query;
                 $downloadfilename = "{$job->get_artifact_checksum()}.tsq";
                 break;
-            case FileManager::TSP_DATA_REPLY_FILENAME:
+            case self::TSP_DATA_REPLY_FILENAME:
                 $filecontents = $tspdata->reply;
                 $downloadfilename = "{$job->get_artifact_checksum()}.tsr";
                 break;

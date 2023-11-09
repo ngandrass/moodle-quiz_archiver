@@ -418,7 +418,9 @@ class ArchiveJob {
      * @throws \dml_exception
      */
     public function timeout_if_overdue(int $timeout_min): bool {
-        if ($this->is_complete()) return false;
+        if ($this->is_complete()) {
+            return false;
+        }
 
         // Check if job is overdue
         if ($this->timecreated < (time() - ($timeout_min * 60))) {
@@ -521,12 +523,16 @@ class ArchiveJob {
      * @return void
      * @throws \dml_exception on failure
      */
-    public function set_status(string $status, bool $delete_wstoken_if_completed = true, $delete_temporary_files_if_completed = true) {
+    public function set_status(
+        string $status,
+        bool $delete_wstoken_if_completed = true,
+        $delete_temporary_files_if_completed = true
+    ) {
         global $DB;
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
             'id' => $this->id,
             'status' => $status,
-            'timemodified' => time()
+            'timemodified' => time(),
         ]);
 
         if ($this->is_complete()) {
@@ -558,19 +564,19 @@ class ArchiveJob {
      */
     public static function get_status_display_args(string $status): array {
         switch ($status) {
-            case ArchiveJob::STATUS_UNKNOWN:
+            case self::STATUS_UNKNOWN:
                 return ['color' => 'warning', 'text' => get_string('job_status_UNKNOWN', 'quiz_archiver')];
-            case ArchiveJob::STATUS_UNINITIALIZED:
+            case self::STATUS_UNINITIALIZED:
                 return ['color' => 'secondary', 'text' => get_string('job_status_UNINITIALIZED', 'quiz_archiver')];
-            case ArchiveJob::STATUS_AWAITING_PROCESSING:
+            case self::STATUS_AWAITING_PROCESSING:
                 return ['color' => 'secondary', 'text' => get_string('job_status_AWAITING_PROCESSING', 'quiz_archiver')];
-            case ArchiveJob::STATUS_RUNNING:
+            case self::STATUS_RUNNING:
                 return ['color' => 'primary', 'text' => get_string('job_status_RUNNING', 'quiz_archiver')];
-            case ArchiveJob::STATUS_FINISHED:
+            case self::STATUS_FINISHED:
                 return ['color' => 'success', 'text' => get_string('job_status_FINISHED', 'quiz_archiver')];
-            case ArchiveJob::STATUS_FAILED:
+            case self::STATUS_FAILED:
                 return ['color' => 'danger', 'text' => get_string('job_status_FAILED', 'quiz_archiver')];
-            case ArchiveJob::STATUS_TIMEOUT:
+            case self::STATUS_TIMEOUT:
                 return ['color' => 'danger', 'text' => get_string('job_status_TIMEOUT', 'quiz_archiver')];
             default:
                 return ['color' => 'light', 'text' => $status];
@@ -587,11 +593,11 @@ class ArchiveJob {
     public static function convert_archive_settings_for_display(array $settings): array {
         $ret = [];
 
-        foreach($settings as $key => $value) {
+        foreach ($settings as $key => $value) {
             $ret[] = [
                 'title' => get_string($key, 'quiz_archiver'),
                 'value' => $value,
-                'color' => $value ? 'primary' : 'secondary'
+                'color' => $value ? 'primary' : 'secondary',
             ];
         }
 
@@ -705,7 +711,7 @@ class ArchiveJob {
      */
     public function delete_webservice_token(): void {
         global $DB;
-        $DB->delete_records('external_tokens', array('token' => $this->wstoken, 'tokentype' => EXTERNAL_TOKEN_PERMANENT));
+        $DB->delete_records('external_tokens', ['token' => $this->wstoken, 'tokentype' => EXTERNAL_TOKEN_PERMANENT]);
     }
 
 }

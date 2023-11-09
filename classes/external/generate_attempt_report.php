@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace quiz_archiver\external;
 
 use core_external\external_api;
@@ -46,7 +61,7 @@ class generate_attempt_report extends external_api {
             'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_OPTIONAL),
             'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_OPTIONAL),
             'report' => new external_value(PARAM_RAW, 'HTML DOM of the generated quiz attempt report', VALUE_OPTIONAL),
-            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction', VALUE_REQUIRED)
+            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction', VALUE_REQUIRED),
         ]);
     }
 
@@ -74,7 +89,7 @@ class generate_attempt_report extends external_api {
             'cmid' => $cmid_raw,
             'quizid' => $quizid_raw,
             'attemptid' => $attemptid_raw,
-            'sections' => $sections_raw
+            'sections' => $sections_raw,
         ]);
 
         // Check capabilities
@@ -82,13 +97,13 @@ class generate_attempt_report extends external_api {
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Acquire required data objects
-        if (!$course = $DB->get_record('course', array('id' => $params['courseid']))) {
+        if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
             throw new \invalid_parameter_exception("No course with given courseid found");
         }
         if (!$cm = get_coursemodule_from_instance("quiz", $params['quizid'], $params['courseid'])) {
             throw new \invalid_parameter_exception("No course module with given cmid found");
         }
-        if (!$quiz = $DB->get_record('quiz', array('id' => $params['quizid']))) {
+        if (!$quiz = $DB->get_record('quiz', ['id' => $params['quizid']])) {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
         }
 
@@ -96,7 +111,7 @@ class generate_attempt_report extends external_api {
         $report = new Report($course, $cm, $quiz);
         if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
-                'status' => 'E_ACCESS_DENIED'
+                'status' => 'E_ACCESS_DENIED',
             ];
         }
         if (!$report->attempt_exists($params['attemptid'])) {
@@ -109,7 +124,7 @@ class generate_attempt_report extends external_api {
             'quizid' => $params['quizid'],
             'attemptid' => $params['attemptid'],
             'report' => $report->generate_full_page($params['attemptid'], $params['sections']),
-            'status' => 'OK'
+            'status' => 'OK',
         ];
     }
 

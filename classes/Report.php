@@ -29,7 +29,7 @@ use mod_quiz\quiz_attempt;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->dirroot/mod/quiz/locallib.php");  # Required for legacy mod_quiz functions ...
+require_once("$CFG->dirroot/mod/quiz/locallib.php");  // Required for legacy mod_quiz functions ...
 
 class Report {
 
@@ -61,13 +61,13 @@ class Report {
         "question_feedback" => ["question"],
         "general_feedback" => ["question"],
         "rightanswer" => ["question"],
-        "history" => ["question"]
+        "history" => ["question"],
     ];
 
     /** @var string[] Available paper formats for attempt PDFs */
     public const PAPER_FORMATS = [
         'A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6',
-        'Letter', 'Legal', 'Tabloid', 'Ledger'
+        'Letter', 'Legal', 'Tabloid', 'Ledger',
     ];
 
     /**
@@ -249,12 +249,12 @@ class Report {
     public static function build_report_sections_from_formdata(object $archive_quiz_form_data): array {
         // Extract section settings from form data object
         $report_sections = [];
-        foreach (Report::SECTIONS as $section) {
+        foreach (self::SECTIONS as $section) {
             $report_sections[$section] = $archive_quiz_form_data->{'export_report_section_'.$section};
         }
 
         // Disable all sections that depend on a disabled section
-        foreach (Report::SECTION_DEPENDENCIES as $section => $dependencies) {
+        foreach (self::SECTION_DEPENDENCIES as $section => $dependencies) {
             foreach ($dependencies as $dependency) {
                 if (!$report_sections[$dependency]) {
                     $report_sections[$section] = 0;
@@ -308,7 +308,7 @@ class Report {
         if ($sections['header']) {
 
             $quiz_header_data = [];
-            $attempt_user = $DB->get_record('user', array('id' => $attemptobj->get_userid()));
+            $attempt_user = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
             $userpicture = new \user_picture($attempt_user);
             $userpicture->courseid = $attemptobj->get_courseid();
             $quiz_header_data['user'] = [
@@ -331,42 +331,42 @@ class Report {
             ];
 
             // Timing information.
-            $quiz_header_data['startedon'] = array(
+            $quiz_header_data['startedon'] = [
                 'title' => get_string('startedon', 'quiz'),
                 'content' => userdate($attempt->timestart),
-            );
+            ];
 
-            $quiz_header_data['state'] = array(
+            $quiz_header_data['state'] = [
                 'title' => get_string('attemptstate', 'quiz'),
                 'content' => quiz_attempt::state_name($attempt->state),
-            );
+            ];
 
             if ($attempt->state == quiz_attempt::FINISHED) {
-                $quiz_header_data['completedon'] = array(
+                $quiz_header_data['completedon'] = [
                     'title' => get_string('completedon', 'quiz'),
                     'content' => userdate($attempt->timefinish),
-                );
-                $quiz_header_data['timetaken'] = array(
+                ];
+                $quiz_header_data['timetaken'] = [
                     'title' => get_string('timetaken', 'quiz'),
                     'content' => $timetaken,
-                );
+                ];
             }
 
             if (!empty($overtime)) {
-                $quiz_header_data['overdue'] = array(
+                $quiz_header_data['overdue'] = [
                     'title' => get_string('overdue', 'quiz'),
                     'content' => $overtime,
-                );
+                ];
             }
 
             // Grades
             $grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
             if ($options->marks >= \question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
                 if (is_null($grade)) {
-                    $quiz_header_data['grade'] = array(
+                    $quiz_header_data['grade'] = [
                         'title' => get_string('grade', 'quiz'),
                         'content' => quiz_format_grade($quiz, $grade),
-                    );
+                    ];
                 }
 
                 if ($attempt->state == quiz_attempt::FINISHED) {
@@ -375,10 +375,10 @@ class Report {
                         $a = new \stdClass();
                         $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
                         $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
-                        $quiz_header_data['marks'] = array(
+                        $quiz_header_data['marks'] = [
                             'title' => get_string('marks', 'quiz'),
                             'content' => get_string('outofshort', 'quiz', $a),
-                        );
+                        ];
                     }
 
                     // Now the scaled grade.
@@ -392,10 +392,10 @@ class Report {
                     } else {
                         $formattedgrade = get_string('outof', 'quiz', $a);
                     }
-                    $quiz_header_data['grade'] = array(
+                    $quiz_header_data['grade'] = [
                         'title' => get_string('grade', 'quiz'),
                         'content' => $formattedgrade,
-                    );
+                    ];
                 }
             }
 
@@ -406,10 +406,10 @@ class Report {
             if ($sections['quiz_feedback']) {
                 $feedback = $attemptobj->get_overall_feedback($grade);
                 if ($options->overallfeedback && $feedback) {
-                    $quiz_header_data['feedback'] = array(
+                    $quiz_header_data['feedback'] = [
                         'title' => get_string('feedback', 'quiz'),
                         'content' => $feedback,
-                    );
+                    ];
                 }
             }
 
@@ -460,7 +460,7 @@ class Report {
      * footer
      *
      * @param int $attemptid ID of the attempt this report is for
-     * @param array $sections Array of Report::SECTIONS to include in the report
+     * @param array $sections Array of self::SECTIONS to include in the report
      * @param bool $fix_relative_urls If true, all relative URLs will be
      * forcefully mapped to the Moodle base URL
      * @param bool $minimal If true, unneccessary elements (e.g. navbar) are
@@ -572,7 +572,9 @@ class Report {
         global $CFG;
 
         // Only process images with src attribute
-        if (!$img->getAttribute('src')) return false;
+        if (!$img->getAttribute('src')) {
+            return false;
+        }
 
         // Remove any parameters and anchors from URL
         $img_src = preg_replace('/^([^\?\&\#]+).*$/', '${1}', $img->getAttribute('src'));
@@ -586,11 +588,15 @@ class Report {
         $img_src_url = $this->ensure_absolute_url($img_src, $moodle_baseurl);
 
         # Make sure to only process web URLs and nothing that somehow remained a valid local filepath
-        if (!substr($img_src_url, 0, 4) === "http") return false;  // Yes, this includes https as well ;)
+        if (!substr($img_src_url, 0, 4) === "http") { // Yes, this includes https as well ;)
+            return false;
+        }
 
         // Only process allowed image types
         $img_ext = pathinfo($img_src_url, PATHINFO_EXTENSION);
-        if (!array_key_exists($img_ext, self::ALLOWED_IMAGE_TYPES)) return false;
+        if (!array_key_exists($img_ext, self::ALLOWED_IMAGE_TYPES)) {
+            return false;
+        }
 
         // Try to get image content based on link type
         $regex_matches = null;
@@ -614,13 +620,17 @@ class Report {
                 $regex_matches['filename']
             );
 
-            if (!$file) return false;
+            if (!$file) {
+                return false;
+            }
             $img_data = $file->get_content();
-        } elseif (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
+        } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
             // ### Link type: qtype_stack plotfile ### //
             // Get STACK plot file from disk
             $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
-            if (!is_readable($filename)) return false;
+            if (!is_readable($filename)) {
+                return false;
+            }
             $img_data = file_get_contents($filename);
         } else {
             // ### Link type: Generic ### //
@@ -633,7 +643,9 @@ class Report {
         }
 
         // Encode and replace image if present
-        if (!$img_data) return false;
+        if (!$img_data) {
+            return false;
+        }
         $img_base64 = base64_encode($img_data);
         $img->setAttribute('src', 'data:'.self::ALLOWED_IMAGE_TYPES[$img_ext].';base64,'.$img_base64);
 
@@ -651,10 +663,14 @@ class Report {
      */
     protected static function ensure_absolute_url(string $url, string $base): string {
         /* return if already absolute URL */
-        if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
+        if (parse_url($url, PHP_URL_SCHEME) != '') {
+            return $url;
+        }
 
         /* queries and anchors */
-        if ($url[0]=='#' || $url[0]=='?') return $base.$url;
+        if ($url[0] == '#' || $url[0] == '?') {
+            return $base.$url;
+        }
 
         /* parse base URL and convert to local variables: $scheme, $host, $path */
         extract(parse_url($base));
@@ -663,14 +679,16 @@ class Report {
         $path = preg_replace('#/[^/]*$#', '', $path);
 
         /* destroy path if relative url points to root */
-        if ($url[0] == '/') $path = '';
+        if ($url[0] == '/') {
+            $path = '';
+        }
 
         /* dirty absolute URL */
         $abs = "$host$path/$url";
 
         /* replace '//' or '/./' or '/foo/../' with '/' */
-        $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
-        for ($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
+        $re = ['#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'];
+        for ($n = 1; $n > 0; $abs = preg_replace($re, '/', $abs, -1, $n)) {}
 
         /* absolute URL is ready! */
         return $scheme.'://'.$abs;

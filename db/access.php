@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [
-    # Capability to view the quiz archiver report page.
+    // Capability to view the quiz archiver report page.
     'mod/quiz_archiver:view' => [
         'riskbitmask' => (RISK_PERSONAL),
         'captype' => 'read',
@@ -36,7 +36,7 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
-    # Capability to create and delete quiz archives.
+    // Capability to create and delete quiz archives.
     'mod/quiz_archiver:archive' => [
         'riskbitmask' => (RISK_PERSONAL | RISK_DATALOSS),
         'captype' => 'write',
@@ -46,7 +46,7 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
-    # Capability to use the webservice. Required for the webservice user.
+    // Capability to use the webservice. Required for the webservice user.
     'mod/quiz_archiver:use_webservice' => [
         'riskbitmask' => (RISK_PERSONAL | RISK_DATALOSS),
         'captype' => 'write',

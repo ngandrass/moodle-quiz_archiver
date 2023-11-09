@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace quiz_archiver\external;
 
 use core_external\external_api;
@@ -83,13 +98,13 @@ class get_attempts_metadata extends external_api {
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Acquire required data objects
-        if (!$course = $DB->get_record('course', array('id' => $params['courseid']))) {
+        if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
             throw new \invalid_parameter_exception("No course with given courseid found");
         }
         if (!$cm = get_coursemodule_from_instance("quiz", $params['quizid'], $params['courseid'])) {
             throw new \invalid_parameter_exception("No course module with given cmid found");
         }
-        if (!$quiz = $DB->get_record('quiz', array('id' => $params['quizid']))) {
+        if (!$quiz = $DB->get_record('quiz', ['id' => $params['quizid']])) {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
         }
 
