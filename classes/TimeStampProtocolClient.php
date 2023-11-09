@@ -51,6 +51,8 @@ class TimeStampProtocolClient {
     }
 
     /**
+     * Returns the URL of the TSP server
+     *
      * @return string URL of the TSP server
      */
     public function get_server_url() {

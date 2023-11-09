@@ -34,6 +34,9 @@ use quiz_archiver\output\job_overview_table;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * The quiz archiver report class.
+ */
 class quiz_archiver_report extends report_base {
 
     /** @var object course object. */
@@ -49,6 +52,12 @@ class quiz_archiver_report extends report_base {
     /** @var Report internal report instance */
     protected Report $report;
 
+    /**
+     * Creates a new quiz_archiver_report instance and automatically loads the
+     * Moodle config for this plugin.
+     *
+     * @throws dml_exception
+     */
     public function __construct() {
         $this->config = get_config('quiz_archiver');
     }

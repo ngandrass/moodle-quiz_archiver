@@ -24,6 +24,9 @@ use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * API endpoint to generate a quiz attempt report
+ */
 class generate_attempt_report extends external_api {
 
     /**

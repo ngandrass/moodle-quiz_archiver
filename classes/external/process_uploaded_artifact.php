@@ -25,6 +25,10 @@ use quiz_archiver\FileManager;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * API endpoint to process an artifact that was uploaded by the quiz archiver
+ * worker service
+ */
 class process_uploaded_artifact extends external_api {
 
     /**

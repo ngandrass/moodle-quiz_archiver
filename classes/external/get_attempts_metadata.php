@@ -25,6 +25,9 @@ use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * API endpoint to access quiz attempt metadata
+ */
 class get_attempts_metadata extends external_api {
 
     /**

@@ -29,6 +29,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/lib/formslib.php');
 
 
+/**
+ * Form to trigger deletion of an archive job
+ */
 class job_delete_form extends \moodleform {
 
     /**

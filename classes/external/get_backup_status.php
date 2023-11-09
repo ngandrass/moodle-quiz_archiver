@@ -25,6 +25,9 @@ use quiz_archiver\BackupManager;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * API endpoint to get the status of a Moodle backup
+ */
 class get_backup_status extends external_api {
 
     /**

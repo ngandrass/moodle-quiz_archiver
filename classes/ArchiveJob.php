@@ -26,6 +26,10 @@ namespace quiz_archiver;
 
 defined('MOODLE_INTERNAL') || die();
 
+
+/**
+ * A single quiz archive job
+ */
 class ArchiveJob {
 
     /** @var int Database id of this job */
@@ -56,12 +60,19 @@ class ArchiveJob {
     const JOB_SETTINGS_TABLE_NAME = 'quiz_archiver_job_settings';
 
     // Job status values
+    /** @var string Job status: Unknown */
     const STATUS_UNKNOWN = 'UNKNOWN';
+    /** @var string Job status: Uninitialized */
     const STATUS_UNINITIALIZED = 'UNINITIALIZED';
+    /** @var string Job status: Awaiting processing */
     const STATUS_AWAITING_PROCESSING = 'AWAITING_PROCESSING';
+    /** @var string Job status: Running */
     const STATUS_RUNNING = 'RUNNING';
+    /** @var string Job status: Finished */
     const STATUS_FINISHED = 'FINISHED';
+    /** @var string Job status: Failed */
     const STATUS_FAILED = 'FAILED';
+    /** @var string Job status: Timeout */
     const STATUS_TIMEOUT = 'TIMEOUT';
 
     /**
@@ -110,9 +121,9 @@ class ArchiveJob {
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that initiated this job
+     * @param string $wstoken The webservice token that is allowed to write to this job via API
      * @param array $settings Map of settings to store for this job and display in the report interface
      * @param string $status (optional) Initial status of the job. Default to STATUS_UNKNOWN
-     * @param string $wstoken The webservice token that is allowed to write to this job via API
      * @return ArchiveJob
      * @throws \dml_exception On database error
      * @throws \moodle_exception If the job already exists inside the database
@@ -198,6 +209,7 @@ class ArchiveJob {
     /**
      * Determines whether a job with the given job UUID exists inside the database
      *
+     * @param string $jobid UUID to query for
      * @return bool True if this job is persisted inside the database
      */
     protected static function exists_in_db(string $jobid): bool {
@@ -471,6 +483,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the internal database ID of this job
+     *
      * @return int Internal database ID of this job
      */
     public function get_id(): int {
@@ -478,6 +492,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the UUID of this job
+     *
      * @return string UUID of the job, as assigned by the archive worker
      */
     public function get_jobid(): string {
@@ -485,6 +501,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the ID of the course this job is associated with
+     *
      * @return int ID of the course this job is associated with
      */
     public function get_course_id(): int {
@@ -492,6 +510,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the ID of the course module this job is associated with
+     *
      * @return int ID of the course module this job is associated with
      */
     public function get_cm_id(): int {
@@ -499,6 +519,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the ID of the quiz this job is associated with
+     *
      * @return int ID of the quiz this job is associated with
      */
     public function get_quiz_id(): int {
@@ -506,6 +528,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the ID of the user that owns this job
+     *
      * @return int ID of the user that owns this job
      */
     public function get_user_id(): int {
@@ -559,6 +583,8 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the status indicator display arguments based on the given job status
+     *
      * @return array Status of this job, translated for display
      * @throws \coding_exception
      */

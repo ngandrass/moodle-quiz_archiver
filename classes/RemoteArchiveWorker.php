@@ -28,6 +28,10 @@ use curl;
 
 defined('MOODLE_INTERNAL') || die();
 
+
+/**
+ * A client to interface the remote archive worker service
+ */
 class RemoteArchiveWorker {
 
     /** @var string URL of the remote Quiz Archive Worker instance */
@@ -48,6 +52,7 @@ class RemoteArchiveWorker {
      * @param $server_url string URL of the remote Archive Worker instance
      * @param $connection_timeout int Seconds to wait until a connection can be established before aborting
      * @param $request_timeout int Seconds to wait for the request to complete before aborting
+     * @throws \dml_exception
      */
     public function __construct(string $server_url, int $connection_timeout, int $request_timeout) {
         $this->server_url = $server_url;

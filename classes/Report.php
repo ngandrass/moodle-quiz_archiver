@@ -31,6 +31,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/quiz/locallib.php");  // Required for legacy mod_quiz functions ...
 
+
+/**
+ * Quiz report renderer
+ */
 class Report {
 
     /** @var object Moodle admin settings object */
@@ -71,6 +75,8 @@ class Report {
     ];
 
     /**
+     * Creates a new Report
+     *
      * @param object $course
      * @param object $cm
      * @param object $quiz

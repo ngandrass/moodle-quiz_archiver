@@ -29,6 +29,9 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/lib/formslib.php');
 
 
+/**
+ * Form to trigger manual archive signing
+ */
 class job_sign_form extends \moodleform {
 
     /**

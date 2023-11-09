@@ -63,6 +63,8 @@ class BackupManager {
     ];
 
     /**
+     * Creates a new BackupManager instance
+     *
      * @param string $backupid ID of the backup_controller associated with this backup
      * @throws \dml_exception
      */
@@ -80,6 +82,8 @@ class BackupManager {
     }
 
     /**
+     * Determines if the backup finished successfully
+     *
      * @return bool True if backup finished successfully
      */
     public function is_finished_successfully(): bool {
@@ -87,6 +91,8 @@ class BackupManager {
     }
 
     /**
+     * Determines if the backup failed
+     *
      * @return bool True if backup finished with error
      */
     public function is_failed(): bool {
@@ -94,6 +100,8 @@ class BackupManager {
     }
 
     /**
+     * Retrieves the current status of this backup
+     *
      * @return int Raw backup status value according to backup_controller::STATUS_*
      * @throws \dml_exception
      */

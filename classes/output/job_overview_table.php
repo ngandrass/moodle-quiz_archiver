@@ -32,6 +32,9 @@ global $CFG;
 require_once($CFG->libdir.'/tablelib.php');
 
 
+/**
+ * Table renderer for the job overview table
+ */
 class job_overview_table extends \table_sql {
 
     /**
@@ -79,23 +82,58 @@ class job_overview_table extends \table_sql {
         $this->collapsible(false);
     }
 
+    /**
+     * Column renderer for the timecreated column
+     *
+     * @param $values \stdClass Values of the current row
+     * @return string HTML code to be displayed
+     */
     public function col_timecreated($values) {
         return date('Y-m-d\<\b\r\\>H:i:s', $values->timecreated);
     }
 
+    /**
+     * Column renderer for the status column
+     *
+     * @param $values \stdClass Values of the current row
+     * @return string HTML code to be displayed
+     * @throws \coding_exception
+     */
     public function col_status($values) {
         $s = ArchiveJob::get_status_display_args($values->status);
         return '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
     }
 
+    /**
+     * Column renderer for the user column
+     *
+     * @param $values \stdClass Values of the current row
+     * @return string HTML code to be displayed
+     * @throws \moodle_exception
+     */
     public function col_user($values) {
         return '<a href="'.new \moodle_url('/user/profile.php', ['id' => $values->userid]).'">'.$values->username.'</a>';
     }
 
+    /**
+     * Column renderer for the filesize column
+     *
+     * @param $values \stdClass Values of the current row
+     * @return string HTML code to be displayed
+     * @throws \coding_exception
+     */
     public function col_filesize($values) {
         return $values->filesize !== null ? display_size($values->filesize) : '';
     }
 
+    /**
+     * Column renderer for the actions column
+     *
+     * @param $values \stdClass Values of the current row
+     * @return string HTML code to be displayed
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
     public function col_actions($values) {
         $html = '';
 

@@ -24,6 +24,9 @@ use quiz_archiver\ArchiveJob;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * API endpoint to update the status of a quiz archiver job
+ */
 class update_job_status extends external_api {
 
     /**

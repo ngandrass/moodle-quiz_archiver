@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Custom code to be run to update the plugin database.
+ *
+ * @param int $oldversion The version we are upgrading from
  */
 function xmldb_quiz_archiver_upgrade($oldversion) {
     global $DB;

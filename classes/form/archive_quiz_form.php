@@ -30,6 +30,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 
+
+/**
+ * Form to initiate a new quiz archive job
+ */
 class archive_quiz_form extends \moodleform {
 
     /** @var string Name of the quiz to be exportet */
@@ -38,6 +42,9 @@ class archive_quiz_form extends \moodleform {
     protected int $num_attempts;
 
     /**
+     * Creates a new archive_quiz_form instance
+     *
+     * @param string $quiz_name Name of the quiz to be exported
      * @param int $num_attempts Number of attempts to be exported
      */
     public function __construct(string $quiz_name, int $num_attempts) {
