@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.6.2 (2023110900)
+
+- Honor Moodle proxy configuration and other network settings during requests
+- Preparation for listing within the Moodle plugin directory
+
+
 ## Version 0.6.1 (2023110800)
 
 - Support for quiz archive signing using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol) according to [RFC 3161](https://www.ietf.org/rfc/rfc3161.txt).
