@@ -24,6 +24,7 @@
 
 namespace quiz_archiver;
 
+use curl;
 use mod_quiz\quiz_attempt;
 
 defined('MOODLE_INTERNAL') || die();
@@ -624,17 +625,11 @@ class Report {
         } else {
             // ### Link type: Generic ### //
             // No special local file access. Try to download via HTTP request
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $img_src_url);
-            curl_setopt($curl, CURLOPT_HEADER, false);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-
-            $img_data = curl_exec($curl);
-            curl_close($curl);
-            if ($img_data === false) return false;
+            $c = new curl();
+            $img_data = $c->get($img_src_url);  // Curl handle automatically closed
+            if ($c->get_info()['http_code'] !== 200 || $img_data === false) {
+                return false;
+            }
         }
 
         // Encode and replace image if present

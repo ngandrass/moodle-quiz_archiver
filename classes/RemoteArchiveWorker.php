@@ -24,6 +24,8 @@
 
 namespace quiz_archiver;
 
+use curl;
+
 defined('MOODLE_INTERNAL') || die();
 
 class RemoteArchiveWorker {
@@ -66,17 +68,18 @@ class RemoteArchiveWorker {
      * @param $task_moodle_backups mixed Array containing payload data for
      * the moodle backups task, or null if it should not be executed
      *
+     * @return mixed Job information returned from the archive worker on success
      * @throws \UnexpectedValueException if the communication to the archive worker
      * service or decoding of the response failed
      * @throws \RuntimeException if the archive worker service reported an error
+     * @throws \coding_exception
      *
-     * @return mixed Job information returned from the archive worker on success
      */
     public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, $task_archive_quiz_attempts, $task_moodle_backups) {
         global $CFG;
         $moodle_url_base = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
-        // Prepare and execute request
+        // Prepare request payload
         $request_payload = json_encode([
             "api_version" => self::API_VERSION,
             "moodle_ws_url" => $moodle_url_base.'/webservice/rest/server.php',
@@ -89,10 +92,19 @@ class RemoteArchiveWorker {
             "task_moodle_backups" => $task_moodle_backups
         ]);
 
-        $ch = $this->prepare_curl_request($request_payload);
-        $result = curl_exec($ch);
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        // Execute request
+        // Moodle curl wrapper automatically closes curl handle after requests. No need to call curl_close() manually.
+        $c = new curl(['ignoresecurity' => true]); // Ignore URL filter since we require custom ports and the URL is only configurable by admins
+        $result = $c->post($this->server_url, $request_payload, [
+            'CURLOPT_CONNECTTIMEOUT' => $this->connection_timeout,
+            'CURLOPT_TIMEOUT' => $this->request_timeout,
+            'CURLOPT_HTTPHEADER' => [
+                'Content-Type: application/json',
+                'Content-Length: '.strlen($request_payload)
+            ]
+        ]);
+
+        $http_status = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string
         $data = json_decode($result);
 
         // Handle errors
@@ -109,34 +121,6 @@ class RemoteArchiveWorker {
 
         // Decoded JSON data containing jobid and job_status returned on success
         return $data;
-    }
-
-    /**
-     * Prepares a JSON POST-request containing given $json_data to $this->server_url.
-     *
-     * @param string $json_data Encoded JSON-data to post to the server
-     *
-     * @return resource Preconfigured CURL resource
-     */
-    private function prepare_curl_request($json_data) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->server_url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_VERBOSE, 0);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connection_timeout);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->request_timeout);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($json_data)
-        ]);
-
-        return $ch;
     }
 
 }

@@ -24,6 +24,8 @@
 
 namespace quiz_archiver;
 
+use curl;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -70,37 +72,23 @@ class TimeStampProtocolClient {
         $tsreq = self::createTimeStampReq($sha256hash, $nonce);
 
         // Send TimeStampRequest to TSP server
-        $ch = curl_init();
-        $curl_error = null;
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $this->server_url,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $tsreq,
-            CURLOPT_HTTPHEADER => [
+        $c = new curl();
+        $tsresp = $c->post($this->server_url, $tsreq, [
+            'CURLOPT_SSL_VERIFYPEER' => true,
+            'CURLOPT_CONNECTTIMEOUT' => 15,
+            'CURLOPT_TIMEOUT' => 15,
+            'CURLOPT_HTTPHEADER' => [
                 'Content-Type: ' . self::CONTENT_TYPE_TIMESTAMP_QUERY,
                 'Content-Length: ' . strlen($tsreq),
             ],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_AUTOREFERER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 5,
+
         ]);
-        $tsresp = curl_exec($ch);
-
-        if (curl_error($ch)) {
-            $curl_error = curl_error($ch);
-        } else {
-            $curl_info = curl_getinfo($ch);
-        }
-
-        curl_close($ch);
 
         // Error handling
-        if ($curl_error !== null) {
-            throw new \Exception(get_string('tsp_client_error_curl', 'quiz_archiver', $curl_error));
+        if ($c->error) {  // Moodle curl wrapper provides no getter for curl error message
+            throw new \Exception(get_string('tsp_client_error_curl', 'quiz_archiver', $c->error));
+        } else {
+            $curl_info = $c->get_info();
         }
 
         if ($curl_info['http_code'] !== 200) {
@@ -111,6 +99,7 @@ class TimeStampProtocolClient {
             throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curl_info['content_type']));
         }
 
+        // Success
         return [
             'query' => $tsreq,
             'reply' => $tsresp
