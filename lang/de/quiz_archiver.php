@@ -132,3 +132,21 @@ $string['setting_worker_url_desc'] = 'URL des Archive Worker Services, der für 
 $string['error_worker_connection_failed'] = 'Verbindung zum Archive Worker fehlgeschlagen.';
 $string['error_worker_reported_error'] = 'Der Archive Worker hat einen Fehler gemeldet: {$a}';
 $string['error_worker_unknown'] = 'Ein unbekannter Fehler ist beim Senden des Auftrags zum Archive Worker aufgetreten.';
+
+// Privacy
+$string['privacy:metadata:core_files'] = 'Das Quiz Archiver Plugin speichert erstellte Testarchive im Moodle Dateisystem.';
+$string['privacy:metadata:quiz_archiver_jobs'] = 'Metadaten über erstellte Testarchive.';
+$string['privacy:metadata:quiz_archiver_jobs:courseid'] = 'ID des Kurses der zu einem Testarchiv gehört.';
+$string['privacy:metadata:quiz_archiver_jobs:cmid'] = 'ID des Kursmoduls das zu einem Testarchiv gehört.';
+$string['privacy:metadata:quiz_archiver_jobs:quizid'] = 'ID des Tests der zu einem Testarchiv gehört.';
+$string['privacy:metadata:quiz_archiver_jobs:userid'] = 'ID des Nutzers der ein Testarchiv erstellt hat.';
+$string['privacy:metadata:quiz_archiver_jobs:timecreated'] = 'Zeitpunkt der Erstellung des Testarchivs.';
+$string['privacy:metadata:quiz_archiver_jobs:timemodified'] = 'Zeitpunkt der letzten Änderung des Testarchivs (z.B.: Status-Update).';
+$string['privacy:metadata:quiz_archiver_job_settings'] = 'Einstellungen während der Erstellung eines Testarchivs (z.B.: eingeschlossene Abschnitte, Anzahl der Versuche, ...).';
+$string['privacy:metadata:quiz_archiver_job_settings:key'] = 'Der Name einer entsprechenden Einstellung (z.B.: Anzahl der Versuche).';
+$string['privacy:metadata:quiz_archiver_job_settings:value'] = 'Der Wert einer entsprechenden Einstellung (z.B.: 42).';
+$string['privacy:metadata:quiz_archiver_tsp'] = 'Time-Stamp Protocol (TSP) Daten über die Signierung eines Testarchivs.';
+$string['privacy:metadata:quiz_archiver_tsp:timecreated'] = 'Zeitpunkt der Signierung des Testarchivs.';
+$string['privacy:metadata:quiz_archiver_tsp:server'] = 'Die URL des TSP Servers, der das Testarchiv signiert hat.';
+$string['privacy:metadata:quiz_archiver_tsp:timestampquery'] = 'Die TimestampQuery, der an den TSP Server gesendet wurde.';
+$string['privacy:metadata:quiz_archiver_tsp:timestampreply'] = 'Die TimestampReply, die vom TSP Server empfangen wurde.';
