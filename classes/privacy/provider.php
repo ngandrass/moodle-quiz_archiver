@@ -113,6 +113,7 @@ class provider implements
         $userid = $contextlist->get_user()->id;
 
         // Process all contexts
+        $subCtxBase = get_string('pluginname', 'quiz_archiver');
         foreach ($contextlist->get_contexts() as $ctx) {
             $ctxData = [];
 
@@ -133,7 +134,11 @@ class provider implements
                 'userid' => $userid,
             ]);
 
+            // Export each job
             foreach ($jobs as $job) {
+                // Set correct subcontext for the job
+                $subCtx = [$subCtxBase, "Job: {$job->jobid}"];
+
                 // Get job settings
                 $job_settings = $DB->get_records(
                     ArchiveJob::JOB_SETTINGS_TABLE_NAME,
@@ -157,7 +162,7 @@ class provider implements
                 }
 
                 // Add job data to current context
-                $ctxData["Archive Job: {$job->jobid}"] = [
+                writer::with_context($ctx)->export_data($subCtx, (object) [
                     'courseid' => $job->courseid,
                     'cmid' => $job->cmid,
                     'quizid' => $job->quizid,
@@ -166,16 +171,15 @@ class provider implements
                     'timemodified' => $job->timemodified,
                     'settings' => $job_settings,
                     'tsp' => $tsp_data,
-                ];
+                ]);
 
-                // TODO: Add artifact file handling
+                if ($job->artifactfileid) {
+                    writer::with_context($ctx)->export_file(
+                        $subCtx,
+                        get_file_storage()->get_file_by_id($job->artifactfileid)
+                    );
+                }
             }
-
-            // Export data to context
-            writer::with_context($ctx)->export_data(
-                [get_string('pluginname', 'quiz_archiver')],
-                (object) $ctxData
-            );
         }
     }
 
