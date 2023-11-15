@@ -29,6 +29,9 @@ use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\userlist;
+use core_privacy\local\request\writer;
+use quiz_archiver\ArchiveJob;
+use quiz_archiver\TSPManager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -71,13 +74,109 @@ class provider implements
     }
 
     public static function get_contexts_for_userid(int $userid): contextlist {
-        // TODO: Implement get_contexts_for_userid() method.
         $contextlist = new contextlist();
+
+        // TODO: Handle userdata inside the quiz archives
+
+        // Get all contexts where the user has a quiz archiver job
+        // Note: The context stays the same across all entries for a single
+        //       archive job. Hence, we only query the main job table.
+        $contextlist->add_from_sql("
+            SELECT DISTINCT c.id
+            FROM {context} c
+                JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+                JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                JOIN {quiz} q ON q.id = cm.instance
+                JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
+                    WHERE (
+                    j.userid        = :userid
+                    )
+            ",
+            [
+                'modname'       => 'quiz',
+                'contextlevel'  => CONTEXT_MODULE,
+                'userid'        => $userid,
+            ]
+        );
+
         return $contextlist;
     }
 
+    /**
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
     public static function export_user_data(approved_contextlist $contextlist) {
-        // TODO: Implement export_user_data() method.
+        // TODO: Handle userdata inside the quiz archives
+        global $DB;
+
+        $userid = $contextlist->get_user()->id;
+
+        // Process all contexts
+        foreach ($contextlist->get_contexts() as $ctx) {
+            $ctxData = [];
+
+            // Get existing jobs for current context
+            $jobs = $DB->get_records_sql("
+                SELECT *
+                FROM {context} c
+                    JOIN {course_modules} cm ON cm.id = c.instanceid
+                    JOIN {modules} m ON m.id = cm.module
+                    JOIN {quiz} q ON q.id = cm.instance
+                    JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
+                WHERE (
+                    j.userid = :userid AND
+                    c.id = :contextid
+                )
+            ", [
+                'contextid' => $ctx->id,
+                'userid' => $userid,
+            ]);
+
+            foreach ($jobs as $job) {
+                // Get job settings
+                $job_settings = $DB->get_records(
+                    ArchiveJob::JOB_SETTINGS_TABLE_NAME,
+                    ['jobid' => $job->id],
+                    '',
+                    'key, value'
+                );
+
+                // Get TSP data
+                $tsp_data = $DB->get_record(
+                    TSPManager::TSP_TABLE_NAME,
+                    ['jobid' => $job->id],
+                    'timecreated, server, timestampquery, timestampreply',
+                    IGNORE_MISSING
+                );
+
+                // Encode TSP data as base64 if present
+                if ($tsp_data) {
+                    $tsp_data->timestampquery = base64_encode($tsp_data->timestampquery);
+                    $tsp_data->timestampreply = base64_encode($tsp_data->timestampreply);
+                }
+
+                // Add job data to current context
+                $ctxData["Archive Job: {$job->jobid}"] = [
+                    'courseid' => $job->courseid,
+                    'cmid' => $job->cmid,
+                    'quizid' => $job->quizid,
+                    'userid' => $job->userid,
+                    'timecreated' => $job->timecreated,
+                    'timemodified' => $job->timemodified,
+                    'settings' => $job_settings,
+                    'tsp' => $tsp_data,
+                ];
+
+                // TODO: Add artifact file handling
+            }
+
+            // Export data to context
+            writer::with_context($ctx)->export_data(
+                [get_string('pluginname', 'quiz_archiver')],
+                (object) $ctxData
+            );
+        }
     }
 
     public static function delete_data_for_all_users_in_context(\context $context) {
@@ -89,7 +188,29 @@ class provider implements
     }
 
     public static function get_users_in_context(userlist $userlist) {
-        // TODO: Implement get_users_in_context() method.
+        // TODO: Handle userdata inside the quiz archives
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_module) {
+            return;
+        }
+
+        // Job metadata
+        $userlist->add_from_sql(
+            'userid',
+            "
+            SELECT j.userid
+            FROM {course_modules} cm
+                JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                JOIN {quiz} q ON q.id = cm.instance
+                JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
+            WHERE cm.id = :instanceid
+            ",
+            [
+                'instanceid'    => $context->instanceid,
+                'modulename'    => 'quiz',
+            ]
+        );
     }
 
     public static function delete_data_for_users(approved_userlist $userlist) {
