@@ -34,6 +34,10 @@ service to remove load from Moodle and to eliminate the need to install a large
 number of software dependencies on the webserver. It can easily be [deployed
 using Docker](https://github.com/ngandrass/moodle-quiz-archive-worker#installation).
 
+Available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_archiver):\
+[![Moodle Plugin Directory](doc/moodle-plugin-directory-button.png)](https://moodle.org/plugins/quiz_archiver)
+
+
 -----
 
 ## Features
