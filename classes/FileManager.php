@@ -41,12 +41,18 @@ class FileManager {
     const COMPONENT_NAME = 'quiz_archiver';
     /** @var string Name of the filearea all artifact files should be stored in */
     const ARTIFACTS_FILEAREA_NAME = 'artifact';
+    /** @var string Name of the filearea to store temporary files in */
+    const TEMP_FILEAREA_NAME = 'temp';
     /** @var string Name of the virtual filearea all TSP files are served from */
     const TSP_DATA_FILEAREA_NAME = 'tspdata';
     /** @var string Name of the virtual TSP query file */
     const TSP_DATA_QUERY_FILENAME = 'timestampquery';
     /** @var string Name of the virtual TSP reply file */
     const TSP_DATA_REPLY_FILENAME = 'timestampreply';
+    /** @var string Name of the metadata file within artifact archives */
+    const ARTIFACT_METADATA_FILE = 'attempts_metadata.csv';
+    /** @var int Lifetime of temporary attempt archive export files in seconds */
+    const ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS = 60; // FIXME: Set back to 86400
 
     /** @var int ID of the course this FileManager is associated with */
     protected int $course_id;
@@ -307,6 +313,114 @@ class FileManager {
         echo $filecontents;
         ob_flush();
         die;
+    }
+
+    /**
+     * Extracts the data of a single attempt from a given artifact file into an
+     * independent archive.
+     *
+     * @param stored_file $artifactfile Archive artifact file to extract attempt from
+     * @param int $attemptid ID of the attempt to extract
+     * @return stored_file|null New independent attempt archive or null on skip
+     * @throws \coding_exception
+     * @throws \moodle_exception On error
+     */
+    public function extract_attempt_data_from_artifact(stored_file $artifactfile, int $jobid, int $attemptid): stored_file | null {
+        global $CFG;
+
+        // Prepare
+        $packer = get_file_packer('application/x-gzip');
+        $workdir = "{$CFG->tempdir}/quiz_archiver/jid{$jobid}_cid{$this->course_id}_cmid{$this->cm_id}_qid{$this->quiz_id}_aid{$attemptid}";
+
+        // Wrap in try-catch to ensure cleanup on exit
+        try {
+            // Extract metadata file from artifact and find relevant path information
+            $packer->extract_to_pathname($artifactfile, $workdir, [
+                self::ARTIFACT_METADATA_FILE,
+            ]);
+            $metadata = array_map('str_getcsv', file($workdir."/".self::ARTIFACT_METADATA_FILE));
+
+            if ($metadata[0][0] !== 'attemptid' || $metadata[0][9] !== 'path') {
+                // Fail silently for old archives for now
+                if ($metadata[0][9] === 'report_filename') {
+                    throw new \invalid_state_exception('Old artifact format is skipped');
+                } else {
+                    throw new \moodle_exception('Invalid metadata file in artifact archive');
+                }
+            }
+
+            // Search for attempt path
+            $attemptpath = null;
+            foreach ($metadata as $row) {
+                if ($row[0] == $attemptid) {
+                    $attemptpath = $row[9];
+                    break;
+                }
+            }
+
+            if (!$attemptpath) {
+                throw new \moodle_exception('Attempt not found in metadata file');
+            }
+
+            // Extract attempt data from artifact
+            // All files must be given explicitly to tgz_packer::extract_to_pathname(). Wildcards
+            // are unsupported. Therefore, we list the contents and filter the index. This reduces
+            // space and time complexity compared to extracting the whole archive at once.
+            $attemptfiles = array_map(
+                fn($file): string => $file->pathname,
+                array_filter($packer->list_files($artifactfile), function($file) use ($attemptpath) {
+                    return strpos($file->pathname, ltrim($attemptpath, '/')) === 0;
+                })
+            );
+            if (!$packer->extract_to_pathname($artifactfile, $workdir."/attemptdata", $attemptfiles)) {
+                throw new \moodle_exception('Failed to extract attempt data from artifact archive');
+            }
+
+            // Create new archive from extracted attempt data into temp filearea
+            $export_expiry = time() + self::ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS;
+            $export_file = $packer->archive_to_storage(
+                [
+                    $workdir."/attemptdata"
+                ],
+                $this->context->id,
+                self::COMPONENT_NAME,
+                self::TEMP_FILEAREA_NAME,
+                0,
+                "/{$export_expiry}",
+                "attempt_export_jid{$jobid}_cid{$this->course_id}_cmid{$this->cm_id}_qid{$this->quiz_id}_aid{$attemptid}.tar.gz",
+            );
+
+            if (!$export_file) {
+                throw new \moodle_exception('Failed to create attempt data archive');
+            }
+
+            return $export_file;
+        } catch (\Exception $e) {
+            // Ignore skipped archives but always execute cleanup code!
+            if (!($e instanceof \invalid_state_exception)) {
+                throw $e;
+            }
+        } finally {
+            // Cleanup
+            remove_dir($workdir);
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes all files from the temp filearea that are due to delete.
+     *
+     * Files inside self::TEMP_FILEAREA_NAME are stored in within a path that
+     * indicates the unix timestamp of their expiry. When created, the path is
+     * set to the timestamp after which the file can be deleted.
+     *
+     * @param int $max_age_seconds Maximum age of files to keep in seconds
+     * @return int Number of deleted files
+     */
+    public static function cleanup_temp_files(int $max_age_seconds = 86400): int {
+        // TODO: Implement
+        return 0;
     }
 
 }

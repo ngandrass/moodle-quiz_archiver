@@ -298,7 +298,7 @@ class quiz_archiver_report extends report_base {
         $task_archive_quiz_attempts = null;
         if ($export_attempts) {
             $task_archive_quiz_attempts = [
-                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $attempts)),
+                'attemptids' => array_values(array_keys($attempts)),
                 'fetch_metadata' => true,
                 'sections' => $report_sections,
                 'paper_format' => $paper_format,
