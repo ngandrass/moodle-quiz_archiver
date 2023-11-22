@@ -58,6 +58,8 @@ class ArchiveJob {
     const FILES_TABLE_NAME = 'quiz_archiver_files';
     /** @var string Name of the table to store archive job settings */
     const JOB_SETTINGS_TABLE_NAME = 'quiz_archiver_job_settings';
+    /** @var string Name of the table to store attemptids and userids */
+    const ATTEMPTS_TABLE_NAME = 'quiz_archiver_attempts';
 
     // Job status values
     /** @var string Job status: Unknown */
@@ -122,13 +124,25 @@ class ArchiveJob {
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that initiated this job
      * @param string $wstoken The webservice token that is allowed to write to this job via API
+     * @param array $attempts List of quiz attempts to archive, each consisting of an attemptid and a userid
      * @param array $settings Map of settings to store for this job and display in the report interface
      * @param string $status (optional) Initial status of the job. Default to STATUS_UNKNOWN
      * @return ArchiveJob
+     * @throws \coding_exception
      * @throws \dml_exception On database error
      * @throws \moodle_exception If the job already exists inside the database
      */
-    public static function create(string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, string $wstoken, array $settings, string $status = self::STATUS_UNKNOWN): ArchiveJob {
+    public static function create(
+        string $jobid,
+        int $course_id,
+        int $cm_id,
+        int $quiz_id,
+        int $user_id,
+        string $wstoken,
+        array $attempts,
+        array $settings,
+        string $status = self::STATUS_UNKNOWN
+    ): ArchiveJob {
         global $DB;
 
         // Do not re-created jobs!
@@ -158,6 +172,15 @@ class ArchiveJob {
                 'value' => $value === null ? null : strval($value)
             ];
         }, array_keys($settings), $settings));
+
+        // Remember attempts associated with this archive
+        $DB->insert_records(self::ATTEMPTS_TABLE_NAME, array_map(function($data) use ($id): array {
+            return [
+                'jobid' => $id,
+                'userid' => $data->userid,
+                'attemptid' => $data->attemptid
+            ];
+        }, $attempts));
 
         return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $now, $wstoken);
     }
@@ -408,6 +431,7 @@ class ArchiveJob {
             $artifact->delete();
         }
         $DB->delete_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]);
+        $DB->delete_records(self::ATTEMPTS_TABLE_NAME, ['jobid' => $this->id]);
 
         // Delete job from DB
         $DB->delete_records(self::JOB_TABLE_NAME, ['id' => $this->id]);

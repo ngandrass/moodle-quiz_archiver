@@ -291,11 +291,14 @@ class quiz_archiver_report extends report_base {
             0
         );
 
+        // Get attempt metadata
+        $attempts = $this->report->get_attempts();
+
         // Prepare task: Export quiz attempts
         $task_archive_quiz_attempts = null;
         if ($export_attempts) {
             $task_archive_quiz_attempts = [
-                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $this->report->get_attempts())),
+                'attemptids' => array_values(array_map(fn($obj): int => $obj->attemptid, $attempts)),
                 'fetch_metadata' => true,
                 'sections' => $report_sections,
                 'paper_format' => $paper_format,
@@ -318,7 +321,7 @@ class quiz_archiver_report extends report_base {
 
         // Generate job settings array
         $job_settings = [];
-        $job_settings['num_attempts'] = count($this->report->get_attempts());
+        $job_settings['num_attempts'] = count($attempts);
         $job_settings['export_attempts'] = $export_attempts;
         if ($export_attempts) {
             foreach ($report_sections as $section_name => $section_value) {
@@ -348,6 +351,7 @@ class quiz_archiver_report extends report_base {
                 $this->quiz->id,
                 $USER->id,
                 $wstoken,
+                $attempts,
                 $job_settings,
                 $job_metadata->status
             );

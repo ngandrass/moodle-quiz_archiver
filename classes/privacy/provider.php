@@ -88,9 +88,7 @@ class provider implements
                 JOIN {modules} m ON m.id = cm.module AND m.name = :modname
                 JOIN {quiz} q ON q.id = cm.instance
                 JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-                    WHERE (
-                    j.userid        = :userid
-                    )
+            WHERE j.userid = :userid
             ",
             [
                 'modname'       => 'quiz',
@@ -183,14 +181,6 @@ class provider implements
         }
     }
 
-    public static function delete_data_for_all_users_in_context(\context $context) {
-        // TODO: Implement delete_data_for_all_users_in_context() method.
-    }
-
-    public static function delete_data_for_user(approved_contextlist $contextlist) {
-        // TODO: Implement delete_data_for_user() method.
-    }
-
     public static function get_users_in_context(userlist $userlist) {
         // TODO: Handle userdata inside the quiz archives
         $context = $userlist->get_context();
@@ -218,7 +208,15 @@ class provider implements
     }
 
     public static function delete_data_for_users(approved_userlist $userlist) {
-        // TODO: Implement delete_data_for_users() method.
+        // We cannot simply delete data that needs to be archived for a specified amount of time
+    }
+
+    public static function delete_data_for_all_users_in_context(\context $context) {
+        // We cannot simply delete data that needs to be archived for a specified amount of time
+    }
+
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
+        // We cannot simply delete data that needs to be archived for a specified amount of time
     }
 
 }

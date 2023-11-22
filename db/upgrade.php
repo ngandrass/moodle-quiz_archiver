@@ -160,5 +160,28 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023101800, 'quiz', 'archiver');
     }
 
+    if ($oldversion < 2023111500) {
+        // Define table quiz_archiver_attempts to be created.
+        $table = new xmldb_table('quiz_archiver_attempts');
+
+        // Adding fields to table quiz_archiver_attempts.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('jobid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('attemptid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table quiz_archiver_attempts.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('jobid', XMLDB_KEY_FOREIGN, ['jobid'], 'quiz_archiver_jobs', ['id']);
+
+        // Conditionally launch create table for quiz_archiver_attempts.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2023111500, 'quiz', 'archiver');
+    }
+
     return true;
 }
