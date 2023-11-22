@@ -52,7 +52,7 @@ class FileManager {
     /** @var string Name of the metadata file within artifact archives */
     const ARTIFACT_METADATA_FILE = 'attempts_metadata.csv';
     /** @var int Lifetime of temporary attempt archive export files in seconds */
-    const ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS = 60; // FIXME: Set back to 86400
+    const ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS = 86400;
 
     /** @var int ID of the course this FileManager is associated with */
     protected int $course_id;
@@ -317,7 +317,8 @@ class FileManager {
 
     /**
      * Extracts the data of a single attempt from a given artifact file into an
-     * independent archive.
+     * independent archive. Created files are stored inside the temp filearea and
+     * will be automatically deleted after a certain time.
      *
      * @param stored_file $artifactfile Archive artifact file to extract attempt from
      * @param int $attemptid ID of the attempt to extract
@@ -386,7 +387,7 @@ class FileManager {
                 self::COMPONENT_NAME,
                 self::TEMP_FILEAREA_NAME,
                 0,
-                "/{$export_expiry}",
+                "/{$export_expiry}/",
                 "attempt_export_jid{$jobid}_cid{$this->course_id}_cmid{$this->cm_id}_qid{$this->quiz_id}_aid{$attemptid}.tar.gz",
             );
 
@@ -415,12 +416,40 @@ class FileManager {
      * indicates the unix timestamp of their expiry. When created, the path is
      * set to the timestamp after which the file can be deleted.
      *
-     * @param int $max_age_seconds Maximum age of files to keep in seconds
      * @return int Number of deleted files
+     * @throws \dml_exception
      */
-    public static function cleanup_temp_files(int $max_age_seconds = 86400): int {
-        // TODO: Implement
-        return 0;
+    public static function cleanup_temp_files(): int {
+        global $DB;
+
+        // Prepare
+        $fs = get_file_storage();
+        $now = time();
+        $files_deleted = 0;
+
+        // Query using raw SQL to get temp files independent of contextid to speed this up a LOT
+        $tempfilerecords = $DB->get_records_sql("
+            SELECT id, filepath, filesize FROM {files}
+            WHERE component = '".self::COMPONENT_NAME."'
+                AND filearea = '".self::TEMP_FILEAREA_NAME."'
+                AND filepath != '/';
+        ");
+
+        // Delete files that are expired (expiry date in path is smaller than now)
+        foreach ($tempfilerecords as $f) {
+            $match = preg_match('/^\/(?P<expiry>\d+)\/.*$/m', $f->filepath, $matches);
+            if ($match) {
+                $expiry = $matches['expiry'];
+                if ($expiry < $now) {
+                    $fs->get_file_by_id($f->id)->delete();
+                    if ($f->filesize > 0) {
+                        $files_deleted++;
+                    }
+                }
+            }
+        }
+
+        return $files_deleted;
     }
 
 }

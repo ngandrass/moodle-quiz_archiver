@@ -149,3 +149,8 @@ $string['privacy:metadata:quiz_archiver_tsp:timecreated'] = 'The time when the q
 $string['privacy:metadata:quiz_archiver_tsp:server'] = 'The URL of the TSP server that was used to sign the quiz archive.';
 $string['privacy:metadata:quiz_archiver_tsp:timestampquery'] = 'The timestamp query that was sent to the TSP server.';
 $string['privacy:metadata:quiz_archiver_tsp:timestampreply'] = 'The timestamp reply that was received from the TSP server.';
+
+// Tasks
+$string['task_cleanup_temp_files'] = 'Cleanup temporary files';
+$string['task_cleanup_temp_files_start'] = 'Cleaning up expired temporary files ...';
+$string['task_cleanup_temp_files_report'] = 'Deleted {$a} temporary files.';

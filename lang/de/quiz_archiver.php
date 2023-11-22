@@ -150,3 +150,8 @@ $string['privacy:metadata:quiz_archiver_tsp:timecreated'] = 'Zeitpunkt der Signi
 $string['privacy:metadata:quiz_archiver_tsp:server'] = 'Die URL des TSP Servers, der das Testarchiv signiert hat.';
 $string['privacy:metadata:quiz_archiver_tsp:timestampquery'] = 'Die TimestampQuery, der an den TSP Server gesendet wurde.';
 $string['privacy:metadata:quiz_archiver_tsp:timestampreply'] = 'Die TimestampReply, die vom TSP Server empfangen wurde.';
+
+// Tasks
+$string['task_cleanup_temp_files'] = 'Bereinigen temporärer Dateien';
+$string['task_cleanup_temp_files_start'] = 'Räume temporäre Dateien auf ...';
+$string['task_cleanup_temp_files_report'] = '{$a} temporäre Dateien gelöscht.';
