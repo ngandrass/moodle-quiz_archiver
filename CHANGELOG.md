@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.6.3 (2023112200)
+
+- Implement privacy API to ensure GDPR compliance
+- Remember attempts and users that are contained within a given quiz archive
+- Add support to internally extract a single attempt from a full quiz archive
+- Introduce a scheduled task to execute cleanup routines
+
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.1.3`
+is required during archive creation to export individual attempts via the Moodle privacy API.
+
+
 ## Version 0.6.2 (2023110900)
 
 - Honor Moodle proxy configuration and other network settings during requests
