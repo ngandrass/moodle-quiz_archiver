@@ -1,5 +1,10 @@
 # Changelog
 
+## Version x.x.x (XXXXXXXXXX)
+
+- Provide reference quiz, containing all standard Moodle question types
+
+
 ## Version 0.6.3 (2023112200)
 
 - Implement privacy API to ensure GDPR compliance

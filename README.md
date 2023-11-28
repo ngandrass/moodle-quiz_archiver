@@ -371,6 +371,17 @@ steps:
    2. Verify that the output is `Verification: OK` \
       Errors are indicated by `Verification: FAILED`
 
+
+## Testing
+
+For testing, a Moodle course that contains a reference quiz is provided. The quiz
+features an instance of every standard question type that is provided by Moodle.
+Example students are enrolled and possess graded attempts, ready to test the
+archive functionality.
+
+You can import the reference course from the corresponding Moodle backup file
+located at [res/backup-moodle2-course-qa-ref.mbz](res/backup-moodle2-course-qa-ref.mbz).
+
 -----
 
 ## Screenshots
