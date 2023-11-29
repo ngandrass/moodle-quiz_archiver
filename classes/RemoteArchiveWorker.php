@@ -44,7 +44,7 @@ class RemoteArchiveWorker {
     protected \stdClass $config;
 
     /** @var int Version of the used API */
-    public const API_VERSION = 3;
+    public const API_VERSION = 4;
 
     /**
      * RemoteArchiveWorker constructor
@@ -87,6 +87,7 @@ class RemoteArchiveWorker {
         // Prepare request payload
         $request_payload = json_encode([
             "api_version" => self::API_VERSION,
+            "moodle_base_url" => $moodle_url_base,
             "moodle_ws_url" => $moodle_url_base.'/webservice/rest/server.php',
             "moodle_upload_url" => $moodle_url_base.'/webservice/upload.php',
             "wstoken" => $wstoken,
