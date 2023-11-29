@@ -70,6 +70,8 @@ $string['export_report_section_general_feedback'] = 'Allgemeines Fragenfeedback 
 $string['export_report_section_general_feedback_help'] = 'Allgemeines Fragenfeedback im Bericht einschließen';
 $string['export_report_section_history'] = 'Bearbeitungsverlauf einschließen';
 $string['export_report_section_history_help'] = 'Bearbeitungsverlauf der Testfragen im Bericht einschließen';
+$string['export_report_section_attachments'] = 'Dateiabgaben einschließen';
+$string['export_report_section_attachments_help'] = 'Alle Dateiabgaben (z.B. von Aufsätzen/Essay Aufgaben) im Archiv einschließen. Warnung: Dies kann die Archivgröße erheblich erhöhen.';
 $string['job_overview'] = 'Testarchive';
 $string['num_attempts'] = 'Anzahl Testversuche';
 

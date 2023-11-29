@@ -55,6 +55,7 @@ class Report {
         "general_feedback",
         "rightanswer",
         "history",
+        "attachments",
     ];
 
     /** @var array Dependencies of report sections */
@@ -66,6 +67,7 @@ class Report {
         "general_feedback" => ["question"],
         "rightanswer" => ["question"],
         "history" => ["question"],
+        "attachments" => ["question"],
     ];
 
     /** @var string[] Available paper formats for attempt PDFs */
@@ -272,6 +274,77 @@ class Report {
     }
 
     /**
+     * Returns a list of all files that were attached to questions inside the
+     * given attempt
+     *
+     * @param int $attemptid ID of the attempt to get the files from
+     * @return array containing all files that are attached to the questions
+     *               inside the given attempt.
+     *
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function get_attempt_attachments(int $attemptid): array {
+        // Prepare
+        $files = [];
+        $ctx = \context_module::instance($this->cm->id);
+        $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
+
+        // Get all files from all questions inside this attempt
+        foreach ($attemptobj->get_slots() as $slot) {
+            $qa = $attemptobj->get_question_attempt($slot);
+            $qa_files = $qa->get_last_qt_files('attachments', $ctx->id);
+
+            foreach ($qa_files as $qa_file) {
+                $files[] = [
+                    'usageid' => $qa->get_usage_id(),
+                    'slot' => $slot,
+                    'file' => $qa_file,
+                ];
+            }
+        }
+
+        return $files;
+    }
+
+    /**
+     * Returns a list of metadata for all files that were attached to questions
+     * inside the given attempt to be used within the webservice API
+     *
+     * @param int $attemptid ID of the attempt to get the files from
+     * @return array containing the metadata of all files that are attached to
+     * the questions inside the given attempt.
+     *
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function get_attempt_attechments_metadata(int $attemptid): array {
+        $res = [];
+
+        foreach ($this->get_attempt_attachments($attemptid) as $attachment) {
+            $downloadurl = strval(\moodle_url::make_webservice_pluginfile_url(
+                $attachment['file']->get_contextid(),
+                $attachment['file']->get_component(),
+                $attachment['file']->get_filearea(),
+                "{$attachment['usageid']}/{$attachment['slot']}/{$attachment['file']->get_itemid()}",  # YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url() creates and while eating innocent programmers for breakfast ...
+                $attachment['file']->get_filepath(),
+                $attachment['file']->get_filename()
+            ));
+
+            $res[] = (object) [
+                'slot' => $attachment['slot'],
+                'filename' => $attachment['file']->get_filename(),
+                'filesize' => $attachment['file']->get_filesize(),
+                'mimetype' => $attachment['file']->get_mimetype(),
+                'contenthash' => $attachment['file']->get_contenthash(),
+                'downloadurl' => $downloadurl,
+            ];
+        }
+
+        return $res;
+    }
+
+    /**
      * Generates a HTML representation of the quiz attempt
      *
      * @param int $attemptid ID of the attempt this report is for
@@ -285,6 +358,7 @@ class Report {
      */
     public function generate(int $attemptid, array $sections): string {
         global $DB, $PAGE;
+        $ctx = \context_module::instance($this->cm->id);
         $renderer = $PAGE->get_renderer('mod_quiz');
         $html = '';
 
@@ -293,7 +367,7 @@ class Report {
         $attempt = $attemptobj->get_attempt();
         $quiz = $attemptobj->get_quiz();
         $options = \mod_quiz\question\display_options::make_from_quiz($this->quiz, quiz_attempt_state($quiz, $attempt));
-        $options->flags = quiz_get_flag_option($attempt, \context_module::instance($this->cm->id));
+        $options->flags = quiz_get_flag_option($attempt, $ctx);
         $overtime = 0;
 
         if ($attempt->state == quiz_attempt::FINISHED) {
@@ -433,6 +507,7 @@ class Report {
         if ($sections['question']) {
             $slots = $attemptobj->get_slots();
             foreach ($slots as $slot) {
+                // Define display options for this question
                 $originalslot = $attemptobj->get_original_slot($slot);
                 $number = $attemptobj->get_question_number($originalslot);
                 $displayoptions = $attemptobj->get_display_options_with_edit_link(true, $slot, "");
@@ -448,13 +523,13 @@ class Report {
                 $displayoptions->flags = 1;
                 $displayoptions->manualcommentlink = 0;
 
+                // Render question as HTML
                 if ($slot != $originalslot) {
                     $attemptobj->get_question_attempt($slot)->set_max_mark(
                         $attemptobj->get_question_attempt($originalslot)->get_max_mark());
                 }
                 $quba = \question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
                 $html .= $quba->render_question($slot, $displayoptions, $number);
-
             }
         }
 

@@ -18,6 +18,7 @@ namespace quiz_archiver\external;
 
 use core_external\external_api;
 use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\Report;
@@ -50,6 +51,7 @@ class generate_attempt_report extends external_api {
                 'Sections to include in the report',
                 VALUE_REQUIRED
             ),
+            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_OPTIONAL)
         ]);
     }
 
@@ -64,6 +66,18 @@ class generate_attempt_report extends external_api {
             'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_OPTIONAL),
             'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_OPTIONAL),
             'report' => new external_value(PARAM_RAW, 'HTML DOM of the generated quiz attempt report', VALUE_OPTIONAL),
+            'attachments' => new external_multiple_structure(
+                new external_single_structure([
+                    'slot' => new external_value(PARAM_INT, 'Number of the quiz slot this file is attached to', VALUE_REQUIRED),
+                    'filename' => new external_value(PARAM_TEXT, 'Filename of the attachment', VALUE_REQUIRED),
+                    'filesize' => new external_value(PARAM_INT, 'Filesize of the attachment', VALUE_REQUIRED),
+                    'mimetype' => new external_value(PARAM_TEXT, 'Mimetype of the attachment', VALUE_REQUIRED),
+                    'contenthash' => new external_value(PARAM_TEXT, 'Contenthash (SHA-1) of the attachment', VALUE_REQUIRED),
+                    'downloadurl' => new external_value(PARAM_TEXT, 'URL to download the attachment', VALUE_REQUIRED),
+                ]),
+                'Files attached to the quiz attempt',
+                VALUE_OPTIONAL
+            ),
             'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction', VALUE_REQUIRED),
         ]);
     }
@@ -76,6 +90,7 @@ class generate_attempt_report extends external_api {
      * @param int $quizid_raw ID of the quiz
      * @param int $attemptid_raw ID of the quiz attempt
      * @param array $sections_raw Sections to include in the report
+     * @param bool $attachments_raw Whether to check for attempts and include metadata if present
      *
      * @return array According to execute_returns()
      *
@@ -83,7 +98,14 @@ class generate_attempt_report extends external_api {
      * @throws \dml_transaction_exception
      * @throws \moodle_exception
      */
-    public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, int $attemptid_raw, $sections_raw): array {
+    public static function execute(
+        int $courseid_raw,
+        int $cmid_raw,
+        int $quizid_raw,
+        int $attemptid_raw,
+        array $sections_raw,
+        bool $attachments_raw
+    ): array {
         global $DB;
 
         // Validate request
@@ -93,6 +115,7 @@ class generate_attempt_report extends external_api {
             'quizid' => $quizid_raw,
             'attemptid' => $attemptid_raw,
             'sections' => $sections_raw,
+            'attachments' => $attachments_raw,
         ]);
 
         // Check capabilities
@@ -110,6 +133,14 @@ class generate_attempt_report extends external_api {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
         }
 
+        // Prepare response
+        $res = [
+            'courseid' => $params['courseid'],
+            'cmid' => $params['cmid'],
+            'quizid' => $params['quizid'],
+            'attemptid' => $params['attemptid'],
+        ];
+
         // Generate report
         $report = new Report($course, $cm, $quiz);
         if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
@@ -121,14 +152,19 @@ class generate_attempt_report extends external_api {
             throw new \invalid_parameter_exception("No attempt with given attemptid found");
         }
 
-        return [
-            'courseid' => $params['courseid'],
-            'cmid' => $params['cmid'],
-            'quizid' => $params['quizid'],
-            'attemptid' => $params['attemptid'],
-            'report' => $report->generate_full_page($params['attemptid'], $params['sections']),
-            'status' => 'OK',
-        ];
+        $res['report'] = $report->generate_full_page($params['attemptid'], $params['sections']);
+
+        // Check for attachments
+        if ($params['attachments']) {
+            $res['attachments'] = $report->get_attempt_attechments_metadata($params['attemptid']);
+        } else {
+            $res['attachments'] = [];
+        }
+
+        // Return response
+        $res['status'] = 'OK';
+
+        return $res;
     }
 
 }

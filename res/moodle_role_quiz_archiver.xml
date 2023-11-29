@@ -12,7 +12,9 @@
 	<allowswitch/>
 	<allowview/>
 	<permissions>
+		<allow>mod/quiz:reviewmyattempts</allow>
 		<allow>mod/quiz:view</allow>
+		<allow>mod/quiz:viewreports</allow>
 		<allow>mod/quiz_archiver:use_webservice</allow>
 		<allow>moodle/backup:anonymise</allow>
 		<allow>moodle/backup:backupactivity</allow>

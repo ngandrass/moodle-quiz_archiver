@@ -70,6 +70,8 @@ $string['export_report_section_general_feedback'] = 'Include general question fe
 $string['export_report_section_general_feedback_help'] = 'Display the general feedback for each question inside the report.';
 $string['export_report_section_history'] = 'Include answer history';
 $string['export_report_section_history_help'] = 'Display the answer history for each question inside the report.';
+$string['export_report_section_attachments'] = 'Include file attachments';
+$string['export_report_section_attachments_help'] = 'Include all file attachments (e.g., essay file submissions) inside the archive. Warning: This can significantly increase the archive size.';
 $string['job_overview'] = 'Archives';
 $string['num_attempts'] = 'Number of attempts';
 
