@@ -43,13 +43,15 @@ Available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_arch
 ## Features
 
 - Archiving of quiz attempts as PDF and HTML files
+- Support for file submissions / attachments (e.g., essay files)
 - Quiz attempt reports are accessible completely independent of Moodle, hereby
   ensuring long-term readability
 - Customization of generated PDF and HTML reports
   - Allows creation of reduced reports, e.g., without example solutions, for
     handing out to students during inspection
-- Support for complex content and question types, including MathJax formulas,
-  STACK plots, and other question / content types that require JavaScript processing
+- Support for complex content and question types, including Drag and Drop, MathJax
+  formulas, STACK plots, and other question / content types that require JavaScript
+  processing
 - Quiz attempt reports are fully text-searchable, including mathematical formulas 
 - Moodle backups (`.mbz`) of both the quiz and the whole course are supported
 - Generation of checksums for every file within the archive and the archive itself
