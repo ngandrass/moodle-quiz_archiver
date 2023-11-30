@@ -1,8 +1,22 @@
 # Changelog
 
-## Version x.x.x (XXXXXXXXXX)
+## Version 1.0.0 (20231130)
 
+- Switch from BETA to STABLE status! :)
+- Backwards-compatibility to Moodle 4.1 (LTS) until end of support on 08-12-2025
+- Include question attachments (e.g., essay file submissions) in quiz archive
+- Fix dynamic rendering of Drag and Drop question types
 - Provide reference quiz, containing all standard Moodle question types
+
+**WARNING**: If you are upgrading from v0.6.3 or earlier, you need to add the
+permissions `mod/quiz:reviewmyattempts` and `mod/quiz:viewreports` to the quiz
+archiver service account role. This is required to allow access to quiz
+attachments (e.g., uploaded essay files). The provided XML role definition
+[res/moodle_role_quiz_archiver.xml](res/moodle_role_quiz_archiver.xml) is
+already updated to reflect these changes.
+
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.2.0`
+is required.
 
 
 ## Version 0.6.3 (2023112200)
