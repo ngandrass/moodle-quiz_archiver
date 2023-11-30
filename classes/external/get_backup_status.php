@@ -16,6 +16,9 @@
 
 namespace quiz_archiver\external;
 
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
+
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
