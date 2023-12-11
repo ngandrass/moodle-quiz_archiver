@@ -68,6 +68,7 @@ class RemoteArchiveWorker {
      * @param $courseid int Moodle course id
      * @param $cmid int Moodle course module id
      * @param $quizid int Moodle quiz id
+     * @param $job_options array Associative array containing global job options
      * @param $task_archive_quiz_attempts mixed Array containing payload data for
      * the archive quiz attempts task, or null if it should not be executed
      * @param $task_moodle_backups mixed Array containing payload data for
@@ -80,12 +81,13 @@ class RemoteArchiveWorker {
      * @throws \coding_exception
      *
      */
-    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, $task_archive_quiz_attempts, $task_moodle_backups) {
+    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $job_options, $task_archive_quiz_attempts, $task_moodle_backups) {
         global $CFG;
         $moodle_url_base = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
         // Prepare request payload
-        $request_payload = json_encode([
+        $request_payload = json_encode(array_merge(
+            [
             "api_version" => self::API_VERSION,
             "moodle_base_url" => $moodle_url_base,
             "moodle_ws_url" => $moodle_url_base.'/webservice/rest/server.php',
@@ -96,7 +98,9 @@ class RemoteArchiveWorker {
             "quizid" => $quizid,
             "task_archive_quiz_attempts" => $task_archive_quiz_attempts,
             "task_moodle_backups" => $task_moodle_backups,
-        ]);
+            ],
+            $job_options
+        ));
 
         // Execute request
         // Moodle curl wrapper automatically closes curl handle after requests. No need to call curl_close() manually.

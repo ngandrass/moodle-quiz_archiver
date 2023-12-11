@@ -324,6 +324,7 @@ class quiz_archiver_report extends report_base {
                 'sections' => $report_sections,
                 'paper_format' => $paper_format,
                 'keep_html_files' => $report_keep_html_files,
+                'filename_pattern' => 'quiz_attempt_${courseid}_${cmid}_${quizid}_${attemptid}_${courseshortname}_${coursename}_${quizname}_${timestamp}_${date}_${time}_${username}_${firstname}_${lastname}'
             ];
         }
 
@@ -361,6 +362,9 @@ class quiz_archiver_report extends report_base {
                 $this->course->id,
                 $this->cm->id,
                 $this->quiz->id,
+                [
+                    'archive_filename' => ArchiveJob::generate_archive_filename($this->course, $this->cm, $this->quiz, 'quiz_archive_${courseid}_${cmid}_${quizid}_${date}_${time}_${timestamp}_${courseshortname}_${coursename}_${quizname}'), // TODO: Make configurable
+                ],
                 $task_archive_quiz_attempts,
                 $task_moodle_backups,
             );
@@ -388,6 +392,8 @@ class quiz_archiver_report extends report_base {
             throw new \RuntimeException(get_string('error_worker_connection_failed', 'quiz_archiver'));
         } catch (RuntimeException $e) {
             throw new \RuntimeException(get_string('error_worker_reported_error', 'quiz_archiver', $e->getMessage()));
+        } catch (\invalid_parameter_exception $e) {
+            throw new \RuntimeException(get_string('error_preparing_job', 'quiz_archiver', $e->getMessage()));
         } catch (Exception $e) {
             throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver')." ".$e->getMessage());
         }

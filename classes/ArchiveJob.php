@@ -77,6 +77,41 @@ class ArchiveJob {
     /** @var string Job status: Timeout */
     const STATUS_TIMEOUT = 'TIMEOUT';
 
+    /** @var string[] Valid variables for archive filename patterns */
+    public const ARCHIVE_FILENAME_PATTERN_VARIABLES = [
+        'courseid',
+        'cmid',
+        'quizid',
+        'coursename',
+        'courseshortname',
+        'quizname',
+        'timestamp',
+        'date',
+        'time'
+    ];
+
+    /** @var string[] Valid variables for report filename patterns */
+    public const REPORT_FILENAME_PATTERN_VARIABLES = [
+        'courseid',
+        'cmid',
+        'quizid',
+        'attemptid',
+        'coursename',
+        'courseshortname',
+        'quizname',
+        'timestamp',
+        'date',
+        'time',
+        'timestart',
+        'timefinish',
+        'username',
+        'firstname',
+        'lastname'
+    ];
+
+    /** @var string[] Characters that are forbidden in a filename pattern */
+    public const FILENAME_FORBIDDEN_CHARACTERS = ["\0", "\\", "/", ":", "*", "?", "\"", "<", ">", "|", "."];
+
     /**
      * Creates a new ArchiveJob. This does **NOT** enqueue the job anywhere.
      *
@@ -762,6 +797,158 @@ class ArchiveJob {
     public function delete_webservice_token(): void {
         global $DB;
         $DB->delete_records('external_tokens', ['token' => $this->wstoken, 'tokentype' => EXTERNAL_TOKEN_PERMANENT]);
+    }
+
+    /**
+     * Determines if the given filename pattern contains only allowed variables
+     * and no orphaned dollar signs
+     *
+     * @param string $pattern Filename pattern to test
+     * @param array $allowed_variables List of allowed variables
+     * @return bool True if the pattern is valid
+     */
+    protected static function is_valid_filename_pattern(string $pattern, array $allowed_variables): bool {
+        // Check for variables
+        $residue = preg_replace('/\$\{\s*('.implode('|', $allowed_variables).')\s*\}/m', '', $pattern);
+        if (strpos($residue, '$') !== false) {
+            return false;
+        }
+
+        // Check for forbidden characters
+        foreach (self::FILENAME_FORBIDDEN_CHARACTERS as $char) {
+            if (strpos($pattern, $char) !== false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Determines if the given filename pattern is valid for an archive and does
+     * not contain any invalid variables
+     *
+     * @param string $pattern Filename pattern to test
+     * @return bool True if the pattern is valid for an archive filename
+     */
+    public static function is_valid_archive_filename_pattern(string $pattern): bool {
+        return self::is_valid_filename_pattern($pattern, self::ARCHIVE_FILENAME_PATTERN_VARIABLES);
+    }
+
+    /**
+     * Determines if the given filename pattern is valid for a report file and
+     * does not contain any invalid variables
+     *
+     * @param string $pattern Filename pattern to test
+     * @return bool True if the pattern is valid for a report filename
+     */
+    public static function is_valid_report_filename_pattern(string $pattern): bool {
+        return self::is_valid_filename_pattern($pattern, self::REPORT_FILENAME_PATTERN_VARIABLES);
+    }
+
+    /**
+     * Sanitizes the given filename by removing all forbidden characters
+     *
+     * @param string $filename Filename to sanitize
+     * @return string Sanitized filename
+     */
+    protected static function sanitize_filename(string $filename): string {
+        $res = $filename;
+        foreach (self::FILENAME_FORBIDDEN_CHARACTERS as $char) {
+            $res = str_replace($char, '', $res);
+        }
+
+        return trim($res);
+    }
+
+    /**
+     * Generates an archive filename based on the given pattern and context information
+     *
+     * @param mixed $course Course object
+     * @param mixed $cm Course module object
+     * @param mixed $quiz Quiz object
+     * @return string Archive filename
+     * @throws \invalid_parameter_exception If the pattern is invalid
+     * @throws \coding_exception
+     */
+    public static function generate_archive_filename($course, $cm, $quiz, string $pattern): string {
+        // Validate pattern
+        if (!self::is_valid_archive_filename_pattern($pattern)) {
+            throw new \invalid_parameter_exception(get_string('error_invalid_archive_filename_pattern', 'quiz_archiver'));
+        }
+
+        // Prepare data
+        $data = [
+            'courseid' => $course->id,
+            'cmid' => $cm->id,
+            'quizid' => $quiz->id,
+            'coursename' => $course->fullname,
+            'courseshortname' => $course->shortname,
+            'quizname' => $quiz->name,
+            'timestamp' => time(),
+            'date' => date('Y-m-d'),
+            'time' => date('H-i-s')
+        ];
+
+        // Substitute variables
+        $filename = $pattern;
+        foreach ($data as $key => $value) {
+            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+        }
+
+        return self::sanitize_filename($filename);
+    }
+
+    /**
+     * Generates a report filename based on the given pattern and context information
+     *
+     * @param mixed $course Course object
+     * @param mixed $cm Course module object
+     * @param mixed $quiz Quiz object
+     * @param int $attemptid ID of the attempt
+     * @param string $pattern Filename pattern to use
+     * @return string Report filename
+     * @throws \dml_exception If the attempt or user could not be found in the database
+     * @throws \invalid_parameter_exception If the pattern is invalid
+     * @throws \coding_exception
+     */
+    public static function generate_report_filename($course, $cm, $quiz, int $attemptid, string $pattern): string {
+        global $DB;
+
+        // Validate pattern
+        if (!self::is_valid_report_filename_pattern($pattern)) {
+            throw new \invalid_parameter_exception(get_string('error_invalid_report_filename_pattern', 'quiz_archiver'));
+        }
+
+        // Prepare data
+        // We query the DB directly to prevent a full question_attempt object from being created
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $data = [
+            'courseid' => $course->id,
+            'cmid' => $cm->id,
+            'quizid' => $quiz->id,
+            'attemptid' => $attemptid,
+            'coursename' => $course->fullname,
+            'courseshortname' => $course->shortname,
+            'quizname' => $quiz->name,
+            'timestamp' => time(),
+            'date' => date('Y-m-d'),
+            'time' => date('H-i-s'),
+            'timestart' => $attemptinfo->timestart,
+            'timefinish' => $attemptinfo->timefinish,
+            'username' => $userinfo->username,
+            'firstname' => $userinfo->firstname,
+            'lastname' => $userinfo->lastname,
+        ];
+
+        // Substitute variables
+        $filename = $pattern;
+        foreach ($data as $key => $value) {
+            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+        }
+
+        return self::sanitize_filename($filename);
     }
 
 }

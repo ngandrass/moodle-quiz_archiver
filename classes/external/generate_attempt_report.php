@@ -24,6 +24,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use quiz_archiver\ArchiveJob;
 use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -43,6 +44,7 @@ class generate_attempt_report extends external_api {
             'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_REQUIRED),
             'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_REQUIRED),
             'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_REQUIRED),
+            'filenamepattern' => new external_value(PARAM_TEXT, 'Filename pattern to use for the generated archive', VALUE_REQUIRED),
             'sections' => new external_single_structure(
                 array_combine(Report::SECTIONS,
                     array_map(fn ($section): external_value => new external_value(
@@ -68,6 +70,7 @@ class generate_attempt_report extends external_api {
             'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_OPTIONAL),
             'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_OPTIONAL),
             'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_OPTIONAL),
+            'filename' => new external_value(PARAM_TEXT, 'Desired filename of this quiz attempt report', VALUE_OPTIONAL),
             'report' => new external_value(PARAM_RAW, 'HTML DOM of the generated quiz attempt report', VALUE_OPTIONAL),
             'attachments' => new external_multiple_structure(
                 new external_single_structure([
@@ -91,6 +94,7 @@ class generate_attempt_report extends external_api {
      * @param int $courseid_raw ID of the course
      * @param int $cmid_raw ID of the course module
      * @param int $quizid_raw ID of the quiz
+     * @param string $filenamepattern_raw Filename pattern to use for report name generation
      * @param int $attemptid_raw ID of the quiz attempt
      * @param array $sections_raw Sections to include in the report
      * @param bool $attachments_raw Whether to check for attempts and include metadata if present
@@ -106,6 +110,7 @@ class generate_attempt_report extends external_api {
         int $cmid_raw,
         int $quizid_raw,
         int $attemptid_raw,
+        string $filenamepattern_raw,
         array $sections_raw,
         bool $attachments_raw
     ): array {
@@ -117,6 +122,7 @@ class generate_attempt_report extends external_api {
             'cmid' => $cmid_raw,
             'quizid' => $quizid_raw,
             'attemptid' => $attemptid_raw,
+            'filenamepattern' => $filenamepattern_raw,
             'sections' => $sections_raw,
             'attachments' => $attachments_raw,
         ]);
@@ -134,6 +140,11 @@ class generate_attempt_report extends external_api {
         }
         if (!$quiz = $DB->get_record('quiz', ['id' => $params['quizid']])) {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
+        }
+
+        // Validate filename pattern
+        if (!ArchiveJob::is_valid_report_filename_pattern($params['filenamepattern'])) {
+            throw new \invalid_parameter_exception("Report filename pattern is invalid");
         }
 
         // Prepare response
@@ -163,6 +174,9 @@ class generate_attempt_report extends external_api {
         } else {
             $res['attachments'] = [];
         }
+
+        // Generate filename
+        $res['filename'] = ArchiveJob::generate_report_filename($course, $cm, $quiz, $params['attemptid'], $params['filenamepattern']);
 
         // Return response
         $res['status'] = 'OK';
