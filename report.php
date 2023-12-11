@@ -183,6 +183,7 @@ class quiz_archiver_report extends report_base {
                 $job = $this->initiate_archive_job(
                     $formdata->export_attempts,
                     Report::build_report_sections_from_formdata($formdata),
+                    $formdata->export_attempts_keep_html_files,
                     $formdata->export_attempts_paper_format,
                     $formdata->export_quiz_backup,
                     $formdata->export_course_backup
@@ -263,6 +264,8 @@ class quiz_archiver_report extends report_base {
      *
      * @param bool $export_attempts Quiz attempts will be archives if true
      * @param array $report_sections Sections to export during attempt report generation
+     * @param bool $report_keep_html_files If true, HTML files are kept alongside PDFs
+     *                                     within the created archive
      * @param string $paper_format Paper format to use for attempt report generation
      * @param bool $export_quiz_backup Complete quiz backup will be archived if true
      * @param bool $export_course_backup Complete course backup will be archived if true
@@ -275,6 +278,7 @@ class quiz_archiver_report extends report_base {
     protected function initiate_archive_job(
         bool $export_attempts,
         array $report_sections,
+        bool $report_keep_html_files,
         string $paper_format,
         bool $export_quiz_backup,
         bool $export_course_backup
@@ -319,6 +323,7 @@ class quiz_archiver_report extends report_base {
                 'fetch_metadata' => true,
                 'sections' => $report_sections,
                 'paper_format' => $paper_format,
+                'keep_html_files' => $report_keep_html_files,
             ];
         }
 

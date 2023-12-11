@@ -78,12 +78,12 @@ class archive_quiz_form extends \moodleform {
         // Options: Attempts
         $mform->addElement('advcheckbox', 'export_attempts', get_string('attempts', 'mod_quiz'), get_string('export_attempts_num', 'quiz_archiver', $this->num_attempts), ['disabled' => 'disabled'], ['1', '1']);
         $mform->addHelpButton('export_attempts', 'export_attempts', 'quiz_archiver');
-        $mform->setDefault('export_attempts', true);
+        $mform->setDefault('export_attempts', true);  // TODO: Make global default configurable
 
         foreach (Report::SECTIONS as $section) {
             $mform->addElement('advcheckbox', 'export_report_section_'.$section, '&nbsp;', get_string('export_report_section_'.$section, 'quiz_archiver'));
             $mform->addHelpButton('export_report_section_'.$section, 'export_report_section_'.$section, 'quiz_archiver');
-            $mform->setDefault('export_report_section_'.$section, true);
+            $mform->setDefault('export_report_section_'.$section, true);  // TODO: Make global default configurable
 
             foreach (REPORT::SECTION_DEPENDENCIES[$section] as $dependency) {
                 $mform->disabledIf('export_report_section_'.$section, 'export_report_section_'.$dependency, 'notchecked');
@@ -93,11 +93,11 @@ class archive_quiz_form extends \moodleform {
         // Options: Backups
         $mform->addElement('advcheckbox', 'export_quiz_backup', get_string('backups', 'admin'), get_string('export_quiz_backup', 'quiz_archiver'));
         $mform->addHelpButton('export_quiz_backup', 'export_quiz_backup', 'quiz_archiver');
-        $mform->setDefault('export_quiz_backup', true);
+        $mform->setDefault('export_quiz_backup', true);  // TODO: Make global default configurable
 
         $mform->addElement('advcheckbox', 'export_course_backup', '&nbsp;', get_string('export_course_backup', 'quiz_archiver'));
         $mform->addHelpButton('export_course_backup', 'export_course_backup', 'quiz_archiver');
-        $mform->setDefault('export_course_backup', false);
+        $mform->setDefault('export_course_backup', false);  // TODO: Make global default configurable
 
         // Advanced options
         $mform->addElement('header', 'header_advanced_settings', get_string('advancedsettings'));
@@ -105,7 +105,11 @@ class archive_quiz_form extends \moodleform {
 
         $mform->addElement('select', 'export_attempts_paper_format', get_string('export_attempts_paper_format', 'quiz_archiver'), array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS));
         $mform->addHelpButton('export_attempts_paper_format', 'export_attempts_paper_format', 'quiz_archiver');
-        $mform->setDefault('export_attempts_paper_format', 'A4');
+        $mform->setDefault('export_attempts_paper_format', 'A4');  // TODO: Make global default configurable
+
+        $mform->addElement('advcheckbox', 'export_attempts_keep_html_files', get_string('export_attempts_keep_html_files', 'quiz_archiver'), get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'));
+        $mform->addHelpButton('export_attempts_keep_html_files', 'export_attempts_keep_html_files', 'quiz_archiver');
+        $mform->setDefault('export_attempts_keep_html_files', true);  // TODO: Make global default configurable
 
         // Submit
         $mform->closeHeaderBefore('submitbutton');
