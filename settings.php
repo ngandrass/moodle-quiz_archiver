@@ -26,6 +26,7 @@
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
+use quiz_archiver\local\admin\setting\admin_setting_configcheckbox_alwaystrue;
 use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -90,18 +91,11 @@ if ($hassiteconfig) {
             get_string('setting_header_job_presets_desc', 'quiz_archiver'),
         ));
 
-        $settings->add(new class('quiz_archiver/job_preset_export_attempts',
+        $settings->add(new admin_setting_configcheckbox_alwaystrue('quiz_archiver/job_preset_export_attempts',
             get_string('export_attempts', 'quiz_archiver'),
             get_string('export_attempts_help', 'quiz_archiver'),
             '1',
-        ) extends admin_setting_configcheckbox {
-            public function get_setting() {
-                return 1;
-            }
-            public function is_readonly(): bool {
-                return true;
-            }
-        });
+        ));
 
         foreach (Report::SECTIONS as $section) {
             $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_report_section_'.$section,
