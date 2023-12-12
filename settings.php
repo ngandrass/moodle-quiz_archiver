@@ -23,6 +23,9 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use quiz_archiver\ArchiveJob;
+use quiz_archiver\Report;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $DB;
@@ -78,6 +81,107 @@ if ($hassiteconfig) {
             '',
             PARAM_TEXT
         ));
+
+        // Job Presets
+        $settings->add(new admin_setting_heading('quiz_archiver/header_job_presets',
+            get_string('setting_header_job_presets', 'quiz_archiver'),
+            get_string('setting_header_job_presets_desc', 'quiz_archiver'),
+        ));
+
+        $settings->add(new class('quiz_archiver/job_preset_export_attempts',
+            get_string('export_attempts', 'quiz_archiver'),
+            get_string('export_attempts_help', 'quiz_archiver'),
+            '1',
+        ) extends admin_setting_configcheckbox {
+            public function get_setting() {
+                return 1;
+            }
+            public function is_readonly(): bool {
+                return true;
+            }
+        });
+
+        foreach (Report::SECTIONS as $section) {
+            $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_report_section_'.$section,
+                get_string('export_report_section_'.$section, 'quiz_archiver'),
+                get_string('export_report_section_'.$section.'_help', 'quiz_archiver'),
+                '1',
+            );
+            $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+
+            foreach (Report::SECTION_DEPENDENCIES[$section] as $dependency) {
+                $set->add_dependent_on('quiz_archiver/job_preset_export_report_section_'.$dependency);
+            }
+
+            $settings->add($set);
+        }
+
+        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_quiz_backup',
+            get_string('export_quiz_backup', 'quiz_archiver'),
+            get_string('export_quiz_backup_help', 'quiz_archiver'),
+            '1',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_course_backup',
+            get_string('export_course_backup', 'quiz_archiver'),
+            get_string('export_course_backup_help', 'quiz_archiver'),
+            '0',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        $set = new admin_setting_configselect('quiz_archiver/job_preset_export_attempts_paper_format',
+            get_string('export_attempts_paper_format', 'quiz_archiver'),
+            get_string('export_attempts_paper_format_help', 'quiz_archiver'),
+            'A4',
+            array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS),
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
+            get_string('export_attempts_keep_html_files', 'quiz_archiver'),
+            get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),
+            '1',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        // TODO: Implement validation
+        $settings->add($set);
+
+        $set = new admin_setting_configtext('quiz_archiver/job_preset_archive_filename_pattern',
+            get_string('archive_filename_pattern', 'quiz_archiver'),
+            get_string('archive_filename_pattern_help', 'quiz_archiver', [
+                'variables' => array_reduce(
+                    ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
+                    fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
+                    , ""
+                ),
+                'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+            ]),
+            'quiz_archive_${courseshortname}(${courseid})_${quizname}(${quizid})_${date}_${time}',
+            PARAM_TEXT,
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        // TODO: Implement validation
+        $settings->add($set);
+
+        $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_filename_pattern',
+            get_string('export_attempts_filename_pattern', 'quiz_archiver'),
+            get_string('export_attempts_filename_pattern_help', 'quiz_archiver', [
+                'variables' => array_reduce(
+                    ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
+                    fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
+                    , ""
+                ),
+                'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+            ]),
+            'attempt_${attemptid}_${username}_${date}_${time}',
+            PARAM_TEXT,
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
 
         // Time-Stamp Protocol settings
         $settings->add(new admin_setting_heading('quit_archiver/header_tsp',
