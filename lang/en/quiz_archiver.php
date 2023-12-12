@@ -46,6 +46,7 @@ $string['users_with_attempts'] = 'Users with quiz attempts';
 $string['archive_quiz'] = 'Archive quiz';
 $string['create_quiz_archive'] = 'Create new quiz archive';
 $string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page.';
+$string['error_archive_quiz_form_validation_failed'] = 'Form data validation failed. Please correct your input and try again.';
 $string['export_attempts'] = 'Export quiz attempts';
 $string['export_attempts_help'] = 'Quiz attempts will always be exported';
 $string['export_attempts_num'] = 'Export quiz attempts ({$a})';
@@ -77,6 +78,39 @@ $string['export_report_section_attachments'] = 'Include file attachments';
 $string['export_report_section_attachments_help'] = 'Include all file attachments (e.g., essay file submissions) inside the archive. Warning: This can significantly increase the archive size.';
 $string['job_overview'] = 'Archives';
 $string['num_attempts'] = 'Number of attempts';
+
+// Job creation form: Filename pattern
+$string['archive_filename_pattern'] = 'Archive name';
+$string['archive_filename_pattern_help'] = 'Name of the generated quiz archive. Variables <b>must</b> follow the <code>${variablename}</code> pattern. The file extension will be added automatically.<br><br><b>Available variables</b>: <ul>{$a->variables}</ul><b>Forbidden characters</b>: <code>{$a->forbiddenchars}</code>';
+$string['archive_filename_pattern_variable_courseid'] = 'Course ID';
+$string['archive_filename_pattern_variable_coursename'] = 'Course name';
+$string['archive_filename_pattern_variable_courseshortname'] = 'Course short name';
+$string['archive_filename_pattern_variable_cmid'] = 'Course module ID';
+$string['archive_filename_pattern_variable_quizid'] = 'Quiz ID';
+$string['archive_filename_pattern_variable_quizname'] = 'Quiz name';
+$string['archive_filename_pattern_variable_date'] = 'Current date <small>(YYYY-MM-DD)</small>';
+$string['archive_filename_pattern_variable_time'] = 'Current time <small>(HH-MM-SS)</small>';
+$string['archive_filename_pattern_variable_timestamp'] = 'Current unix timestamp';
+$string['error_invalid_archive_filename_pattern'] = 'Invalid archive filename pattern. Please correct your input and try again.';
+
+$string['export_attempts_filename_pattern'] = 'Report name';
+$string['export_attempts_filename_pattern_help'] = 'Name of the generated quiz attempt reports (PDF files). Variables <b>must</b> follow the <code>${variablename}</code> pattern. The file extension will be added automatically.<br><br><b>Available variables</b>: <ul>{$a->variables}</ul><b>Forbidden characters</b>: <code>{$a->forbiddenchars}</code>';
+$string['export_attempts_filename_pattern_variable_courseid'] = 'Course ID';
+$string['export_attempts_filename_pattern_variable_coursename'] = 'Course name';
+$string['export_attempts_filename_pattern_variable_courseshortname'] = 'Course short name';
+$string['export_attempts_filename_pattern_variable_cmid'] = 'Course module ID';
+$string['export_attempts_filename_pattern_variable_quizid'] = 'Quiz ID';
+$string['export_attempts_filename_pattern_variable_quizname'] = 'Quiz name';
+$string['export_attempts_filename_pattern_variable_attemptid'] = 'Attempt ID';
+$string['export_attempts_filename_pattern_variable_username'] = 'Student username';
+$string['export_attempts_filename_pattern_variable_firstname'] = 'Student first name';
+$string['export_attempts_filename_pattern_variable_lastname'] = 'Student last name';
+$string['export_attempts_filename_pattern_variable_timestart'] = 'Attempt start unix timestamp';
+$string['export_attempts_filename_pattern_variable_timefinish'] = 'Attempt finish unix timestamp';
+$string['export_attempts_filename_pattern_variable_date'] = 'Current date <small>(YYYY-MM-DD)</small>';
+$string['export_attempts_filename_pattern_variable_time'] = 'Current time <small>(HH-MM-SS)</small>';
+$string['export_attempts_filename_pattern_variable_timestamp'] = 'Current unix timestamp';
+$string['error_invalid_attempt_filename_pattern'] = 'Invalid attempt report filename pattern. Please correct your input and try again.';
 
 // Job
 $string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';

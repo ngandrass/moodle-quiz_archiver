@@ -24,6 +24,7 @@
 
 namespace quiz_archiver\form;
 
+use quiz_archiver\ArchiveJob;
 use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -106,14 +107,64 @@ class archive_quiz_form extends \moodleform {
         $mform->addElement('select', 'export_attempts_paper_format', get_string('export_attempts_paper_format', 'quiz_archiver'), array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS));
         $mform->addHelpButton('export_attempts_paper_format', 'export_attempts_paper_format', 'quiz_archiver');
         $mform->setDefault('export_attempts_paper_format', 'A4');  // TODO: Make global default configurable
+        // TODO: Implement $mform->disabledIf(); based on global setting
 
         $mform->addElement('advcheckbox', 'export_attempts_keep_html_files', get_string('export_attempts_keep_html_files', 'quiz_archiver'), get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'));
         $mform->addHelpButton('export_attempts_keep_html_files', 'export_attempts_keep_html_files', 'quiz_archiver');
+        // TODO: Implement $mform->disabledIf(); based on global setting
         $mform->setDefault('export_attempts_keep_html_files', true);  // TODO: Make global default configurable
+
+        $mform->addElement('text', 'archive_filename_pattern', get_string('archive_filename_pattern', 'quiz_archiver'));
+        $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern', 'quiz_archiver', '', false, [
+            'variables' => array_reduce(
+                ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
+                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('archive_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
+                , ""
+            ),
+            'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+        ]);
+        $mform->setDefault('archive_filename_pattern', 'quiz_archive_${courseshortname}(${courseid})_${quizname}(${quizid})_${date}_${time}');  // TODO: Make global default configurable
+        // TODO: Implement $mform->disabledIf(); based on global setting
+        $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
+
+        $mform->addElement('text', 'export_attempts_filename_pattern', get_string('export_attempts_filename_pattern', 'quiz_archiver'));
+        $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern', 'quiz_archiver', '', false, [
+            'variables' => array_reduce(
+                ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
+                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
+                , ""
+            ),
+            'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+        ]);
+        $mform->setDefault('export_attempts_filename_pattern', 'attempt_${attemptid}_${username}_${date}_${time}');  // TODO: Make global default configurable
+        // TODO: Implement $mform->disabledIf(); based on global setting
+        $mform->addRule('export_attempts_filename_pattern', null, 'maxlength', 255, 'client');
 
         // Submit
         $mform->closeHeaderBefore('submitbutton');
         $mform->addElement('submit', 'submitbutton', get_string('archive_quiz', 'quiz_archiver'));
+    }
+
+    /**
+     * Server-side form data validation
+     *
+     * @param mixed $data Submitted form data
+     * @param mixed $files Uploaed files
+     * @return array Associative array with error messages for invalid fields
+     * @throws \coding_exception
+     */
+    function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        // Validate filename pattern
+        if (!ArchiveJob::is_valid_archive_filename_pattern($data['archive_filename_pattern'])) {
+            $errors['archive_filename_pattern'] = get_string('error_archive_filename_pattern_invalid', 'quiz_archiver');
+        }
+        if (!ArchiveJob::is_valid_report_filename_pattern($data['export_attempts_filename_pattern'])) {
+            $errors['export_attempts_filename_pattern'] = get_string('error_export_attempts_filename_pattern_invalid', 'quiz_archiver');
+        }
+
+        return $errors;
     }
 
 }

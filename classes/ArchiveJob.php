@@ -80,37 +80,37 @@ class ArchiveJob {
     /** @var string[] Valid variables for archive filename patterns */
     public const ARCHIVE_FILENAME_PATTERN_VARIABLES = [
         'courseid',
-        'cmid',
-        'quizid',
         'coursename',
         'courseshortname',
-        'quizname',
-        'timestamp',
-        'date',
-        'time'
-    ];
-
-    /** @var string[] Valid variables for report filename patterns */
-    public const REPORT_FILENAME_PATTERN_VARIABLES = [
-        'courseid',
         'cmid',
         'quizid',
-        'attemptid',
-        'coursename',
-        'courseshortname',
         'quizname',
-        'timestamp',
         'date',
         'time',
-        'timestart',
-        'timefinish',
+        'timestamp',
+    ];
+
+    /** @var string[] Valid variables for attempt report filename patterns */
+    public const ATTEMPT_FILENAME_PATTERN_VARIABLES = [
+        'courseid',
+        'coursename',
+        'courseshortname',
+        'cmid',
+        'quizid',
+        'quizname',
+        'attemptid',
         'username',
         'firstname',
-        'lastname'
+        'lastname',
+        'timestart',
+        'timefinish',
+        'date',
+        'time',
+        'timestamp',
     ];
 
     /** @var string[] Characters that are forbidden in a filename pattern */
-    public const FILENAME_FORBIDDEN_CHARACTERS = ["\0", "\\", "/", ":", "*", "?", "\"", "<", ">", "|", "."];
+    public const FILENAME_FORBIDDEN_CHARACTERS = ["\\", "/", ".", ":", ";", "*", "?", "!", "\"", "<", ">", "|", "\0"];
 
     /**
      * Creates a new ArchiveJob. This does **NOT** enqueue the job anywhere.
@@ -808,6 +808,11 @@ class ArchiveJob {
      * @return bool True if the pattern is valid
      */
     protected static function is_valid_filename_pattern(string $pattern, array $allowed_variables): bool {
+        // Check for minimal length
+        if (strlen($pattern) < 1) {
+            return false;
+        }
+
         // Check for variables
         $residue = preg_replace('/\$\{\s*('.implode('|', $allowed_variables).')\s*\}/m', '', $pattern);
         if (strpos($residue, '$') !== false) {
@@ -836,14 +841,14 @@ class ArchiveJob {
     }
 
     /**
-     * Determines if the given filename pattern is valid for a report file and
-     * does not contain any invalid variables
+     * Determines if the given filename pattern is valid for an attempt report
+     * file and does not contain any invalid variables
      *
      * @param string $pattern Filename pattern to test
-     * @return bool True if the pattern is valid for a report filename
+     * @return bool True if the pattern is valid for an attempt report filename
      */
-    public static function is_valid_report_filename_pattern(string $pattern): bool {
-        return self::is_valid_filename_pattern($pattern, self::REPORT_FILENAME_PATTERN_VARIABLES);
+    public static function is_valid_attempt_filename_pattern(string $pattern): bool {
+        return self::is_valid_filename_pattern($pattern, self::ATTEMPT_FILENAME_PATTERN_VARIABLES);
     }
 
     /**
@@ -900,24 +905,24 @@ class ArchiveJob {
     }
 
     /**
-     * Generates a report filename based on the given pattern and context information
+     * Generates an attempt filename based on the given pattern and context information
      *
      * @param mixed $course Course object
      * @param mixed $cm Course module object
      * @param mixed $quiz Quiz object
      * @param int $attemptid ID of the attempt
      * @param string $pattern Filename pattern to use
-     * @return string Report filename
+     * @return string Attempt report filename
      * @throws \dml_exception If the attempt or user could not be found in the database
      * @throws \invalid_parameter_exception If the pattern is invalid
      * @throws \coding_exception
      */
-    public static function generate_report_filename($course, $cm, $quiz, int $attemptid, string $pattern): string {
+    public static function generate_attempt_filename($course, $cm, $quiz, int $attemptid, string $pattern): string {
         global $DB;
 
         // Validate pattern
         if (!self::is_valid_report_filename_pattern($pattern)) {
-            throw new \invalid_parameter_exception(get_string('error_invalid_report_filename_pattern', 'quiz_archiver'));
+            throw new \invalid_parameter_exception(get_string('error_invalid_attempt_filename_pattern', 'quiz_archiver'));
         }
 
         // Prepare data

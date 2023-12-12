@@ -179,6 +179,10 @@ class quiz_archiver_report extends report_base {
         if ($archive_quiz_form->is_submitted()) {
             $job = null;
             try {
+                if (!$archive_quiz_form->is_validated()) {
+                    throw new RuntimeException(get_string('error_archive_quiz_form_validation_failed', 'quiz_archiver'));
+                }
+
                 $formdata = $archive_quiz_form->get_data();
                 $job = $this->initiate_archive_job(
                     $formdata->export_attempts,
@@ -186,7 +190,9 @@ class quiz_archiver_report extends report_base {
                     $formdata->export_attempts_keep_html_files,
                     $formdata->export_attempts_paper_format,
                     $formdata->export_quiz_backup,
-                    $formdata->export_course_backup
+                    $formdata->export_course_backup,
+                    $formdata->archive_filename_pattern,
+                    $formdata->export_attempts_filename_pattern,
                 );
                 $tplCtx['jobInitiationStatusAlert'] = [
                     "color" => "success",
@@ -269,6 +275,8 @@ class quiz_archiver_report extends report_base {
      * @param string $paper_format Paper format to use for attempt report generation
      * @param bool $export_quiz_backup Complete quiz backup will be archived if true
      * @param bool $export_course_backup Complete course backup will be archived if true
+     * @param string $archive_filename_pattern Filename pattern to use for archive generation
+     * @param string $attempts_filename_pattern Filename pattern to use for attempt report generation
      * @return ArchiveJob|null Created ArchiveJob on success
      * @throws coding_exception Handled by Moodle
      * @throws dml_exception Handled by Moodle
@@ -281,7 +289,9 @@ class quiz_archiver_report extends report_base {
         bool $report_keep_html_files,
         string $paper_format,
         bool $export_quiz_backup,
-        bool $export_course_backup
+        bool $export_course_backup,
+        string $archive_filename_pattern,
+        string $attempts_filename_pattern,
     ): ?ArchiveJob {
         global $USER;
 
@@ -324,7 +334,7 @@ class quiz_archiver_report extends report_base {
                 'sections' => $report_sections,
                 'paper_format' => $paper_format,
                 'keep_html_files' => $report_keep_html_files,
-                'filename_pattern' => 'quiz_attempt_${courseid}_${cmid}_${quizid}_${attemptid}_${courseshortname}_${coursename}_${quizname}_${timestamp}_${date}_${time}_${username}_${firstname}_${lastname}'
+                'filename_pattern' => $attempts_filename_pattern,
             ];
         }
 
@@ -363,7 +373,7 @@ class quiz_archiver_report extends report_base {
                 $this->cm->id,
                 $this->quiz->id,
                 [
-                    'archive_filename' => ArchiveJob::generate_archive_filename($this->course, $this->cm, $this->quiz, 'quiz_archive_${courseid}_${cmid}_${quizid}_${date}_${time}_${timestamp}_${courseshortname}_${coursename}_${quizname}'), // TODO: Make configurable
+                    'archive_filename' => ArchiveJob::generate_archive_filename($this->course, $this->cm, $this->quiz, $archive_filename_pattern),
                 ],
                 $task_archive_quiz_attempts,
                 $task_moodle_backups,
