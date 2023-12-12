@@ -921,7 +921,7 @@ class ArchiveJob {
         global $DB;
 
         // Validate pattern
-        if (!self::is_valid_report_filename_pattern($pattern)) {
+        if (!self::is_valid_attempt_filename_pattern($pattern)) {
             throw new \invalid_parameter_exception(get_string('error_invalid_attempt_filename_pattern', 'quiz_archiver'));
         }
 

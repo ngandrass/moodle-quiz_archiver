@@ -143,7 +143,7 @@ class generate_attempt_report extends external_api {
         }
 
         // Validate filename pattern
-        if (!ArchiveJob::is_valid_report_filename_pattern($params['filenamepattern'])) {
+        if (!ArchiveJob::is_valid_attempt_filename_pattern($params['filenamepattern'])) {
             throw new \invalid_parameter_exception("Report filename pattern is invalid");
         }
 
@@ -176,7 +176,7 @@ class generate_attempt_report extends external_api {
         }
 
         // Generate filename
-        $res['filename'] = ArchiveJob::generate_report_filename($course, $cm, $quiz, $params['attemptid'], $params['filenamepattern']);
+        $res['filename'] = ArchiveJob::generate_attempt_filename($course, $cm, $quiz, $params['attemptid'], $params['filenamepattern']);
 
         // Return response
         $res['status'] = 'OK';

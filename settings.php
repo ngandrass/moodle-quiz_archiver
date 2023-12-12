@@ -24,6 +24,8 @@
  */
 
 use quiz_archiver\ArchiveJob;
+use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
+use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
 use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -147,10 +149,9 @@ if ($hassiteconfig) {
             '1',
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
-        // TODO: Implement validation
         $settings->add($set);
 
-        $set = new admin_setting_configtext('quiz_archiver/job_preset_archive_filename_pattern',
+        $set = new admin_setting_archive_filename_pattern('quiz_archiver/job_preset_archive_filename_pattern',
             get_string('archive_filename_pattern', 'quiz_archiver'),
             get_string('archive_filename_pattern_help', 'quiz_archiver', [
                 'variables' => array_reduce(
@@ -164,10 +165,9 @@ if ($hassiteconfig) {
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
-        // TODO: Implement validation
         $settings->add($set);
 
-        $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_filename_pattern',
+        $set = new admin_setting_attempt_filename_pattern('quiz_archiver/job_preset_export_attempts_filename_pattern',
             get_string('export_attempts_filename_pattern', 'quiz_archiver'),
             get_string('export_attempts_filename_pattern_help', 'quiz_archiver', [
                 'variables' => array_reduce(

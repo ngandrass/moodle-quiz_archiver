@@ -124,6 +124,7 @@ class archive_quiz_form extends \moodleform {
             ),
             'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
         ]);
+        $mform->setType('archive_filename_pattern', PARAM_TEXT);
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
 
@@ -136,6 +137,7 @@ class archive_quiz_form extends \moodleform {
             ),
             'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
         ]);
+        $mform->setType('export_attempts_filename_pattern', PARAM_TEXT);
         $mform->setDefault('export_attempts_filename_pattern', $config->job_preset_export_attempts_filename_pattern);
         $mform->addRule('export_attempts_filename_pattern', null, 'maxlength', 255, 'client');
 
@@ -157,10 +159,10 @@ class archive_quiz_form extends \moodleform {
 
         // Validate filename pattern
         if (!ArchiveJob::is_valid_archive_filename_pattern($data['archive_filename_pattern'])) {
-            $errors['archive_filename_pattern'] = get_string('error_archive_filename_pattern_invalid', 'quiz_archiver');
+            $errors['archive_filename_pattern'] = get_string('error_invalid_archive_filename_pattern', 'quiz_archiver');
         }
-        if (!ArchiveJob::is_valid_report_filename_pattern($data['export_attempts_filename_pattern'])) {
-            $errors['export_attempts_filename_pattern'] = get_string('error_export_attempts_filename_pattern_invalid', 'quiz_archiver');
+        if (!ArchiveJob::is_valid_attempt_filename_pattern($data['export_attempts_filename_pattern'])) {
+            $errors['export_attempts_filename_pattern'] = get_string('error_invalid_attempt_filename_pattern', 'quiz_archiver');
         }
 
         return $errors;
