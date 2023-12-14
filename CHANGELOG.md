@@ -1,6 +1,22 @@
 # Changelog
 
-## Version 1.0.0 (20231130)
+## Version 1.1.0 (2023121400)
+
+- Allow customization of archive and attempt report filenames based on variables (e.g., quiz name, username, ...)
+- Add option to exclude HTML files from generated archives to save space
+- Implement global archive job presets (e.g., attempt report sections, exported data, paper format, ...)
+- Introduce global archiving policies (i.e., locked archive job presets that cannot be changed by the user)
+- Fix archive job timeout on Moodle instances where `filter_mathjaxloader` is loaded, but attempts do not contain any MathJax formulas
+
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.3.0`
+is required.
+
+**Note:** Since version 1.1.0, HTML files will be excluded from the archive by
+default. This behavior can be changed for each job individually or via the
+global archive presets.
+
+
+## Version 1.0.0 (2023113000)
 
 - Switch from BETA to STABLE status! :)
 - Backwards-compatibility to Moodle 4.1 (LTS) until end of support on 08-12-2025
