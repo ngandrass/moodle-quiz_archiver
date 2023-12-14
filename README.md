@@ -56,8 +56,12 @@ Available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_arch
 - Moodle backups (`.mbz`) of both the quiz and the whole course are supported
 - Generation of checksums for every file within the archive and the archive itself
 - Cryptographic signing of archives and their creation date using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol)
+- Archive and attempt report names are fully customizable and support dynamic
+  variables (e.g., course name, quiz name, username, ...)
 - Integration as Moodle quiz report
 - Support for custom quiz archive permissions / capabilities
+- Allows definition of global archiving defaults as well as forced archiving
+  policies (i.e., locked archive job presets that cannot be changed by the user)
 - Fully asynchronous archive creation to reduce load on Moodle Server
 - Data compression and vector based MathJax formulas to preserve disk space
 - Technical separation of Moodle and archive worker service
@@ -304,6 +308,34 @@ If you encounter permission errors, ensure that the user has the required
 ## Advanced Usage
 
 This section discusses advanced usage of the plugin.
+
+
+### Archive job presets (global defaults / policies)
+
+Default values for all archive job options can be configured globally via the
+plugin settings page. By default, users are allowed to customize these settings
+during archive creation. However, each setting can be locked individually to
+prevent users from modifying it during archive creation. This allows the
+enforcement of organization wide policies for archived quizzes.
+
+To customize these options:
+
+1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
+   _Quiz_ > _Quiz Archiver_ (2)
+2. Scroll down to the _Archive presets_ section (3)
+3. Set the desired default values for each option (4)
+   - Options can depend on another, as indicated by (6). This causes the
+     dependent option to be disabled, if the parent option is not set (e.g.,
+     question feedback is not exported if question exporting is fully disabled)
+   - More options than shown in the screenshots are available. Scroll down to
+     see all (7)
+4. (Optional) Lock individual options by checking the _Lock_ checkbox (5)
+
+Locked options will be grayed out during archive creation (8).
+
+[![Screenshot: Configuration - Archive job presets 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - Archive job presets 2](doc/configuration/configuration_archive_job_presets_2_thumb.png)](doc/configuration/configuration_archive_job_presets_2.png)
+[![Screenshot: Configuration - Archive job presets 3](doc/configuration/configuration_archive_job_presets_3_thumb.png)](doc/configuration/configuration_archive_job_presets_3.png)
 
 
 ### Quiz archive signing using the Time-Stamp Protocol (TSP)
