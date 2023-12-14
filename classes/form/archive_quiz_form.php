@@ -78,12 +78,24 @@ class archive_quiz_form extends \moodleform {
         $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quiz_name);
 
         // Options: Attempts
-        $mform->addElement('advcheckbox', 'export_attempts', get_string('attempts', 'mod_quiz'), get_string('export_attempts_num', 'quiz_archiver', $this->num_attempts), ['disabled' => 'disabled'], ['1', '1']);
+        $mform->addElement(
+            'advcheckbox',
+            'export_attempts',
+            get_string('attempts', 'mod_quiz'),
+            get_string('export_attempts_num', 'quiz_archiver', $this->num_attempts),
+            ['disabled' => 'disabled'],
+            ['1', '1']
+        );
         $mform->addHelpButton('export_attempts', 'export_attempts', 'quiz_archiver');
         $mform->setDefault('export_attempts', true);
 
         foreach (Report::SECTIONS as $section) {
-            $mform->addElement('advcheckbox', 'export_report_section_'.$section, '&nbsp;', get_string('export_report_section_'.$section, 'quiz_archiver'), $config->{'job_preset_export_report_section_'.$section.'_locked'} ? ['disabled' => 'disabled'] : []);
+            $mform->addElement(
+                'advcheckbox',
+                'export_report_section_'.$section, '&nbsp;',
+                get_string('export_report_section_'.$section, 'quiz_archiver'),
+                $config->{'job_preset_export_report_section_'.$section.'_locked'} ? ['disabled' => 'disabled'] : []
+            );
             $mform->addHelpButton('export_report_section_'.$section, 'export_report_section_'.$section, 'quiz_archiver');
             $mform->setDefault('export_report_section_'.$section, $config->{'job_preset_export_report_section_'.$section});
 
@@ -95,11 +107,23 @@ class archive_quiz_form extends \moodleform {
         }
 
         // Options: Backups
-        $mform->addElement('advcheckbox', 'export_quiz_backup', get_string('backups', 'admin'), get_string('export_quiz_backup', 'quiz_archiver'), $config->job_preset_export_quiz_backup_locked ? ['disabled' => 'disabled'] : []);
+        $mform->addElement(
+            'advcheckbox',
+            'export_quiz_backup',
+            get_string('backups', 'admin'),
+            get_string('export_quiz_backup', 'quiz_archiver'),
+            $config->job_preset_export_quiz_backup_locked ? ['disabled' => 'disabled'] : []
+        );
         $mform->addHelpButton('export_quiz_backup', 'export_quiz_backup', 'quiz_archiver');
         $mform->setDefault('export_quiz_backup', $config->job_preset_export_quiz_backup);
 
-        $mform->addElement('advcheckbox', 'export_course_backup', '&nbsp;', get_string('export_course_backup', 'quiz_archiver'), $config->job_preset_export_course_backup_locked ? ['disabled' => 'disabled'] : []);
+        $mform->addElement(
+            'advcheckbox',
+            'export_course_backup',
+            '&nbsp;',
+            get_string('export_course_backup', 'quiz_archiver'),
+            $config->job_preset_export_course_backup_locked ? ['disabled' => 'disabled'] : []
+        );
         $mform->addHelpButton('export_course_backup', 'export_course_backup', 'quiz_archiver');
         $mform->setDefault('export_course_backup', $config->job_preset_export_course_backup);
 
@@ -107,20 +131,37 @@ class archive_quiz_form extends \moodleform {
         $mform->addElement('header', 'header_advanced_settings', get_string('advancedsettings'));
         $mform->setExpanded('header_advanced_settings', false);
 
-        $mform->addElement('select', 'export_attempts_paper_format', get_string('export_attempts_paper_format', 'quiz_archiver'), array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS), $config->job_preset_export_attempts_paper_format_locked ? ['disabled' => 'disabled'] : []);
+        $mform->addElement(
+            'select',
+            'export_attempts_paper_format',
+            get_string('export_attempts_paper_format', 'quiz_archiver'),
+            array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS),
+            $config->job_preset_export_attempts_paper_format_locked ? ['disabled' => 'disabled'] : []
+        );
         $mform->addHelpButton('export_attempts_paper_format', 'export_attempts_paper_format', 'quiz_archiver');
         $mform->setDefault('export_attempts_paper_format', $config->job_preset_export_attempts_paper_format);
 
-        $mform->addElement('advcheckbox', 'export_attempts_keep_html_files', get_string('export_attempts_keep_html_files', 'quiz_archiver'), get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'), $config->job_preset_export_attempts_keep_html_files_locked ? ['disabled' => 'disabled'] : []);
+        $mform->addElement(
+            'advcheckbox',
+            'export_attempts_keep_html_files',
+            get_string('export_attempts_keep_html_files', 'quiz_archiver'),
+            get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'),
+            $config->job_preset_export_attempts_keep_html_files_locked ? ['disabled' => 'disabled'] : []
+        );
         $mform->addHelpButton('export_attempts_keep_html_files', 'export_attempts_keep_html_files', 'quiz_archiver');
         $mform->setDefault('export_attempts_keep_html_files', $config->job_preset_export_attempts_keep_html_files);
 
-        $mform->addElement('text', 'archive_filename_pattern', get_string('archive_filename_pattern', 'quiz_archiver'), $config->job_preset_archive_filename_pattern_locked ? ['disabled' => 'disabled'] : []);
+        $mform->addElement(
+            'text',
+            'archive_filename_pattern',
+            get_string('archive_filename_pattern', 'quiz_archiver'),
+            $config->job_preset_archive_filename_pattern_locked ? ['disabled' => 'disabled'] : []
+        );
         $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern', 'quiz_archiver', '', false, [
             'variables' => array_reduce(
                 ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
-                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('archive_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
-                , ""
+                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('archive_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>",
+                ""
             ),
             'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
         ]);
@@ -128,12 +169,17 @@ class archive_quiz_form extends \moodleform {
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
 
-        $mform->addElement('text', 'export_attempts_filename_pattern', get_string('export_attempts_filename_pattern', 'quiz_archiver'), $config->job_preset_export_attempts_filename_pattern_locked ? ['disabled' => 'disabled'] : []);
+        $mform->addElement(
+            'text',
+            'export_attempts_filename_pattern',
+            get_string('export_attempts_filename_pattern', 'quiz_archiver'),
+            $config->job_preset_export_attempts_filename_pattern_locked ? ['disabled' => 'disabled'] : []
+        );
         $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern', 'quiz_archiver', '', false, [
             'variables' => array_reduce(
                 ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
-                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
-                , ""
+                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>",
+                ""
             ),
             'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
         ]);
