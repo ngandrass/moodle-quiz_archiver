@@ -155,7 +155,7 @@ if ($hassiteconfig) {
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
             ]),
-            'quiz_archive_${courseshortname}(${courseid})_${quizname}(${quizid})_${date}_${time}',
+            'quiz-archive-${courseshortname}-${courseid}-${quizname}-${quizid}_${date}-${time}',
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
@@ -171,7 +171,7 @@ if ($hassiteconfig) {
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
             ]),
-            'attempt_${attemptid}_${username}_${date}_${time}',
+            'attempt-${attemptid}-${username}_${date}-${time}',
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
