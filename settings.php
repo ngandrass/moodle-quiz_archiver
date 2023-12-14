@@ -140,7 +140,7 @@ if ($hassiteconfig) {
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
             get_string('export_attempts_keep_html_files', 'quiz_archiver'),
             get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),
-            '1',
+            '0',
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
