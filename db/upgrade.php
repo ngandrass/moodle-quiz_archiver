@@ -183,5 +183,19 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023111500, 'quiz', 'archiver');
     }
 
+    if ($oldversion < 2024010300) {
+        // Define field retentiontime to be added to quiz_archiver_jobs.
+        $table = new xmldb_table('quiz_archiver_jobs');
+        $field = new xmldb_field('retentiontime', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'timemodified');
+
+        // Conditionally launch add field retentiontime.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2024010300, 'quiz', 'archiver');
+    }
+
     return true;
 }

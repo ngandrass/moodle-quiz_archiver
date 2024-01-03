@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2023111500" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
+  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2024010300" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
     <TABLES>
       <TABLE NAME="quiz_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
         <FIELDS>
@@ -12,6 +12,7 @@
           <FIELD NAME="status" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Status of this job"/>
           <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was created"/>
           <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was updated"/>
+          <FIELD NAME="retentiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The unix timestamp until when this archive has to be retained. It can be deleted automatically afterwards."/>
           <FIELD NAME="wstoken" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="Webservice token that is allowed to write this job via the Moodle API"/>
           <FIELD NAME="artifactfileid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID of the artifact file from {files}, if present in Moodle storage"/>
           <FIELD NAME="artifactfilechecksum" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="Content hash of the artifact file, if present in Moodle storage"/>
