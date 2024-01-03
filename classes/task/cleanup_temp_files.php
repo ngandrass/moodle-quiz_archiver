@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Defines a scheduled task to clean up temporary files create by the
+ * quiz_archiver plugin.
+ *
+ * @package   quiz_archiver
+ * @copyright 2024 Niels Gandraß <niels@gandrass.de>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace quiz_archiver\task;
 
 use quiz_archiver\FileManager;

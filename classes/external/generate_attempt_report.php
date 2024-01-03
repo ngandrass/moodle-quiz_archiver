@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * This file defines the generate_attempt_report webservice function that is
+ * part of the quiz_archiver plugin.
+ *
+ * @package   quiz_archiver
+ * @copyright 2024 Niels Gandraß <niels@gandrass.de>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 namespace quiz_archiver\external;
 
 // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025

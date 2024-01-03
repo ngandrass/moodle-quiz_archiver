@@ -21,7 +21,7 @@ namespace quiz_archiver\local\admin\setting;
  * Custom read-only admin setting checkbox that is always checked
  *
  * @package   quiz_archiver
- * @copyright 2023 Niels Gandraß <niels@gandrass.de>
+ * @copyright 2024 Niels Gandraß <niels@gandrass.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
  */
 class admin_setting_configcheckbox_alwaystrue extends \admin_setting_configcheckbox {

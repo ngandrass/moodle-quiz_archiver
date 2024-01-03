@@ -18,7 +18,7 @@
  * Defines the signing form for artifacts
  *
  * @package    quiz_archiver
- * @copyright  2023 Niels Gandraß <niels@gandrass.de>
+ * @copyright  2024 Niels Gandraß <niels@gandrass.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
