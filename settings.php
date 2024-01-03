@@ -177,6 +177,24 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_archive_autodelete',
+            get_string('archive_autodelete', 'quiz_archiver'),
+            get_string('archive_autodelete_help', 'quiz_archiver'),
+            '0',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, true);
+        $settings->add($set);
+
+        $set = new admin_setting_configduration('quiz_archiver/job_preset_archive_retention_time',
+            get_string('archive_retention_time', 'quiz_archiver'),
+            get_string('archive_retention_time_help', 'quiz_archiver'),
+            3 * YEARSECS,
+            DAYSECS
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, true);
+        $set->add_dependent_on('quiz_archiver/job_preset_archive_autodelete');
+        $settings->add($set);
+
         // Time-Stamp Protocol settings
         $settings->add(new admin_setting_heading('quit_archiver/header_tsp',
             get_string('setting_header_tsp', 'quiz_archiver'),
