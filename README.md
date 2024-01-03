@@ -58,11 +58,11 @@ Available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_arch
 - Cryptographic signing of archives and their creation date using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol)
 - Archive and attempt report names are fully customizable and support dynamic
   variables (e.g., course name, quiz name, username, ...)
-- Integration as Moodle quiz report
 - Support for custom quiz archive permissions / capabilities
 - Allows definition of global archiving defaults as well as forced archiving
   policies (i.e., locked archive job presets that cannot be changed by the user)
 - Fully asynchronous archive creation to reduce load on Moodle Server
+- Automatic deletion of quiz archives after a specified retention period
 - Data compression and vector based MathJax formulas to preserve disk space
 - Technical separation of Moodle and archive worker service
 - Data-minimising and security driven design
@@ -336,6 +336,46 @@ Locked options will be grayed out during archive creation (8).
 [![Screenshot: Configuration - Archive job presets 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
 [![Screenshot: Configuration - Archive job presets 2](doc/configuration/configuration_archive_job_presets_2_thumb.png)](doc/configuration/configuration_archive_job_presets_2.png)
 [![Screenshot: Configuration - Archive job presets 3](doc/configuration/configuration_archive_job_presets_3_thumb.png)](doc/configuration/configuration_archive_job_presets_3.png)
+
+
+### Automatic deletion of quiz archives (retention policy)
+
+Quiz archives can be automatically deleted after a specified retention period.
+Automatic deletion can either be controlled on a per-archive basis or globally
+via the [archive job presets](#archive-job-presets-global-defaults--policies).
+Archives with expired lifetimes are deleted by an asynchronous task that is, by
+default, scheduled to run every hour. Only the archived user data (attempt PDFs,
+attachments, ...) is deleted, while the job metadata is kept until manually
+deleted. This procedure allows to document the deletion of archive data in a
+traceable manner, while the privacy relevant user data is deleted.
+
+![Screenshot: Job details modal - Automatic deletion](doc/screenshots/quiz_archiver_job_details_modal_autodelete.png)
+
+If an archive is scheduled for automatic deletion, its remaining lifetime is
+shown in the job details modal, as depict above. You can access it via the
+_Show details_ button on the quiz archiver overview page. Once deleted, archives
+change their status from _'Finished'_ to _'Deleted'_. If you try to delete an
+archive that is scheduled for automatic deletion before its retention period
+expired, an extra warning message will be shown.
+
+#### Enable automatic deletion for a single quiz archive
+
+To enable the scheduled deletion for a single quiz archive:
+
+1. Navigate to the quiz archiver overview page
+2. Expand the _Advanced settings_ section of the _Create new quiz archive_ form
+3. Check the _Automatic deletion_ checkbox (1)
+4. Set the desired retention period (2)
+5. Create the archive job (3)
+
+[![Screenshot: Configuration - Automatic archive deletion](doc/configuration/configuration_job_autodelete_thumb.png)](doc/configuration/configuration_job_autodelete.png)
+
+
+#### Enable automatic deletion globally
+
+Like any other archive settings, automatic deletion can be configured globally
+using the [archive job presets](#archive-job-presets-global-defaults--policies).
+
 
 
 ### Quiz archive signing using the Time-Stamp Protocol (TSP)
