@@ -425,6 +425,24 @@ class ArchiveJob {
                 ];
             }
 
+            // Calculate autodelete metadata
+            if ($j->retentiontime !== null) {
+                if ($j->status == self::STATUS_DELETED) {
+                    $autodelete_str = get_string('archive_autodelete_deleted', 'quiz_archiver');
+                } elseif ($j->retentiontime <= time()) {
+                    $autodelete_str = get_string('archive_autodelete_now', 'quiz_archiver');
+                } else {
+                    $autodelete_str = get_string(
+                        'archive_autodelete_in',
+                        'quiz_archiver',
+                        util::duration_to_human_readable($j->retentiontime - time())
+                    );
+                    $autodelete_str .= ' ('.userdate($j->retentiontime, get_string('strftimedatetime', 'core_langconfig')).')';
+                }
+            } else {
+                $autodelete_str = get_string('archive_autodelete_disabled', 'quiz_archiver');
+            }
+
             // Build job metadata array
             return [
                 'id' => $j->id,
@@ -433,6 +451,10 @@ class ArchiveJob {
                 'status_display_args' => self::get_status_display_args($j->status),
                 'timecreated' => $j->timecreated,
                 'timemodified' => $j->timemodified,
+                'retentiontime' => $j->retentiontime,
+                'autodelete' => $j->retentiontime !== null,
+                'autodelete_done' => $j->status == self::STATUS_DELETED ? true : null,
+                'autodelete_str' => $autodelete_str,
                 'user' => [
                     'id' => $j->userid,
                     'firstname' => $j->userfirstname,
@@ -473,6 +495,26 @@ class ArchiveJob {
             },
             []
         );
+    }
+
+    public static function delete_expired_artifacts(): int {
+        global $DB;
+
+        $records = $DB->get_records_select(
+            self::JOB_TABLE_NAME,
+            "artifactfileid IS NOT NULL AND retentiontime IS NOT NULL AND retentiontime < :now",
+            ['now' => time()],
+            'id'
+        );
+
+        $files_deleted = 0;
+        foreach ($records as $record) {
+            $job = self::get_by_id($record->id);
+            $job->delete_artifact();
+            $files_deleted++;
+        }
+
+        return $files_deleted;
     }
 
     /**
@@ -560,6 +602,7 @@ class ArchiveJob {
             case self::STATUS_FINISHED:
             case self::STATUS_FAILED:
             case self::STATUS_TIMEOUT:
+            case self::STATUS_DELETED:
                 return true;
             default:
                 return false;
@@ -634,8 +677,8 @@ class ArchiveJob {
     public function set_status(
         string $status,
         bool $delete_wstoken_if_completed = true,
-        $delete_temporary_files_if_completed = true
-    ) {
+        bool $delete_temporary_files_if_completed = true
+    ): void {
         global $DB;
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
             'id' => $this->id,
@@ -776,11 +819,35 @@ class ArchiveJob {
     }
 
     /**
+     * Deletes the artifact file associated with this job
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function delete_artifact(): void {
+        global $DB;
+
+        if ($artifact = $this->get_artifact()) {
+            $artifact->delete();
+
+            $DB->update_record(self::JOB_TABLE_NAME, (object) [
+                'id' => $this->id,
+                'artifactfileid' => null,
+                'artifactfilechecksum' => null,
+                'timemodified' => time()
+            ]);
+
+            $this->set_status(self::STATUS_DELETED);
+        }
+    }
+
+    /**
      * Links a temporary file by its future $pathnamehash to this job. Temporary
      * files will be deleted once this job completes.
      *
      * @param string $pathnamehash Pathnamehash of the file
      * @return void
+     * @throws \dml_exception
      */
     public function link_temporary_file(string $pathnamehash): void {
         global $DB;
