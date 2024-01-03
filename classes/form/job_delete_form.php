@@ -43,6 +43,16 @@ class job_delete_form extends \moodleform {
         // Warning message
         $warn_head = get_string('areyousure', 'moodle');
         $warn_msg = get_string('delete_job_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
+
+        if ($this->optional_param('autodelete_warning', null, PARAM_INT)) {
+            $warn_msg .= '<br><br>';
+            $warn_msg .= get_string(
+                'delete_job_warning_retention',
+                'quiz_archiver',
+                userdate($this->optional_param('autodelete_warning', null, PARAM_INT), get_string('strftimedatetime', 'langconfig'))
+            );
+        }
+
         $warn_details = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
         $mform->addElement('html', <<<EOD
             <div class="alert alert-warning" role="alert">

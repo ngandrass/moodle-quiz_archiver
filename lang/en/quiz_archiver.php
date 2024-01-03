@@ -118,7 +118,9 @@ $string['export_attempts_filename_pattern_variable_timestamp'] = 'Current unix t
 $string['error_invalid_attempt_filename_pattern'] = 'Invalid attempt report filename pattern. Please correct your input and try again.';
 
 // Job
+$string['delete_job'] = 'Delete archive job';
 $string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';
+$string['delete_job_warning_retention'] = '<b>Attention:</b> This archive job is scheduled for automatic deletion on <code>{$a}</code>. Are you absolutely sure that you want to delete it <b>before its scheduled lifetime expired</b>?';
 $string['jobid'] = 'Job ID';
 $string['job_created_successfully'] = 'New archive job created successfully: {$a}';
 $string['job_status_UNKNOWN'] = 'Unknown';

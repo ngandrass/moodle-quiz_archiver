@@ -66,7 +66,7 @@ class job_overview_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
+            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
             '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id',
             'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
@@ -165,6 +165,7 @@ class job_overview_table extends \table_sql {
             'mode' => 'archiver',
             'action' => 'delete_job',
             'jobid' => $values->jobid,
+            'autodelete_warning' => ($values->retentiontime != null && $values->status != ArchiveJob::STATUS_DELETED) ? $values->retentiontime : false,
         ]);
         $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
 

@@ -118,7 +118,9 @@ $string['export_attempts_filename_pattern_variable_timestamp'] = 'Aktueller Unix
 $string['error_invalid_attempt_filename_pattern'] = 'Ungültiger Versuchsname. Bitte korrigieren Sie Ihre Eingabe und versuchen Sie es erneut.';
 
 // Job
+$string['delete_job'] = 'Archivierungsauftrag löschen';
 $string['delete_job_warning'] = 'Sind Sie sicher, dass Sie diesen Archivierungsauftrag <b>inklusive aller archivierten Daten</b> löschen möchten?';
+$string['delete_job_warning_retention'] = '<b>Achtung:</b> Dieser Archivierungsauftrag ist für die automatische Löschung am <code>{$a}</code> vorgesehen. Sind Sie absolut sicher, dass Sie ihn <b>vor Ablauf seiner geplanten Lebensdauer</b> löschen möchten?';
 $string['jobid'] = 'Auftrags-ID';
 $string['job_created_successfully'] = 'Neuer Archivierungsauftrag erfolgreich erstellt: {$a}';
 $string['job_status_UNKNOWN'] = 'Unbekannt';

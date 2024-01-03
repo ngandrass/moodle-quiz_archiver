@@ -236,7 +236,8 @@ class quiz_archiver_report extends report_base {
                         'id' => optional_param('id', null, PARAM_INT),
                         'mode' => 'archiver',
                         'action' => 'delete_job',
-                        'jobid' => $jm['jobid']
+                        'jobid' => $jm['jobid'],
+                        'autodelete_warning' => ($jm['autodelete'] && !$jm['autodelete_done']) ? $jm['retentiontime'] : false,
                     ]))->out(),
                     'sign' => (new moodle_url('', [
                         'id' => optional_param('id', null, PARAM_INT),
