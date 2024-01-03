@@ -43,7 +43,12 @@ $string['quiz_archive_not_ready'] = 'Testarchiv noch nicht bereit';
 // Template: Overview
 $string['archived'] = 'Archiviert';
 $string['users_with_attempts'] = 'Nutzende mit Versuchen';
+$string['archive_autodelete'] = 'Automatische Löschung';
+$string['archive_autodelete_short'] = 'Löschung';
+$string['archive_autodelete_help'] = 'Automatisches Löschen dieses Testarchivs nach einer bestimmten Zeit. Die Aufbewahrungszeit kann konfiguriert werden, sobald die automatische Löschung aktiviert ist.';
 $string['archive_quiz'] = 'Test archivieren';
+$string['archive_retention_time'] = 'Aufbewahrungszeit';
+$string['archive_retention_time_help'] = 'Die Aufbewahrungszeit dieses Testarchivs, bevor es automatisch gelöscht wird. Diese Einstellung hat nur Auswirkungen, wenn die automatische Löschung aktiviert ist.';
 $string['create_quiz_archive'] = 'Neues Archiv erstellen';
 $string['archive_quiz_form_desc'] = 'Füllen Sie dieses Formular aus, um den Test zu archivieren. Die Archivierung findet asynchron statt und kann einige Zeit in Anspruch nehmen. Sie können den aktuellen Status jederzeit auf dieser Seite überprüfen und fertige Archive herunterladen.';
 $string['error_archive_quiz_form_validation_failed'] = 'Validierung der gesendeten Formulardaten fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.';
@@ -123,9 +128,14 @@ $string['job_status_RUNNING'] = 'Läuft';
 $string['job_status_FINISHED'] = 'Fertig';
 $string['job_status_FAILED'] = 'Fehler';
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
+$string['job_status_DELETED'] = 'Gelöscht';
 
 // Job details
 $string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
+$string['archive_autodelete_deleted'] = 'Testarchive wurde automatisch gelöscht';
+$string['archive_autodelete_in'] = 'Testarchiv wird gelöscht in: {$a}';
+$string['archive_autodelete_disabled'] = 'Deaktiviert';
+$string['archive_autodelete_now'] = 'Testarchiv wird zeitnah automatisch gelöscht';
 $string['archive_not_signed'] = 'Testarchiv ist nicht signiert';
 $string['archive_signature'] = 'Signatur';
 $string['archive_signed_successfully'] = 'Testarchiv erfolgreich signiert';
@@ -196,3 +206,7 @@ $string['privacy:metadata:quiz_archiver_tsp:timestampreply'] = 'Die TimestampRep
 $string['task_cleanup_temp_files'] = 'Bereinigen temporärer Dateien';
 $string['task_cleanup_temp_files_start'] = 'Räume temporäre Dateien auf ...';
 $string['task_cleanup_temp_files_report'] = '{$a} temporäre Dateien gelöscht.';
+$string['task_autodelete_job_artifacts'] = 'Delete expired quiz archives';
+$string['task_autodelete_job_artifacts'] = 'Löschen abgelaufener Testarchive';
+$string['task_autodelete_job_artifacts_start'] = 'Lösche abgelaufene Testarchive ...';
+$string['task_autodelete_job_artifacts_report'] = '{$a} Testarchive gelöscht.';

@@ -176,7 +176,12 @@
                 </table>
             {{/artifactfile}}
             {{^artifactfile}}
-                {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
+                {{#autodelete_done}}
+                    {{#str}} archive_autodelete_deleted, quiz_archiver {{/str}}
+                {{/autodelete_done}}
+                {{^autodelete_done}}
+                    {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
+                {{/autodelete_done}}
             {{/artifactfile}}
         </td>
     </tr>
@@ -208,9 +213,18 @@
                 {{/tsp}}
             {{/artifactfile}}
             {{^artifactfile}}
-                {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
+                {{#autodelete_done}}
+                    {{#str}} archive_autodelete_deleted, quiz_archiver {{/str}}
+                {{/autodelete_done}}
+                {{^autodelete_done}}
+                    {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
+                {{/autodelete_done}}
             {{/artifactfile}}
         </td>
+    </tr>
+    <tr>
+        <td>{{#str}} archive_autodelete_short, quiz_archiver {{/str}}</td>
+        <td>{{autodelete_str}}</td>
     </tr>
     <tr>
         <td class="align-middle">{{#str}} settings {{/str}}</td>

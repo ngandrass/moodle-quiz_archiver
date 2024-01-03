@@ -43,7 +43,12 @@ $string['quiz_archive_not_ready'] = 'Quiz archive not ready yet';
 // Template: Overview
 $string['archived'] = 'Archived';
 $string['users_with_attempts'] = 'Users with quiz attempts';
+$string['archive_autodelete'] = 'Automatic deletion';
+$string['archive_autodelete_short'] = 'Deletion';
+$string['archive_autodelete_help'] = 'Automatically delete this quiz archive after a certain amount of time. The retention time can be configured below, once automatic deletion is activated.';
 $string['archive_quiz'] = 'Archive quiz';
+$string['archive_retention_time'] = 'Retention time';
+$string['archive_retention_time_help'] = 'The amount of time this quiz archive should be kept before it is automatically deleted. This setting only takes effect if automatic deletion is activated.';
 $string['create_quiz_archive'] = 'Create new quiz archive';
 $string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page.';
 $string['error_archive_quiz_form_validation_failed'] = 'Form data validation failed. Please correct your input and try again.';
@@ -123,9 +128,14 @@ $string['job_status_RUNNING'] = 'Running';
 $string['job_status_FINISHED'] = 'Finished';
 $string['job_status_FAILED'] = 'Failed';
 $string['job_status_TIMEOUT'] = 'Timeout';
+$string['job_status_DELETED'] = 'Deleted';
 
 // Job details
 $string['archive_already_signed'] = 'Archive is already signed';
+$string['archive_autodelete_deleted'] = 'Archive was automatically deleted';
+$string['archive_autodelete_in'] = 'Archive will be deleted in: {$a}';
+$string['archive_autodelete_disabled'] = 'Disabled';
+$string['archive_autodelete_now'] = 'Archive is scheduled for deletion';
 $string['archive_not_signed'] = 'Archive is unsigned';
 $string['archive_signature'] = 'Signature';
 $string['archive_signed_successfully'] = 'Archive signed successfully';
@@ -195,3 +205,6 @@ $string['privacy:metadata:quiz_archiver_tsp:timestampreply'] = 'The timestamp re
 $string['task_cleanup_temp_files'] = 'Cleanup temporary files';
 $string['task_cleanup_temp_files_start'] = 'Cleaning up expired temporary files ...';
 $string['task_cleanup_temp_files_report'] = 'Deleted {$a} temporary files.';
+$string['task_autodelete_job_artifacts'] = 'Delete expired quiz archives';
+$string['task_autodelete_job_artifacts_start'] = 'Deleting expired quiz archives ...';
+$string['task_autodelete_job_artifacts_report'] = 'Deleted {$a} quiz archives.';
