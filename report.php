@@ -28,6 +28,7 @@ require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.ph
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\BackupManager;
+use quiz_archiver\local\util;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
 use quiz_archiver\form\archive_quiz_form;
@@ -193,6 +194,7 @@ class quiz_archiver_report extends report_base {
                     $formdata->export_course_backup,
                     $formdata->archive_filename_pattern,
                     $formdata->export_attempts_filename_pattern,
+                    $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
                 );
                 $tplCtx['jobInitiationStatusAlert'] = [
                     "color" => "success",
@@ -277,6 +279,7 @@ class quiz_archiver_report extends report_base {
      * @param bool $export_course_backup Complete course backup will be archived if true
      * @param string $archive_filename_pattern Filename pattern to use for archive generation
      * @param string $attempts_filename_pattern Filename pattern to use for attempt report generation
+     * @param int|null $retention_seconds If set, the archive will be deleted automatically this many seconds after creation
      * @return ArchiveJob|null Created ArchiveJob on success
      * @throws coding_exception Handled by Moodle
      * @throws dml_exception Handled by Moodle
@@ -292,6 +295,7 @@ class quiz_archiver_report extends report_base {
         bool $export_course_backup,
         string $archive_filename_pattern,
         string $attempts_filename_pattern,
+        int|null $retention_seconds = null
     ): ?ArchiveJob {
         global $USER;
 
@@ -363,6 +367,10 @@ class quiz_archiver_report extends report_base {
         }
         $job_settings['export_quiz_backup'] = $export_quiz_backup ? '1' : '0';
         $job_settings['export_course_backup'] = $export_course_backup ? '1' : '0';
+        $job_settings['archive_autodelete'] = $retention_seconds ? '1' : '0';
+        if ($retention_seconds) {
+            $job_settings['archive_retention_time'] = util::duration_to_human_readable($retention_seconds);
+        }
 
         // Request archive worker
         $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/').'/archive', 10, 20);
@@ -386,6 +394,7 @@ class quiz_archiver_report extends report_base {
                 $this->cm->id,
                 $this->quiz->id,
                 $USER->id,
+                $retention_seconds,
                 $wstoken,
                 $attempts,
                 $job_settings,

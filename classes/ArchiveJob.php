@@ -24,6 +24,8 @@
 
 namespace quiz_archiver;
 
+use quiz_archiver\local\util;
+
 defined('MOODLE_INTERNAL') || die();
 
 
@@ -76,6 +78,8 @@ class ArchiveJob {
     const STATUS_FAILED = 'FAILED';
     /** @var string Job status: Timeout */
     const STATUS_TIMEOUT = 'TIMEOUT';
+    /** @var string Job status: Deleted */
+    const STATUS_DELETED = 'DELETED';
 
     /** @var string[] Valid variables for archive filename patterns */
     public const ARCHIVE_FILENAME_PATTERN_VARIABLES = [
@@ -121,10 +125,22 @@ class ArchiveJob {
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that owns this job
+     * @param int|null $retentiontime Unix timestamp after which this jobs
+     * artifacts will be deleted automatically. Null indicates no deletion.
      * @param int $timecreated Unix timestamp of job creation
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      */
-    protected function __construct(int $id, string $jobid, int $course_id, int $cm_id, int $quiz_id, int $user_id, int $timecreated, string $wstoken) {
+    protected function __construct(
+        int $id,
+        string $jobid,
+        int $course_id,
+        int $cm_id,
+        int $quiz_id,
+        int $user_id,
+        int $timecreated,
+        int|null $retentiontime,
+        string $wstoken
+    ) {
         $this->id = $id;
         $this->jobid = $jobid;
         $this->course_id = $course_id;
@@ -132,6 +148,7 @@ class ArchiveJob {
         $this->quiz_id = $quiz_id;
         $this->user_id = $user_id;
         $this->timecreated = $timecreated;
+        $this->retentiontime = $retentiontime;
         $this->wstoken = $wstoken;
         $this->tspManager = null; // Lazy initialization
     }
@@ -158,6 +175,8 @@ class ArchiveJob {
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that initiated this job
+     * @params int|null $retention_seconds Number of seconds to retain this jobs
+     * artifact after job creation. Null indicates no deletion.
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      * @param array $attempts List of quiz attempts to archive, each consisting of an attemptid and a userid
      * @param array $settings Map of settings to store for this job and display in the report interface
@@ -173,6 +192,7 @@ class ArchiveJob {
         int $cm_id,
         int $quiz_id,
         int $user_id,
+        int|null $retention_seconds,
         string $wstoken,
         array $attempts,
         array $settings,
@@ -187,6 +207,7 @@ class ArchiveJob {
 
         // Create database entry and return ArchiveJob object to represent it
         $now = time();
+        $retentiontime = $retention_seconds ? $now + $retention_seconds : null;
         $id = $DB->insert_record(self::JOB_TABLE_NAME, [
             'jobid' => $jobid,
             'courseid' => $course_id,
@@ -196,6 +217,7 @@ class ArchiveJob {
             'status' => $status,
             'timecreated' => $now,
             'timemodified' => $now,
+            'retentiontime' => $retentiontime,
             'wstoken' => $wstoken
         ]);
 
@@ -217,7 +239,7 @@ class ArchiveJob {
             ];
         }, $attempts));
 
-        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $now, $wstoken);
+        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $now, $retentiontime, $wstoken);
     }
 
     /**
@@ -238,6 +260,7 @@ class ArchiveJob {
             $jobdata->quizid,
             $jobdata->userid,
             $jobdata->timecreated,
+            $jobdata->retentiontime,
             $jobdata->wstoken
         );
     }
@@ -260,6 +283,7 @@ class ArchiveJob {
             $jobdata->quizid,
             $jobdata->userid,
             $jobdata->timecreated,
+            $jobdata->retentiontime,
             $jobdata->wstoken
         );
     }
@@ -304,6 +328,7 @@ class ArchiveJob {
             $dbdata->quizid,
             $dbdata->userid,
             $dbdata->timecreated,
+            $dbdata->retentiontime,
             $dbdata->wstoken
         ), $records);
     }
@@ -426,7 +451,7 @@ class ArchiveJob {
                 'artifactfile' => $artifactfile_metadata,
                 'tsp' => $tspdata,
                 'settings' => self::convert_archive_settings_for_display(
-                    (new self($j->id, '', -1, -1, -1, -1, -1, ''))->get_settings()
+                    (new self($j->id, '', -1, -1, -1, -1, -1, null, ''))->get_settings()
                 ),
             ];
         }, $records));
@@ -663,6 +688,8 @@ class ArchiveJob {
                 return ['color' => 'danger', 'text' => get_string('job_status_FAILED', 'quiz_archiver')];
             case self::STATUS_TIMEOUT:
                 return ['color' => 'danger', 'text' => get_string('job_status_TIMEOUT', 'quiz_archiver')];
+            case self::STATUS_DELETED:
+                return ['color' => 'secondary', 'text' => get_string('job_status_DELETED', 'quiz_archiver')];
             default:
                 return ['color' => 'light', 'text' => $status];
         }
