@@ -105,7 +105,7 @@ class quiz_archiver_report extends report_base {
 
             if ($job_delete_form->is_submitted()) {
                 // Check permissions.
-                require_capability('mod/quiz_archiver:archive', $this->context);
+                require_capability('mod/quiz_archiver:delete', $this->context);
 
                 // Execute deletion
                 $formdata = $job_delete_form->get_data();
@@ -126,7 +126,7 @@ class quiz_archiver_report extends report_base {
 
             if ($arfifact_delete_form->is_submitted()) {
                 // Check permissions.
-                require_capability('mod/quiz_archiver:archive', $this->context);
+                require_capability('mod/quiz_archiver:delete', $this->context);
 
                 // Execute deletion
                 $formdata = $arfifact_delete_form->get_data();
@@ -147,7 +147,7 @@ class quiz_archiver_report extends report_base {
 
             if ($job_sign_form->is_submitted()) {
                 // Check permissions.
-                require_capability('mod/quiz_archiver:archive', $this->context);
+                require_capability('mod/quiz_archiver:create', $this->context);
 
                 // Execute signing
                 $formdata = $job_sign_form->get_data();
@@ -337,7 +337,7 @@ class quiz_archiver_report extends report_base {
         global $USER;
 
         // Check permissions.
-        require_capability('mod/quiz_archiver:archive', $this->context);
+        require_capability('mod/quiz_archiver:create', $this->context);
 
         // Create temporary webservice token
         if (class_exists('core_external\util')) {

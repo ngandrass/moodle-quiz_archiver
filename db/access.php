@@ -37,8 +37,18 @@ $capabilities = [
         ],
     ],
     // Capability to create and delete quiz archives.
-    'mod/quiz_archiver:archive' => [
-        'riskbitmask' => (RISK_PERSONAL | RISK_DATALOSS),
+    'mod/quiz_archiver:create' => [
+        'riskbitmask' => (RISK_PERSONAL),
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    // Capability to delete quiz archives.
+    'mod/quiz_archiver:delete' => [
+        'riskbitmask' => (RISK_DATALOSS),
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [

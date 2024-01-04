@@ -58,7 +58,8 @@ Available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_arch
 - Cryptographic signing of archives and their creation date using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol)
 - Archive and attempt report names are fully customizable and support dynamic
   variables (e.g., course name, quiz name, username, ...)
-- Support for custom quiz archive permissions / capabilities
+- Fine granular permission / capability management (e.g., only allow archive
+  creation but prevent deletion)
 - Allows definition of global archiving defaults as well as forced archiving
   policies (i.e., locked archive job presets that cannot be changed by the user)
 - Fully asynchronous archive creation to reduce load on Moodle Server
@@ -274,7 +275,10 @@ The following capabilities are required for the listed actions:
   overview page. It allows to download all created archives but does not allow do
   create new or delete existing archives (read-only access). By default, assigned
   to: `teacher`, `editingteacher`, `manager`.
-- `mod/quiz_archiver:archive` (context: Module): Allows creation and deletion of
+- `mod/quiz_archiver:create` (context: Module): Allows creation of new quiz
+   archives (read-write access). By default, assigned to: `editingteacher`,
+  `manager`.
+- `mod/quiz_archiver:delete`, (context: Module): Allows deletion of existing
   quiz archives (read-write access). By default, assigned to: `editingteacher`,
   `manager`.
 - `mod/quiz_archiver:use_webservice` (context: System): Required to use any of
