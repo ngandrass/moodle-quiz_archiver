@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 1.2.0 (2024010400)
+
+- Support for automatic deletion of quiz archives after a specified retention period
+- Allow to enforce a global retention policy via the plugin settings
+- Allow manual deletion of artifact files while keeping job metadata from job details modal
+- Differentiate between quiz archive creation and deletion permission
+- Link to course, quiz, and archive creation user in job details modal
+- Reduce job action form URL arguments and improve displayed warnings / information
+- Delete TSP data, if job or artifact is deleted
+
+
 ## Version 1.1.0 (2023121400)
 
 - Allow customization of archive and attempt report filenames based on variables (e.g., quiz name, username, ...)
