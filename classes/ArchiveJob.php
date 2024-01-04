@@ -664,6 +664,16 @@ class ArchiveJob {
     }
 
     /**
+     * Returns the retention time of this job, if enabled
+     *
+     * @return int|null Unix timestamp after which this jobs artifact will be
+     * deleted automatically. Null indicates no automatic deletion.
+     */
+    public function get_retentiontime(): int|null {
+        return $this->retentiontime;
+    }
+
+    /**
      * Updates the status of this ArchiveJob
      *
      * @param string $status New job status
@@ -793,6 +803,15 @@ class ArchiveJob {
     }
 
     /**
+     * Determines if this job has a linked artifactfile
+     *
+     * @return bool True if this job has a linked artifactfile
+     */
+    public function has_artifact(): bool {
+        return $this->get_artifact() !== null;
+    }
+
+    /**
      * Links the moodle file with the given ID to this job as the artifact
      *
      * @param int $file_id ID of the file from {files} to link to this
@@ -839,6 +858,15 @@ class ArchiveJob {
 
             $this->set_status(self::STATUS_DELETED);
         }
+    }
+
+    /**
+     * Determines if the artifact file is scheduled for automatic deletion
+     *
+     * @return bool True if the artifact file is scheduled for automatic deletion
+     */
+    public function is_autodelete_enabled(): bool {
+        return $this->retentiontime !== null;
     }
 
     /**

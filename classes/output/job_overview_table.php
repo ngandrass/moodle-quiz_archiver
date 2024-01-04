@@ -165,7 +165,6 @@ class job_overview_table extends \table_sql {
             'mode' => 'archiver',
             'action' => 'delete_job',
             'jobid' => $values->jobid,
-            'autodelete_warning' => ($values->retentiontime != null && $values->status != ArchiveJob::STATUS_DELETED) ? $values->retentiontime : false,
         ]);
         $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
 
