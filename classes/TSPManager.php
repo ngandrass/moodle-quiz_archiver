@@ -107,6 +107,20 @@ class TSPManager {
     }
 
     /**
+     * Deletes all TSP data for the associated ArchiveJob.
+     *
+     * @return void
+     * @throws \dml_exception On database error
+     */
+    public function delete_tsp_data(): void {
+        global $DB;
+
+        $DB->delete_records(self::TSP_TABLE_NAME, [
+            'jobid' => $this->job->get_id(),
+        ]);
+    }
+
+    /**
      * Issues a TSP timestamp for the associated ArchiveJobs artifact
      *
      * @return void

@@ -400,7 +400,7 @@ class ArchiveJob {
 
             // Prepate TSP data
             $tspdata = null;
-            if ($j->tsp_timecreated) {
+            if ($j->tsp_timecreated && $j->artifactfileid) {
                 $tspdata = [
                     'timecreated' => $j->tsp_timecreated,
                     'server' => $j->tsp_server,
@@ -529,9 +529,8 @@ class ArchiveJob {
         // Delete additional data
         $this->delete_webservice_token();
         $this->delete_temporary_files();
-        if ($artifact = $this->get_artifact()) {
-            $artifact->delete();
-        }
+        $this->delete_artifact();
+
         $DB->delete_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]);
         $DB->delete_records(self::ATTEMPTS_TABLE_NAME, ['jobid' => $this->id]);
 
@@ -848,6 +847,7 @@ class ArchiveJob {
 
         if ($artifact = $this->get_artifact()) {
             $artifact->delete();
+            $this->tspManager()->delete_tsp_data();
 
             $DB->update_record(self::JOB_TABLE_NAME, (object) [
                 'id' => $this->id,
