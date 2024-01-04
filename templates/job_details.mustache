@@ -183,13 +183,17 @@
                             <a href="{{{artifactfile.downloadurl}}}" target="_blank">
                                 {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} downloadfile {{/str}}
                             </a>
+                            &nbsp;&ndash;&nbsp;
+                            <a href="{{{action_urls.delete_artifact}}}">
+                                {{#pix}} t/delete, core, {{#str}} delete {{/str}} {{/pix}}{{#str}} delete {{/str}}
+                            </a>
                         </td>
                     </tr>
                 </table>
             {{/artifactfile}}
             {{^artifactfile}}
                 {{#autodelete_done}}
-                    {{#str}} archive_autodelete_deleted, quiz_archiver {{/str}}
+                    {{#str}} archive_deleted, quiz_archiver {{/str}}
                 {{/autodelete_done}}
                 {{^autodelete_done}}
                     {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
@@ -220,13 +224,13 @@
                     {{#str}} archive_not_signed, quiz_archiver {{/str}}.
                     {{#tsp_enabled}}
                         &nbsp;&ndash;&nbsp;
-                        <a href="{{{action_urls.sign}}}">{{#pix}} t/edit, core, {{#str}} sign_archive, quiz_archiver{{/str}} {{/pix}}{{#str}} sign_archive, quiz_archiver {{/str}}</a>
+                        <a href="{{{action_urls.sign_artifact}}}">{{#pix}} t/edit, core, {{#str}} sign_archive, quiz_archiver{{/str}} {{/pix}}{{#str}} sign_archive, quiz_archiver {{/str}}</a>
                     {{/tsp_enabled}}
                 {{/tsp}}
             {{/artifactfile}}
             {{^artifactfile}}
                 {{#autodelete_done}}
-                    {{#str}} archive_autodelete_deleted, quiz_archiver {{/str}}
+                    {{#str}} archive_deleted, quiz_archiver {{/str}}
                 {{/autodelete_done}}
                 {{^autodelete_done}}
                     {{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}
@@ -257,7 +261,7 @@
     <tr>
         <td class="border-top-0 py-0"></td>
         <td class="border-top-0 py-0 text-right">
-            <a href="{{{action_urls.delete}}}" class="btn btn-danger mx-1" role="button" alt="{{#str}} delete {{/str}}">
+            <a href="{{{action_urls.delete_job}}}" class="btn btn-danger mx-1" role="button" alt="{{#str}} delete {{/str}}">
                 {{#str}} delete {{/str}}
             </a>
         </td>

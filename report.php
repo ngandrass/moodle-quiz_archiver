@@ -28,6 +28,7 @@ require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.ph
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\BackupManager;
+use quiz_archiver\form\artifact_delete_form;
 use quiz_archiver\local\util;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
@@ -111,6 +112,27 @@ class quiz_archiver_report extends report_base {
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete();
             } else {
                 $job_delete_form->display();
+                return true;
+            }
+        }
+
+        // Handle artifact delete form
+        if (optional_param('action', null, PARAM_TEXT) === 'delete_artifact') {
+            $arfifact_delete_form = new artifact_delete_form();
+
+            if ($arfifact_delete_form->is_cancelled()) {
+                redirect($this->base_url());
+            }
+
+            if ($arfifact_delete_form->is_submitted()) {
+                // Check permissions.
+                require_capability('mod/quiz_archiver:archive', $this->context);
+
+                // Execute deletion
+                $formdata = $arfifact_delete_form->get_data();
+                ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
+            } else {
+                $arfifact_delete_form->display();
                 return true;
             }
         }
@@ -232,13 +254,19 @@ class quiz_archiver_report extends report_base {
             $tplCtx['jobs'] = array_map(function($jm): array {
                 // Generate action URLs
                 $jm['action_urls'] = [
-                    'delete' => (new moodle_url($this->base_url(), [
+                    'delete_job' => (new moodle_url($this->base_url(), [
                         'id' => optional_param('id', null, PARAM_INT),
                         'mode' => 'archiver',
                         'action' => 'delete_job',
                         'jobid' => $jm['jobid'],
                     ]))->out(),
-                    'sign' => (new moodle_url('', [
+                    'delete_artifact' => (new moodle_url($this->base_url(), [
+                        'id' => optional_param('id', null, PARAM_INT),
+                        'mode' => 'archiver',
+                        'action' => 'delete_artifact',
+                        'jobid' => $jm['jobid'],
+                    ]))->out(),
+                    'sign_artifact' => (new moodle_url('', [
                         'id' => optional_param('id', null, PARAM_INT),
                         'mode' => 'archiver',
                         'action' => 'sign_job',

@@ -97,7 +97,6 @@ $string['archive_filename_pattern_variable_date'] = 'Current date <small>(YYYY-M
 $string['archive_filename_pattern_variable_time'] = 'Current time <small>(HH-MM-SS)</small>';
 $string['archive_filename_pattern_variable_timestamp'] = 'Current unix timestamp';
 $string['error_invalid_archive_filename_pattern'] = 'Invalid archive filename pattern. Please correct your input and try again.';
-
 $string['export_attempts_filename_pattern'] = 'Report name';
 $string['export_attempts_filename_pattern_help'] = 'Name of the generated quiz attempt reports (PDF files). Variables <b>must</b> follow the <code>${variablename}</code> pattern. The file extension will be added automatically.<br><br><b>Available variables</b>: <ul>{$a->variables}</ul><b>Forbidden characters</b>: <code>{$a->forbiddenchars}</code>';
 $string['export_attempts_filename_pattern_variable_courseid'] = 'Course ID';
@@ -118,6 +117,8 @@ $string['export_attempts_filename_pattern_variable_timestamp'] = 'Current unix t
 $string['error_invalid_attempt_filename_pattern'] = 'Invalid attempt report filename pattern. Please correct your input and try again.';
 
 // Job
+$string['delete_artifact'] = 'Delete quiz archive';
+$string['delete_artifact_warning'] = 'Are you sure that you want to delete this quiz archive and therefore <b>all archived data?</b>. The job metadate will be kept.';
 $string['delete_job'] = 'Delete archive job';
 $string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';
 $string['delete_job_warning_retention'] = '<b>Attention:</b> This archive job is scheduled for automatic deletion on <code>{$a}</code>. Are you absolutely sure that you want to delete it <b>before its scheduled lifetime expired</b>?';
@@ -138,6 +139,7 @@ $string['archive_autodelete_deleted'] = 'Archive was automatically deleted';
 $string['archive_autodelete_in'] = 'Archive will be deleted in {$a}';
 $string['archive_autodelete_disabled'] = 'Disabled';
 $string['archive_autodelete_now'] = 'Archive is scheduled for deletion';
+$string['archive_deleted'] = 'Archive was deleted';
 $string['archive_not_signed'] = 'Archive is unsigned';
 $string['archive_signature'] = 'Signature';
 $string['archive_signed_successfully'] = 'Archive signed successfully';

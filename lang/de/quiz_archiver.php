@@ -118,6 +118,8 @@ $string['export_attempts_filename_pattern_variable_timestamp'] = 'Aktueller Unix
 $string['error_invalid_attempt_filename_pattern'] = 'Ungültiger Versuchsname. Bitte korrigieren Sie Ihre Eingabe und versuchen Sie es erneut.';
 
 // Job
+$string['delete_artifact'] = 'Testarchiv löschen';
+$string['delete_artifact_warning'] = 'Sind Sie sicher, dass Sie dieses Testarchiv inklusive <b>aller archivierten Daten</b> löschen möchten?. Die Metadaten des Archivierungsauftrags werden hierbei nicht gelöscht.';
 $string['delete_job'] = 'Archivierungsauftrag löschen';
 $string['delete_job_warning'] = 'Sind Sie sicher, dass Sie diesen Archivierungsauftrag <b>inklusive aller archivierten Daten</b> löschen möchten?';
 $string['delete_job_warning_retention'] = '<b>Achtung:</b> Dieser Archivierungsauftrag ist für die automatische Löschung am <code>{$a}</code> vorgesehen. Sind Sie absolut sicher, dass Sie ihn <b>vor Ablauf seiner geplanten Lebensdauer</b> löschen möchten?';
@@ -138,6 +140,7 @@ $string['archive_autodelete_deleted'] = 'Testarchive wurde automatisch gelöscht
 $string['archive_autodelete_in'] = 'Testarchiv wird gelöscht in {$a}';
 $string['archive_autodelete_disabled'] = 'Deaktiviert';
 $string['archive_autodelete_now'] = 'Testarchiv wird zeitnah automatisch gelöscht';
+$string['archive_deleted'] = 'Testarchiv wurde gelöscht';
 $string['archive_not_signed'] = 'Testarchiv ist nicht signiert';
 $string['archive_signature'] = 'Signatur';
 $string['archive_signed_successfully'] = 'Testarchiv erfolgreich signiert';

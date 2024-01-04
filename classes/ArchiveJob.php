@@ -428,7 +428,7 @@ class ArchiveJob {
             // Calculate autodelete metadata
             if ($j->retentiontime !== null) {
                 if ($j->status == self::STATUS_DELETED) {
-                    $autodelete_str = get_string('archive_autodelete_deleted', 'quiz_archiver');
+                    $autodelete_str = get_string('archive_deleted', 'quiz_archiver');
                 } elseif ($j->retentiontime <= time()) {
                     $autodelete_str = get_string('archive_autodelete_now', 'quiz_archiver');
                 } else {

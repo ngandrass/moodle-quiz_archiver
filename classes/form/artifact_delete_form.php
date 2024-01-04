@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the editing form for artifacts
+ * Defines the deletion form for job artifacts
  *
  * @package    quiz_archiver
  * @copyright  2024 Niels Gandraß <niels@gandrass.de>
@@ -32,41 +32,43 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 
 
 /**
- * Form to trigger deletion of an archive job
+ * Form to trigger deletion of a job artifact
  */
-class job_delete_form extends \moodleform {
+class artifact_delete_form extends \moodleform {
 
     /**
      * Form definiton.
      */
     public function definition() {
-        $mform = $this->_form;
+         $mform = $this->_form;
 
         // Find job
         $job = ArchiveJob::get_by_jobid($this->optional_param('jobid', null, PARAM_TEXT));
         $artifactfile = $job->get_artifact();
 
         // Generic warning message
-        $warn_head = get_string('delete_job', 'quiz_archiver');
-        $warn_msg = get_string('delete_job_warning', 'quiz_archiver');
-        $warn_details = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
+        $warn_head = get_string('delete_artifact', 'quiz_archiver');
 
-        // Add artifact details if available
         if ($artifactfile) {
+            $warn_msg = get_string('delete_artifact_warning', 'quiz_archiver');
+            $warn_details = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
             $warn_details .= '<br>';
             $warn_details .= get_string('quiz_archive', 'quiz_archiver').': ' .$artifactfile->get_filename().' ('.display_size($artifactfile->get_filesize()).')';
-        }
 
-        // Warn additionally if job is scheduled for automatic deletion
-        if ($job->is_autodelete_enabled()) {
-            if ($job->get_status() === ArchiveJob::STATUS_FINISHED) {
-                $warn_msg .= '<br><br>';
-                $warn_msg .= get_string(
-                    'delete_job_warning_retention',
-                    'quiz_archiver',
-                    userdate($job->get_retentiontime(), get_string('strftimedatetime', 'langconfig'))
-                );
+            // Warn additionally if job is scheduled for automatic deletion
+            if ($job->is_autodelete_enabled()) {
+                if ($job->get_status() === ArchiveJob::STATUS_FINISHED) {
+                    $warn_msg .= '<br><br>';
+                    $warn_msg .= get_string(
+                        'delete_job_warning_retention',
+                        'quiz_archiver',
+                        userdate($job->get_retentiontime(), get_string('strftimedatetime', 'langconfig'))
+                    );
+                }
             }
+        } else {
+            $warn_msg = get_string('error').': '.get_string('quiz_archive_not_found', 'quiz_archiver', $job->get_jobid());
+            $warn_details = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
         }
 
         // Print warning element
@@ -85,14 +87,18 @@ class job_delete_form extends \moodleform {
         $mform->addElement('hidden', 'mode', 'archiver');
         $mform->setType('mode', PARAM_TEXT);
 
-        // Options
-        $mform->addElement('hidden', 'action', 'delete_job');
-        $mform->setType('action', PARAM_TEXT);
-        $mform->addElement('hidden', 'jobid', $job->get_jobid());
-        $mform->setType('jobid', PARAM_TEXT);
+        if ($artifactfile) {
+            // Options
+            $mform->addElement('hidden', 'action', 'delete_artifact');
+            $mform->setType('action', PARAM_TEXT);
+            $mform->addElement('hidden', 'jobid', $job->get_jobid());
+            $mform->setType('jobid', PARAM_TEXT);
 
-        // Action buttons
-        $this->add_action_buttons(true, get_string('delete', 'moodle'));
+            // Action buttons
+            $this->add_action_buttons(true, get_string('delete', 'moodle'));
+        } else {
+            $this->add_action_buttons(false, get_string('back'));
+        }
     }
 
 }
