@@ -130,15 +130,27 @@
     </tr>
     <tr>
         <td>{{#str}} course {{/str}}</td>
-        <td>{{course.name}}</td>
+        <td>
+            <a href="{{{action_urls.course}}}" target="_blank">
+                {{course.name}}
+            </a>
+        </td>
     </tr>
     <tr>
         <td>{{#str}} modulename, mod_quiz {{/str}}</td>
-        <td>{{quiz.name}}</td>
+        <td>
+            <a href="{{{action_urls.quiz}}}" target="_blank">
+                {{quiz.name}}
+            </a>
+        </td>
     </tr>
     <tr>
         <td>{{#str}} user {{/str}}</td>
-        <td>{{user.firstname}} {{user.lastname}} ({{user.username}})</td>
+        <td>
+            <a href="{{{action_urls.user}}}" target="_blank">
+                {{user.firstname}} {{user.lastname}} ({{user.username}})
+            </a>
+        </td>
     </tr>
     <tr>
         <td>{{#str}} timecreated {{/str}}</td>

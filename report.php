@@ -244,7 +244,16 @@ class quiz_archiver_report extends report_base {
                         'mode' => 'archiver',
                         'action' => 'sign_job',
                         'jobid' => $jm['jobid']
-                    ]))->out()
+                    ]))->out(),
+                    'course' => (new moodle_url('/course/view.php', [
+                        'id' => $this->course->id,
+                    ]))->out(),
+                    'quiz' => (new moodle_url('/mod/quiz/view.php', [
+                        'id' => $this->cm->id,
+                    ]))->out(),
+                    'user' => (new moodle_url('/user/profile.php', [
+                        'id' => $jm['user']['id'],
+                    ]))->out(),
                 ];
 
                 // Inject global TSP settings
