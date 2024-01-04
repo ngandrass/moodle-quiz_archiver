@@ -135,7 +135,7 @@ $string['job_status_DELETED'] = 'Deleted';
 // Job details
 $string['archive_already_signed'] = 'Archive is already signed';
 $string['archive_autodelete_deleted'] = 'Archive was automatically deleted';
-$string['archive_autodelete_in'] = 'Archive will be deleted in: {$a}';
+$string['archive_autodelete_in'] = 'Archive will be deleted in {$a}';
 $string['archive_autodelete_disabled'] = 'Disabled';
 $string['archive_autodelete_now'] = 'Archive is scheduled for deletion';
 $string['archive_not_signed'] = 'Archive is unsigned';

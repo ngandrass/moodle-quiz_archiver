@@ -135,7 +135,7 @@ $string['job_status_DELETED'] = 'Gelöscht';
 // Job details
 $string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
 $string['archive_autodelete_deleted'] = 'Testarchive wurde automatisch gelöscht';
-$string['archive_autodelete_in'] = 'Testarchiv wird gelöscht in: {$a}';
+$string['archive_autodelete_in'] = 'Testarchiv wird gelöscht in {$a}';
 $string['archive_autodelete_disabled'] = 'Deaktiviert';
 $string['archive_autodelete_now'] = 'Testarchiv wird zeitnah automatisch gelöscht';
 $string['archive_not_signed'] = 'Testarchiv ist nicht signiert';
