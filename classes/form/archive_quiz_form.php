@@ -56,6 +56,8 @@ class archive_quiz_form extends \moodleform {
 
     /**
      * Form definiton.
+     * @throws \dml_exception
+     * @throws \coding_exception
      */
     public function definition() {
         $config = get_config('quiz_archiver');

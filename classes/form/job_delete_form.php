@@ -38,6 +38,9 @@ class job_delete_form extends \moodleform {
 
     /**
      * Form definiton.
+     *
+     * @throws \dml_exception
+     * @throws \coding_exception
      */
     public function definition() {
         $mform = $this->_form;

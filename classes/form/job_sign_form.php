@@ -36,6 +36,8 @@ class job_sign_form extends \moodleform {
 
     /**
      * Form definiton.
+     *
+     * @throws \coding_exception
      */
     public function definition() {
         $mform = $this->_form;

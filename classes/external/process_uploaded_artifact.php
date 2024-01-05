@@ -87,6 +87,7 @@ class process_uploaded_artifact extends external_api {
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
      */
     public static function execute(
         string $jobid_raw,

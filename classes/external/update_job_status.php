@@ -69,6 +69,8 @@ class update_job_status extends external_api {
      * @param string $status_raw
      * @return array
      * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     * @throws \coding_exception
      */
     public static function execute(
         string $jobid_raw,

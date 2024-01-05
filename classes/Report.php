@@ -554,6 +554,7 @@ class Report {
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
+     * @throws \DOMException
      */
     public function generate_full_page(int $attemptid, array $sections, bool $fix_relative_urls = true, bool $minimal = true, bool $inline_images = true): string {
         global $CFG, $OUTPUT;
@@ -648,6 +649,7 @@ class Report {
      *
      * @param \DOMElement $img The <img> element to process
      * @return bool true on success
+     * @throws \dml_exception
      */
     protected function convert_image_to_base64(\DOMElement $img): bool {
         global $CFG;

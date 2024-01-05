@@ -126,7 +126,7 @@ class FileManager {
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    public function store_uploaded_artifact(stored_file $draftfile): ?\stored_file {
+    public function store_uploaded_artifact(stored_file $draftfile): ?stored_file {
         // Check draftfile
         if ($draftfile->get_filearea() != "draft" || $draftfile->get_component() != "user") {
             throw new \file_exception('Passed draftfile does not reside inside the draft area of the webservice user. Aborting');
@@ -226,6 +226,7 @@ class FileManager {
      * @param string $relativepath Relative path to the requested file, depending
      *                             on the virtual filearea
      * @return void
+     * @throws \dml_exception
      */
     public function send_virtual_file(string $filearea, string $relativepath): void {
         if (!self::filearea_is_virtual($filearea)) {

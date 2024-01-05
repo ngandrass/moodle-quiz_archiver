@@ -145,6 +145,7 @@ class BackupManager {
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
+     * @throws \dml_exception
      */
     protected static function initiate_backup(string $type, int $id, int $user_id): object {
         global $CFG;
@@ -232,6 +233,7 @@ class BackupManager {
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
+     * @throws \dml_exception
      */
     public static function initiate_quiz_backup(int $cm_id, int $user_id): object {
         return self::initiate_backup(backup::TYPE_1ACTIVITY, $cm_id, $user_id);
@@ -245,6 +247,7 @@ class BackupManager {
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
+     * @throws \dml_exception
      */
     public static function initiate_course_backup(int $course_id, int $user_id): object {
         return self::initiate_backup(backup::TYPE_1COURSE, $course_id, $user_id);

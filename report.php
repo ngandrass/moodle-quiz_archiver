@@ -459,9 +459,11 @@ class quiz_archiver_report extends report_base {
 
     /**
      * Get the URL of the front page of the report that lists all the questions.
-     * @return string the URL.
+     *
+     * @return moodle_url the URL
+     * @throws moodle_exception
      */
-    protected function base_url() {
+    protected function base_url(): moodle_url {
         return new moodle_url('/mod/quiz/report.php', ['id' => $this->cm->id, 'mode' => 'archiver']);
     }
 

@@ -497,6 +497,12 @@ class ArchiveJob {
         );
     }
 
+    /**
+     * Scans all jobs for expired artifacts and deletes them.
+     *
+     * @returns int Number of deleted artifacts
+     * @throws \dml_exception
+     */
     public static function delete_expired_artifacts(): int {
         global $DB;
 
@@ -914,7 +920,7 @@ class ArchiveJob {
      * Removes / invalidates the webservice token that is associated with this ArchiveJob
      *
      * @return void
-     * @throws dml_exception
+     * @throws \dml_exception
      */
     public function delete_webservice_token(): void {
         global $DB;

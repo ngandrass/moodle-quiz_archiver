@@ -113,6 +113,7 @@ class generate_attempt_report extends external_api {
      * @throws \dml_exception
      * @throws \dml_transaction_exception
      * @throws \moodle_exception
+     * @throws \DOMException
      */
     public static function execute(
         int $courseid_raw,
