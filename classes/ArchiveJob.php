@@ -48,6 +48,8 @@ class ArchiveJob {
     protected int $user_id;
     /** @var int Unix timestamp of job creation */
     protected int $timecreated;
+    /** @var int|null Unix timestamp after which this jobs artifacts will be deleted automatically. Null indicates no deletion.*/
+    protected ?int $retentiontime;
     /** @var string The webservice token that is allowed to write to this job via API */
     protected string $wstoken;
 

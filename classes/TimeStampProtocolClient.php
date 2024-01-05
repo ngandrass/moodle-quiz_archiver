@@ -35,6 +35,9 @@ defined('MOODLE_INTERNAL') || die();
  */
 class TimeStampProtocolClient {
 
+    /** @var string URL of the TSP server */
+    private string $server_url;
+
     /** @var string Content-Type header for TimeStampQuery */
     const CONTENT_TYPE_TIMESTAMP_QUERY = 'application/timestamp-query';
 
