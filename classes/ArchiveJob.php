@@ -138,7 +138,7 @@ class ArchiveJob {
         int $quiz_id,
         int $user_id,
         int $timecreated,
-        int|null $retentiontime,
+        ?int $retentiontime,
         string $wstoken
     ) {
         $this->id = $id;
@@ -192,7 +192,7 @@ class ArchiveJob {
         int $cm_id,
         int $quiz_id,
         int $user_id,
-        int|null $retention_seconds,
+        ?int $retention_seconds,
         string $wstoken,
         array $attempts,
         array $settings,
@@ -668,7 +668,7 @@ class ArchiveJob {
      * @return int|null Unix timestamp after which this jobs artifact will be
      * deleted automatically. Null indicates no automatic deletion.
      */
-    public function get_retentiontime(): int|null {
+    public function get_retentiontime(): ?int {
         return $this->retentiontime;
     }
 

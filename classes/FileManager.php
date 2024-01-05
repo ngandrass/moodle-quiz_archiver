@@ -326,7 +326,7 @@ class FileManager {
      * @throws \coding_exception
      * @throws \moodle_exception On error
      */
-    public function extract_attempt_data_from_artifact(stored_file $artifactfile, int $jobid, int $attemptid): stored_file | null {
+    public function extract_attempt_data_from_artifact(stored_file $artifactfile, int $jobid, int $attemptid): ?stored_file {
         global $CFG;
 
         // Prepare

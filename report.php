@@ -332,7 +332,7 @@ class quiz_archiver_report extends report_base {
         bool $export_course_backup,
         string $archive_filename_pattern,
         string $attempts_filename_pattern,
-        int|null $retention_seconds = null
+        ?int $retention_seconds = null
     ): ?ArchiveJob {
         global $USER;
 
