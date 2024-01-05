@@ -85,18 +85,20 @@ class BackupManager {
      * Determines if the backup finished successfully
      *
      * @return bool True if backup finished successfully
+     * @throws \dml_exception
      */
     public function is_finished_successfully(): bool {
-        return $this->get_status() === backup_controller::STATUS_FINISHED_OK;
+        return $this->get_status() === backup::STATUS_FINISHED_OK;
     }
 
     /**
      * Determines if the backup failed
      *
      * @return bool True if backup finished with error
+     * @throws \dml_exception
      */
     public function is_failed(): bool {
-        return $this->get_status() === backup_controller::STATUS_FINISHED_ERR;
+        return $this->get_status() === backup::STATUS_FINISHED_ERR;
     }
 
     /**
@@ -125,9 +127,9 @@ class BackupManager {
      */
     public function is_associated_with_job(ArchiveJob $job): bool {
         switch ($this->get_type()) {
-            case backup_controller::TYPE_1ACTIVITY:
+            case backup::TYPE_1ACTIVITY:
                 return $this->backup_metadata->itemid == $job->get_cm_id();
-            case backup_controller::TYPE_1COURSE:
+            case backup::TYPE_1COURSE:
                 return $this->backup_metadata->itemid == $job->get_course_id();
             default:
                 return false;
