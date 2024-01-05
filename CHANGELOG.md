@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.2.1 (2024010500)
+
+- Fix compatibility with PHP 7.4 by replacing union type usages
+- Improve code quality
+
+
 ## Version 1.2.0 (2024010400)
 
 - Support for automatic deletion of quiz archives after a specified retention period
