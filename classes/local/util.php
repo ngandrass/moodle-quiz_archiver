@@ -64,4 +64,28 @@ class util {
         return trim($humanreadable);
     }
 
+    /**
+     * Expresses a duration in seconds as the largest possible unit.
+     *
+     * @param int $duration Duration in seconds
+     * @return array Containing the value (idx: 0) and the unit (idx: 1)
+     * @throws \coding_exception
+     */
+    public static function duration_to_unit(int $duration): array {
+        if (fmod($duration, WEEKSECS) == 0) {
+            return [$duration / WEEKSECS, get_string('weeks')];
+        }
+        if (fmod($duration, DAYSECS) == 0) {
+            return [$duration / DAYSECS, get_string('days')];
+        }
+        if (fmod($duration, HOURSECS) == 0) {
+            return [$duration / HOURSECS, get_string('hours')];
+        }
+        if (fmod($duration, MINSECS) == 0) {
+            return [$duration / MINSECS, get_string('minutes')];
+        }
+
+        return [$duration, get_string('seconds')];
+    }
+
 }
