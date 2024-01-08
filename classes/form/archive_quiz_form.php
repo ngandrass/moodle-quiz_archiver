@@ -250,4 +250,27 @@ class archive_quiz_form extends \moodleform {
         return $errors;
     }
 
+    /**
+     * Returns the data submitted by the user but forces all locked fields to
+     * their preset values
+     *
+     * @returns \stdClass Cleared, submitted form data
+     * @throws \dml_exception
+     */
+    public function get_data():\stdClass  {
+        $data = parent::get_data();
+        $config = get_config('quiz_archiver');
+
+        // Force locked fields to their preset values
+        foreach ($config as $key => $value) {
+            if (strpos($key, 'job_preset_') === 0 && strrpos($key, '_locked') === strlen($key) - 7) {
+                if ($value) {
+                    $data->{substr($key, 11, -7)} = $config->{substr($key, 0, -7)};
+                }
+            }
+        }
+
+        return $data;
+    }
+
 }
