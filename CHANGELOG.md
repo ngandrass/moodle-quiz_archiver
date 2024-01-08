@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.2.2 (2024010800)
+
+- Fix locking of archive retention time job preset
+- Fix wrong interpretation of checked and locked checkboxes within job preset settings
+- Server-side prevention of job setting changes/tinkering if presets are locked globally
+
+
 ## Version 1.2.1 (2024010500)
 
 - Fix compatibility with PHP 7.4 by replacing union type usages
