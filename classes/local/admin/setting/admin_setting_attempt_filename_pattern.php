@@ -33,7 +33,7 @@ class admin_setting_attempt_filename_pattern extends \admin_setting_configtext {
      * @return mixed true if ok string if error found
      * @throws \coding_exception
      */
-    public function validate($data): mixed {
+    public function validate($data) {
         // Basic data validation
         $parentvalidation = parent::validate($data);
         if ($parentvalidation !== true) {
