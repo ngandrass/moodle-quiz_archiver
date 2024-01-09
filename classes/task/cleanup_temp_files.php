@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines a scheduled task to clean up temporary files create by the
- * quiz_archiver plugin.
+ * Defines a scheduled task to clean up temporary files
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>

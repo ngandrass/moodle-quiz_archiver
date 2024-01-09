@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines the process_uploaded_artifact webservice function that is
- * part of the quiz_archiver plugin.
+ * This file defines the process_uploaded_artifact webservice function
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>
@@ -38,8 +37,7 @@ use quiz_archiver\FileManager;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * API endpoint to process an artifact that was uploaded by the quiz archiver
- * worker service
+ * API endpoint to process an artifact that was uploaded by the quiz archiver worker service
  */
 class process_uploaded_artifact extends external_api {
 

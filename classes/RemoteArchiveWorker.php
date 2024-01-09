@@ -49,10 +49,10 @@ class RemoteArchiveWorker {
     /**
      * RemoteArchiveWorker constructor
      *
-     * @param $server_url string URL of the remote Archive Worker instance
-     * @param $connection_timeout int Seconds to wait until a connection can be established before aborting
-     * @param $request_timeout int Seconds to wait for the request to complete before aborting
-     * @throws \dml_exception
+     * @param string $server_url URL of the remote Archive Worker instance
+     * @param int $connection_timeout Seconds to wait until a connection can be established before aborting
+     * @param int $request_timeout Seconds to wait for the request to complete before aborting
+     * @throws \dml_exception If retrieving of the plugin config failed
      */
     public function __construct(string $server_url, int $connection_timeout, int $request_timeout) {
         $this->server_url = $server_url;
@@ -64,22 +64,20 @@ class RemoteArchiveWorker {
     /**
      * Tries to enqueue a new archive job at the archive worker service
      *
-     * @param $wstoken string Moodle webervice token to use
-     * @param $courseid int Moodle course id
-     * @param $cmid int Moodle course module id
-     * @param $quizid int Moodle quiz id
-     * @param $job_options array Associative array containing global job options
-     * @param $task_archive_quiz_attempts mixed Array containing payload data for
+     * @param string $wstoken Moodle webervice token to use
+     * @param int $courseid Moodle course id
+     * @param int $cmid Moodle course module id
+     * @param int $quizid Moodle quiz id
+     * @param array $job_options Associative array containing global job options
+     * @param mixed $task_archive_quiz_attempts Array containing payload data for
      * the archive quiz attempts task, or null if it should not be executed
-     * @param $task_moodle_backups mixed Array containing payload data for
+     * @param mixed $task_moodle_backups Array containing payload data for
      * the moodle backups task, or null if it should not be executed
      *
      * @return mixed Job information returned from the archive worker on success
      * @throws \UnexpectedValueException if the communication to the archive worker
      * service or decoding of the response failed
      * @throws \RuntimeException if the archive worker service reported an error
-     * @throws \coding_exception
-     *
      */
     public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $job_options, $task_archive_quiz_attempts, $task_moodle_backups) {
         global $CFG;

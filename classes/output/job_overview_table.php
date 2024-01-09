@@ -88,7 +88,7 @@ class job_overview_table extends \table_sql {
     /**
      * Column renderer for the timecreated column
      *
-     * @param $values \stdClass Values of the current row
+     * @param \stdClass $values Values of the current row
      * @return string HTML code to be displayed
      */
     public function col_timecreated($values) {
@@ -98,7 +98,7 @@ class job_overview_table extends \table_sql {
     /**
      * Column renderer for the status column
      *
-     * @param $values \stdClass Values of the current row
+     * @param \stdClass $values Values of the current row
      * @return string HTML code to be displayed
      * @throws \coding_exception
      */
@@ -110,7 +110,7 @@ class job_overview_table extends \table_sql {
     /**
      * Column renderer for the user column
      *
-     * @param $values \stdClass Values of the current row
+     * @param \stdClass $values Values of the current row
      * @return string HTML code to be displayed
      * @throws \moodle_exception
      */
@@ -121,7 +121,7 @@ class job_overview_table extends \table_sql {
     /**
      * Column renderer for the filesize column
      *
-     * @param $values \stdClass Values of the current row
+     * @param \stdClass $values Values of the current row
      * @return string HTML code to be displayed
      * @throws \coding_exception
      */
@@ -132,7 +132,7 @@ class job_overview_table extends \table_sql {
     /**
      * Column renderer for the actions column
      *
-     * @param $values \stdClass Values of the current row
+     * @param \stdClass $values Values of the current row
      * @return string HTML code to be displayed
      * @throws \coding_exception
      * @throws \moodle_exception

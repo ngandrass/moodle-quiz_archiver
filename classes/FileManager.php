@@ -322,8 +322,9 @@ class FileManager {
      * will be automatically deleted after a certain time.
      *
      * @param stored_file $artifactfile Archive artifact file to extract attempt from
+     * @param int $jobid ID of the job this artifact belongs to
      * @param int $attemptid ID of the attempt to extract
-     * @return stored_file|null New independent attempt archive or null on skip
+     * @return ?stored_file New independent attempt archive or null on skip
      * @throws \coding_exception
      * @throws \moodle_exception On error
      */

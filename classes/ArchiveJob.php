@@ -127,9 +127,9 @@ class ArchiveJob {
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that owns this job
-     * @param int|null $retentiontime Unix timestamp after which this jobs
-     * artifacts will be deleted automatically. Null indicates no deletion.
      * @param int $timecreated Unix timestamp of job creation
+     * @param ?int $retentiontime Unix timestamp after which this jobs
+     * artifacts will be deleted automatically. Null indicates no deletion.
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      */
     protected function __construct(
@@ -177,14 +177,14 @@ class ArchiveJob {
      * @param int $cm_id ID of the course module this job is associated with
      * @param int $quiz_id ID of the quiz this job is associated with
      * @param int $user_id ID of the user that initiated this job
-     * @params int|null $retention_seconds Number of seconds to retain this jobs
+     * @param ?int $retention_seconds Number of seconds to retain this jobs
      * artifact after job creation. Null indicates no deletion.
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      * @param array $attempts List of quiz attempts to archive, each consisting of an attemptid and a userid
      * @param array $settings Map of settings to store for this job and display in the report interface
      * @param string $status (optional) Initial status of the job. Default to STATUS_UNKNOWN
-     * @return ArchiveJob
-     * @throws \coding_exception
+     *
+     * @return ArchiveJob The newly created job
      * @throws \dml_exception On database error
      * @throws \moodle_exception If the job already exists inside the database
      */
@@ -502,7 +502,7 @@ class ArchiveJob {
     /**
      * Scans all jobs for expired artifacts and deletes them.
      *
-     * @returns int Number of deleted artifacts
+     * @return int Number of deleted artifacts
      * @throws \dml_exception
      */
     public static function delete_expired_artifacts(): int {
@@ -715,6 +715,8 @@ class ArchiveJob {
     }
 
     /**
+     * Retrieves the status of this job
+     *
      * @return string Status of this job
      */
     public function get_status(): string {
@@ -729,6 +731,7 @@ class ArchiveJob {
     /**
      * Returns the status indicator display arguments based on the given job status
      *
+     * @param string $status JOB_STATUS value to convert
      * @return array Status of this job, translated for display
      * @throws \coding_exception
      */
@@ -798,6 +801,8 @@ class ArchiveJob {
     }
 
     /**
+     * Retrieves the artifact file checksum
+     *
      * @return string|null Artifact file SHA256 checksum if present, else null
      */
     public function get_artifact_checksum(): ?string {
@@ -1002,6 +1007,7 @@ class ArchiveJob {
      * @param mixed $course Course object
      * @param mixed $cm Course module object
      * @param mixed $quiz Quiz object
+     * @param string $pattern Filename pattern to use
      * @return string Archive filename
      * @throws \invalid_parameter_exception If the pattern is invalid
      * @throws \coding_exception

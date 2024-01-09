@@ -113,6 +113,8 @@ class BackupManager {
     }
 
     /**
+     * Retrieves the type of this backup controller
+     *
      * @return string Type of this backup controller (e.g. course, activity)
      */
     public function get_type(): string {

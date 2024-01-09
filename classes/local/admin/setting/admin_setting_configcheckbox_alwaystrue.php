@@ -26,10 +26,20 @@ namespace quiz_archiver\local\admin\setting;
  */
 class admin_setting_configcheckbox_alwaystrue extends \admin_setting_configcheckbox {
 
+    /**
+     * Retrieves the current setting using the objects name
+     *
+     * @return int Always 1, because this setting is always true
+     */
     public function get_setting() {
         return 1;
     }
 
+    /**
+     * Is this option forced in config.php?
+     *
+     * @return bool Always true, because this setting is always read only
+     */
     public function is_readonly(): bool {
         return true;
     }

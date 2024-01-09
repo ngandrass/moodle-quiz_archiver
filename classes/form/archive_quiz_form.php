@@ -254,7 +254,7 @@ class archive_quiz_form extends \moodleform {
      * Returns the data submitted by the user but forces all locked fields to
      * their preset values
      *
-     * @returns \stdClass Cleared, submitted form data
+     * @return \stdClass Cleared, submitted form data
      * @throws \dml_exception
      */
     public function get_data():\stdClass  {

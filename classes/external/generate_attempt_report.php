@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines the generate_attempt_report webservice function that is
- * part of the quiz_archiver plugin.
+ * This file defines the generate_attempt_report webservice function
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>
@@ -103,8 +102,8 @@ class generate_attempt_report extends external_api {
      * @param int $courseid_raw ID of the course
      * @param int $cmid_raw ID of the course module
      * @param int $quizid_raw ID of the quiz
-     * @param string $filenamepattern_raw Filename pattern to use for report name generation
      * @param int $attemptid_raw ID of the quiz attempt
+     * @param string $filenamepattern_raw Filename pattern to use for report name generation
      * @param array $sections_raw Sections to include in the report
      * @param bool $attachments_raw Whether to check for attempts and include metadata if present
      *

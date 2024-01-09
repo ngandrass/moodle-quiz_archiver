@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines the get_attempts_metadata webservice function that is
- * part of the quiz_archiver plugin.
+ * This file defines the get_attempts_metadata webservice function
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>
