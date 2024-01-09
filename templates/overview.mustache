@@ -29,7 +29,7 @@
             "message": "Job initiated successfully.",
             "returnMessage": "Return to the overview page."
         },
-        "jobOverviewTable": "<table>[...]</table>",
+        "jobOverviewTable": "<!-- Generated Moodle table HTML -->",
         "jobs": [
             {
                 "jobid": "3e6273fe-3784-11ee-be56-0242ac120002",
@@ -38,7 +38,7 @@
             {
                 "jobid": "45edd9f6-3784-11ee-be56-0242ac120002",
                 "json": "{...}"
-            },
+            }
         ],
         "quizHasNoQuestionsWarning": "<div>[...]</div>"
     }
@@ -68,7 +68,7 @@
 {{#jobOverviewTable}}
 <h1>
     {{#str}} job_overview, quiz_archiver {{/str}}
-    <a href="{{{baseurl}}}" class="small mx-2" alt="{{#str}} refresh, moodle {{/str}}">
+    <a href="{{{baseurl}}}" class="small mx-2" title="{{#str}} refresh, moodle {{/str}}">
         <i class="fa fa-rotate-right"></i>
     </a>
 </h1>
@@ -77,9 +77,9 @@
 </div>
 
 {{#js}}
-    require(['core/modal_factory', 'core/templates'], function(ModalFactory, Templates) {
+    require(['jquery', 'core/modal_factory', 'core/templates'], function($, ModalFactory, Templates) {
         {{#jobs}}
-            $('#job-details-{{jobid}}').click(async () => {
+            $('#job-details-{{jobid}}').click(async() => {
                 var modal = await ModalFactory.create({
                     type: ModalFactory.types.DEFAULT,
                     title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
