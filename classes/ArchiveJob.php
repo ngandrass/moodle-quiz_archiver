@@ -227,8 +227,8 @@ class ArchiveJob {
         $DB->insert_records(self::JOB_SETTINGS_TABLE_NAME, array_map(function($key, $value) use ($id): array {
             return [
                 'jobid' => $id,
-                'key' => strval($key),
-                'value' => $value === null ? null : strval($value)
+                'settingkey' => strval($key),
+                'settingvalue' => $value === null ? null : strval($value)
             ];
         }, array_keys($settings), $settings));
 
@@ -492,7 +492,7 @@ class ArchiveJob {
         return array_reduce(
             $DB->get_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]),
             function($res, $item): array {
-                $res[$item->key] = $item->value;
+                $res[$item->settingkey] = $item->settingvalue;
                 return $res;
             },
             []

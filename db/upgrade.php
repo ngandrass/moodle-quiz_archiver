@@ -197,5 +197,21 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024010300, 'quiz', 'archiver');
     }
 
+    if ($oldversion < 2024011000) {
+        // Rename field key on table quiz_archiver_job_settings to settingkey.
+        $table = new xmldb_table('quiz_archiver_job_settings');
+        $field = new xmldb_field('key', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'jobid');
+        $dbman->rename_field($table, $field, 'settingkey');
+
+        // Rename field value on table quiz_archiver_job_settings to settingvalue.
+        $table = new xmldb_table('quiz_archiver_job_settings');
+        $field = new xmldb_field('value', XMLDB_TYPE_TEXT, null, null, null, null, null, 'settingkey');
+        $dbman->rename_field($table, $field, 'settingvalue');
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2024011000, 'quiz', 'archiver');
+    }
+
+
     return true;
 }

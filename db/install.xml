@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2024010300" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
+  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2024011000" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
     <TABLES>
       <TABLE NAME="quiz_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
         <FIELDS>
@@ -42,8 +42,8 @@
         <FIELDS>
           <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
           <FIELD NAME="jobid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the associated job inside the quiz_archiver_jobs table"/>
-          <FIELD NAME="key" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-          <FIELD NAME="value" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+          <FIELD NAME="settingkey" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+          <FIELD NAME="settingvalue" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         </FIELDS>
         <KEYS>
           <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
