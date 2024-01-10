@@ -64,7 +64,7 @@ class generate_attempt_report extends external_api {
                 'Sections to include in the report',
                 VALUE_REQUIRED
             ),
-            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_OPTIONAL)
+            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_REQUIRED)
         ]);
     }
 
