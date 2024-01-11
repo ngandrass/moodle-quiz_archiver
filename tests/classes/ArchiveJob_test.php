@@ -553,6 +553,15 @@ class ArchiveJob_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Tests that temporary files are deleted properly
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \moodle_exception
+     * @throws \stored_file_creation_exception
+     */
     public function test_temporary_file_deletion(): void {
         // Generate data
         $mocks = $this->generateMockQuiz();
@@ -610,7 +619,7 @@ class ArchiveJob_test extends \advanced_testcase {
      *
      * @return array[] Array of test cases
      */
-    protected function archive_filename_pattern_data_provider(): array {
+    public function archive_filename_pattern_data_provider(): array {
         return [
             'Default pattern' => [
                 'pattern' => 'quiz-archive-${courseshortname}-${courseid}-${quizname}-${quizid}_${date}-${time}',
@@ -675,7 +684,7 @@ class ArchiveJob_test extends \advanced_testcase {
      *
      * @return array[] Array of test cases
      */
-    protected function attempt_filename_pattern_data_provider(): array {
+    public function attempt_filename_pattern_data_provider(): array {
         return [
             'Default pattern' => [
                 'pattern' => 'attempt-${attemptid}-${username}_${date}-${time}',
