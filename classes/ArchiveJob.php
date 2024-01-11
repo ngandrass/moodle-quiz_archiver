@@ -924,6 +924,29 @@ class ArchiveJob {
     }
 
     /**
+     * Retrieves all temporary files associated with this job
+     *
+     * @return array of stored_file objects
+     * @throws \dml_exception on database error
+     */
+    public function get_temporary_files(): array {
+        global $DB;
+        $fs = get_file_storage();
+
+        $fileEntries = $DB->get_records(self::FILES_TABLE_NAME, ['jobid' => $this->id]);
+        $files = [];
+
+        foreach ($fileEntries as $fileEntry) {
+            $f = $fs->get_file_by_hash($fileEntry->pathnamehash);
+            if ($f !== false) {
+                $files[$f->get_id()] = $f;
+            }
+        }
+
+        return $files;
+    }
+
+    /**
      * Removes / invalidates the webservice token that is associated with this ArchiveJob
      *
      * @return void
