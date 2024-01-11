@@ -74,7 +74,8 @@ class BackupManager {
         $this->backup_metadata = $DB->get_record(
             'backup_controllers',
             ['backupid' => $backupid],
-            'id, backupid, operation, type, itemid, userid'
+            'id, backupid, operation, type, itemid, userid',
+            MUST_EXIST
         );
         if ($this->backup_metadata->operation != 'backup') {
             throw new \ValueError('Only backup operations are supported.');
