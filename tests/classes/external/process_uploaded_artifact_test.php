@@ -62,6 +62,9 @@ class process_uploaded_artifact_test extends \advanced_testcase {
     /**
      * Generates a set of valid parameters
      *
+     * @param string $jobid Job ID
+     * @param int $cmid Course module ID
+     * @param int $userid User ID
      * @return array Valid request parameters
      */
     protected function generateValidRequest(string $jobid, int $cmid, int $userid): array {

@@ -60,6 +60,10 @@ class generate_attempt_report_test extends \advanced_testcase {
     /**
      * Generates a set of valid parameters
      *
+     * @param int $courseid Course ID
+     * @param int $cmid Course module ID
+     * @param int $quizid Quiz ID
+     * @param int $attemptid Attempt ID
      * @return array Valid request parameters
      */
     protected function generateValidRequest(int $courseid, int $cmid, int $quizid, int $attemptid): array {
