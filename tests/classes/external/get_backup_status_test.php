@@ -113,7 +113,7 @@ class get_backup_status_test extends \advanced_testcase {
 
         try {
             get_backup_status::execute($jobid, $backupid);
-        } catch (\dml_exception) {}
+        } catch (\dml_exception $e) {}
     }
 
     /**

@@ -137,7 +137,7 @@ class generate_attempt_report_test extends \advanced_testcase {
 
         try {
             generate_attempt_report::execute($courseid, $cmid, $quizid, $attemptid, $filenamepattern, $sections, $attachments);
-        } catch (\dml_exception) {}
+        } catch (\dml_missing_record_exception $e) {}
     }
 
     /**

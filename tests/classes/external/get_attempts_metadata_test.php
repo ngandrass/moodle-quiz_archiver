@@ -122,7 +122,7 @@ class get_attempts_metadata_test extends \advanced_testcase {
 
         try {
             get_attempts_metadata::execute($courseid, $cmid, $quizid, $attemptids);
-        } catch (\dml_exception) {}
+        } catch (\dml_exception $e) {}
     }
 
     /**
