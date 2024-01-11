@@ -30,10 +30,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1', '8.2']
-        extensions: ['gd']
-        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'MOODLE_403_STABLE']
-        database: [pgsql, mariadb]
+        include:
+          # Moodle 4.1 (LTS), PHP 7.4 to 8.1, PostgreSQL and MariaDB
+          - {moodle-branch: 'MOODLE_401_STABLE', php: '7.4', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_401_STABLE', php: '7.4', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_401_STABLE', php: '8.0', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_401_STABLE', php: '8.0', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_401_STABLE', php: '8.1', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_401_STABLE', php: '8.1', database: 'mariadb'}
+
+          # Moodle 4.2, PHP 8.0 to 8.1, PostgreSQL and MariaDB
+          - {moodle-branch: 'MOODLE_402_STABLE', php: '8.0', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_402_STABLE', php: '8.0', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_402_STABLE', php: '8.1', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_402_STABLE', php: '8.1', database: 'mariadb'}
+
+          # Moodle 4.3, PHP 8.0 to 8.2, PostgreSQL and MariaDB
+          - {moodle-branch: 'MOODLE_403_STABLE', php: '8.0', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_403_STABLE', php: '8.0', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_403_STABLE', php: '8.1', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_403_STABLE', php: '8.1', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_403_STABLE', php: '8.2', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_403_STABLE', php: '8.2', database: 'mariadb'}
 
     steps:
       - name: Check out repository code
@@ -45,7 +63,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ${{ matrix.extensions }}
+          extensions: 'gd'
           ini-values: max_input_vars=5000
           # If you are not using code coverage, keep "none". Otherwise, use "pcov" (Moodle 3.10 and up) or "xdebug".
           # If you try to use code coverage with "none", it will fallback to phpdbg (which has known problems).
