@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 1.2.3 (2024011200)
+
+- Fix job setting storage issues with MySQL / MariaDB
+- Create PHPUnit tests for key components
+- Set up automated Moodle-CI tests for all supported Moodle and PHP versions with both PostgreSQL and MariaDB
+- Remove use of 'mixed' union type to fix PHP 7.4 compatibility
+- Replace ValueError exceptions to fix PHP 7.4 compatibility
+- Improve PHPDoc comments
+- Fix deserialization of example JSON test data within Mustache templates
+- Improve error reporting of Moodle backup management class
+- Improve webservice parameter strictness
+
+
 ## Version 1.2.2 (2024010800)
 
 - Fix locking of archive retention time job preset
