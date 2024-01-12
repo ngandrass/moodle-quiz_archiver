@@ -135,7 +135,7 @@ class TSPManager {
      * @return void
      * @throws \dml_exception On database error
      * @throws \Exception On TSP error
-     * @throws \ValueError If the associated ArchiveJob has no valid artifact
+     * @throws \RuntimeException If the associated ArchiveJob has no valid artifact
      */
     public function timestamp(): void {
         global $DB;
@@ -143,7 +143,7 @@ class TSPManager {
         // Get artifact checksum
         $artifactchecksum = $this->job->get_artifact_checksum();
         if ($artifactchecksum === null) {
-            throw new \ValueError(get_string('archive_signing_failed_no_artifact', 'quiz_archiver'));
+            throw new \RuntimeException(get_string('archive_signing_failed_no_artifact', 'quiz_archiver'));
         }
 
         // Check if TSP signing globally is enabled

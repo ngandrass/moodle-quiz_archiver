@@ -167,7 +167,7 @@ class quiz_archiver_report extends report_base {
                             "dismissible" => true,
                             "message" => get_string('archive_signed_successfully', 'quiz_archiver').$jobid_log_str,
                         ];
-                    } catch (ValueError $e) {
+                    } catch (RuntimeException $e) {
                         $tplCtx['jobInitiationStatusAlert'] = [
                             "color" => "danger",
                             "dismissible" => true,
