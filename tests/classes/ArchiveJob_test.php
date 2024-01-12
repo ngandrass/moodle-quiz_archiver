@@ -509,6 +509,32 @@ class ArchiveJob_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that the artifact checksum is null for non-existing artifacts
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_artifact_checksum_non_existing(): void {
+        // Generate data
+        $mocks = $this->generateMockQuiz();
+        $job = ArchiveJob::create(
+            '99000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Check that the artifact checksum is null for non-existing artifacts
+        $this->assertNull($job->get_artifact_checksum(), 'Artifact checksum was not null for non-existing artifact');
+    }
+
+    /**
      * Tests that temporary files can be linked to a job
      *
      * @return void

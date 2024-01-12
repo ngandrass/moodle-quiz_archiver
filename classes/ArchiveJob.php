@@ -808,7 +808,12 @@ class ArchiveJob {
     public function get_artifact_checksum(): ?string {
         global $DB;
         try {
-            return (string) $DB->get_field(self::JOB_TABLE_NAME, 'artifactfilechecksum', ['id' => $this->id], MUST_EXIST);
+            $checksum = (string) $DB->get_field(self::JOB_TABLE_NAME, 'artifactfilechecksum', ['id' => $this->id], MUST_EXIST);
+            if (empty($checksum)) {
+                return null;
+            } else {
+                return $checksum;
+            }
         } catch (\Exception $e) {
             return null;
         }
