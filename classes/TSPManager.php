@@ -51,6 +51,15 @@ class TSPManager {
     }
 
     /**
+     * Provides a TimeStampProtocolClient instance for this TSPManager.
+     *
+     * @return TimeStampProtocolClient A fresh TimeStampProtocolClient instance
+     */
+    protected function getTimestampProtocolClient(): TimeStampProtocolClient {
+        return new TimeStampProtocolClient($this->config->tsp_server_url);
+    }
+
+    /**
      * Checks if the associated ArchiveJob wants an automatically generated TSP
      * timestamp.
      *
@@ -143,7 +152,7 @@ class TSPManager {
         }
 
         // Issue TSP timestamp
-        $tspclient = new TimeStampProtocolClient($this->config->tsp_server_url);
+        $tspclient = $this->getTimestampProtocolClient();
         $tspdata = $tspclient->sign($artifactchecksum);
 
         // Store TSP data
