@@ -189,54 +189,62 @@ class quiz_archiver_report extends report_base {
 
         // Determine page to display
         if (!quiz_has_questions($quiz->id)) {
-            $tplCtx['quizHasNoQuestionsWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
-            echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplCtx);
-            return false;
+            $tplCtx['quizMissingSomethingWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
+        } else {
+            if (!quiz_has_attempts($quiz->id)) {
+                $tplCtx['quizMissingSomethingWarning'] = $OUTPUT->notification(
+                    get_string('noattempts', 'quiz'),
+                    \core\output\notification::NOTIFY_ERROR,
+                    false
+                );
+            }
         }
 
         // Archive quiz form
-        $archive_quiz_form = new archive_quiz_form(
-            $this->quiz->name,
-            count($this->report->get_attempts())
-        );
-        if ($archive_quiz_form->is_submitted()) {
-            $job = null;
-            try {
-                if (!$archive_quiz_form->is_validated()) {
-                    throw new RuntimeException(get_string('error_archive_quiz_form_validation_failed', 'quiz_archiver'));
+        if (!array_key_exists('quizMissingSomethingWarning', $tplCtx)) {
+            $archive_quiz_form = new archive_quiz_form(
+                $this->quiz->name,
+                count($this->report->get_attempts())
+            );
+            if ($archive_quiz_form->is_submitted()) {
+                $job = null;
+                try {
+                    if (!$archive_quiz_form->is_validated()) {
+                        throw new RuntimeException(get_string('error_archive_quiz_form_validation_failed', 'quiz_archiver'));
+                    }
+
+                    $formdata = $archive_quiz_form->get_data();
+                    $job = $this->initiate_archive_job(
+                        $formdata->export_attempts,
+                        Report::build_report_sections_from_formdata($formdata),
+                        $formdata->export_attempts_keep_html_files,
+                        $formdata->export_attempts_paper_format,
+                        $formdata->export_quiz_backup,
+                        $formdata->export_course_backup,
+                        $formdata->archive_filename_pattern,
+                        $formdata->export_attempts_filename_pattern,
+                        $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
+                    );
+                    $tplCtx['jobInitiationStatusAlert'] = [
+                        "color" => "success",
+                        "message" => get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid()),
+                        "returnMessage" => get_string('continue'),
+                    ];
+                } catch (RuntimeException $e) {
+                    $tplCtx['jobInitiationStatusAlert'] = [
+                        "color" => "danger",
+                        "message" => $e->getMessage(),
+                        "returnMessage" => get_string('retry'),
+                    ];
                 }
 
-                $formdata = $archive_quiz_form->get_data();
-                $job = $this->initiate_archive_job(
-                    $formdata->export_attempts,
-                    Report::build_report_sections_from_formdata($formdata),
-                    $formdata->export_attempts_keep_html_files,
-                    $formdata->export_attempts_paper_format,
-                    $formdata->export_quiz_backup,
-                    $formdata->export_course_backup,
-                    $formdata->archive_filename_pattern,
-                    $formdata->export_attempts_filename_pattern,
-                    $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
-                );
-                $tplCtx['jobInitiationStatusAlert'] = [
-                    "color" => "success",
-                    "message" => get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid()),
-                    "returnMessage" => get_string('continue'),
-                ];
-            } catch (RuntimeException $e) {
-                $tplCtx['jobInitiationStatusAlert'] = [
-                    "color" => "danger",
-                    "message" => $e->getMessage(),
-                    "returnMessage" => get_string('retry'),
-                ];
+                // Do not print job overview table if job creation failed
+                if ($job == null) {
+                    unset($tplCtx['jobOverviewTable']);
+                }
+            } else {
+                $tplCtx['jobInitiationForm'] = $archive_quiz_form->render();
             }
-
-            // Do not print job overview table if job creation failed
-            if ($job == null) {
-                unset($tplCtx['jobOverviewTable']);
-            }
-        } else {
-            $tplCtx['jobInitiationForm'] = $archive_quiz_form->render();
         }
 
         // Job overview table
