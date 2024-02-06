@@ -1,0 +1,164 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        Thanks for submitting a bug report 👍 Please fill in the applicable fields.
+        Additional information or images can always be added later as comments.
+
+        ---
+  
+  - type: markdown
+    attributes:
+      value: |
+        # Environment
+
+  - type: input
+    id: quiz_archiver_version
+    attributes:
+      label: Quiz archiver moodle plugin version
+      description: Which version of the **quiz_archiver Moodle plugin** are you using?
+      placeholder: ex. v1.2.3 / develop
+    validations:
+      required: true
+  
+  - type: input
+    id: quiz_archive_worker_version
+    attributes:
+      label: Quiz archiver worker version
+      description: Which version of the **quiz archive worker service** are you using?
+      placeholder: ex. v1.2.3 / develop
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: quiz_archive_worker_deployment_method
+    attributes:
+      label: Worker service deployment method
+      description: How did you deploy the quiz archive worker service?
+      options:
+        - Docker
+        - Docker compose
+        - Manual
+        - Other, please specify below
+      default: 1
+    validations:
+      required: false
+
+  - type: input
+    id: moodle_version
+    attributes:
+      label: Moodle Version
+      description: Which version of Moodle are you using?
+      placeholder: ex. Moodle 4.3.2+
+    validations:
+      required: false
+  
+  - type: input
+    id: php_version
+    attributes:
+      label: PHP Version
+      description: Which PHP version do you run?
+      placeholder: ex. PHP 8.3
+    validations:
+      required: false
+  
+  - type: dropdown
+    id: database_type
+    attributes:
+      label: Database
+      description: Which database are you using?
+      options:
+        - PostgreSQL
+        - MySQL
+        - MariaDB
+        - Microsoft SQL Server
+        - Oracle Database
+        - Other, please specify below
+      default: 0
+    validations:
+      required: false
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: Which operating system do your Moodle and the quiz archive worker service run on?
+      placeholder: ex. Debian 12
+    validations:
+      required: false
+
+  
+  - type: markdown
+    attributes:
+      value: |
+        # Issue
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please tell us what you expected to happen and what happend instead.
+      value: |
+        Expected behavior:
+
+        Actual behavior:
+
+        Additional information:
+    validations:
+      required: true
+  
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Please list the stepts one needs to perform to reproduce the issue.
+      placeholder: |
+        1. Navigate to the archiver page of a quiz
+        2. Click X, Y, and Z
+        3. Find the above described error
+    validations:
+      required: true
+
+        
+  - type: markdown
+    attributes:
+      value: |
+        # Additional Information
+
+  - type: textarea
+    id: moodle_logs
+    attributes:
+      label: Relevant Moodle / PHP log output (if applicable)
+      description: |
+        Please copy and paste any relevant log output from Moodle or PHP.
+        See [Moodle Wiki -> Debugging](https://docs.moodle.org/403/en/Debugging) for more details.
+      render: text
+    validations:
+      required: false
+  
+  - type: textarea
+    id: quiz_archive_worker_logs
+    attributes:
+      label: Relevant quiz archive worker service log output (if applicable)
+      description: |
+        Please copy and paste any relevant log output from the quiz archive worker service. Ideadly set your `LOG_LEVEL` to `DEBUG` when capturing the logs.
+        See [Quiz Archive Worker -> Configuration](https://github.com/ngandrass/moodle-quiz-archive-worker?tab=readme-ov-file#configuration) for more details.
+      render: text
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: ---
+  
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing this bug report! You made it 🎉
+
+        Be aware, that you can always provide additional information or images as comments, once this issue is created.

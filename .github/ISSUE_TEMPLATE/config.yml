@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Anything Else
+    url: https://github.com/ngandrass/moodle-quiz_archiver/issues/new
+    about: For anything else feel free to create a blank issue
+  - name: Read the Documentation
+    url: https://github.com/ngandrass/moodle-quiz_archiver/blob/master/README.md
+    about: Have you already tried to find an answer to your question or problem in the docs?

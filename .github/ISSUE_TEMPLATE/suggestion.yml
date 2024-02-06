@@ -1,0 +1,28 @@
+name: Feature Request / Suggestion / Improvement
+description: File a feature request, provide a suggestion, or discuss an improvement
+title: "[Request]: "
+body:
+
+  - type: textarea
+    id: feature-request
+    attributes:
+      label: Description
+      description: Please tell us what you would like to see in the near future, provide your suggestion, or stat an open discussion.
+      placeholder: Can you please try to make unicorns dance on rainbows with the next release? Thanks! :)
+    validations:
+      required: true
+  
+  - type: textarea
+    id: additional-resources
+    attributes:
+      label: Additional resources and references
+      description: List all additional links, material or other media here
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing your valuble input! You made it 🎉
+
+        Be aware, that you can always provide additional information or images as comments, once this issue is created.
