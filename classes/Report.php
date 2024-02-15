@@ -686,7 +686,7 @@ class Report {
         $img_ext = pathinfo($img_src_url, PATHINFO_EXTENSION);
         if (!array_key_exists($img_ext, self::ALLOWED_IMAGE_TYPES)) {
             // Edge case: Moodle theme images must not always contain extensions
-            if (strpos($img_src_url, '/theme/image.php/') === false) {
+            if (!preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $img_src_url)) {
                 $img->setAttribute('x-debug-notice', 'image type not allowed');
                 return false;
             }
@@ -695,6 +695,7 @@ class Report {
         // Try to get image content based on link type
         $regex_matches = null;
         $img_data = null;
+        // TODO: Add proper support for REGEX_MOODLE_URL_THEME_IMAGE
         if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $img_src_url, $regex_matches)) {
             // ### Link type: Moodle pluginfile URL ### //
             $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
@@ -739,10 +740,14 @@ class Report {
             // ### Link type: Generic ### //
             $img->setAttribute('x-url-type', 'GENERIC');
 
+            // Determine if file is from this Moodle instance
+            $is_external_url = strpos($img_src_url, $moodle_baseurl) === false;
+
             // No special local file access. Try to download via HTTP request
-            $c = new curl();
+            $c = new curl(['ignoresecurity' => !$is_external_url]);
             $img_data = $c->get($img_src_url);  // Curl handle automatically closed
             if ($c->get_info()['http_code'] !== 200 || $img_data === false) {
+                $img->setAttribute('x-debug-more', $img_data);
                 $img->setAttribute('x-debug-notice', 'HTTP request failed');
                 return false;
             }
