@@ -630,6 +630,9 @@ class Report {
     /** @var string Regex for Moodle file API URLs of specific types: component=(question|qtype_.*) */
     const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))/m';
 
+    /** @var string Regex for Moodle theme image files */
+    const REGEX_MOODLE_URL_THEME_IMAGE = '/^(https?:\/\/[^\/]+)?(\/theme\/image\.php\/)(?P<theme>[^\/\#\?\&]+)\/.*\/(?P<filename>.+)$/m';
+
     /** @var string[] Mapping of file extensions to file types that are allowed to process */
     const ALLOWED_IMAGE_TYPES = [
             'png' => 'image/png',
@@ -656,7 +659,10 @@ class Report {
 
         // Only process images with src attribute
         if (!$img->getAttribute('src')) {
+            $img->setAttribute('x-debug-notice', 'no source present');
             return false;
+        } else {
+            $img->setAttribute('x-original-source', $img->getAttribute('src'));
         }
 
         // Remove any parameters and anchors from URL
@@ -672,13 +678,18 @@ class Report {
 
         # Make sure to only process web URLs and nothing that somehow remained a valid local filepath
         if (!substr($img_src_url, 0, 4) === "http") { // Yes, this includes https as well ;)
+            $img->setAttribute('x-debug-notice', 'not a web URL');
             return false;
         }
 
         // Only process allowed image types
         $img_ext = pathinfo($img_src_url, PATHINFO_EXTENSION);
         if (!array_key_exists($img_ext, self::ALLOWED_IMAGE_TYPES)) {
-            return false;
+            // Edge case: Moodle theme images must not always contain extensions
+            if (strpos($img_src_url, '/theme/image.php/') === false) {
+                $img->setAttribute('x-debug-notice', 'image type not allowed');
+                return false;
+            }
         }
 
         // Try to get image content based on link type
@@ -686,10 +697,15 @@ class Report {
         $img_data = null;
         if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $img_src_url, $regex_matches)) {
             // ### Link type: Moodle pluginfile URL ### //
+            $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
+
             // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
             if ($regex_matches['component'] == 'question' || strpos($regex_matches['component'], 'qtype_') === 0) {
                 $regex_matches = null;
-                if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $img_src_url, $regex_matches)) return false;
+                if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $img_src_url, $regex_matches)) {
+                    $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
+                    return false;
+                }
             }
 
             // Get file content via Moodle File API
@@ -704,29 +720,37 @@ class Report {
             );
 
             if (!$file) {
+                $img->setAttribute('x-debug-notice', 'moodledata file not found');
                 return false;
             }
             $img_data = $file->get_content();
         } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
             // ### Link type: qtype_stack plotfile ### //
+            $img->setAttribute('x-url-type', 'MOODLE_URL_STACKPLOT');
+
             // Get STACK plot file from disk
             $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
             if (!is_readable($filename)) {
+                $img->setAttribute('x-debug-notice', 'stack plot file not readable');
                 return false;
             }
             $img_data = file_get_contents($filename);
         } else {
             // ### Link type: Generic ### //
+            $img->setAttribute('x-url-type', 'GENERIC');
+
             // No special local file access. Try to download via HTTP request
             $c = new curl();
             $img_data = $c->get($img_src_url);  // Curl handle automatically closed
             if ($c->get_info()['http_code'] !== 200 || $img_data === false) {
+                $img->setAttribute('x-debug-notice', 'HTTP request failed');
                 return false;
             }
         }
 
         // Encode and replace image if present
         if (!$img_data) {
+            $img->setAttribute('x-debug-notice', 'no image data');
             return false;
         }
         $img_base64 = base64_encode($img_data);
