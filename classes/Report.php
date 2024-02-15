@@ -631,20 +631,20 @@ class Report {
     const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))/m';
 
     /** @var string Regex for Moodle theme image files */
-    const REGEX_MOODLE_URL_THEME_IMAGE = '/^(https?:\/\/[^\/]+)?(\/theme\/image\.php\/)(?P<theme>[^\/\#\?\&]+)\/.*\/(?P<filename>.+)$/m';
+    const REGEX_MOODLE_URL_THEME_IMAGE = '/^(https?:\/\/[^\/]+)?(\/theme\/image\.php\/)(?P<themename>[^\/]+)\/(?P<component>[^\/]+)\/(?P<rev>[^\/]+)\/(?P<image>.+)$/m';
 
     /** @var string[] Mapping of file extensions to file types that are allowed to process */
     const ALLOWED_IMAGE_TYPES = [
-            'png' => 'image/png',
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'svg' => 'image/svg+xml',
-            'gif' => 'image/gif',
-            'webp' => 'image/webp',
-            'bmp' => 'image/bmp',
-            'ico' => 'image/x-icon',
-            'tiff' => 'image/tiff'
-        ];
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'svg' => 'image/svg+xml',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'bmp' => 'image/bmp',
+        'ico' => 'image/x-icon',
+        'tiff' => 'image/tiff'
+    ];
 
     /**
      * Tries to download and inline images of <img> tags with src attributes as base64 encoded strings. Replacement
@@ -695,9 +695,8 @@ class Report {
         // Try to get image content based on link type
         $regex_matches = null;
         $img_data = null;
-        // TODO: Add proper support for REGEX_MOODLE_URL_THEME_IMAGE
         if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $img_src_url, $regex_matches)) {
-            // ### Link type: Moodle pluginfile URL ### //
+            // ### Link type: Moodle pluginfile URL ###
             $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
 
             // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
@@ -726,7 +725,7 @@ class Report {
             }
             $img_data = $file->get_content();
         } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
-            // ### Link type: qtype_stack plotfile ### //
+            // ### Link type: qtype_stack plotfile ###
             $img->setAttribute('x-url-type', 'MOODLE_URL_STACKPLOT');
 
             // Get STACK plot file from disk
@@ -737,8 +736,16 @@ class Report {
             }
             $img_data = file_get_contents($filename);
         } else {
-            // ### Link type: Generic ### //
-            $img->setAttribute('x-url-type', 'GENERIC');
+            if (preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $img_src_url)) {
+                // ### Link type: Moodle theme image ###
+                // We should be able to download there images using a simple HTTP request
+                // Accessing them directly from disk is a little more complicated due to caching and other logic (see: /theme/image.php).
+                // Let's try to keep it this way until we encounter explicit problems.
+                $img->setAttribute('x-url-type', 'MOODLE_URL_THEME_IMAGE');
+            } else {
+                // ### Link type: Generic ###
+                $img->setAttribute('x-url-type', 'GENERIC');
+            }
 
             // Determine if file is from this Moodle instance
             $is_external_url = strpos($img_src_url, $moodle_baseurl) === false;
