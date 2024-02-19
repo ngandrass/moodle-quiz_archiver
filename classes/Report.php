@@ -622,16 +622,16 @@ class Report {
     }
 
     /** @var string Regex for URLs of qtype_stack plots */
-    const REGEX_MOODLE_URL_STACKPLOT = '/^(https?:\/\/[^\/]+)?(\/question\/type\/stack\/plot\.php\/)(?P<filename>[^\/\#\?\&]+\.(png|svg))/m';
+    const REGEX_MOODLE_URL_STACKPLOT = '/^(?P<wwwroot>https?:\/\/.+)?(\/question\/type\/stack\/plot\.php\/)(?P<filename>[^\/\#\?\&]+\.(png|svg))$/m';
 
     /** @var string Regex for Moodle file API URLs */
-    const REGEX_MOODLE_URL_PLUGINFILE = '/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))/m';
+    const REGEX_MOODLE_URL_PLUGINFILE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle file API URLs of specific types: component=(question|qtype_.*) */
-    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(https?:\/\/[^\/]+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))/m';
+    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle theme image files */
-    const REGEX_MOODLE_URL_THEME_IMAGE = '/^(https?:\/\/[^\/]+)?(\/theme\/image\.php\/)(?P<themename>[^\/]+)\/(?P<component>[^\/]+)\/(?P<rev>[^\/]+)\/(?P<image>.+)$/m';
+    const REGEX_MOODLE_URL_THEME_IMAGE = '/^(?P<wwwroot>https?:\/\/.+)?(\/theme\/image\.php\/)(?P<themename>[^\/]+)\/(?P<component>[^\/]+)\/(?P<rev>[^\/]+)\/(?P<image>.+)$/m';
 
     /** @var string[] Mapping of file extensions to file types that are allowed to process */
     const ALLOWED_IMAGE_TYPES = [
@@ -695,47 +695,57 @@ class Report {
         // Try to get image content based on link type
         $regex_matches = null;
         $img_data = null;
-        if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $img_src_url, $regex_matches)) {
-            // ### Link type: Moodle pluginfile URL ###
-            $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
 
-            // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
-            if ($regex_matches['component'] == 'question' || strpos($regex_matches['component'], 'qtype_') === 0) {
-                $regex_matches = null;
-                if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $img_src_url, $regex_matches)) {
-                    $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
+        // Handle special internal URLs first
+        $is_internal_url = substr($img_src_url, 0, strlen($moodle_baseurl)) === $moodle_baseurl;
+        if ($is_internal_url) {
+            if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $img_src_url, $regex_matches)) {
+                // ### Link type: Moodle pluginfile URL ###
+                $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
+
+                // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
+                if ($regex_matches['component'] == 'question' || strpos($regex_matches['component'], 'qtype_') === 0) {
+                    $regex_matches = null;
+                    if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $img_src_url, $regex_matches)) {
+                        $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
+                        return false;
+                    }
+                }
+
+                // Get file content via Moodle File API
+                $fs = get_file_storage();
+                $file = $fs->get_file(
+                    $regex_matches['contextid'],
+                    $regex_matches['component'],
+                    $regex_matches['filearea'],
+                    !empty($regex_matches['itemid']) ? $regex_matches['itemid'] : 0,
+                    '/',  // Dirty simplification but works for now *sigh*
+                    $regex_matches['filename']
+                );
+
+                if (!$file) {
+                    $img->setAttribute('x-debug-notice', 'moodledata file not found');
                     return false;
                 }
-            }
+                $img_data = $file->get_content();
+            } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
+                // ### Link type: qtype_stack plotfile ###
+                $img->setAttribute('x-url-type', 'MOODLE_URL_STACKPLOT');
 
-            // Get file content via Moodle File API
-            $fs = get_file_storage();
-            $file = $fs->get_file(
-                $regex_matches['contextid'],
-                $regex_matches['component'],
-                $regex_matches['filearea'],
-                !empty($regex_matches['itemid']) ? $regex_matches['itemid'] : 0,
-                '/',  // Dirty simplification but works for now *sigh*
-                $regex_matches['filename']
-            );
-
-            if (!$file) {
-                $img->setAttribute('x-debug-notice', 'moodledata file not found');
-                return false;
+                // Get STACK plot file from disk
+                $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
+                if (!is_readable($filename)) {
+                    $img->setAttribute('x-debug-notice', 'stack plot file not readable');
+                    return false;
+                }
+                $img_data = file_get_contents($filename);
+            } else {
+                $img->setAttribute('x-debug-internal-url-without-handler', '');
             }
-            $img_data = $file->get_content();
-        } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
-            // ### Link type: qtype_stack plotfile ###
-            $img->setAttribute('x-url-type', 'MOODLE_URL_STACKPLOT');
+        }
 
-            // Get STACK plot file from disk
-            $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
-            if (!is_readable($filename)) {
-                $img->setAttribute('x-debug-notice', 'stack plot file not readable');
-                return false;
-            }
-            $img_data = file_get_contents($filename);
-        } else {
+        // Fall back to generic URL handling if image data not already set by internal handling routines
+        if ($img_data === null) {
             if (preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $img_src_url)) {
                 // ### Link type: Moodle theme image ###
                 // We should be able to download there images using a simple HTTP request
@@ -747,11 +757,8 @@ class Report {
                 $img->setAttribute('x-url-type', 'GENERIC');
             }
 
-            // Determine if file is from this Moodle instance
-            $is_external_url = strpos($img_src_url, $moodle_baseurl) === false;
-
             // No special local file access. Try to download via HTTP request
-            $c = new curl(['ignoresecurity' => !$is_external_url]);
+            $c = new curl(['ignoresecurity' => $is_internal_url]);
             $img_data = $c->get($img_src_url);  // Curl handle automatically closed
             if ($c->get_info()['http_code'] !== 200 || $img_data === false) {
                 $img->setAttribute('x-debug-more', $img_data);
