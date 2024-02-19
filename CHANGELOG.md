@@ -1,5 +1,16 @@
 # Changelog
 
+
+## Version 1.2.4 (2024021901)
+
+- Fix image inlining for Moodle instances that reside in subdirectories (e.g., `https://your.domain/moodle`)
+  - Thanks a lot to @500gLychee for extensive testing and reporting!
+- Fix inlining of miscellaneous local images that do not fall into any specific link type category
+- Detect quizzes without attempts and prevent archive creation until at least one attempt was registered
+- Create GitHub issue template forms for bug reports and feature requests
+  - Found a bug? Please report it here: https://github.com/ngandrass/moodle-quiz_archiver/issues
+
+
 ## Version 1.2.3 (2024011200)
 
 - Fix job setting storage issues with MySQL / MariaDB
