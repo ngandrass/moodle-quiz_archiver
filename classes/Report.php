@@ -131,22 +131,25 @@ class Report {
     /**
      * Get all attempts for all users inside this quiz, excluding previews
      *
+     * @param int $userid - If set, only the attempts of the given user are included.
      * @return array Array of all attempt IDs together with the userid that were
      * made inside this quiz. Indexed by attemptid.
      *
      * @throws \dml_exception
      */
-    public function get_attempts(): array {
+    public function get_attempts($userid = 0): array {
         global $DB;
 
-        return $DB->get_records_sql(
-            "SELECT id AS attemptid, userid " .
-            "FROM {quiz_attempts} " .
-            "WHERE preview = 0 AND quiz = :quizid",
-            [
-                "quizid" => $this->quiz->id,
-            ]
-        );
+        $conditions = [
+            'quiz' => $this->quiz->id,
+            'preview' => 0,
+        ];
+
+        if(!empty($userid)) {
+            $conditions['userid'] = $userid;
+        }
+
+        return $DB->get_records('quiz_attempts', $conditions, '', 'id AS attemptid, userid');
     }
 
     /**
