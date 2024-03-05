@@ -46,9 +46,16 @@ use quiz_archiver\FileManager;
 function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     // Check permissions.
     require_login($course, false, $cm);
-    require_capability('mod/quiz:grade', $context);
-    require_capability('quiz/grading:viewstudentnames', $context);
-    require_capability('quiz/grading:viewidnumber', $context);
+
+    if (!((
+    has_capability('mod/quiz:grade', $context)
+    && has_capability('quiz/grading:viewstudentnames', $context)
+    && has_capability('quiz/grading:viewidnumber', $context)
+    ) ||
+    has_capability('mod/quiz_archiver:getownarchive', $context)
+    )) {
+        throw new moodle_exception("You have not the capability to download the archive file.");
+    }
 
     // Validate course
     if ($args[1] !== $course->id) {

@@ -77,7 +77,7 @@ class quiz_archiver_report extends report_base {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course): bool {
-        global $OUTPUT;
+        global $OUTPUT, $USER;
 
         $this->course = $course;
         $this->cm = $cm;
@@ -250,7 +250,7 @@ class quiz_archiver_report extends report_base {
         // Job overview table
         if (array_key_exists('jobOverviewTable', $tplCtx)) {
             // Generate table
-            $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
+            $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id, $USER->id);
             $jobtbl->define_baseurl($this->base_url());
             ob_start();
             $jobtbl->out(10, true);
@@ -325,6 +325,7 @@ class quiz_archiver_report extends report_base {
      * @param string $archive_filename_pattern Filename pattern to use for archive generation
      * @param string $attempts_filename_pattern Filename pattern to use for attempt report generation
      * @param int|null $retention_seconds If set, the archive will be deleted automatically this many seconds after creation
+     * @param int $userid If set, only quiz attempts of the given user are included.
      * @return ArchiveJob|null Created ArchiveJob on success
      * @throws coding_exception Handled by Moodle
      * @throws dml_exception Handled by Moodle
@@ -340,12 +341,20 @@ class quiz_archiver_report extends report_base {
         bool $export_course_backup,
         string $archive_filename_pattern,
         string $attempts_filename_pattern,
-        ?int $retention_seconds = null
+        ?int $retention_seconds = null,
+        int $userid = 0
     ): ?ArchiveJob {
         global $USER;
 
         // Check permissions.
-        require_capability('mod/quiz_archiver:create', $this->context);
+        if (
+            !(
+                has_capability('mod/quiz_archiver:create', $this->context)
+                || has_capability('mod/quiz_archiver:getownarchive', $this->context)
+            )
+        ) {
+            throw new moodle_exception("You have not the capability to generate the archive file.");
+        }
 
         // Create temporary webservice token
         if (class_exists('core_external\util')) {
@@ -372,7 +381,7 @@ class quiz_archiver_report extends report_base {
         }
 
         // Get attempt metadata
-        $attempts = $this->report->get_attempts();
+        $attempts = $this->report->get_attempts($userid);
 
         // Prepare task: Export quiz attempts
         $task_archive_quiz_attempts = null;
@@ -473,6 +482,49 @@ class quiz_archiver_report extends report_base {
      */
     protected function base_url(): moodle_url {
         return new moodle_url('/mod/quiz/report.php', ['id' => $this->cm->id, 'mode' => 'archiver']);
+    }
+
+    /**
+     * Initialises an archive job for a specific user.
+     *
+     * @param int $userid
+     * @return ArchiveJob|null Created ArchiveJob on success
+     */
+    public function initiate_users_archive_job(
+        object $quiz,
+        object $cm,
+        object $course,
+        object $context,
+        bool $export_attempts,
+        array $report_sections,
+        bool $report_keep_html_files,
+        string $paper_format,
+        bool $export_quiz_backup,
+        bool $export_course_backup,
+        string $archive_filename_pattern,
+        string $attempts_filename_pattern,
+        ?int $retention_seconds = null,
+        int $userid = 0
+    ) {
+        $this->context = $context;
+        require_capability('mod/quiz_archiver:getownarchive', $this->context);
+
+        $this->course = $course;
+        $this->cm = $cm;
+        $this->quiz = $quiz;
+        $this->report = new Report($this->course, $this->cm, $this->quiz);
+        return $this->initiate_archive_job(
+            $export_attempts,
+            $report_sections,
+            $report_keep_html_files,
+            $paper_format,
+            $export_quiz_backup,
+            $export_course_backup,
+            $archive_filename_pattern,
+            $attempts_filename_pattern,
+            $retention_seconds,
+            $userid
+        );
     }
 
 }

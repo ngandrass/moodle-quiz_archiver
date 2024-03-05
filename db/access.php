@@ -63,4 +63,15 @@ $capabilities = [
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [],
     ],
+    // Capability to use the webservice. Required for the webservice user.
+    'mod/quiz_archiver:getownarchive' => [
+        'riskbitmask' => (RISK_PERSONAL),
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'student' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

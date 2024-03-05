@@ -45,10 +45,11 @@ class job_overview_table extends \table_sql {
      * @param int $courseid ID of the course
      * @param int $cmid ID of the course module
      * @param int $quizid ID of the quiz
+     * @param int $userid - If set, the table is limited to the archives created by the user itself.
      *
      * @throws \coding_exception
      */
-    public function __construct(string $uniqueid, int $courseid, int $cmid, int $quizid) {
+    public function __construct(string $uniqueid, int $courseid, int $cmid, int $quizid, int $userid = 0) {
         parent::__construct($uniqueid);
         $this->define_columns([
             'timecreated',
@@ -68,16 +69,22 @@ class job_overview_table extends \table_sql {
             '',
         ]);
 
-        $this->set_sql(
-            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
-            '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id',
-            'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
-            [
-                'courseid' => $courseid,
-                'cmid' => $cmid,
-                'quizid' => $quizid,
-            ]
-        );
+        $conditions = [
+            'courseid' => $courseid,
+            'cmid' => $cmid,
+            'quizid' => $quizid,
+        ];
+
+        $fields = 'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username';
+        $sql = '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id';
+        $where = 'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid';
+
+        if (!empty($userid)) {
+            $conditions['userid'] = $userid;
+            $where .= ' AND u.id = :userid';
+        }
+
+        $this->set_sql($fields, $sql, $where, $conditions);
 
         $this->sortable(true, 'timecreated', SORT_DESC);
         $this->no_sorting('jobid');
