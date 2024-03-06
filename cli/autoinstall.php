@@ -28,53 +28,9 @@ const CLI_SCRIPT = true;
 
 require_once(__DIR__ . '/../../../../../config.php');
 require_once("{$CFG->libdir}/clilib.php");
-require_once("{$CFG->dirroot}/lib/testing/generator/data_generator.php");
-require_once("{$CFG->dirroot}/webservice/lib.php");
+require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/local/autoinstall.php");
 
-###################################
-# Defaults and base configuration #
-###################################
-
-/** @var string Default name for the webservice to create */
-const DEFAULT_WSNAME = 'quiz_archiver_webservice';
-
-/** @var string Default username for the service account to create */
-const DEFAULT_USERNAME = 'quiz_archiver_serviceacount';
-
-/** @var string Default shortname for the role to create */
-const DEFAULT_ROLESHORTNAME = 'quiz_archiver';
-
-/** @var string[] List of capabilities to assign to the created role */
-const WS_ROLECAPS = [
-        'mod/quiz:reviewmyattempts',
-        'mod/quiz:view',
-        'mod/quiz:viewreports',
-        'mod/quiz_archiver:use_webservice',
-        'moodle/backup:anonymise',
-        'moodle/backup:backupactivity',
-        'moodle/backup:backupcourse',
-        'moodle/backup:backupsection',
-        'moodle/backup:backuptargetimport',
-        'moodle/backup:configure',
-        'moodle/backup:downloadfile',
-        'moodle/backup:userinfo',
-        'moodle/course:ignoreavailabilityrestrictions',
-        'moodle/course:view',
-        'moodle/course:viewhiddenactivities',
-        'moodle/course:viewhiddencourses',
-        'moodle/course:viewhiddensections',
-        'moodle/user:ignoreuserquota',
-        'webservice/rest:use',
-];
-
-/** @var string[] List of functions to add to the created webservice */
-const WS_FUNCTIONS = [
-        'quiz_archiver_generate_attempt_report',
-        'quiz_archiver_get_attempts_metadata',
-        'quiz_archiver_update_job_status',
-        'quiz_archiver_process_uploaded_artifact',
-        'quiz_archiver_get_backup_status',
-];
+use quiz_archiver\local\autoinstall;
 
 #######################
 # CLI options parsing #
@@ -83,9 +39,9 @@ const WS_FUNCTIONS = [
 list($options, $unrecognised) = cli_get_params(
     [
         'help' => false,
-        'wsname' => DEFAULT_WSNAME,
-        'rolename' => DEFAULT_ROLESHORTNAME,
-        'username' => DEFAULT_USERNAME,
+        'wsname' => autoinstall::DEFAULT_WSNAME,
+        'rolename' => autoinstall::DEFAULT_ROLESHORTNAME,
+        'username' => autoinstall::DEFAULT_USERNAME,
     ],
     [
         'h' => 'help',
@@ -127,138 +83,23 @@ if ($options['help']) {
 # Begin of autoinstall routine #
 ################################
 
-// Set system context.
-try {
-    $systemcontext = context_system::instance();
-} catch (dml_exception $e) {
-    cli_error("Error: Cannot get system context: ".$e->getMessage());
-    exit(1);
-}
-
-cli_writeln("Starting automatic installation of quiz archiver plugin...");
-
 // Set admin user.
 $USER = get_admin();
 
-// Create a web service user.
-try {
-    $datagenerator = new testing_data_generator();
-    $webserviceuser = $datagenerator->create_user([
-        'username' => $options['username'],
-        'password' => bin2hex(random_bytes(32)),
-        'firstname' => 'Quiz Archiver',
-        'firstnamephonetic' => '',
-        'middlename' => '',
-        'lastname' => 'Service Account',
-        'lastnamephonetic' => '',
-        'alternatename' => '',
-        'email' => 'noreply@localhost',
-        'policyagreed' => 1
-    ]);
-    cli_writeln("  -> Web service user '{$webserviceuser->username}' with ID {$webserviceuser->id} created.");
-} catch (dml_exception $e) {
-    cli_error("Error: Cloud not create webservice user: ".$e->getMessage());
-    exit(1);
-}
+cli_writeln("Starting automatic installation of quiz archiver plugin...");
+cli_separator();
 
-// Create a web service role.
-try {
-    $wsroleid = create_role(
-        'Quiz Archiver Service Account',
-        $options['rolename'],
-        'A role that bundles all access rights required for the quiz archiver plugin to work.'
-    );
-    set_role_contextlevels($wsroleid, [CONTEXT_SYSTEM]);
+list($success, $log) = autoinstall::execute($options['wsname'], $options['rolename'], $options['username']);
 
-    cli_writeln("  -> Role '{$options['rolename']}' created.");
-} catch (coding_exception $e) {
-    cli_error("Error: Cannot create role {$options['rolename']}: {$e->getMessage()}");
-    exit(1);
-}
+cli_write($log."\r\n");
 
-foreach (WS_ROLECAPS as $cap){
-    try {
-        assign_capability($cap, CAP_ALLOW, $wsroleid, $systemcontext->id, true);
-        cli_writeln("    -> Capability {$cap} assigned to role '{$options['rolename']}'.");
-    } catch (coding_exception $e) {
-        cli_error("Error: Cannot assign capability {$cap}: {$e->getMessage()}");
-        exit(1);
-    }
-}
-
-// Give the user the role.
-try {
-    role_assign($wsroleid, $webserviceuser->id, $systemcontext->id);
-    cli_writeln("  -> Role '{$options['rolename']}' assigned to user '{$webserviceuser->username}'.");
-} catch (coding_exception $e) {
-    cli_error("Error: Cannot assign role to webservice user: ".$e->getMessage());
-    exit(1);
-}
-
-// Enable web services and REST protocol.
-try {
-    set_config('enablewebservices', true);
-    cli_writeln('  -> Web services enabled.');
-
-    $enabledprotocols = get_config('core', 'webserviceprotocols');
-    if (stripos($enabledprotocols, 'rest') === false) {
-        set_config('webserviceprotocols', $enabledprotocols . ',rest');
-    }
-    cli_writeln('  -> REST webservice protocol enabled.');
-} catch (dml_exception $e) {
-    cli_error("Error: Cannot get config setting webserviceprotocols: ".$e->getMessage());
-    exit(1);
-}
-
-// Enable the webservice.
-$webservicemanager = new webservice();
-$serviceid = $webservicemanager->add_external_service((object)[
-        'name' => $options['wsname'],
-        'shortname' => $options['wsname'],
-        'enabled' => 1,
-        'requiredcapability' => '',
-        'restrictedusers' => true,
-        'downloadfiles' => true,
-        'uploadfiles' => true,
-]);
-
-if(!$serviceid){
-    cli_error("ERROR: Service {$options['wsname']} could not be created.");
-    exit(1);
+if ($success) {
+    cli_separator();
+    cli_writeln("Automatic installation of quiz archiver plugin finished successfully.");
+    exit(0);
 } else {
-    cli_writeln("  -> Web service '{$options['wsname']}' created with ID {$serviceid}.");
-}
-
-// Add functions to the service
-foreach (WS_FUNCTIONS as $f) {
-    $webservicemanager->add_external_function_to_service($f, $serviceid);
-    cli_writeln("    -> Function {$f} added to service '{$options['wsname']}'.");
-}
-
-// Authorise the user to use the service.
-$webservicemanager->add_ws_authorised_user((object) [
-    'externalserviceid' => $serviceid,
-    'userid' => $webserviceuser->id
-]);
-
-$service = $webservicemanager->get_external_service_by_id($serviceid);
-$webservicemanager->update_external_service($service);
-cli_writeln("  -> User '{$webserviceuser->username}' authorised to use service '{$options['wsname']}'.");
-
-// Configure quiz_archiver plugin settings
-try {
-    cli_writeln("  -> Configuring the quiz archiver plugin...");
-
-    set_config('webservice_id', $serviceid, 'quiz_archiver');
-    cli_writeln("    -> Web service set to '{$options['wsname']}'.");
-
-    set_config('webservice_userid', $webserviceuser->id, 'quiz_archiver');
-    cli_writeln("    -> Web service user set to '{$webserviceuser->username}'.");
-} catch (dml_exception $e) {
-    cli_error("Error: Failed to set config settings for quiz_archiver plugin: ".$e->getMessage());
+    cli_writeln("Aborted.");
+    cli_separator();
+    cli_writeln("FAILED: Automatic installation of quiz archiver plugin failed.");
     exit(1);
 }
-
-cli_writeln('');
-cli_writeln("Automatic installation of quiz archiver plugin finished successfully.");
-exit(0);
