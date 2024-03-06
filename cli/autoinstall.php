@@ -142,7 +142,17 @@ if (stripos($enabledprotocols, 'rest') === false) {
 // Create a web service user.
 $datagenerator = new testing_data_generator();
 $webserviceuser = $datagenerator->create_user([
-        'username' => 'ws-'.$wsname.'-user', 'firstname' => 'Webservice', 'lastname' => 'User ('.$wsname.')', 'policyagreed' => 1]);
+    'username' => $options['username'],
+    'password' => bin2hex(random_bytes(32)),
+    'firstname' => 'Quiz Archiver',
+    'firstnamephonetic' => '',
+    'middlename' => '',
+    'lastname' => 'Service Account',
+    'lastnamephonetic' => '',
+    'alternatename' => '',
+    'email' => 'noreply@localhost',
+    'policyagreed' => 1
+]);
 
 // Create a web service role.
 try {
