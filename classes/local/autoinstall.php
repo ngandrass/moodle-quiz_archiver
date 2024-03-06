@@ -98,6 +98,8 @@ class autoinstall {
      * @param string $wsname The name for the web service to create
      * @param string $rolename The shortname for the role to create
      * @param string $username The username for the service account to create
+     * @param bool $force If true, the installation is forced regardless of the
+     *                    current state of the system
      * @return array An array with two elements: a boolean indicating success
      *               and a string with a log of the performed actions
      */
