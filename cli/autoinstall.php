@@ -125,34 +125,31 @@ try {
     exit(1);
 }
 
+cli_writeln("Starting automatic installation of quiz archiver plugin...");
+
 // Set admin user.
 $USER = get_admin();
 
-// Enable web services and REST protocol.
-set_config('enablewebservices', true);
+// Create a web service user.
 try {
-    $enabledprotocols = get_config('core', 'webserviceprotocols');
+    $datagenerator = new testing_data_generator();
+    $webserviceuser = $datagenerator->create_user([
+        'username' => $options['username'],
+        'password' => bin2hex(random_bytes(32)),
+        'firstname' => 'Quiz Archiver',
+        'firstnamephonetic' => '',
+        'middlename' => '',
+        'lastname' => 'Service Account',
+        'lastnamephonetic' => '',
+        'alternatename' => '',
+        'email' => 'noreply@localhost',
+        'policyagreed' => 1
+    ]);
+    cli_writeln("  -> Web service user '{$webserviceuser->username}' with ID {$webserviceuser->id} created.");
 } catch (dml_exception $e) {
-    cli_error("Error: Cannot get config setting webserviceprotocols: ".$e->getMessage());
+    cli_error("Error: Cloud not create webservice user: ".$e->getMessage());
     exit(1);
 }
-if (stripos($enabledprotocols, 'rest') === false) {
-    set_config('webserviceprotocols', $enabledprotocols . ',rest');
-}
-// Create a web service user.
-$datagenerator = new testing_data_generator();
-$webserviceuser = $datagenerator->create_user([
-    'username' => $options['username'],
-    'password' => bin2hex(random_bytes(32)),
-    'firstname' => 'Quiz Archiver',
-    'firstnamephonetic' => '',
-    'middlename' => '',
-    'lastname' => 'Service Account',
-    'lastnamephonetic' => '',
-    'alternatename' => '',
-    'email' => 'noreply@localhost',
-    'policyagreed' => 1
-]);
 
 // Create a web service role.
 try {
@@ -162,6 +159,8 @@ try {
         'A role that bundles all access rights required for the quiz archiver plugin to work.'
     );
     set_role_contextlevels($wsroleid, [CONTEXT_SYSTEM]);
+
+    cli_writeln("  -> Role '{$options['rolename']}' created.");
 } catch (coding_exception $e) {
     cli_error("Error: Cannot create role {$options['rolename']}: {$e->getMessage()}");
     exit(1);
@@ -170,6 +169,7 @@ try {
 foreach (WS_ROLECAPS as $cap){
     try {
         assign_capability($cap, CAP_ALLOW, $wsroleid, $systemcontext->id, true);
+        cli_writeln("    -> Capability {$cap} assigned to role '{$options['rolename']}'.");
     } catch (coding_exception $e) {
         cli_error("Error: Cannot assign capability {$cap}: {$e->getMessage()}");
         exit(1);
@@ -179,8 +179,24 @@ foreach (WS_ROLECAPS as $cap){
 // Give the user the role.
 try {
     role_assign($wsroleid, $webserviceuser->id, $systemcontext->id);
+    cli_writeln("  -> Role '{$options['rolename']}' assigned to user '{$webserviceuser->username}'.");
 } catch (coding_exception $e) {
     cli_error("Error: Cannot assign role to webservice user: ".$e->getMessage());
+    exit(1);
+}
+
+// Enable web services and REST protocol.
+try {
+    set_config('enablewebservices', true);
+    cli_writeln('  -> Web services enabled.');
+
+    $enabledprotocols = get_config('core', 'webserviceprotocols');
+    if (stripos($enabledprotocols, 'rest') === false) {
+        set_config('webserviceprotocols', $enabledprotocols . ',rest');
+    }
+    cli_writeln('  -> REST webservice protocol enabled.');
+} catch (dml_exception $e) {
+    cli_error("Error: Cannot get config setting webserviceprotocols: ".$e->getMessage());
     exit(1);
 }
 
@@ -199,11 +215,14 @@ $serviceid = $webservicemanager->add_external_service((object)[
 if(!$serviceid){
     cli_error("ERROR: Service {$options['wsname']} could not be created.");
     exit(1);
+} else {
+    cli_writeln("  -> Web service '{$options['wsname']}' created with ID {$serviceid}.");
 }
 
 // Add functions to the service
 foreach (WS_FUNCTIONS as $f) {
     $webservicemanager->add_external_function_to_service($f, $serviceid);
+    cli_writeln("    -> Function {$f} added to service '{$options['wsname']}'.");
 }
 
 // Authorise the user to use the service.
@@ -215,5 +234,8 @@ $webservicemanager->add_ws_authorised_user((object) [
 $service = $webservicemanager->get_external_service_by_id($serviceid);
 $webservicemanager->update_external_service($service);
 
-cli_writeln("Service {$options['wsname']} was created successfully with for user with id $webserviceuser->id.");
+cli_writeln("  -> User '{$webserviceuser->username}' authorised to use service '{$options['wsname']}'.");
+
+cli_writeln('');
+cli_writeln("Automatic installation of quiz archiver plugin finished successfully.");
 exit(0);
