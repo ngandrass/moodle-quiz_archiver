@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/** @var bool Identifies this script as a CLI script */
 const CLI_SCRIPT = true;
 
 require_once(__DIR__ . '/../../../../../config.php');
@@ -34,9 +35,16 @@ require_once("{$CFG->dirroot}/webservice/lib.php");
 # Defaults and base configuration #
 ###################################
 
+/** @var string Default name for the webservice to create */
 const DEFAULT_WSNAME = 'quiz_archiver_webservice';
+
+/** @var string Default username for the service account to create */
 const DEFAULT_USERNAME = 'quiz_archiver_serviceacount';
+
+/** @var string Default shortname for the role to create */
 const DEFAULT_ROLESHORTNAME = 'quiz_archiver';
+
+/** @var string[] List of capabilities to assign to the created role */
 const WS_ROLECAPS = [
         'mod/quiz:reviewmyattempts',
         'mod/quiz:view',
@@ -58,6 +66,8 @@ const WS_ROLECAPS = [
         'moodle/user:ignoreuserquota',
         'webservice/rest:use',
 ];
+
+/** @var string[] List of functions to add to the created webservice */
 const WS_FUNCTIONS = [
         'quiz_archiver_generate_attempt_report',
         'quiz_archiver_get_attempts_metadata',
