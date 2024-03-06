@@ -64,7 +64,7 @@ class generate_attempt_report extends external_api {
                 'Sections to include in the report',
                 VALUE_REQUIRED
             ),
-            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_REQUIRED)
+            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_REQUIRED),
         ]);
     }
 
@@ -115,25 +115,25 @@ class generate_attempt_report extends external_api {
      * @throws \DOMException
      */
     public static function execute(
-        int $courseid_raw,
-        int $cmid_raw,
-        int $quizid_raw,
-        int $attemptid_raw,
-        string $filenamepattern_raw,
-        array $sections_raw,
-        bool $attachments_raw
+        int $courseidraw,
+        int $cmidraw,
+        int $quizidraw,
+        int $attemptidraw,
+        string $filenamepatternraw,
+        array $sectionsraw,
+        bool $attachmentsraw
     ): array {
         global $DB;
 
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'courseid' => $courseid_raw,
-            'cmid' => $cmid_raw,
-            'quizid' => $quizid_raw,
-            'attemptid' => $attemptid_raw,
-            'filenamepattern' => $filenamepattern_raw,
-            'sections' => $sections_raw,
-            'attachments' => $attachments_raw,
+            'courseid' => $courseidraw,
+            'cmid' => $cmidraw,
+            'quizid' => $quizidraw,
+            'attemptid' => $attemptidraw,
+            'filenamepattern' => $filenamepatternraw,
+            'sections' => $sectionsraw,
+            'attachments' => $attachmentsraw,
         ]);
 
         // Check capabilities

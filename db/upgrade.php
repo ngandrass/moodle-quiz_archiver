@@ -74,12 +74,12 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
     if ($oldversion < 2023072700) {
         // Replace foreign-unique key with simple foreign key for userid in quiz_report_archiver_jobs.
         $table = new xmldb_table('quiz_report_archiver_jobs');
-        $old_key = new xmldb_key('userid', XMLDB_KEY_FOREIGN_UNIQUE, ['userid'], 'user', ['id']);
-        $new_key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $oldkey = new xmldb_key('userid', XMLDB_KEY_FOREIGN_UNIQUE, ['userid'], 'user', ['id']);
+        $newkey = new xmldb_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
 
         // Perform key exchange.
-        $dbman->drop_key($table, $old_key);
-        $dbman->add_key($table, $new_key);
+        $dbman->drop_key($table, $oldkey);
+        $dbman->add_key($table, $newkey);
 
         // Archiver savepoint reached.
         upgrade_plugin_savepoint(true, 2023072700, 'quiz', 'archiver');
@@ -211,7 +211,6 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
         // Archiver savepoint reached.
         upgrade_plugin_savepoint(true, 2024011000, 'quiz', 'archiver');
     }
-
 
     return true;
 }

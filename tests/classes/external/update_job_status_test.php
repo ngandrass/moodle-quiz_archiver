@@ -37,7 +37,7 @@ class update_job_status_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generatemockquiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -47,7 +47,7 @@ class update_job_status_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -66,7 +66,7 @@ class update_job_status_test extends \advanced_testcase {
      */
     public function test_capability_requirement(): void {
         // Create mock quiz and job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -101,7 +101,7 @@ class update_job_status_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Create mock quiz and job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -144,8 +144,8 @@ class update_job_status_test extends \advanced_testcase {
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
      */
-    public function test_parameter_validation(string $jobid, string $status, bool $shouldFail): void {
-        if ($shouldFail) {
+    public function test_parameter_validation(string $jobid, string $status, bool $shouldfail): void {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
@@ -181,13 +181,13 @@ class update_job_status_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \required_capability_exception
      */
-    public function test_update_job_status(string $originStatus, string $targetStatus, array $expected) {
+    public function test_update_job_status(string $originstatus, string $targetstatus, array $expected) {
         // Gain privileges
         $this->setAdminUser();
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
         // Create mock quiz and job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -198,16 +198,16 @@ class update_job_status_test extends \advanced_testcase {
             'TEST-WS-TOKEN',
             [],
             [],
-            $originStatus
+            $originstatus
         );
 
         // Ensure job is in the expected state
-        $this->assertSame($originStatus, $job->get_status());
+        $this->assertSame($originstatus, $job->get_status());
 
         // Execute the external function and check the result
         $result = update_job_status::execute(
             $job->get_jobid(),
-            $targetStatus
+            $targetstatus
         );
         $this->assertSame($expected, $result, 'Invalid webservice answer');
     }

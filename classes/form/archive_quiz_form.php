@@ -39,9 +39,9 @@ require_once($CFG->dirroot.'/lib/formslib.php');
 class archive_quiz_form extends \moodleform {
 
     /** @var string Name of the quiz to be exportet */
-    protected string $quiz_name;
+    protected string $quizname;
     /** @var int Number of attempts to be exported */
-    protected int $num_attempts;
+    protected int $numattempts;
 
     /**
      * Creates a new archive_quiz_form instance
@@ -49,9 +49,9 @@ class archive_quiz_form extends \moodleform {
      * @param string $quiz_name Name of the quiz to be exported
      * @param int $num_attempts Number of attempts to be exported
      */
-    public function __construct(string $quiz_name, int $num_attempts) {
-        $this->quiz_name = $quiz_name;
-        $this->num_attempts = $num_attempts;
+    public function __construct(string $quizname, int $numattempts) {
+        $this->quiz_name = $quizname;
+        $this->num_attempts = $numattempts;
         parent::__construct();
     }
 
@@ -257,7 +257,7 @@ class archive_quiz_form extends \moodleform {
      * @return \stdClass Cleared, submitted form data
      * @throws \dml_exception
      */
-    public function get_data():\stdClass  {
+    public function get_data():\stdClass {
         $data = parent::get_data();
         $config = get_config('quiz_archiver');
 

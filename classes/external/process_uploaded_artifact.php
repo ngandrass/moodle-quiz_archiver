@@ -88,27 +88,27 @@ class process_uploaded_artifact extends external_api {
      * @throws \required_capability_exception
      */
     public static function execute(
-        string $jobid_raw,
-        string $artifact_component_raw,
-        int $artifact_contextid_raw,
-        int $artifact_userid_raw,
-        string $artifact_filearea_raw,
-        string $artifact_filename_raw,
-        string $artifact_filepath_raw,
-        int $artifact_itemid_raw,
-        string $artifact_sha256sum_raw
+        string $jobidraw,
+        string $artifactcomponentraw,
+        int $artifactcontextidraw,
+        int $artifactuseridraw,
+        string $artifactfilearearaw,
+        string $artifactfilenameraw,
+        string $artifactfilepathraw,
+        int $artifactitemidraw,
+        string $artifactsha256sumraw
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'jobid' => $jobid_raw,
-            'artifact_component' => $artifact_component_raw,
-            'artifact_contextid' => $artifact_contextid_raw,
-            'artifact_userid' => $artifact_userid_raw,
-            'artifact_filearea' => $artifact_filearea_raw,
-            'artifact_filename' => $artifact_filename_raw,
-            'artifact_filepath' => $artifact_filepath_raw,
-            'artifact_itemid' => $artifact_itemid_raw,
-            'artifact_sha256sum' => $artifact_sha256sum_raw,
+            'jobid' => $jobidraw,
+            'artifact_component' => $artifactcomponentraw,
+            'artifact_contextid' => $artifactcontextidraw,
+            'artifact_userid' => $artifactuseridraw,
+            'artifact_filearea' => $artifactfilearearaw,
+            'artifact_filename' => $artifactfilenameraw,
+            'artifact_filepath' => $artifactfilepathraw,
+            'artifact_itemid' => $artifactitemidraw,
+            'artifact_sha256sum' => $artifactsha256sumraw,
         ]);
 
         // Validate that the jobid exists and no artifact was uploaded previously
@@ -180,7 +180,7 @@ class process_uploaded_artifact extends external_api {
                 // TODO: Fail silently for now ...
                 // $job->set_status(ArchiveJob::STATUS_FAILED);
                 // return [
-                //     'status' => 'E_TSP_TIMESTAMP_FAILED'
+                // 'status' => 'E_TSP_TIMESTAMP_FAILED'
                 // ];
             }
         }

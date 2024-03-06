@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class TimeStampProtocolClient {
 
     /** @var string URL of the TSP server */
-    private string $server_url;
+    private string $serverurl;
 
     /** @var string Content-Type header for TimeStampQuery */
     const CONTENT_TYPE_TIMESTAMP_QUERY = 'application/timestamp-query';
@@ -49,8 +49,8 @@ class TimeStampProtocolClient {
      *
      * @param string $server_url URL of the TSP server
      */
-    public function __construct(string $server_url) {
-        $this->server_url = $server_url;
+    public function __construct(string $serverurl) {
+        $this->server_url = $serverurl;
     }
 
     /**
@@ -73,8 +73,8 @@ class TimeStampProtocolClient {
      */
     public function sign(string $sha256hash): array {
         // Prepare TimeStampRequest
-        $nonce = self::generateNonce();
-        $tsreq = self::createTimeStampReq($sha256hash, $nonce);
+        $nonce = self::generatenonce();
+        $tsreq = self::createtimestampreq($sha256hash, $nonce);
 
         // Send TimeStampRequest to TSP server
         $c = new curl();
@@ -93,21 +93,21 @@ class TimeStampProtocolClient {
         if ($c->error) {  // Moodle curl wrapper provides no getter for curl error message
             throw new \Exception(get_string('tsp_client_error_curl', 'quiz_archiver', $c->error));
         } else {
-            $curl_info = $c->get_info();
+            $curlinfo = $c->get_info();
         }
 
-        if ($curl_info['http_code'] !== 200) {
-            throw new \Exception(get_string('tsp_client_error_http_code', 'quiz_archiver', $curl_info['http_code']));
+        if ($curlinfo['http_code'] !== 200) {
+            throw new \Exception(get_string('tsp_client_error_http_code', 'quiz_archiver', $curlinfo['http_code']));
         }
 
-        if ($curl_info['content_type'] !== self::CONTENT_TYPE_TIMESTAMP_REPLY) {
-            throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curl_info['content_type']));
+        if ($curlinfo['content_type'] !== self::CONTENT_TYPE_TIMESTAMP_REPLY) {
+            throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curlinfo['content_type']));
         }
 
         // Success
         return [
             'query' => $tsreq,
-            'reply' => $tsresp
+            'reply' => $tsresp,
         ];
     }
 
@@ -117,7 +117,7 @@ class TimeStampProtocolClient {
      * @return string 128-bit nonce
      * @throws \Exception If an appropriate source of randomness cannot be found.
      */
-    public static function generateNonce(): string {
+    public static function generatenonce(): string {
         return random_bytes(16);
     }
 
@@ -133,7 +133,7 @@ class TimeStampProtocolClient {
      * @return string ASN.1 encoded TimeStampReq
      * @throws \ValueError If the SHA256 hash or nonce are invalid
      */
-    protected static function createTimeStampReq(string $sha256hash, string $nonce, bool $requestTSAPublicKey = false): string {
+    protected static function createtimestampreq(string $sha256hash, string $nonce, bool $requesttsapublickey = false): string {
         // Validate input
         if (strlen($sha256hash) !== 64) {
             throw new \ValueError('Invalid hexadecimal SHA256 hash');
@@ -167,7 +167,7 @@ class TimeStampProtocolClient {
         $asn1[] = chr(0x02) . chr(0x10) . $nonce; // INTEGER + Length (16 bytes) + nonce value
 
         // -> certReq
-        if ($requestTSAPublicKey) {
+        if ($requesttsapublickey) {
             $asn1[] = chr(0x01) . chr(0x01) . chr(0xff); // BOOLEAN + Length + True
         }
 

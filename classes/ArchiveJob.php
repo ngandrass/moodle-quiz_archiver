@@ -39,13 +39,13 @@ class ArchiveJob {
     /** @var string UUID of the job, as assigned by the archive worker */
     protected string $jobid;
     /** @var int ID of the course this job is associated with */
-    protected int $course_id;
+    protected int $courseid;
     /** @var int ID of the course module this job is associated with */
-    protected int $cm_id;
+    protected int $cmid;
     /** @var int ID of the quiz this job is associated with */
-    protected int $quiz_id;
+    protected int $quizid;
     /** @var int ID of the user that owns this job */
-    protected int $user_id;
+    protected int $userid;
     /** @var int Unix timestamp of job creation */
     protected int $timecreated;
     /** @var int|null Unix timestamp after which this jobs artifacts will be deleted automatically. Null indicates no deletion.*/
@@ -54,7 +54,7 @@ class ArchiveJob {
     protected string $wstoken;
 
     /** @var ?TSPManager A Time-Stamp Protocol (TSP) manager associated with this class */
-    protected ?TSPManager $tspManager;
+    protected ?TSPManager $tspmanager;
 
     /** @var string Name of the job status table */
     const JOB_TABLE_NAME = 'quiz_archiver_jobs';
@@ -135,20 +135,20 @@ class ArchiveJob {
     protected function __construct(
         int $id,
         string $jobid,
-        int $course_id,
-        int $cm_id,
-        int $quiz_id,
-        int $user_id,
+        int $courseid,
+        int $cmid,
+        int $quizid,
+        int $userid,
         int $timecreated,
         ?int $retentiontime,
         string $wstoken
     ) {
         $this->id = $id;
         $this->jobid = $jobid;
-        $this->course_id = $course_id;
-        $this->cm_id = $cm_id;
-        $this->quiz_id = $quiz_id;
-        $this->user_id = $user_id;
+        $this->course_id = $courseid;
+        $this->cm_id = $cmid;
+        $this->quiz_id = $quizid;
+        $this->user_id = $userid;
         $this->timecreated = $timecreated;
         $this->retentiontime = $retentiontime;
         $this->wstoken = $wstoken;
@@ -161,7 +161,7 @@ class ArchiveJob {
      * @return TSPManager The TSPManager for this ArchiveJob
      * @throws \dml_exception If the plugin config could not be loaded
      */
-    public function TSPManager(): TSPManager {
+    public function tspmanager(): TSPManager {
         if ($this->tspManager == null) {
             $this->tspManager = new TSPManager($this);
         }
@@ -190,11 +190,11 @@ class ArchiveJob {
      */
     public static function create(
         string $jobid,
-        int $course_id,
-        int $cm_id,
-        int $quiz_id,
-        int $user_id,
-        ?int $retention_seconds,
+        int $courseid,
+        int $cmid,
+        int $quizid,
+        int $userid,
+        ?int $retentionseconds,
         string $wstoken,
         array $attempts,
         array $settings,
@@ -209,18 +209,18 @@ class ArchiveJob {
 
         // Create database entry and return ArchiveJob object to represent it
         $now = time();
-        $retentiontime = $retention_seconds ? $now + $retention_seconds : null;
+        $retentiontime = $retentionseconds ? $now + $retentionseconds : null;
         $id = $DB->insert_record(self::JOB_TABLE_NAME, [
             'jobid' => $jobid,
-            'courseid' => $course_id,
-            'cmid' => $cm_id,
-            'quizid' => $quiz_id,
-            'userid' => $user_id,
+            'courseid' => $courseid,
+            'cmid' => $cmid,
+            'quizid' => $quizid,
+            'userid' => $userid,
             'status' => $status,
             'timecreated' => $now,
             'timemodified' => $now,
             'retentiontime' => $retentiontime,
-            'wstoken' => $wstoken
+            'wstoken' => $wstoken,
         ]);
 
         // Store job settings
@@ -228,7 +228,7 @@ class ArchiveJob {
             return [
                 'jobid' => $id,
                 'settingkey' => strval($key),
-                'settingvalue' => $value === null ? null : strval($value)
+                'settingvalue' => $value === null ? null : strval($value),
             ];
         }, array_keys($settings), $settings));
 
@@ -237,11 +237,11 @@ class ArchiveJob {
             return [
                 'jobid' => $id,
                 'userid' => $data->userid,
-                'attemptid' => $data->attemptid
+                'attemptid' => $data->attemptid,
             ];
         }, $attempts));
 
-        return new ArchiveJob($id, $jobid, $course_id, $cm_id, $quiz_id, $user_id, $now, $retentiontime, $wstoken);
+        return new ArchiveJob($id, $jobid, $courseid, $cmid, $quizid, $userid, $now, $retentiontime, $wstoken);
     }
 
     /**
@@ -314,12 +314,12 @@ class ArchiveJob {
      * @return array<ArchiveJob>
      * @throws \dml_exception
      */
-    public static function get_jobs(int $course_id, int $cm_id, int $quiz_id): array {
+    public static function get_jobs(int $courseid, int $cmid, int $quizid): array {
         global $DB;
         $records = $DB->get_records(self::JOB_TABLE_NAME, [
-            'courseid' => $course_id,
-            'cmid' => $cm_id,
-            'quizid' => $quiz_id
+            'courseid' => $courseid,
+            'cmid' => $cmid,
+            'quizid' => $quizid,
         ]);
 
         return array_map(fn($dbdata): ArchiveJob => new ArchiveJob(
@@ -349,7 +349,7 @@ class ArchiveJob {
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public static function get_metadata_for_jobs(int $course_id, int $cm_id, int $quiz_id): array {
+    public static function get_metadata_for_jobs(int $courseid, int $cmid, int $quizid): array {
         global $DB;
         $records = $DB->get_records_sql(
             'SELECT '.
@@ -368,15 +368,15 @@ class ArchiveJob {
             '    j.cmid = :cmid AND '.
             '    j.quizid = :quizid ',
             [
-                'courseid' => $course_id,
-                'cmid' => $cm_id,
-                'quizid' => $quiz_id
+                'courseid' => $courseid,
+                'cmid' => $cmid,
+                'quizid' => $quizid,
             ]
         );
 
         return array_values(array_map(function($j): array {
             // Get artifactfile metadata if available
-            $artifactfile_metadata = null;
+            $artifactfilemetadata = null;
             if ($j->artifactfileid) {
                 $artifactfile = get_file_storage()->get_file_by_id($j->artifactfileid);
                 if ($artifactfile) {
@@ -390,12 +390,12 @@ class ArchiveJob {
                         true
                     );
 
-                    $artifactfile_metadata = [
+                    $artifactfilemetadata = [
                         'name' => $artifactfile->get_filename(),
                         'downloadurl' => $artifactfileurl->out(),
                         'size' => $artifactfile->get_filesize(),
                         'size_human' => display_size($artifactfile->get_filesize()),
-                        'checksum' => $j->artifactfilechecksum
+                        'checksum' => $j->artifactfilechecksum,
                     ];
                 }
             }
@@ -423,26 +423,26 @@ class ArchiveJob {
                         $artifactfile->get_filepath()."{$j->id}/",
                         FileManager::TSP_DATA_REPLY_FILENAME,
                         true
-                    )->out()
+                    )->out(),
                 ];
             }
 
             // Calculate autodelete metadata
             if ($j->retentiontime !== null) {
                 if ($j->status == self::STATUS_DELETED) {
-                    $autodelete_str = get_string('archive_deleted', 'quiz_archiver');
-                } elseif ($j->retentiontime <= time()) {
-                    $autodelete_str = get_string('archive_autodelete_now', 'quiz_archiver');
+                    $autodeletestr = get_string('archive_deleted', 'quiz_archiver');
+                } else if ($j->retentiontime <= time()) {
+                    $autodeletestr = get_string('archive_autodelete_now', 'quiz_archiver');
                 } else {
-                    $autodelete_str = get_string(
+                    $autodeletestr = get_string(
                         'archive_autodelete_in',
                         'quiz_archiver',
                         util::duration_to_human_readable($j->retentiontime - time())
                     );
-                    $autodelete_str .= ' ('.userdate($j->retentiontime, get_string('strftimedatetime', 'core_langconfig')).')';
+                    $autodeletestr .= ' ('.userdate($j->retentiontime, get_string('strftimedatetime', 'core_langconfig')).')';
                 }
             } else {
-                $autodelete_str = get_string('archive_autodelete_disabled', 'quiz_archiver');
+                $autodeletestr = get_string('archive_autodelete_disabled', 'quiz_archiver');
             }
 
             // Build job metadata array
@@ -456,23 +456,23 @@ class ArchiveJob {
                 'retentiontime' => $j->retentiontime,
                 'autodelete' => $j->retentiontime !== null,
                 'autodelete_done' => $j->status == self::STATUS_DELETED ? true : null,
-                'autodelete_str' => $autodelete_str,
+                'autodelete_str' => $autodeletestr,
                 'user' => [
                     'id' => $j->userid,
                     'firstname' => $j->userfirstname,
                     'lastname' => $j->userlastname,
-                    'username' => $j->username
+                    'username' => $j->username,
                 ],
                 'course' => [
                     'id' => $j->courseid,
-                    'name' => $j->coursename
+                    'name' => $j->coursename,
                 ],
                 'quiz' => [
                     'id' => $j->quizid,
                     'cmid' => $j->cmid,
-                    'name' => $j->quizname
+                    'name' => $j->quizname,
                 ],
-                'artifactfile' => $artifactfile_metadata,
+                'artifactfile' => $artifactfilemetadata,
                 'tsp' => $tspdata,
                 'settings' => self::convert_archive_settings_for_display(
                     (new self($j->id, '', -1, -1, -1, -1, -1, null, ''))->get_settings()
@@ -515,14 +515,14 @@ class ArchiveJob {
             'id'
         );
 
-        $files_deleted = 0;
+        $filesdeleted = 0;
         foreach ($records as $record) {
             $job = self::get_by_id($record->id);
             $job->delete_artifact();
-            $files_deleted++;
+            $filesdeleted++;
         }
 
-        return $files_deleted;
+        return $filesdeleted;
     }
 
     /**
@@ -562,13 +562,13 @@ class ArchiveJob {
      * @return bool True if the job was overdue
      * @throws \dml_exception
      */
-    public function timeout_if_overdue(int $timeout_min): bool {
+    public function timeout_if_overdue(int $timeoutmin): bool {
         if ($this->is_complete()) {
             return false;
         }
 
         // Check if job is overdue
-        if ($this->timecreated < (time() - ($timeout_min * 60))) {
+        if ($this->timecreated < (time() - ($timeoutmin * 60))) {
             $this->set_status(self::STATUS_TIMEOUT);
             return true;
         } else {
@@ -693,8 +693,8 @@ class ArchiveJob {
      */
     public function set_status(
         string $status,
-        bool $delete_wstoken_if_completed = true,
-        bool $delete_temporary_files_if_completed = true
+        bool $deletewstokenifcompleted = true,
+        bool $deletetemporaryfilesifcompleted = true
     ): void {
         global $DB;
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
@@ -704,11 +704,11 @@ class ArchiveJob {
         ]);
 
         if ($this->is_complete()) {
-            if ($delete_wstoken_if_completed) {
+            if ($deletewstokenifcompleted) {
                 $this->delete_webservice_token();
             }
 
-            if ($delete_temporary_files_if_completed) {
+            if ($deletetemporaryfilesifcompleted) {
                 $this->delete_temporary_files();
             }
         }
@@ -792,7 +792,8 @@ class ArchiveJob {
                 ['id' => $this->id]
             );
 
-            if (!$file) return null;
+            if (!$file) { return null;
+            }
 
             return get_file_storage()->get_file_by_hash($file->pathnamehash);
         } catch (\Exception $e) {
@@ -839,16 +840,17 @@ class ArchiveJob {
      * @return bool True on success
      * @throws \dml_exception
      */
-    public function link_artifact(int $file_id, string $checksum): bool {
+    public function link_artifact(int $fileid, string $checksum): bool {
         global $DB;
 
-        if ($file_id < 1) return false;
+        if ($fileid < 1) { return false;
+        }
 
         $DB->update_record(self::JOB_TABLE_NAME, (object) [
             'id' => $this->id,
-            'artifactfileid' => $file_id,
+            'artifactfileid' => $fileid,
             'artifactfilechecksum' => $checksum,
-            'timemodified' => time()
+            'timemodified' => time(),
         ]);
 
         return true;
@@ -871,7 +873,7 @@ class ArchiveJob {
                 'id' => $this->id,
                 'artifactfileid' => null,
                 'artifactfilechecksum' => null,
-                'timemodified' => time()
+                'timemodified' => time(),
             ]);
 
             $this->set_status(self::STATUS_DELETED);
@@ -900,7 +902,7 @@ class ArchiveJob {
 
         $DB->insert_record(self::FILES_TABLE_NAME, [
             'jobid' => $this->id,
-            'pathnamehash' => $pathnamehash
+            'pathnamehash' => $pathnamehash,
         ]);
     }
 
@@ -914,18 +916,18 @@ class ArchiveJob {
         global $DB;
         $fs = get_file_storage();
 
-        $num_deleted_files = 0;
+        $numdeletedfiles = 0;
         $tempfiles = $DB->get_records(self::FILES_TABLE_NAME, ['jobid' => $this->id]);
         foreach ($tempfiles as $tempfile) {
             $f = $fs->get_file_by_hash($tempfile->pathnamehash);
             if ($f) {
                 $f->delete();
                 $DB->delete_records(self::FILES_TABLE_NAME, ['jobid' => $this->id, 'pathnamehash' => $tempfile->pathnamehash]);
-                $num_deleted_files++;
+                $numdeletedfiles++;
             }
         }
 
-        return $num_deleted_files;
+        return $numdeletedfiles;
     }
 
     /**
@@ -938,11 +940,11 @@ class ArchiveJob {
         global $DB;
         $fs = get_file_storage();
 
-        $fileEntries = $DB->get_records(self::FILES_TABLE_NAME, ['jobid' => $this->id]);
+        $fileentries = $DB->get_records(self::FILES_TABLE_NAME, ['jobid' => $this->id]);
         $files = [];
 
-        foreach ($fileEntries as $fileEntry) {
-            $f = $fs->get_file_by_hash($fileEntry->pathnamehash);
+        foreach ($fileentries as $fileentry) {
+            $f = $fs->get_file_by_hash($fileentry->pathnamehash);
             if ($f !== false) {
                 $files[$f->get_id()] = $f;
             }
@@ -970,14 +972,14 @@ class ArchiveJob {
      * @param array $allowed_variables List of allowed variables
      * @return bool True if the pattern is valid
      */
-    protected static function is_valid_filename_pattern(string $pattern, array $allowed_variables): bool {
+    protected static function is_valid_filename_pattern(string $pattern, array $allowedvariables): bool {
         // Check for minimal length
         if (strlen($pattern) < 1) {
             return false;
         }
 
         // Check for variables
-        $residue = preg_replace('/\$\{\s*('.implode('|', $allowed_variables).')\s*\}/m', '', $pattern);
+        $residue = preg_replace('/\$\{\s*('.implode('|', $allowedvariables).')\s*\}/m', '', $pattern);
         if (strpos($residue, '$') !== false) {
             return false;
         }
@@ -1056,7 +1058,7 @@ class ArchiveJob {
             'quizname' => $quiz->name,
             'timestamp' => time(),
             'date' => date('Y-m-d'),
-            'time' => date('H-i-s')
+            'time' => date('H-i-s'),
         ];
 
         // Substitute variables

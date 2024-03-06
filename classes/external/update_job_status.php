@@ -72,13 +72,13 @@ class update_job_status extends external_api {
      * @throws \coding_exception
      */
     public static function execute(
-        string $jobid_raw,
-        string $status_raw
+        string $jobidraw,
+        string $statusraw
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'jobid' => $jobid_raw,
-            'status' => $status_raw,
+            'jobid' => $jobidraw,
+            'status' => $statusraw,
         ]);
 
         try {

@@ -96,15 +96,15 @@ class get_attempts_metadata extends external_api {
      * @throws \dml_transaction_exception
      * @throws \moodle_exception
      */
-    public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, array $attemptids_raw): array {
+    public static function execute(int $courseidraw, int $cmidraw, int $quizidraw, array $attemptidsraw): array {
         global $DB;
 
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'courseid' => $courseid_raw,
-            'cmid' => $cmid_raw,
-            'quizid' => $quizid_raw,
-            'attemptids' => $attemptids_raw
+            'courseid' => $courseidraw,
+            'cmid' => $cmidraw,
+            'quizid' => $quizidraw,
+            'attemptids' => $attemptidsraw,
         ]);
 
         // Check capabilities
@@ -126,17 +126,17 @@ class get_attempts_metadata extends external_api {
         $report = new Report($course, $cm, $quiz);
         if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
-                'status' => 'E_ACCESS_DENIED'
+                'status' => 'E_ACCESS_DENIED',
             ];
         }
-        $attempt_metadata = $report->get_attempts_metadata($params['attemptids']);
+        $attemptmetadata = $report->get_attempts_metadata($params['attemptids']);
 
         return [
             'courseid' => $params['courseid'],
             'cmid' => $params['cmid'],
             'quizid' => $params['quizid'],
-            'attempts' => $attempt_metadata,
-            'status' => 'OK'
+            'attempts' => $attemptmetadata,
+            'status' => 'OK',
         ];
     }
 

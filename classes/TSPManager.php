@@ -55,7 +55,7 @@ class TSPManager {
      *
      * @return TimeStampProtocolClient A fresh TimeStampProtocolClient instance
      */
-    protected function getTimestampProtocolClient(): TimeStampProtocolClient {
+    protected function gettimestampprotocolclient(): TimeStampProtocolClient {
         return new TimeStampProtocolClient($this->config->tsp_server_url);
     }
 
@@ -86,11 +86,11 @@ class TSPManager {
     public function has_tsp_timestamp(): bool {
         global $DB;
 
-        $num_tsp_records = $DB->count_records(self::TSP_TABLE_NAME, [
-            'jobid' => $this->job->get_id()
+        $numtsprecords = $DB->count_records(self::TSP_TABLE_NAME, [
+            'jobid' => $this->job->get_id(),
         ]);
 
-        return $num_tsp_records > 0;
+        return $numtsprecords > 0;
     }
 
     /**
@@ -152,7 +152,7 @@ class TSPManager {
         }
 
         // Issue TSP timestamp
-        $tspclient = $this->getTimestampProtocolClient();
+        $tspclient = $this->gettimestampprotocolclient();
         $tspdata = $tspclient->sign($artifactchecksum);
 
         // Store TSP data

@@ -39,7 +39,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generatemockquiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -49,7 +49,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -67,7 +67,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      * @param int $userid User ID
      * @return array Valid request parameters
      */
-    protected function generateValidRequest(string $jobid, int $cmid, int $userid): array {
+    protected function generatevalidrequest(string $jobid, int $cmid, int $userid): array {
         return [
             'jobid' => $jobid,
             'artifact_component' => FileManager::COMPONENT_NAME,
@@ -94,7 +94,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -109,7 +109,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
 
         // Execute test call
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
-        $r = $this->generateValidRequest($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generatevalidrequest($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
         process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -146,30 +146,30 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      */
     public function test_parameter_validation(
         string $jobid,
-        string $artifact_component,
-        int $artifact_contextid,
-        int $artifact_userid,
-        string $artifact_filearea,
-        string $artifact_filename,
-        string $artifact_filepath,
-        int $artifact_itemid,
-        string $artifact_sha256sum,
-        bool $shouldFail
+        string $artifactcomponent,
+        int $artifactcontextid,
+        int $artifactuserid,
+        string $artifactfilearea,
+        string $artifactfilename,
+        string $artifactfilepath,
+        int $artifactitemid,
+        string $artifactsha256sum,
+        bool $shouldfail
     ): void {
-        if ($shouldFail) {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
         process_uploaded_artifact::execute(
             $jobid,
-            $artifact_component,
-            $artifact_contextid,
-            $artifact_userid,
-            $artifact_filearea,
-            $artifact_filename,
-            $artifact_filepath,
-            $artifact_itemid,
-            $artifact_sha256sum
+            $artifactcomponent,
+            $artifactcontextid,
+            $artifactuserid,
+            $artifactfilearea,
+            $artifactfilename,
+            $artifactfilepath,
+            $artifactitemid,
+            $artifactsha256sum
         );
     }
 
@@ -179,8 +179,8 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      * @return array[] Test data
      */
     public function parameter_data_provider(): array {
-        $mocks = $this->generateMockQuiz();
-        $base = $this->generateValidRequest('xxx', $mocks->quiz->cmid, $mocks->user->id);
+        $mocks = $this->generatemockquiz();
+        $base = $this->generatevalidrequest('xxx', $mocks->quiz->cmid, $mocks->user->id);
         return [
             'Valid' => array_merge($base, ['shouldFail' => false]),
             'Invalid jobid' => array_merge($base, ['jobid' => '<a href="localhost">Foo</a>', 'shouldFail' => true]),
@@ -204,7 +204,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      */
     public function test_rejection_of_artifacts_for_complete_jobs(): void {
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -220,7 +220,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
 
         // Execute test call
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
-        $r = $this->generateValidRequest($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generatevalidrequest($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
         $this->assertSame(['status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'], process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -246,7 +246,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      */
     public function test_invalid_file_metadata(): void {
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -264,7 +264,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Execute test call
-        $r = $this->generateValidRequest($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generatevalidrequest($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
         $this->assertSame(['status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'], process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],

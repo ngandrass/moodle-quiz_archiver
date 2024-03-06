@@ -29,5 +29,5 @@ $plugin->release = '1.2.4';
 $plugin->version = 2024021901;
 $plugin->requires = 2022112800;
 $plugin->supported = [401, 403];
-//$plugin->incompatible = 402;
+// $plugin->incompatible = 402;
 $plugin->maturity = MATURITY_STABLE;

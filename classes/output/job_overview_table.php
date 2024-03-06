@@ -156,8 +156,8 @@ class job_overview_table extends \table_sql {
                 true,
             );
 
-            $download_title = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" title="'.$download_title.'" alt="'.$download_title.'"><i class="fa fa-download"></i></a>';
+            $downloadtitle = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
+            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" title="'.$downloadtitle.'" alt="'.$downloadtitle.'"><i class="fa fa-download"></i></a>';
         } else {
             $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }

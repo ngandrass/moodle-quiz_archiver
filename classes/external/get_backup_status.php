@@ -74,13 +74,13 @@ class get_backup_status extends external_api {
      * @throws \required_capability_exception
      */
     public static function execute(
-        string $jobid_raw,
-        string $backupid_raw
+        string $jobidraw,
+        string $backupidraw
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'jobid' => $jobid_raw,
-            'backupid' => $backupid_raw,
+            'jobid' => $jobidraw,
+            'backupid' => $backupidraw,
         ]);
 
         // Validate that the jobid exists

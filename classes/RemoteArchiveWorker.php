@@ -35,11 +35,11 @@ defined('MOODLE_INTERNAL') || die();
 class RemoteArchiveWorker {
 
     /** @var string URL of the remote Quiz Archive Worker instance */
-    protected string $server_url;
+    protected string $serverurl;
     /** @var int Seconds to wait until a connection can be established before aborting */
-    protected int $connection_timeout;
+    protected int $connectiontimeout;
     /** @var int Seconds to wait for the request to complete before aborting */
-    protected int $request_timeout;
+    protected int $requesttimeout;
     /** @var \stdClass Moodle config object for this plugin */
     protected \stdClass $config;
 
@@ -54,10 +54,10 @@ class RemoteArchiveWorker {
      * @param int $request_timeout Seconds to wait for the request to complete before aborting
      * @throws \dml_exception If retrieving of the plugin config failed
      */
-    public function __construct(string $server_url, int $connection_timeout, int $request_timeout) {
-        $this->server_url = $server_url;
-        $this->connection_timeout = $connection_timeout;
-        $this->request_timeout = $request_timeout;
+    public function __construct(string $serverurl, int $connectiontimeout, int $requesttimeout) {
+        $this->server_url = $serverurl;
+        $this->connection_timeout = $connectiontimeout;
+        $this->request_timeout = $requesttimeout;
         $this->config = get_config('quiz_archiver');
     }
 
@@ -79,46 +79,46 @@ class RemoteArchiveWorker {
      * service or decoding of the response failed
      * @throws \RuntimeException if the archive worker service reported an error
      */
-    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $job_options, $task_archive_quiz_attempts, $task_moodle_backups) {
+    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $joboptions, $taskarchivequizattempts, $taskmoodlebackups) {
         global $CFG;
-        $moodle_url_base = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
+        $moodleurlbase = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
         // Prepare request payload
-        $request_payload = json_encode(array_merge(
+        $requestpayload = json_encode(array_merge(
             [
             "api_version" => self::API_VERSION,
-            "moodle_base_url" => $moodle_url_base,
-            "moodle_ws_url" => $moodle_url_base.'/webservice/rest/server.php',
-            "moodle_upload_url" => $moodle_url_base.'/webservice/upload.php',
+            "moodle_base_url" => $moodleurlbase,
+            "moodle_ws_url" => $moodleurlbase.'/webservice/rest/server.php',
+            "moodle_upload_url" => $moodleurlbase.'/webservice/upload.php',
             "wstoken" => $wstoken,
             "courseid" => $courseid,
             "cmid" => $cmid,
             "quizid" => $quizid,
-            "task_archive_quiz_attempts" => $task_archive_quiz_attempts,
-            "task_moodle_backups" => $task_moodle_backups,
+            "task_archive_quiz_attempts" => $taskarchivequizattempts,
+            "task_moodle_backups" => $taskmoodlebackups,
             ],
-            $job_options
+            $joboptions
         ));
 
         // Execute request
         // Moodle curl wrapper automatically closes curl handle after requests. No need to call curl_close() manually.
         $c = new curl(['ignoresecurity' => true]); // Ignore URL filter since we require custom ports and the URL is only configurable by admins
-        $result = $c->post($this->server_url, $request_payload, [
+        $result = $c->post($this->server_url, $requestpayload, [
             'CURLOPT_CONNECTTIMEOUT' => $this->connection_timeout,
             'CURLOPT_TIMEOUT' => $this->request_timeout,
             'CURLOPT_HTTPHEADER' => [
                 'Content-Type: application/json',
-                'Content-Length: '.strlen($request_payload),
-            ]
+                'Content-Length: '.strlen($requestpayload),
+            ],
         ]);
 
-        $http_status = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string
+        $httpstatus = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string
         $data = json_decode($result);
 
         // Handle errors
-        if ($http_status != 200) {
+        if ($httpstatus != 200) {
             if ($data === null) {
-                throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $http_status");
+                throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $httpstatus");
             }
             throw new \RuntimeException($data->error);
         } else {

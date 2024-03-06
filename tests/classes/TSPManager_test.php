@@ -37,7 +37,7 @@ class TSPManager_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generatemockquiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -47,7 +47,7 @@ class TSPManager_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object) [
@@ -68,7 +68,7 @@ class TSPManager_test extends \advanced_testcase {
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    protected function generateArtifactFile(int $courseid, int $cmid, int $quizid, string $filename): \stored_file {
+    protected function generateartifactfile(int $courseid, int $cmid, int $quizid, string $filename): \stored_file {
         $this->resetAfterTest();
         $ctx = context_course::instance($courseid);
 
@@ -96,34 +96,34 @@ class TSPManager_test extends \advanced_testcase {
      * @param string $dummy_reply Dummy TSP reply data
      * @return TSPManager
      */
-    protected function createMockTSPManager(
+    protected function createmocktspmanager(
         ArchiveJob $job,
-        string $dummy_server = 'localhost',
-        string $dummy_query = 'tsp-dummy-query',
-        string $dummy_reply = 'tsp-dummy-reply-0123456789abcdef'
+        string $dummyserver = 'localhost',
+        string $dummyquery = 'tsp-dummy-query',
+        string $dummyreply = 'tsp-dummy-reply-0123456789abcdef'
     ): TSPManager {
         // Prepare TimeStampProtocolClient that returns dummy data
-        $tspClientMock = $this->getMockBuilder(TimeStampProtocolClient::class)
+        $tspclientmock = $this->getMockBuilder(TimeStampProtocolClient::class)
             ->onlyMethods(['sign'])
-            ->setConstructorArgs([$dummy_server])
+            ->setConstructorArgs([$dummyserver])
             ->getMock();
-        $tspClientMock->expects($this->any())
+        $tspclientmock->expects($this->any())
             ->method('sign')
             ->willReturn([
-                'query' => $dummy_query,
-                'reply' => $dummy_reply,
+                'query' => $dummyquery,
+                'reply' => $dummyreply,
             ]);
 
         // Create TSPManager that uses the mocked TimeStampProtocolClient
-        $tspManager = $this->getMockBuilder(TSPManager::class)
-            ->onlyMethods(['getTimestampProtocolClient'])
+        $tspmanager = $this->getMockBuilder(TSPManager::class)
+            ->onlyMethods(['gettimestampprotocolclient'])
             ->setConstructorArgs([$job])
             ->getMock();
-        $tspManager->expects($this->any())
-            ->method('getTimestampProtocolClient')
-            ->willReturn($tspClientMock);
+        $tspmanager->expects($this->any())
+            ->method('gettimestampprotocolclient')
+            ->willReturn($tspclientmock);
 
-        return $tspManager;
+        return $tspmanager;
     }
 
     /**
@@ -141,7 +141,7 @@ class TSPManager_test extends \advanced_testcase {
         set_config('tsp_enable', true, 'quiz_archiver');
 
         // Generate job with artifact
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -163,14 +163,14 @@ class TSPManager_test extends \advanced_testcase {
         $this->assertFalse($job->TSPManager()->has_tsp_timestamp(), 'Artifact was detected as signed without it being signed');
 
         // Try signing the artifact using TSP
-        $tspManager = $this->createMockTSPManager($job);
-        $tspManager->timestamp();
-        $this->assertTrue($tspManager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
+        $tspmanager = $this->createMockTSPManager($job);
+        $tspmanager->timestamp();
+        $this->assertTrue($tspmanager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
 
         // Ensure that the TSP data was stored correctly
-        $this->assertEquals('tsp-dummy-query', $tspManager->get_tsp_data()->query, 'TSP query was not stored correctly');
-        $this->assertEquals('tsp-dummy-reply-0123456789abcdef', $tspManager->get_tsp_data()->reply, 'TSP reply was not stored correctly');
-        $this->assertEquals('localhost', $tspManager->get_tsp_data()->server, 'TSP server URL was not stored correctly');
+        $this->assertEquals('tsp-dummy-query', $tspmanager->get_tsp_data()->query, 'TSP query was not stored correctly');
+        $this->assertEquals('tsp-dummy-reply-0123456789abcdef', $tspmanager->get_tsp_data()->reply, 'TSP reply was not stored correctly');
+        $this->assertEquals('localhost', $tspmanager->get_tsp_data()->server, 'TSP server URL was not stored correctly');
     }
 
     /**
@@ -188,7 +188,7 @@ class TSPManager_test extends \advanced_testcase {
         set_config('tsp_enable', true, 'quiz_archiver');
 
         // Generate job with artifact
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -207,13 +207,13 @@ class TSPManager_test extends \advanced_testcase {
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
         // Sign the artifact using TSP
-        $tspManager = $this->createMockTSPManager($job);
-        $tspManager->timestamp();
-        $this->assertTrue($tspManager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
+        $tspmanager = $this->createMockTSPManager($job);
+        $tspmanager->timestamp();
+        $this->assertTrue($tspmanager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
 
         // Delete the TSP data
-        $tspManager->delete_tsp_data();
-        $this->assertFalse($tspManager->has_tsp_timestamp(), 'Artifact was detected as signed after deleting the TSP data');
+        $tspmanager->delete_tsp_data();
+        $this->assertFalse($tspmanager->has_tsp_timestamp(), 'Artifact was detected as signed after deleting the TSP data');
     }
 
     /**
@@ -230,7 +230,7 @@ class TSPManager_test extends \advanced_testcase {
         set_config('tsp_enable', true, 'quiz_archiver');
 
         // Generate job without artifact
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -265,7 +265,7 @@ class TSPManager_test extends \advanced_testcase {
         set_config('tsp_enable', false, 'quiz_archiver');
 
         // Generate job with artifact
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '40000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,

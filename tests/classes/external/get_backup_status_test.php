@@ -38,7 +38,7 @@ class get_backup_status_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generatemockquiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -48,7 +48,7 @@ class get_backup_status_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -68,7 +68,7 @@ class get_backup_status_test extends \advanced_testcase {
      */
     public function test_capability_requirement(): void {
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -105,15 +105,16 @@ class get_backup_status_test extends \advanced_testcase {
     public function test_parameter_validation(
         string $jobid,
         string $backupid,
-        bool $shouldFail
+        bool $shouldfail
     ): void {
-        if ($shouldFail) {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
         try {
             get_backup_status::execute($jobid, $backupid);
-        } catch (\dml_exception $e) {}
+        } catch (\dml_exception $e) {
+        }
     }
 
     /**
@@ -125,7 +126,7 @@ class get_backup_status_test extends \advanced_testcase {
      */
     public function parameter_data_provider(): array {
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -164,7 +165,7 @@ class get_backup_status_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generatemockquiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
