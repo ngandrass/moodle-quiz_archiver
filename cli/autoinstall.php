@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * quiz_archiver - webservice install script
+ * quiz_archiver - automatic install script
  *
  * @package    quiz_archiver
  * @copyright  2024 Niels Gandraß <niels@gandrass.de>
