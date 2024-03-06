@@ -75,6 +75,21 @@ class autoinstall {
         'quiz_archiver_get_backup_status',
     ];
 
+    /**
+     * Performs an automatic installation of the quiz_archiver plugin.
+     *
+     * This function:
+     *   - Enables web services and REST protocol
+     *   - Creates a quiz archiver service role and a corresponding user
+     *   - Creates a new web service with all required webservice functions
+     *   - Authorises the user to use the webservice.
+     *
+     * @param string $wsname The name for the web service to create
+     * @param string $rolename The shortname for the role to create
+     * @param string $username The username for the service account to create
+     * @return array An array with two elements: a boolean indicating success
+     *               and a string with a log of the performed actions
+     */
     public static function execute(
         string $wsname = self::DEFAULT_WSNAME,
         string $rolename = self::DEFAULT_ROLESHORTNAME,
