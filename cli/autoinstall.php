@@ -42,9 +42,11 @@ list($options, $unrecognised) = cli_get_params(
         'wsname' => autoinstall::DEFAULT_WSNAME,
         'rolename' => autoinstall::DEFAULT_ROLESHORTNAME,
         'username' => autoinstall::DEFAULT_USERNAME,
+        'force' => false,
     ],
     [
         'h' => 'help',
+        'f' => 'force',
     ]
 );
 
@@ -64,6 +66,7 @@ Usage:
 
 Options:
     --help, -h          Show this help message
+    --force, -f         Force the autoinstall, regardless of the current state of the system
     --wsname=<value>    Sets a custom name for the web service (default: quiz_archiver_webservice)
     --rolename=<value>  Sets a custom name for the web service role (default: quiz_archiver)
     --username=<value>  Sets a custom username for the web service user (default: quiz_archiver_serviceacount)
@@ -89,7 +92,12 @@ $USER = get_admin();
 cli_writeln("Starting automatic installation of quiz archiver plugin...");
 cli_separator();
 
-list($success, $log) = autoinstall::execute($options['wsname'], $options['rolename'], $options['username']);
+list($success, $log) = autoinstall::execute(
+    $options['wsname'],
+    $options['rolename'],
+    $options['username'],
+    $options['force']
+);
 
 cli_write($log."\r\n");
 

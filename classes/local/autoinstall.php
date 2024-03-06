@@ -76,6 +76,17 @@ class autoinstall {
     ];
 
     /**
+     * Determines if the quiz_archiver plugin was configured previously.
+     *
+     * @return bool True if the plugin is unconfigured, false otherwise
+     * @throws dml_exception If the plugin configuration cannot be retrieved
+     */
+    public static function plugin_is_unconfigured(): bool {
+        return empty(get_config('quiz_archiver', 'webservice_id'))
+            && empty(get_config('quiz_archiver', 'webservice_userid'));
+    }
+
+    /**
      * Performs an automatic installation of the quiz_archiver plugin.
      *
      * This function:
@@ -93,7 +104,8 @@ class autoinstall {
     public static function execute(
         string $wsname = self::DEFAULT_WSNAME,
         string $rolename = self::DEFAULT_ROLESHORTNAME,
-        string $username = self::DEFAULT_USERNAME
+        string $username = self::DEFAULT_USERNAME,
+        bool $force = false
     ): array {
         // Prepare return values
         $success = false;
@@ -103,6 +115,16 @@ class autoinstall {
             if (!is_siteadmin()) {
                 $log[] = "Error: You need to be a site administrator to run this script.";
                 throw new \RuntimeException();
+            }
+
+            // Check if the plugin is already configured.
+            if (!self::plugin_is_unconfigured()) {
+                if ($force) {
+                    $log[] = "Warning: The quiz archiver plugin is already configured. Forcing reconfiguration nonetheless ...";
+                } else {
+                    $log[] = "Error: The quiz archiver plugin is already configured. Use --force to bypass this check.";
+                    throw new \RuntimeException();
+                }
             }
 
             // Get system context.
