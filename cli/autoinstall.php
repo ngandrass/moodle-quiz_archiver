@@ -233,8 +233,21 @@ $webservicemanager->add_ws_authorised_user((object) [
 
 $service = $webservicemanager->get_external_service_by_id($serviceid);
 $webservicemanager->update_external_service($service);
-
 cli_writeln("  -> User '{$webserviceuser->username}' authorised to use service '{$options['wsname']}'.");
+
+// Configure quiz_archiver plugin settings
+try {
+    cli_writeln("  -> Configuring the quiz archiver plugin...");
+
+    set_config('webservice_id', $serviceid, 'quiz_archiver');
+    cli_writeln("    -> Web service set to '{$options['wsname']}'.");
+
+    set_config('webservice_userid', $webserviceuser->id, 'quiz_archiver');
+    cli_writeln("    -> Web service user set to '{$webserviceuser->username}'.");
+} catch (dml_exception $e) {
+    cli_error("Error: Failed to set config settings for quiz_archiver plugin: ".$e->getMessage());
+    exit(1);
+}
 
 cli_writeln('');
 cli_writeln("Automatic installation of quiz archiver plugin finished successfully.");
