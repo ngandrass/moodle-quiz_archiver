@@ -52,7 +52,7 @@ if ($hassiteconfig) {
             $autoinstall_desc = 'Plugin is already configured.';
         }
         $settings->add(new admin_setting_description('quiz_archiver/autoinstall',
-            get_string('autoinstall', 'quiz_archiver'),
+            get_string('setting_autoconfigure', 'quiz_archiver'),
             $autoinstall_desc
         ));
 

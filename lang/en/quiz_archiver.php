@@ -159,6 +159,7 @@ $string['tsp_client_error_curl'] = 'Error while sending TSP request: {$a}';
 $string['tsp_client_error_http_code'] = 'TSP server returned HTTP status code {$a}';
 
 // Settings
+$string['setting_autoconfigure'] = 'Automatic configuration';
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Configuration of the archive worker service and the Moodle web service it uses.';
 $string['setting_header_docs_desc'] = 'This plugin archives quiz attempts as PDF and HTML files for long-term storage, independent of Moodle. It <b>requires a separate <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">worker service</a></b> to be installed for the actual archiving process to work. Please refer to the <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">documentation</a> for more details and setup instructions.';
