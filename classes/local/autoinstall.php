@@ -82,8 +82,8 @@ class autoinstall {
      * @throws dml_exception If the plugin configuration cannot be retrieved
      */
     public static function plugin_is_unconfigured(): bool {
-        return empty(get_config('quiz_archiver', 'webservice_id'))
-            && empty(get_config('quiz_archiver', 'webservice_userid'));
+        return intval(get_config('quiz_archiver', 'webservice_id')) <= 0
+            && intval(get_config('quiz_archiver', 'webservice_userid')) <= 0;
     }
 
     /**

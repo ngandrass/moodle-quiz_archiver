@@ -27,6 +27,7 @@ use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_configcheckbox_alwaystrue;
+use quiz_archiver\local\autoinstall;
 use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -42,6 +43,17 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_heading('quiz_archiver/header_docs',
             null,
             get_string('setting_header_docs_desc', 'quiz_archiver')
+        ));
+
+        // Autoinstall
+        if (autoinstall::plugin_is_unconfigured()) {
+            $autoinstall_desc = "<a href='TODO'>Automatically configure the Quiz Archiver plugin now</a>";
+        } else {
+            $autoinstall_desc = 'Plugin is already configured.';
+        }
+        $settings->add(new admin_setting_description('quiz_archiver/autoinstall',
+            get_string('autoinstall', 'quiz_archiver'),
+            $autoinstall_desc
         ));
 
         // Generic settings
