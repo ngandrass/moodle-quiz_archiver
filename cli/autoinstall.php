@@ -23,16 +23,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const CLI_SCRIPT = 1;
+const CLI_SCRIPT = true;
 
-require_once(__DIR__ . '/config.php');
-require_once($CFG->libdir  . '/clilib.php');
-require_once($CFG->dirroot . '/lib/testing/generator/data_generator.php');
-require_once($CFG->dirroot . '/webservice/lib.php');
+require_once(__DIR__ . '/../../../../../config.php');
+require_once("{$CFG->libdir}/clilib.php");
+require_once("{$CFG->dirroot}/lib/testing/generator/data_generator.php");
+require_once("{$CFG->dirroot}/webservice/lib.php");
 
-// Set the variables for the new webservice.
-$wsname = 'quiz_archiver_webservice';
-$additionalcapabilities = [
+###################################
+# Defaults and base configuration #
+###################################
+
+const DEFAULT_WSNAME = 'quiz_archiver_webservice';
+const DEFAULT_USERNAME = 'quiz_archiver_serviceacount';
+const DEFAULT_ROLESHORTNAME = 'quiz_archiver';
+const WS_ROLECAPS = [
         'mod/quiz:reviewmyattempts',
         'mod/quiz:view',
         'mod/quiz:viewreports',
@@ -53,13 +58,64 @@ $additionalcapabilities = [
         'moodle/user:ignoreuserquota',
         'webservice/rest:use',
 ];
-$wsfunctions = [
+const WS_FUNCTIONS = [
         'quiz_archiver_generate_attempt_report',
         'quiz_archiver_get_attempts_metadata',
         'quiz_archiver_update_job_status',
         'quiz_archiver_process_uploaded_artifact',
         'quiz_archiver_get_backup_status',
 ];
+
+#######################
+# CLI options parsing #
+#######################
+
+list($options, $unrecognised) = cli_get_params(
+    [
+        'help' => false,
+        'wsname' => DEFAULT_WSNAME,
+        'rolename' => DEFAULT_ROLESHORTNAME,
+        'username' => DEFAULT_USERNAME,
+    ],
+    [
+        'h' => 'help',
+    ]
+);
+
+$usage = <<<EOT
+Automatically configures Moodle for use with the quiz archiver plugin.
+
+ATTENTION: This CLI script ...
+- Enables web services and REST protocol
+- Creates a quiz archiver service role and a corresponding user
+- Creates a new web service with all required webservice functions
+- Authorises the user to use the webservice.
+
+Usage:
+    $ php autoinstall.php
+    $ php autoinstall.php --username="my-custom-archive-user"
+    $ php autoinstall.php [--help|-h]
+
+Options:
+    --help, -h          Show this help message
+    --wsname=<value>    Sets a custom name for the web service (default: quiz_archiver_webservice)
+    --rolename=<value>  Sets a custom name for the web service role (default: quiz_archiver)
+    --username=<value>  Sets a custom username for the web service user (default: quiz_archiver_serviceacount)
+EOT;
+
+if ($unrecognised) {
+    $unrecognised = implode(PHP_EOL . '  ', $unrecognised);
+    cli_error(get_string('cliunknowoption', 'core_admin', $unrecognised));
+}
+
+if ($options['help']) {
+    cli_writeln($usage);
+    exit(2);
+}
+
+################################
+# Begin of autoinstall routine #
+################################
 
 // Set system context.
 try {
@@ -90,20 +146,22 @@ $webserviceuser = $datagenerator->create_user([
 
 // Create a web service role.
 try {
-    $rolename = 'WS Role for ' . $wsname;
-    $roleshort = 'ws-' . $wsname . '-role';
-    $wsroleid = create_role($rolename, $roleshort, '');
+    $wsroleid = create_role(
+        'Quiz Archiver Service Account',
+        $options['rolename'],
+        'A role that bundles all access rights required for the quiz archiver plugin to work.'
+    );
+    set_role_contextlevels($wsroleid, [CONTEXT_SYSTEM]);
 } catch (coding_exception $e) {
-    cli_error("Error: Cannot create role $rolename: ".$e->getMessage());
+    cli_error("Error: Cannot create role {$options['rolename']}: {$e->getMessage()}");
     exit(1);
 }
-set_role_contextlevels($wsroleid, [CONTEXT_SYSTEM]);
 
-foreach ($additionalcapabilities as $cap){
+foreach (WS_ROLECAPS as $cap){
     try {
         assign_capability($cap, CAP_ALLOW, $wsroleid, $systemcontext->id, true);
     } catch (coding_exception $e) {
-        cli_error("Error: Cannot assign capability $cap: ".$e->getMessage());
+        cli_error("Error: Cannot assign capability {$cap}: {$e->getMessage()}");
         exit(1);
     }
 }
@@ -112,15 +170,15 @@ foreach ($additionalcapabilities as $cap){
 try {
     role_assign($wsroleid, $webserviceuser->id, $systemcontext->id);
 } catch (coding_exception $e) {
-    cli_error("Error: Cannot assign role to webserviceuser: ".$e->getMessage());
+    cli_error("Error: Cannot assign role to webservice user: ".$e->getMessage());
     exit(1);
 }
 
 // Enable the webservice.
 $webservicemanager = new webservice();
 $serviceid = $webservicemanager->add_external_service((object)[
-        'name' => $wsname,
-        'shortname' => $wsname,
+        'name' => $options['wsname'],
+        'shortname' => $options['wsname'],
         'enabled' => 1,
         'requiredcapability' => '',
         'restrictedusers' => true,
@@ -129,20 +187,23 @@ $serviceid = $webservicemanager->add_external_service((object)[
 ]);
 
 if(!$serviceid){
-    cli_error("ERROR: Service $wsname was not created.");
+    cli_error("ERROR: Service {$options['wsname']} could not be created.");
     exit(1);
 }
 
 // Add functions to the service
-foreach ($wsfunctions as $f) {
+foreach (WS_FUNCTIONS as $f) {
     $webservicemanager->add_external_function_to_service($f, $serviceid);
 }
 
 // Authorise the user to use the service.
-$webservicemanager->add_ws_authorised_user((object) ['externalserviceid' => $serviceid, 'userid' => $webserviceuser->id]);
+$webservicemanager->add_ws_authorised_user((object) [
+    'externalserviceid' => $serviceid,
+    'userid' => $webserviceuser->id
+]);
 
 $service = $webservicemanager->get_external_service_by_id($serviceid);
 $webservicemanager->update_external_service($service);
 
-cli_writeln("Service $wsname was created successfully with for user with id $webserviceuser->id.");
+cli_writeln("Service {$options['wsname']} was created successfully with for user with id $webserviceuser->id.");
 exit(0);
