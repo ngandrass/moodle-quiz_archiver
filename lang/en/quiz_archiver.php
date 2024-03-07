@@ -213,3 +213,18 @@ $string['task_cleanup_temp_files_report'] = 'Deleted {$a} temporary files.';
 $string['task_autodelete_job_artifacts'] = 'Delete expired quiz archives';
 $string['task_autodelete_job_artifacts_start'] = 'Deleting expired quiz archives ...';
 $string['task_autodelete_job_artifacts_report'] = 'Deleted {$a} quiz archives.';
+
+// Autoinstall
+$string['autoinstall_already_configured'] = 'Plugin is already configured';
+$string['autoinstall_already_configured_long'] = 'The Quiz Archiver Plugin is already configured. Automatic configuration is not possible twice.';
+$string['autoinstall_cancelled'] = 'The automatic configuration of the Quiz Archiver Plugin was cancelled. No changes were made.';
+$string['autoinstall_failure'] = 'The automatic configuration of the Quiz Archiver Plugin failed.';
+$string['autoinstall_plugin'] = 'Quiz Archiver: Automatic configuration';
+$string['autoinstall_started'] = 'Automatic configuration started ...';
+$string['autoinstall_success'] = 'The automatic configuration of the Quiz Archiver Plugin was successful.';
+$string['autoinstall_rolename'] = 'Role name';
+$string['autoinstall_rolename_help'] = 'TODO';
+$string['autoinstall_username'] = 'Username';
+$string['autoinstall_username_help'] = 'TODO';
+$string['autoinstall_wsname'] = 'Web service name';
+$string['autoinstall_wsname_help'] = 'TODO';
