@@ -221,6 +221,7 @@ $string['autoinstall_cancelled'] = 'The automatic configuration of the Quiz Arch
 $string['autoinstall_failure'] = 'The automatic configuration of the Quiz Archiver Plugin failed.';
 $string['autoinstall_plugin'] = 'Quiz Archiver: Automatic configuration';
 $string['autoinstall_started'] = 'Automatic configuration started ...';
+$string['autoinstall_start_now'] = 'Start automatic configuration now';
 $string['autoinstall_success'] = 'The automatic configuration of the Quiz Archiver Plugin was successful.';
 $string['autoinstall_rolename'] = 'Role name';
 $string['autoinstall_rolename_help'] = 'TODO';
