@@ -22,11 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tests\classes\external;
+namespace quiz_archiver\external;
 
 
 use quiz_archiver\ArchiveJob;
-use quiz_archiver\external\process_uploaded_artifact;
 use quiz_archiver\FileManager;
 
 /**

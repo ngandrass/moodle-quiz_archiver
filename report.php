@@ -29,6 +29,7 @@ use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\BackupManager;
 use quiz_archiver\form\artifact_delete_form;
+use quiz_archiver\local\autoinstall;
 use quiz_archiver\local\util;
 use quiz_archiver\RemoteArchiveWorker;
 use quiz_archiver\Report;
@@ -346,6 +347,11 @@ class quiz_archiver_report extends report_base {
 
         // Check permissions.
         require_capability('mod/quiz_archiver:create', $this->context);
+
+        // Check if webservice is configured properly
+        if (autoinstall::plugin_is_unconfigured()) {
+            throw new \RuntimeException(get_string('error_plugin_is_not_configured', 'quiz_archiver'));
+        }
 
         // Create temporary webservice token
         if (class_exists('core_external\util')) {

@@ -22,10 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tests\classes\external;
-
-
-use quiz_archiver\external\get_attempts_metadata;
+namespace quiz_archiver\external;
 
 /**
  * Tests for the get_attempts_metadata external service
