@@ -46,6 +46,7 @@ class autoinstall_form extends \moodleform {
      */
     public function definition() {
         $mform = $this->_form;
+        $mform->addElement('header', 'header', get_string('settings', 'plugin'));
 
         // Add configuration options
         $mform->addElement('text', 'wsname', get_string('autoinstall_wsname', 'quiz_archiver'), ['size' => 50]);

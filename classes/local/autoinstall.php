@@ -38,7 +38,7 @@ class autoinstall {
     const DEFAULT_WSNAME = 'quiz_archiver_webservice';
 
     /** @var string Default username for the service account to create */
-    const DEFAULT_USERNAME = 'quiz_archiver_serviceacount';
+    const DEFAULT_USERNAME = 'quiz_archiver_serviceaccount';
 
     /** @var string Default shortname for the role to create */
     const DEFAULT_ROLESHORTNAME = 'quiz_archiver';

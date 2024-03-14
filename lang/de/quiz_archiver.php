@@ -222,6 +222,7 @@ $string['task_autodelete_job_artifacts_report'] = '{$a} Testarchive gelöscht.';
 $string['autoinstall_already_configured'] = 'Plugin ist bereits konfiguriert';
 $string['autoinstall_already_configured_long'] = 'Das Quiz Archiver Plugin ist bereits konfiguriert. Eine erneute automatische Konfiguration ist nicht möglich.';
 $string['autoinstall_cancelled'] = 'Die automatische Konfiguration des Quiz Archiver Plugins wurde abgebrochen. Es wurden keine Einstellungen verändert.';
+$string['autoinstall_explanation'] = 'Das Quiz Archiver Plugin erfordert anfangs einige Konfigurationsschritte, um zu funktionieren (siehe  <a href="https://github.com/ngandrass/moodle-quiz_archiver/blob/master/README.md" target="_blank">Installation</a>). Sie können diese Einstellungen manuell konfigurieren, oder die automatische Konfiguration verwenden, um alle Moodle-bezogenen Einstellungen zu setzen.';
 $string['autoinstall_failure'] = 'Die automatische Konfiguration des Quiz Archiver Plugins ist fehlgeschlagen.';
 $string['autoinstall_plugin'] = 'Quiz Archiver: Automatische Konfiguration';
 $string['autoinstall_started'] = 'Automatische Konfiguration gestartet ...';

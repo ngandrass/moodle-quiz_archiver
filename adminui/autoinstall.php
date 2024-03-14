@@ -27,6 +27,7 @@ const NO_OUTPUT_BUFFERING = true;
 
 require_once(__DIR__.'/../../../../../config.php');
 require_once("{$CFG->libdir}/moodlelib.php");
+require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/local/autoinstall.php");
 
 use quiz_archiver\form\autoinstall_form;
 use quiz_archiver\local\autoinstall;
@@ -52,7 +53,7 @@ if (autoinstall::plugin_is_unconfigured()) {
     if ($form->is_cancelled()) {
         // Cancelled
         echo $OUTPUT->paragraph(get_string('autoinstall_cancelled', 'quiz_archiver'));
-        echo $OUTPUT->paragraph(get_string('pleaseclose'));
+        echo $OUTPUT->paragraph('<a href="#" onclick="window.close();">'.(get_string('pleaseclose')).'</a>');
     } else if ($data = $form->get_data()) {
         // Perform autoinstall
         list($success, $log) = autoinstall::execute(
@@ -72,13 +73,15 @@ if (autoinstall::plugin_is_unconfigured()) {
             echo $OUTPUT->paragraph(get_string('autoinstall_failure', 'quiz_archiver'));
         }
 
-        echo $OUTPUT->paragraph(get_string('pleaseclose'));
+        echo $OUTPUT->paragraph('<a href="#" onclick="window.close();">'.(get_string('pleaseclose')).'</a>');
     } else {
+        echo $OUTPUT->paragraph(get_string('autoinstall_explanation', 'quiz_archiver'));
+        echo $OUTPUT->paragraph(get_string('autoinstall_explanation_details', 'quiz_archiver'));
         $form->display();
     }
 } else {
     echo $OUTPUT->paragraph(get_string('autoinstall_already_configured_long', 'quiz_archiver'));
-    echo $OUTPUT->paragraph(get_string('pleaseclose'));
+    echo $OUTPUT->paragraph('<a href="#" onclick="window.close();">'.(get_string('pleaseclose')).'</a>');
 }
 
 // End page

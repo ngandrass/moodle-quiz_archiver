@@ -50,7 +50,8 @@ if ($hassiteconfig) {
         // Autoinstall
         if (autoinstall::plugin_is_unconfigured()) {
             $autoinstall_url = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
-            $autoinstall_desc = "<a href='{$autoinstall_url}' target='_blank'>".get_string('autoinstall_start_now', 'quiz_archiver')."</a>";
+            $autoinstall_desc = "<a href='{$autoinstall_url}' target='_blank' class='btn btn-primary'>".get_string('autoinstall_start_now', 'quiz_archiver')."</a>";
+            $autoinstall_desc .= "<br><br><p>".get_string('autoinstall_explanation', 'quiz_archiver')."</p>";
         } else {
             $autoinstall_desc = get_string('autoinstall_already_configured', 'quiz_archiver');
         }
