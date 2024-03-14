@@ -95,6 +95,7 @@ class autoinstall {
      *   - Creates a new web service with all required webservice functions
      *   - Authorises the user to use the webservice.
      *
+     * @param string $workerurl The URL of the quiz archive worker service
      * @param string $wsname The name for the web service to create
      * @param string $rolename The shortname for the role to create
      * @param string $username The username for the service account to create
@@ -104,6 +105,7 @@ class autoinstall {
      *               and a string with a log of the performed actions
      */
     public static function execute(
+        string $workerurl,
         string $wsname = self::DEFAULT_WSNAME,
         string $rolename = self::DEFAULT_ROLESHORTNAME,
         string $username = self::DEFAULT_USERNAME,
@@ -127,6 +129,12 @@ class autoinstall {
                     $log[] = "Error: The quiz archiver plugin is already configured. Use --force to bypass this check.";
                     throw new \RuntimeException();
                 }
+            }
+
+            // Check worker URL
+            if (empty($workerurl)) {
+                $log[] = "Error: The given worker URL is invalid.";
+                throw new \RuntimeException();
             }
 
             // Get system context.
@@ -253,6 +261,9 @@ class autoinstall {
 
                 set_config('webservice_userid', $webserviceuser->id, 'quiz_archiver');
                 $log[] = "    -> Web service user set to '{$webserviceuser->username}'.";
+
+                set_config('worker_url', $workerurl, 'quiz_archiver');
+                $log[] = "    -> Worker URL set to '{$workerurl}'.";
             } catch (\Exception $e) {
                 $log[] = "Error: Failed to set config settings for quiz_archiver plugin: ".$e->getMessage();
                 throw new \RuntimeException();

@@ -27,7 +27,7 @@ const NO_OUTPUT_BUFFERING = true;
 
 require_once(__DIR__.'/../../../../../config.php');
 require_once("{$CFG->libdir}/moodlelib.php");
-require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/local/autoinstall.php");
+require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/form/autoinstall_form.php");
 
 use quiz_archiver\form\autoinstall_form;
 use quiz_archiver\local\autoinstall;
@@ -57,6 +57,7 @@ if (autoinstall::plugin_is_unconfigured()) {
     } else if ($data = $form->get_data()) {
         // Perform autoinstall
         list($success, $log) = autoinstall::execute(
+            $data->workerurl,
             $data->wsname,
             $data->rolename,
             $data->username

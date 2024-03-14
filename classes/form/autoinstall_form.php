@@ -49,6 +49,11 @@ class autoinstall_form extends \moodleform {
         $mform->addElement('header', 'header', get_string('settings', 'plugin'));
 
         // Add configuration options
+        $mform->addElement('text', 'workerurl', get_string('setting_worker_url', 'quiz_archiver'), ['size' => 50]);
+        $mform->addElement('static', 'workerurl_help', '', get_string('setting_worker_url_desc', 'quiz_archiver'));
+        $mform->setType('workerurl', PARAM_TEXT);
+        $mform->addRule('workerurl', null, 'required', null, 'client');
+
         $mform->addElement('text', 'wsname', get_string('autoinstall_wsname', 'quiz_archiver'), ['size' => 50]);
         $mform->setDefault('wsname', autoinstall::DEFAULT_WSNAME);
         $mform->setType('wsname', PARAM_TEXT);

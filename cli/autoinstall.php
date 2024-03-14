@@ -39,6 +39,7 @@ use quiz_archiver\local\autoinstall;
 list($options, $unrecognised) = cli_get_params(
     [
         'help' => false,
+        'workerurl' => 'http://localhost:8080',
         'wsname' => autoinstall::DEFAULT_WSNAME,
         'rolename' => autoinstall::DEFAULT_ROLESHORTNAME,
         'username' => autoinstall::DEFAULT_USERNAME,
@@ -67,9 +68,10 @@ Usage:
 Options:
     --help, -h          Show this help message
     --force, -f         Force the autoinstall, regardless of the current state of the system
+    --workerurl=<value> Sets the URL of the worker (default: http://localhost:8080)
     --wsname=<value>    Sets a custom name for the web service (default: quiz_archiver_webservice)
     --rolename=<value>  Sets a custom name for the web service role (default: quiz_archiver)
-    --username=<value>  Sets a custom username for the web service user (default: quiz_archiver_serviceacount)
+    --username=<value>  Sets a custom username for the web service user (default: quiz_archiver_serviceaccount)
 EOT;
 
 if ($unrecognised) {
@@ -93,6 +95,7 @@ cli_writeln("Starting automatic installation of quiz archiver plugin...");
 cli_separator();
 
 list($success, $log) = autoinstall::execute(
+    $options['workerurl'],
     $options['wsname'],
     $options['rolename'],
     $options['username'],
