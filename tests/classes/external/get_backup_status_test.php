@@ -22,11 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tests\classes\external;
+namespace quiz_archiver\external;
 
 
 use quiz_archiver\ArchiveJob;
-use quiz_archiver\external\get_backup_status;
 
 /**
  * Tests for the get_backup_status external service
