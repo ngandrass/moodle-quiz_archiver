@@ -1,12 +1,14 @@
 # Changelog
 
 
-## Version 1.2.5 (XXXXXXXXXX)
+## Version 1.2.5 (2024040900)
 
 - Add an automatic plugin configuration feature, to simplify the setup process (#15 - Thanks to @melanietreitinger)
 - Display a welcome message with setup instructions during plugin installation
 - Add support for automated configuration using a CLI script
 - Add error message during job creation, when plugin is not fully configured yet
+- Create quizzes with 100, 250, 500, and 1000 attempts in the reference course `res/backup-moodle2-course-qa-ref.mbz`
+- Update installation instructions in README.md to reflect the new setup process
 
 
 ## Version 1.2.4 (2024021901)
