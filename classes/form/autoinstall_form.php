@@ -55,16 +55,19 @@ class autoinstall_form extends \moodleform {
         $mform->addRule('workerurl', null, 'required', null, 'client');
 
         $mform->addElement('text', 'wsname', get_string('autoinstall_wsname', 'quiz_archiver'), ['size' => 50]);
+        $mform->addElement('static', 'wsname_help', '', get_string('autoinstall_wsname_help', 'quiz_archiver'));
         $mform->setDefault('wsname', autoinstall::DEFAULT_WSNAME);
         $mform->setType('wsname', PARAM_TEXT);
         $mform->addRule('wsname', null, 'required', null, 'client');
 
         $mform->addElement('text', 'rolename', get_string('autoinstall_rolename', 'quiz_archiver'), ['size' => 50]);
+        $mform->addElement('static', 'rolename_help', '', get_string('autoinstall_rolename_help', 'quiz_archiver'));
         $mform->setDefault('rolename', autoinstall::DEFAULT_ROLESHORTNAME);
         $mform->setType('rolename', PARAM_TEXT);
         $mform->addRule('rolename', null, 'required', null, 'client');
 
         $mform->addElement('text', 'username', get_string('autoinstall_username', 'quiz_archiver'), ['size' => 50]);
+        $mform->addElement('static', 'username_help', '', get_string('autoinstall_username_help', 'quiz_archiver'));
         $mform->setDefault('username', autoinstall::DEFAULT_USERNAME);
         $mform->setType('username', PARAM_TEXT);
         $mform->addRule('username', null, 'required', null, 'client');
