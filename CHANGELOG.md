@@ -1,6 +1,14 @@
 # Changelog
 
 
+## Version 1.2.5 (XXXXXXXXXX)
+
+- Add an automatic plugin configuration feature, to simplify the setup process (#15 - Thanks to @melanietreitinger)
+- Display a welcome message with setup instructions during plugin installation
+- Add support for automated configuration using a CLI script
+- Add error message during job creation, when plugin is not fully configured yet
+
+
 ## Version 1.2.4 (2024021901)
 
 - Fix image inlining for Moodle instances that reside in subdirectories (e.g., `https://your.domain/moodle`)

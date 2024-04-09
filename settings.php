@@ -23,10 +23,13 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(__DIR__ . '/classes/local/autoinstall.php');
+
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_configcheckbox_alwaystrue;
+use quiz_archiver\local\autoinstall;
 use quiz_archiver\Report;
 
 defined('MOODLE_INTERNAL') || die();
@@ -42,6 +45,19 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_heading('quiz_archiver/header_docs',
             null,
             get_string('setting_header_docs_desc', 'quiz_archiver')
+        ));
+
+        // Autoinstall
+        if (autoinstall::plugin_is_unconfigured()) {
+            $autoinstall_url = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
+            $autoinstall_desc = "<a href='{$autoinstall_url}' class='btn btn-primary'>".get_string('autoinstall_start_now', 'quiz_archiver')."</a>";
+            $autoinstall_desc .= "<br><br><p>".get_string('autoinstall_explanation', 'quiz_archiver')."</p>";
+        } else {
+            $autoinstall_desc = get_string('autoinstall_already_configured', 'quiz_archiver');
+        }
+        $settings->add(new admin_setting_description('quiz_archiver/autoinstall',
+            get_string('setting_autoconfigure', 'quiz_archiver'),
+            $autoinstall_desc
         ));
 
         // Generic settings

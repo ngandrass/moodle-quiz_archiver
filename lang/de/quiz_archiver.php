@@ -28,6 +28,8 @@ $string['archiver'] = 'Quiz Archiver';
 $string['archiverreport'] = 'Quiz Archiver';
 $string['checksum'] = 'Prüfsumme';
 $string['beta_version_warning'] = 'Dieses Plugin befindet sich derzeit in der Beta-Phase. Bitte melden Sie alle Probleme und Fehler dem Website-Administrator.';
+$string['thanks_for_installing'] = 'Vielen Dank für die Installation des Quiz Archiver Plugins!';
+$string['go_to_plugin_settings'] = 'Plugin-Einstellungen öffnen';
 
 // Capabilities
 $string['quiz_archiver:view'] = 'Quiz Archiver Berichtsseite anzeigen';
@@ -83,6 +85,7 @@ $string['export_report_section_attachments'] = 'Dateiabgaben einschließen';
 $string['export_report_section_attachments_help'] = 'Alle Dateiabgaben (z.B. von Aufsätzen/Essay Aufgaben) im Archiv einschließen. Warnung: Dies kann die Archivgröße erheblich erhöhen.';
 $string['job_overview'] = 'Testarchive';
 $string['num_attempts'] = 'Anzahl Testversuche';
+$string['error_plugin_is_not_configured'] = 'Fehler: Das Quiz Archiver Plugin ist noch nicht konfiguriert. Bitte kontaktieren Sie Ihren Website-Administrator.';
 
 // Job creation form: Filename pattern
 $string['archive_filename_pattern'] = 'Archivname';
@@ -160,6 +163,7 @@ $string['tsp_client_error_curl'] = 'Fehler beim senden des TSP Requests: {$a}';
 $string['tsp_client_error_http_code'] = 'TSP Server hat unerwarteten HTTP Statuscode {$a} zurückgegeben';
 
 // Settings
+$string['setting_autoconfigure'] = 'Automatische Konfiguration';
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Konfiguration des Archive Worker Services und des Moodle Webservices.';
 $string['setting_header_docs_desc'] = 'Dieses Plugin archiviert Testversuche als PDF- und HTML-Dateien zur langfristigen Speicherung unabhängig von Moodle. Es <b>erfordert die Installation eines separaten <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">Archive Worker Services</a></b> um korrekt zu funktionieren. Die <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">Dokumentation</a> enthält alle notwendigen Informationen und Installationsanweisungen.';
@@ -215,3 +219,20 @@ $string['task_autodelete_job_artifacts'] = 'Delete expired quiz archives';
 $string['task_autodelete_job_artifacts'] = 'Löschen abgelaufener Testarchive';
 $string['task_autodelete_job_artifacts_start'] = 'Lösche abgelaufene Testarchive ...';
 $string['task_autodelete_job_artifacts_report'] = '{$a} Testarchive gelöscht.';
+
+// Autoinstall
+$string['autoinstall_already_configured'] = 'Plugin ist bereits konfiguriert';
+$string['autoinstall_already_configured_long'] = 'Das Quiz Archiver Plugin ist bereits konfiguriert. Eine erneute automatische Konfiguration ist nicht möglich.';
+$string['autoinstall_cancelled'] = 'Die automatische Konfiguration des Quiz Archiver Plugins wurde abgebrochen. Es wurden keine Einstellungen verändert.';
+$string['autoinstall_explanation'] = 'Das Quiz Archiver Plugin erfordert anfangs einige Konfigurationsschritte, um zu funktionieren (siehe  <a href="https://github.com/ngandrass/moodle-quiz_archiver/blob/master/README.md" target="_blank">Installation</a>). Sie können diese Einstellungen manuell konfigurieren, oder die automatische Konfiguration verwenden, um alle Moodle-bezogenen Einstellungen zu setzen.';
+$string['autoinstall_failure'] = 'Die automatische Konfiguration des Quiz Archiver Plugins ist <b>fehlgeschlagen</b>.';
+$string['autoinstall_plugin'] = 'Quiz Archiver: Automatische Konfiguration';
+$string['autoinstall_started'] = 'Automatische Konfiguration gestartet ...';
+$string['autoinstall_start_now'] = 'Automatische Konfiguration jetzt starten';
+$string['autoinstall_success'] = 'Die automatische Konfiguration des Quiz Archiver Plugins wurde <b>erfolgreich abgeschlossen</b>.';
+$string['autoinstall_rolename'] = 'Rollenname';
+$string['autoinstall_rolename_help'] = 'TODO';
+$string['autoinstall_username'] = 'Nutzername';
+$string['autoinstall_username_help'] = 'TODO';
+$string['autoinstall_wsname'] = 'Webservice name';
+$string['autoinstall_wsname_help'] = 'TODO';

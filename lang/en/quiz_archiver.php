@@ -28,6 +28,8 @@ $string['archiver'] = 'Quiz Archiver';
 $string['archiverreport'] = 'Quiz Archiver';
 $string['checksum'] = 'Checksum';
 $string['beta_version_warning'] = 'This plugin is currently in beta stage. Please report any problems and bugs you experience to the site administrator.';
+$string['thanks_for_installing'] = 'Thank you for installing the Quiz Archiver plugin!';
+$string['go_to_plugin_settings'] = 'Go to plugin settings';
 
 // Capabilities
 $string['quiz_archiver:view'] = 'View quiz archiver report page';
@@ -83,6 +85,7 @@ $string['export_report_section_attachments'] = 'Include file attachments';
 $string['export_report_section_attachments_help'] = 'Include all file attachments (e.g., essay file submissions) inside the archive. Warning: This can significantly increase the archive size.';
 $string['job_overview'] = 'Archives';
 $string['num_attempts'] = 'Number of attempts';
+$string['error_plugin_is_not_configured'] = 'Error: The quiz archiver plugin is not configured yet. Please contact your site administrator.';
 
 // Job creation form: Filename pattern
 $string['archive_filename_pattern'] = 'Archive name';
@@ -159,6 +162,7 @@ $string['tsp_client_error_curl'] = 'Error while sending TSP request: {$a}';
 $string['tsp_client_error_http_code'] = 'TSP server returned HTTP status code {$a}';
 
 // Settings
+$string['setting_autoconfigure'] = 'Automatic configuration';
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Configuration of the archive worker service and the Moodle web service it uses.';
 $string['setting_header_docs_desc'] = 'This plugin archives quiz attempts as PDF and HTML files for long-term storage, independent of Moodle. It <b>requires a separate <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">worker service</a></b> to be installed for the actual archiving process to work. Please refer to the <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">documentation</a> for more details and setup instructions.';
@@ -212,3 +216,21 @@ $string['task_cleanup_temp_files_report'] = 'Deleted {$a} temporary files.';
 $string['task_autodelete_job_artifacts'] = 'Delete expired quiz archives';
 $string['task_autodelete_job_artifacts_start'] = 'Deleting expired quiz archives ...';
 $string['task_autodelete_job_artifacts_report'] = 'Deleted {$a} quiz archives.';
+
+// Autoinstall
+$string['autoinstall_already_configured'] = 'Plugin is already configured';
+$string['autoinstall_already_configured_long'] = 'The Quiz Archiver Plugin is already configured. Automatic configuration is not possible twice.';
+$string['autoinstall_cancelled'] = 'The automatic configuration of the Quiz Archiver Plugin was cancelled. No changes were made.';
+$string['autoinstall_explanation'] = 'The Quiz Archiver plugin requires a few initial configuration steps to work (see <a href="https://github.com/ngandrass/moodle-quiz_archiver/blob/master/README.md" target="_blank">Installation</a>). You can either configure all of these settings manually or use the automatic configuration feature to take care of all Moodle related settings.';
+$string['autoinstall_explanation_details'] = 'The automatic configuration feature will take care of the following steps:<ul><li>Enabling web services and REST protocol</li><li>Creating a quiz archiver service role and a corresponding user</li><li>Creating a new web service with all required webservice functions</li><li>Authorising the user to use the webservice</li></ul>';
+$string['autoinstall_failure'] = 'The automatic configuration of the Quiz Archiver Plugin <b>failed</b>.';
+$string['autoinstall_plugin'] = 'Quiz Archiver: Automatic configuration';
+$string['autoinstall_started'] = 'Automatic configuration started ...';
+$string['autoinstall_start_now'] = 'Start automatic configuration now';
+$string['autoinstall_success'] = 'The automatic configuration of the Quiz Archiver Plugin was <b>successful</b>.';
+$string['autoinstall_rolename'] = 'Role name';
+$string['autoinstall_rolename_help'] = 'TODO';
+$string['autoinstall_username'] = 'Username';
+$string['autoinstall_username_help'] = 'TODO';
+$string['autoinstall_wsname'] = 'Web service name';
+$string['autoinstall_wsname_help'] = 'TODO';
