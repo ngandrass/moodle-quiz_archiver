@@ -18,6 +18,7 @@ namespace quiz_archiver\local;
 
 require_once("{$CFG->dirroot}/user/lib.php");
 require_once("{$CFG->dirroot}/webservice/lib.php");
+require_once("{$CFG->dirroot}/lib/adminlib.php");
 
 use coding_exception;
 use context_system;
@@ -115,6 +116,9 @@ class autoinstall {
         $success = false;
 
         try {
+            // Init log array
+            $log = [];
+
             // Ensure current user is an admin.
             if (!is_siteadmin()) {
                 $log[] = "Error: You need to be a site administrator to run this script.";
@@ -129,6 +133,22 @@ class autoinstall {
                     $log[] = "Error: The quiz archiver plugin is already configured. Use --force to bypass this check.";
                     throw new \RuntimeException();
                 }
+            }
+
+            // Apply default values for all plugin settings
+            $adminroot = admin_get_root();
+            $adminsearch = $adminroot->search('quiz_archiver_settings');
+            if (!$adminsearch || !$adminsearch['quiz_archiver_settings']->page) {
+                $log[] = "Error: Could not find admin settings definitions for quiz archiver plugin.";
+                throw new \RuntimeException();
+            }
+            $adminpage = $adminsearch['quiz_archiver_settings']->page;
+            $appliedsettings = admin_apply_default_settings($adminpage);
+            if (count($appliedsettings) < 1) {
+                $log[] = "Error: Could not apply default settings for quiz archiver plugin.";
+                throw new \RuntimeException();
+            } else {
+                $log[] = "  -> Default plugin settings applied.";
             }
 
             // Check worker URL
