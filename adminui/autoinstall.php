@@ -43,6 +43,11 @@ $PAGE->set_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
 $title = get_string('autoinstall_plugin', 'quiz_archiver');
 $PAGE->set_title($title);
 
+$returnlink = html_writer::link(
+    new moodle_url('/admin/settings.php', ['section' => 'quiz_archiver_settings']),
+    get_string('back')
+);
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
@@ -53,7 +58,7 @@ if (autoinstall::plugin_is_unconfigured()) {
     if ($form->is_cancelled()) {
         // Cancelled
         echo $OUTPUT->paragraph(get_string('autoinstall_cancelled', 'quiz_archiver'));
-        echo $OUTPUT->paragraph('<a href="#" onclick="window.close();">'.(get_string('pleaseclose')).'</a>');
+        echo $OUTPUT->paragraph($returnlink);
     } else if ($data = $form->get_data()) {
         // Perform autoinstall
         list($success, $log) = autoinstall::execute(
@@ -74,7 +79,7 @@ if (autoinstall::plugin_is_unconfigured()) {
             echo $OUTPUT->paragraph(get_string('autoinstall_failure', 'quiz_archiver'));
         }
 
-        echo $OUTPUT->paragraph('<a href="#" onclick="window.close();">'.(get_string('pleaseclose')).'</a>');
+        echo $OUTPUT->paragraph($returnlink);
     } else {
         echo $OUTPUT->paragraph(get_string('autoinstall_explanation', 'quiz_archiver'));
         echo $OUTPUT->paragraph(get_string('autoinstall_explanation_details', 'quiz_archiver'));
@@ -82,7 +87,7 @@ if (autoinstall::plugin_is_unconfigured()) {
     }
 } else {
     echo $OUTPUT->paragraph(get_string('autoinstall_already_configured_long', 'quiz_archiver'));
-    echo $OUTPUT->paragraph('<a href="#" onclick="window.close();">'.(get_string('pleaseclose')).'</a>');
+    echo $OUTPUT->paragraph($returnlink);
 }
 
 // End page

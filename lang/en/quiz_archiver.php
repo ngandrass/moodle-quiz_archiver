@@ -221,11 +221,11 @@ $string['autoinstall_already_configured_long'] = 'The Quiz Archiver Plugin is al
 $string['autoinstall_cancelled'] = 'The automatic configuration of the Quiz Archiver Plugin was cancelled. No changes were made.';
 $string['autoinstall_explanation'] = 'The Quiz Archiver plugin requires a few initial configuration steps to work (see <a href="https://github.com/ngandrass/moodle-quiz_archiver/blob/master/README.md" target="_blank">Installation</a>). You can either configure all of these settings manually or use the automatic configuration feature to take care of all Moodle related settings.';
 $string['autoinstall_explanation_details'] = 'The automatic configuration feature will take care of the following steps:<ul><li>Enabling web services and REST protocol</li><li>Creating a quiz archiver service role and a corresponding user</li><li>Creating a new web service with all required webservice functions</li><li>Authorising the user to use the webservice</li></ul>';
-$string['autoinstall_failure'] = 'The automatic configuration of the Quiz Archiver Plugin failed.';
+$string['autoinstall_failure'] = 'The automatic configuration of the Quiz Archiver Plugin <b>failed</b>.';
 $string['autoinstall_plugin'] = 'Quiz Archiver: Automatic configuration';
 $string['autoinstall_started'] = 'Automatic configuration started ...';
 $string['autoinstall_start_now'] = 'Start automatic configuration now';
-$string['autoinstall_success'] = 'The automatic configuration of the Quiz Archiver Plugin was successful.';
+$string['autoinstall_success'] = 'The automatic configuration of the Quiz Archiver Plugin was <b>successful</b>.';
 $string['autoinstall_rolename'] = 'Role name';
 $string['autoinstall_rolename_help'] = 'TODO';
 $string['autoinstall_username'] = 'Username';
