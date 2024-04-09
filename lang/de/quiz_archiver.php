@@ -30,6 +30,7 @@ $string['checksum'] = 'Prüfsumme';
 $string['beta_version_warning'] = 'Dieses Plugin befindet sich derzeit in der Beta-Phase. Bitte melden Sie alle Probleme und Fehler dem Website-Administrator.';
 $string['thanks_for_installing'] = 'Vielen Dank für die Installation des Quiz Archiver Plugins!';
 $string['go_to_plugin_settings'] = 'Plugin-Einstellungen öffnen';
+$string['manual_configuration_continue'] = 'Um alle Plugin-Einstellungen manuell zu setzen, verwenden Sie die Schaltfläche "Weiter" am Ende dieser Seite.';
 
 // Capabilities
 $string['quiz_archiver:view'] = 'Quiz Archiver Berichtsseite anzeigen';

@@ -30,6 +30,7 @@ $string['checksum'] = 'Checksum';
 $string['beta_version_warning'] = 'This plugin is currently in beta stage. Please report any problems and bugs you experience to the site administrator.';
 $string['thanks_for_installing'] = 'Thank you for installing the Quiz Archiver plugin!';
 $string['go_to_plugin_settings'] = 'Go to plugin settings';
+$string['manual_configuration_continue'] = 'To manually configure all plugin settings use the "Continue" button at the bottom of this page.';
 
 // Capabilities
 $string['quiz_archiver:view'] = 'View quiz archiver report page';
