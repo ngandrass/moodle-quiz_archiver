@@ -30,5 +30,17 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_quiz_archiver_install() {
 
+    // Print welcome message
+    $autoinstall_url = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
+    $pluginsettings_url = new moodle_url('/admin/settings.php', ['section' => 'quiz_archiver_settings']);
+
+    echo '<div class="alert alert-info" role="alert">';
+        echo '<p>'.get_string("thanks_for_installing", 'quiz_archiver')."</p>";
+        echo '<p>'.get_string('autoinstall_explanation', 'quiz_archiver')."</p>";
+        echo '<p><a href='.$autoinstall_url.' class="btn btn-primary text-white">'.get_string('autoinstall_start_now', 'quiz_archiver').'</a></p>';
+        echo '<p><a href='.$pluginsettings_url.' class="alert-link">'.get_string('go_to_plugin_settings', 'quiz_archiver').'</a></p>';
+    echo '</div>';
+
+
     return true;
 }
