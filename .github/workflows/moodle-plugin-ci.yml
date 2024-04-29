@@ -53,6 +53,13 @@ jobs:
           - {moodle-branch: 'MOODLE_403_STABLE', php: '8.2', database: 'pgsql'}
           - {moodle-branch: 'MOODLE_403_STABLE', php: '8.2', database: 'mariadb'}
 
+          # Moodle 4.4, PHP 8.1 to 8.3, PostgreSQL and MariaDB
+          - {moodle-branch: 'MOODLE_404_STABLE', php: '8.1', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_404_STABLE', php: '8.1', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_404_STABLE', php: '8.2', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_404_STABLE', php: '8.2', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_404_STABLE', php: '8.3', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_404_STABLE', php: '8.3', database: 'mariadb'}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
