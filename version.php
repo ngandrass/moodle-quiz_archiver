@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'quiz_archiver';
-$plugin->release = '1.2.5';
-$plugin->version = 2024040900;
+$plugin->release = '1.2.6';
+$plugin->version = 2024042900;
 $plugin->requires = 2022112800;
-$plugin->supported = [401, 403];
+$plugin->supported = [401, 404];
 //$plugin->incompatible = 402;
 $plugin->maturity = MATURITY_STABLE;

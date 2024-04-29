@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.6 (2024042900)
+
+- Extend automated tests to cover Moodle 4.4 with PHP 8.1 to 8.3 using PostgreSQL and MariaDB
+- Removal of deprecated function use for Moodle 4.4 (See MDL-67667)
+
 
 ## Version 1.2.5 (2024040900)
 
