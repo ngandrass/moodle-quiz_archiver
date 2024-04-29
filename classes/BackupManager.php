@@ -193,7 +193,6 @@ class BackupManager {
         // Enqueue as adhoc task
         $bc->set_status(backup::STATUS_AWAITING);
         $asynctask = new \core\task\asynchronous_backup_task();
-        $asynctask->set_blocking(false);
         $asynctask->set_custom_data(['backupid' => $backupid]);
         $asynctask->set_userid($user_id);
         \core\task\manager::queue_adhoc_task($asynctask);
