@@ -695,6 +695,7 @@ class Report {
         // Try to get image content based on link type
         $regex_matches = null;
         $img_data = null;
+        $img_mime = self::ALLOWED_IMAGE_TYPES[$img_ext];
 
         // Handle special internal URLs first
         $is_internal_url = substr($img_src_url, 0, strlen($moodle_baseurl)) === $moodle_baseurl;
@@ -771,6 +772,15 @@ class Report {
                 $img->setAttribute('x-debug-notice', 'HTTP request failed');
                 return false;
             }
+
+            // Check if we need to detect mime type from response headers
+            if (!$img_mime) {
+                $img_mime = $c->get_info()['content_type'];
+                if (!in_array($img_mime, self::ALLOWED_IMAGE_TYPES)) {
+                    $img->setAttribute('x-debug-notice', 'image type from response header is not allowed');
+                    return false;
+                }
+            }
         }
 
         // Encode and replace image if present
@@ -779,7 +789,7 @@ class Report {
             return false;
         }
         $img_base64 = base64_encode($img_data);
-        $img->setAttribute('src', 'data:'.self::ALLOWED_IMAGE_TYPES[$img_ext].';base64,'.$img_base64);
+        $img->setAttribute('src', 'data:'.$img_mime.';base64,'.$img_base64);
 
         return true;
     }

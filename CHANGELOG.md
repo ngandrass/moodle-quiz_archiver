@@ -3,6 +3,7 @@
 ## Version X.X.X (XXXXXXXXXX)
 
 - Fix inlining of images with filenames that contains URL encoded characters (e.g., `image (1).jpg`)
+- Fix inlining of Moodle theme icons (e.g., drag and drop markers)
 
 
 ## Version 1.2.6 (2024042900)
