@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.X.X (XXXXXXXXXX)
+
+- Fix inlining of images with filenames that contains URL encoded characters (e.g., `image (1).jpg`)
+
+
 ## Version 1.2.6 (2024042900)
 
 - Extend automated tests to cover Moodle 4.4 with PHP 8.1 to 8.3 using PostgreSQL and MariaDB

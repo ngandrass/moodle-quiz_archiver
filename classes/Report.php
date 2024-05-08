@@ -712,6 +712,9 @@ class Report {
                     }
                 }
 
+                // Decode RFC 3986 URL escaped sequences
+                $regex_matches['filename'] = urldecode($regex_matches['filename']);
+
                 // Get file content via Moodle File API
                 $fs = get_file_storage();
                 $file = $fs->get_file(
@@ -731,6 +734,9 @@ class Report {
             } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $img_src_url, $regex_matches)) {
                 // ### Link type: qtype_stack plotfile ###
                 $img->setAttribute('x-url-type', 'MOODLE_URL_STACKPLOT');
+
+                // Decode RFC 3986 URL escaped sequences
+                $regex_matches['filename'] = urldecode($regex_matches['filename']);
 
                 // Get STACK plot file from disk
                 $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regex_matches['filename']);
