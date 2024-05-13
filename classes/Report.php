@@ -695,7 +695,7 @@ class Report {
         // Try to get image content based on link type
         $regex_matches = null;
         $img_data = null;
-        $img_mime = self::ALLOWED_IMAGE_TYPES[$img_ext];
+        $img_mime = array_key_exists($img_ext, self::ALLOWED_IMAGE_TYPES) ? self::ALLOWED_IMAGE_TYPES[$img_ext] : null;
 
         // Handle special internal URLs first
         $is_internal_url = substr($img_src_url, 0, strlen($moodle_baseurl)) === $moodle_baseurl;
