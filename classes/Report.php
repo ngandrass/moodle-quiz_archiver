@@ -357,7 +357,7 @@ class Report {
      * @throws \moodle_exception
      */
     public function generate(int $attemptid, array $sections): string {
-        global $DB, $PAGE;
+        global $CFG, $DB, $PAGE;
         $ctx = \context_module::instance($this->cm->id);
         $renderer = $PAGE->get_renderer('mod_quiz');
         $html = '';
@@ -500,7 +500,15 @@ class Report {
             ];
 
             // Add summary table to the html
-            $html .= $renderer->review_summary_table($quiz_header_data, 0);
+            if ($CFG->branch <= 403) {
+                // FIXME: Remove after Moodle 4.1 (LTS) support ends on 2025-12-08
+                $html .= $renderer->review_summary_table($quiz_header_data, 0);
+            } else {
+                $html .= $renderer->review_attempt_summary(
+                    \mod_quiz\output\attempt_summary_information::create_from_legacy_array($quiz_header_data),
+                    0
+                );
+            }
         }
 
         // ##### Section: Quiz questions #####
