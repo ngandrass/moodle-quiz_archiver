@@ -427,7 +427,7 @@ class Report {
                     'content' => userdate($attempt->timefinish),
                 ];
                 $quiz_header_data['timetaken'] = [
-                    'title' => get_string('timetaken', 'quiz'),
+                    'title' => get_string('attemptduration', 'quiz'),
                     'content' => $timetaken,
                 ];
             }
@@ -444,7 +444,7 @@ class Report {
             if ($options->marks >= \question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
                 if (is_null($grade)) {
                     $quiz_header_data['grade'] = [
-                        'title' => get_string('grade', 'quiz'),
+                        'title' => get_string('gradenoun'),
                         'content' => quiz_format_grade($quiz, $grade),
                     ];
                 }
@@ -473,7 +473,7 @@ class Report {
                         $formattedgrade = get_string('outof', 'quiz', $a);
                     }
                     $quiz_header_data['grade'] = [
-                        'title' => get_string('grade', 'quiz'),
+                        'title' => get_string('gradenoun'),
                         'content' => $formattedgrade,
                     ];
                 }
@@ -504,6 +504,7 @@ class Report {
                 // FIXME: Remove after Moodle 4.1 (LTS) support ends on 2025-12-08
                 $html .= $renderer->review_summary_table($quiz_header_data, 0);
             } else {
+                // TODO: Rework into proper use of new 4.4 API but create appropriate test cases first.
                 $html .= $renderer->review_attempt_summary(
                     \mod_quiz\output\attempt_summary_information::create_from_legacy_array($quiz_header_data),
                     0
