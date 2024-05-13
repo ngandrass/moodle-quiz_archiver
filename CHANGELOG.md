@@ -1,9 +1,12 @@
 # Changelog
 
-## Version X.X.X (XXXXXXXXXX)
+## Version 1.2.7 (2024051300)
 
 - Fix inlining of images with filenames that contains URL encoded characters (e.g., `image (1).jpg`)
 - Fix inlining of Moodle theme icons (e.g., drag and drop markers)
+- Fix PHP warning on quiz_archiver_generate_attempt_report webservice call
+- Fix quiz header / summary table injection in Moodle 4.4+
+- Replace deprecated Moodle 4.4+ language strings
 
 
 ## Version 1.2.6 (2024042900)
