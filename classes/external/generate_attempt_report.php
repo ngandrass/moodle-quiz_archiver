@@ -123,7 +123,7 @@ class generate_attempt_report extends external_api {
         array $sections_raw,
         bool $attachments_raw
     ): array {
-        global $DB;
+        global $DB, $PAGE;
 
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
@@ -163,6 +163,9 @@ class generate_attempt_report extends external_api {
             'quizid' => $params['quizid'],
             'attemptid' => $params['attemptid'],
         ];
+
+        // Forcefully set URL in $PAGE to the webservice handler to prevent further warnings
+        $PAGE->set_url(new \moodle_url('/webservice/rest/server.php', ['wsfunction' => 'quiz_archiver_generate_attempt_report']));
 
         // Generate report
         $report = new Report($course, $cm, $quiz);
