@@ -204,12 +204,17 @@ class ArchiveJob_test extends \advanced_testcase {
      * @return void
      */
     public function test_multiple_jobs_retrieval_and_metadata(): void {
+        global $DB;
+        $this->resetAfterTest();
+
         // Generate data
         $mocks = [];
         $jobs = [];
+        $artifacts = [];
         for ($quizIdx= 0; $quizIdx < 3; $quizIdx++) {
             $mocks[$quizIdx] = $this->generateMockQuiz();
             for ($jobIdx = 0; $jobIdx < 3; $jobIdx++) {
+                // Create job
                 $jobs[$quizIdx][$jobIdx] = ArchiveJob::create(
                     '30000000-1234-5678-abcd-'.$quizIdx.'0000000000'.$jobIdx,
                     $mocks[$quizIdx]->course->id,
@@ -221,6 +226,27 @@ class ArchiveJob_test extends \advanced_testcase {
                     $mocks[$quizIdx]->attempts,
                     $mocks[$quizIdx]->settings
                 );
+
+                // Attach artifact
+                $artifacts[$quizIdx][$jobIdx] = $this->generateArtifactFile(
+                    $mocks[$quizIdx]->course->id,
+                    $mocks[$quizIdx]->quiz->cmid,
+                    $mocks[$quizIdx]->quiz->id,
+                    'test'.$quizIdx.'-'.$jobIdx.'.tar.gz'
+                );
+                $jobs[$quizIdx][$jobIdx]->link_artifact(
+                    $artifacts[$quizIdx][$jobIdx]->get_id(),
+                    hash('sha256', 'foo bar baz')
+                );
+
+                // Generate mock TSP data
+                $DB->insert_record(TSPManager::TSP_TABLE_NAME, [
+                    'jobid' => $jobs[$quizIdx][$jobIdx]->get_id(),
+                    'timecreated' => time(),
+                    'server' => 'localhost',
+                    'timestampquery' => 'tspquery',
+                    'timestampreply' => 'tspreply',
+                ]);
             }
         }
 
@@ -269,6 +295,21 @@ class ArchiveJob_test extends \advanced_testcase {
                 $this->assertSame($expectedJob->is_autodelete_enabled(), $actualJob['autodelete'], 'Autodelete was not detected as enabled');
                 $this->assertArrayHasKey('autodelete_str', $actualJob, 'Autodelete string was not generated correctly');
                 $this->assertSameSize($expectedJob->get_settings(), $actualJob['settings'], 'Settings were not returned correctly');
+
+                // Check that the artifact file metadata was returned correctly
+                $this->assertArrayHasKey('artifactfile', $actualJob, 'Artifact file metadata was not returned');
+                $this->assertEquals($artifacts[$quizIdx][$jobIdx]->get_filename(), $actualJob['artifactfile']['name'], 'Artifact filename was not returned correctly');
+                $this->assertEquals($artifacts[$quizIdx][$jobIdx]->get_filesize(), $actualJob['artifactfile']['size'], 'Artifact size was not returned correctly');
+                $this->assertNotEmpty($actualJob['artifactfile']['downloadurl'], 'Artifact download URL was not returned');
+                $this->assertNotEmpty($actualJob['artifactfile']['size_human'], 'Artifact size in human readable format was not returned');
+                $this->assertEquals(hash('sha256', 'foo bar baz'), $actualJob['artifactfile']['checksum'], 'Artifact checksum was not returned correctly');
+
+                // Check that the TSP data was returned correctly
+                $this->assertArrayHasKey('tsp', $actualJob, 'TSP data was not returned');
+                $this->assertEquals('localhost', $actualJob['tsp']['server'], 'TSP server was not returned correctly');
+                $this->assertNotEmpty($actualJob['tsp']['timecreated'], 'TSP creation time was not returned');
+                $this->assertNotEmpty($actualJob['tsp']['queryfiledownloadurl'], 'TSP queryfile download URL was not returned');
+                $this->assertNotEmpty($actualJob['tsp']['replyfiledownloadurl'], 'TSP replyfile download URL was not returned');
             }
         }
     }
@@ -402,6 +443,44 @@ class ArchiveJob_test extends \advanced_testcase {
         $this->assertNotEmpty($DB->get_record('external_tokens', ['token' => $wstoken]), 'Webservice token was not created correctly');
         $job->delete_webservice_token();
         $this->assertEmpty($DB->get_record('external_tokens', ['token' => $wstoken]), 'Webservice token was not deleted correctly');
+    }
+
+    /**
+     * Test job timeout
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_job_timeout(): void {
+        // Prepare job
+        $mocks = $this->generateMockQuiz();
+        $job = ArchiveJob::create(
+            '12300000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            1,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings,
+            ArchiveJob::STATUS_RUNNING,
+        );
+
+        // Not timed out job should not he set to timed out
+        $this->assertFalse($job->timeout_if_overdue(60), 'Job seems to have been set to timed out before timeout');
+        $this->assertSame(ArchiveJob::STATUS_RUNNING, $job->get_status(), 'Job status was changed to timed out before timeout');
+
+        // Time out job
+        sleep(1); // Ensure that at least one second has passed
+        $this->assertTrue($job->timeout_if_overdue(0), 'Job seems to have not been set to timed out after timeout');
+        $this->assertSame(ArchiveJob::STATUS_TIMEOUT, $job->get_status(), 'Job status was not changed to timed out after timeout');
+
+        // Do not timeout a finished job
+        $job->set_status(ArchiveJob::STATUS_FINISHED);
+        $this->assertFalse($job->timeout_if_overdue(0), 'Finished job seems to have been set to timed out');
+        $this->assertSame(ArchiveJob::STATUS_FINISHED, $job->get_status(), 'Finished job was changed to timed out');
     }
 
     /**
