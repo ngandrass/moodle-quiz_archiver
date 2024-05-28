@@ -366,6 +366,8 @@ class Report {
         $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
         $attempt = $attemptobj->get_attempt();
         $quiz = $attemptobj->get_quiz();
+        $quba = \question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
+        $quba->preload_all_step_users();
         $options = \mod_quiz\question\display_options::make_from_quiz($this->quiz, quiz_attempt_state($quiz, $attempt));
         $options->flags = quiz_get_flag_option($attempt, $ctx);
         $overtime = 0;
@@ -485,12 +487,10 @@ class Report {
             // Feedback if there is any, and the user is allowed to see it now.
             if ($sections['quiz_feedback']) {
                 $feedback = $attemptobj->get_overall_feedback($grade);
-                if ($options->overallfeedback && $feedback) {
-                    $quiz_header_data['feedback'] = [
-                        'title' => get_string('feedback', 'quiz'),
-                        'content' => $feedback,
-                    ];
-                }
+                $quiz_header_data['feedback'] = [
+                    'title' => get_string('feedback', 'quiz'),
+                    'content' => $feedback,
+                ];
             }
 
             // Add export date
@@ -537,7 +537,6 @@ class Report {
                     $attemptobj->get_question_attempt($slot)->set_max_mark(
                         $attemptobj->get_question_attempt($originalslot)->get_max_mark());
                 }
-                $quba = \question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
                 $html .= $quba->render_question($slot, $displayoptions, $number);
             }
         }
