@@ -355,4 +355,50 @@ class Report_test extends \advanced_testcase {
         $this->assertDoesNotMatchRegularExpression('/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/', $html, 'Answer history found when it should be absent');
     }
 
+    /**
+     * Tests to get the attachments of an attempt
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_get_attempt_attachments() {
+        $rd = $this->prepareReferenceCourse();
+        $report = new Report($rd->course, $rd->cm, $rd->quiz);
+        $attachments = $report->get_attempt_attachments($rd->attemptids[0]);
+        $this->assertNotEmpty($attachments, 'No attachments found');
+
+        // Find cake.md attachment
+        $this->assertNotEmpty(array_filter($attachments, fn($a) => $a['file']->get_filename() === 'cake.md'), 'cake.md attachment not found');
+    }
+
+    /**
+     * Tests metadata retrieval for attempt attachments
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_get_attempt_attachments_metadata() {
+        $rd = $this->prepareReferenceCourse();
+        $report = new Report($rd->course, $rd->cm, $rd->quiz);
+        $attachments = $report->get_attempt_attachments_metadata($rd->attemptids[0]);
+        $this->assertNotEmpty($attachments, 'No attachments found');
+
+        // Find cake.md attachment
+        $cake = array_values(array_filter($attachments, fn($a) => $a->filename === 'cake.md'))[0];
+        $this->assertNotEmpty($cake, 'cake.md attachment not found');
+
+        $this->assertNotEmpty($cake->slot, 'Attachment slot not set');
+        $this->assertNotEmpty($cake->filename, 'Attachment filename not set');
+        $this->assertNotEmpty($cake->filesize, 'Attachment filesize not set');
+        $this->assertNotEmpty($cake->mimetype, 'Attachment mimetype not set');
+        $this->assertNotEmpty($cake->contenthash, 'Attachment contenthash not set');
+        $this->assertNotEmpty($cake->downloadurl, 'Attachment downloadurl not set');
+
+        $this->assertEquals(sha1_file(__DIR__.'/../fixtures/cake.md'), $cake->contenthash, 'Attachment contenthash (SHA1) does not match');
+    }
+
 }

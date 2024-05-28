@@ -1,7 +1,7 @@
 # Testing
 
-**ATTENTION: The following notes are meant for developers only. If you only want
-to use this plugin you can fully ignore this file.**
+**ATTENTION:** The following notes are meant **for developers only**. If you only want
+to use this plugin you can fully ignore this file.
 
 
 ## Creating a PHPUnit test environment
