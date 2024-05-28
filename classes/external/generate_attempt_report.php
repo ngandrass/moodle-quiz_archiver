@@ -182,7 +182,7 @@ class generate_attempt_report extends external_api {
 
         // Check for attachments
         if ($params['attachments']) {
-            $res['attachments'] = $report->get_attempt_attechments_metadata($params['attemptid']);
+            $res['attachments'] = $report->get_attempt_attachments_metadata($params['attemptid']);
         } else {
             $res['attachments'] = [];
         }

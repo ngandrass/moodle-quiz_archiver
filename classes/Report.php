@@ -318,7 +318,7 @@ class Report {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function get_attempt_attechments_metadata(int $attemptid): array {
+    public function get_attempt_attachments_metadata(int $attemptid): array {
         $res = [];
 
         foreach ($this->get_attempt_attachments($attemptid) as $attachment) {
