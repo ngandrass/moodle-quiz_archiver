@@ -162,6 +162,9 @@ class TSPManager_test extends \advanced_testcase {
         // Ensure that artifact was not yet signed
         $this->assertFalse($job->TSPManager()->has_tsp_timestamp(), 'Artifact was detected as signed without it being signed');
 
+        // Ensure that the artifact wants to be signed
+        $this->assertTrue($job->TSPManager()->wants_tsp_timestamp(), 'Artifact was not detected as wanting to be signed');
+
         // Try signing the artifact using TSP
         $tspManager = $this->createMockTSPManager($job);
         $tspManager->timestamp();
@@ -171,6 +174,9 @@ class TSPManager_test extends \advanced_testcase {
         $this->assertEquals('tsp-dummy-query', $tspManager->get_tsp_data()->query, 'TSP query was not stored correctly');
         $this->assertEquals('tsp-dummy-reply-0123456789abcdef', $tspManager->get_tsp_data()->reply, 'TSP reply was not stored correctly');
         $this->assertEquals('localhost', $tspManager->get_tsp_data()->server, 'TSP server URL was not stored correctly');
+
+        // Ensure that the artifact does not want to be signed again
+        $this->assertFalse($job->TSPManager()->wants_tsp_timestamp(), 'Artifact was detected as wanting to be signed after it was signed');
     }
 
     /**
@@ -282,6 +288,9 @@ class TSPManager_test extends \advanced_testcase {
         $artifact = $this->generateArtifactFile($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
         $sha256sum = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256sum);
+
+        // Check that the artifact does not want to be signed
+        $this->assertFalse($job->TSPManager()->wants_tsp_timestamp(), 'Artifact was detected as wanting to be signed while TSP is disabled');
 
         // Try signing the artifact using TSP
         $this->expectException(\Exception::class);
