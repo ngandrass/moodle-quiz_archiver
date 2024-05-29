@@ -38,7 +38,7 @@ See: https://moodledev.io/general/development/tools/phpunit
   ```
 - Run all tests for a single component:
     ```bash
-    vendor/bin/phpunit --colors --testdox --filter quiz_archiver
+    vendor/bin/phpunit --colors --testdox --filter quiz_archiver/*
     ```
 - Run a single test suite:
     ```bash

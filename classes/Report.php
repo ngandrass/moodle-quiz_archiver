@@ -29,9 +29,6 @@ use mod_quiz\quiz_attempt;
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
-require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
-
 require_once("$CFG->dirroot/mod/quiz/locallib.php");  // Required for legacy mod_quiz functions ...
 
 
