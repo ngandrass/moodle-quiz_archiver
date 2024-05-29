@@ -24,8 +24,11 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $CFG;
+
 if ($CFG->branch <= 401) {
-    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+    require_once($CFG->dirroot.'/mod/quiz/locallib.php');
+    require_once($CFG->dirroot.'/lib/external/externallib.php');
 
     // Patch renamed classes
     foreach ([
