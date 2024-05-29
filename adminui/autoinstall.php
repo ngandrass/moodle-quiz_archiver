@@ -57,8 +57,8 @@ if (autoinstall::plugin_is_unconfigured()) {
 
     if ($form->is_cancelled()) {
         // Cancelled
-        echo $OUTPUT->paragraph(get_string('autoinstall_cancelled', 'quiz_archiver'));
-        echo $OUTPUT->paragraph($returnlink);
+        echo '<p>'.get_string('autoinstall_cancelled', 'quiz_archiver').'</p>';
+        echo '<p>'.$returnlink.'</p>';
     } else if ($data = $form->get_data()) {
         // Perform autoinstall
         list($success, $log) = autoinstall::execute(
@@ -69,25 +69,25 @@ if (autoinstall::plugin_is_unconfigured()) {
         );
 
         // Show result
-        echo $OUTPUT->paragraph(get_string('autoinstall_started', 'quiz_archiver'));
-        echo $OUTPUT->paragraph(get_string('logs'));
+        echo '<p>'.get_string('autoinstall_started', 'quiz_archiver').'</p>';
+        echo '<p>'.get_string('logs').'</p>';
         echo "<pre>{$log}</pre><br/>";
 
         if ($success) {
-            echo $OUTPUT->paragraph(get_string('autoinstall_success', 'quiz_archiver'));
+            echo '<p>'.get_string('autoinstall_success', 'quiz_archiver').'</p>';
         } else {
-            echo $OUTPUT->paragraph(get_string('autoinstall_failure', 'quiz_archiver'));
+            echo '<p>'.get_string('autoinstall_failure', 'quiz_archiver').'</p>';
         }
 
-        echo $OUTPUT->paragraph($returnlink);
+        echo '<p>'.$returnlink.'</p>';
     } else {
-        echo $OUTPUT->paragraph(get_string('autoinstall_explanation', 'quiz_archiver'));
-        echo $OUTPUT->paragraph(get_string('autoinstall_explanation_details', 'quiz_archiver'));
+        echo '<p>'.get_string('autoinstall_explanation', 'quiz_archiver').'</p>';
+        echo '<p>'.get_string('autoinstall_explanation_details', 'quiz_archiver').'</p>';
         $form->display();
     }
 } else {
-    echo $OUTPUT->paragraph(get_string('autoinstall_already_configured_long', 'quiz_archiver'));
-    echo $OUTPUT->paragraph($returnlink);
+    echo '<p>'.get_string('autoinstall_already_configured_long', 'quiz_archiver').'</p>';
+    echo '<p>'.$returnlink.'</p>';
 }
 
 // End page
