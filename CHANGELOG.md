@@ -1,5 +1,23 @@
 # Changelog
 
+## Version 1.2.8 (2024052900)
+
+- Fix autoinstall admin UI form for Moodle 4.1 (LTS)
+- Fix edge case during GDPR exports via the Moodle privacy API when using PHP 7.4
+- Fix webservice token generation on Moodle 4.1 (LTS)
+- Largely extend the test coverage. Now almost everything is tested automatically
+  for all combinations of:
+  - Moodle version: 4.1 - 4.4
+  - PHP versions: 7.4 - 8.3
+  - Database backends: mariadb, pgsql
+- Cleanup attempt report generation code
+- Provide documentation how to run tests locally
+- Fix typos
+
+_Note: Keep in mind to update your
+[Quiz Archive Worker](https://github.com/ngandrass/moodle-quiz-archive-worker) too!_
+
+
 ## Version 1.2.7 (2024051300)
 
 - Fix inlining of images with filenames that contains URL encoded characters (e.g., `image (1).jpg`)
