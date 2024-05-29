@@ -83,7 +83,7 @@ class FileManager_test extends \advanced_testcase {
             'filename'     => 'reference_quiz_artifact.tar.gz',
             'timecreated'  => time(),
             'timemodified' => time(),
-        ], __DIR__.'/../fixtures/referencequiz-artifact.tar.gz');
+        ], __DIR__.'/fixtures/referencequiz-artifact.tar.gz');
     }
 
     /**

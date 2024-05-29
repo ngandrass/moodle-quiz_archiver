@@ -77,7 +77,7 @@ class Report_test extends \advanced_testcase {
         $backupid = 'referencequiz';
         $backuppath = make_backup_temp_directory($backupid);
         get_file_packer('application/vnd.moodle.backup')->extract_to_pathname(
-            __DIR__ . "/../fixtures/referencequiz.mbz",
+            __DIR__ . "/fixtures/referencequiz.mbz",
             $backuppath
         );
 
@@ -459,7 +459,7 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($cake->contenthash, 'Attachment contenthash not set');
         $this->assertNotEmpty($cake->downloadurl, 'Attachment downloadurl not set');
 
-        $this->assertEquals(sha1_file(__DIR__.'/../fixtures/cake.md'), $cake->contenthash, 'Attachment contenthash (SHA1) does not match');
+        $this->assertEquals(sha1_file(__DIR__.'/fixtures/cake.md'), $cake->contenthash, 'Attachment contenthash (SHA1) does not match');
     }
 
     /**
