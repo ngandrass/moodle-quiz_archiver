@@ -297,7 +297,11 @@ class FileManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_send_virtual_file_tsp_query(): void {
-        global $DB;
+        global $CFG, $DB;
+
+        if ($CFG->branch < 404) {
+            $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
+        }
 
         $mocks = $this->generateMockQuiz();
         $job = ArchiveJob::create(
@@ -340,7 +344,11 @@ class FileManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_send_virtual_file_tsp_reply(): void {
-        global $DB;
+        global $CFG, $DB;
+
+        if ($CFG->branch < 404) {
+            $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
+        }
 
         $mocks = $this->generateMockQuiz();
         $job = ArchiveJob::create(

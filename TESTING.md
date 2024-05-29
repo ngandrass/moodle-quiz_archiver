@@ -26,7 +26,7 @@ See: https://moodledev.io/general/development/tools/phpunit
    ```
 4. Bootstrap test environment:
    ```bash
-   php admin/tool/phpunit/cli/init.php
+   php admin/tool/phpunit/cli/init.php --disable-composer
    ```
 
 

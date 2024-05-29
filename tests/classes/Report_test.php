@@ -26,6 +26,8 @@ namespace quiz_archiver;
 
 global $CFG;
 
+use backup;
+
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 
 
@@ -92,6 +94,7 @@ class Report_test extends \advanced_testcase {
 
         $this->assertTrue($rc->execute_precheck());
         $rc->execute_plan();
+        $this->assertSame(backup::STATUS_FINISHED_OK, $rc->get_status(), 'Restore of reference course failed.');
 
         // 2024-05-14: Do not destroy restore_controller. This will drop temptables without removing them from
         // $DB->temptables properly, causing DB reset to fail in subsequent tests due to missing tables. Destroying the
@@ -493,15 +496,15 @@ class Report_test extends \advanced_testcase {
         $this->assertCount(count($rc->attemptids), $attempts, 'Incorrect number of attempts found without filters set');
 
         $attempt = array_shift($attempts);
-        $this->assertObjectHasProperty('attemptid', $attempt, 'Attempt metadata does not contain attemptid');
-        $this->assertObjectHasProperty('userid', $attempt, 'Attempt metadata does not contain userid');
-        $this->assertObjectHasProperty('attempt', $attempt, 'Attempt metadata does not contain attempt');
-        $this->assertObjectHasProperty('state', $attempt, 'Attempt metadata does not contain state');
-        $this->assertObjectHasProperty('timestart', $attempt, 'Attempt metadata does not contain timestart');
-        $this->assertObjectHasProperty('timefinish', $attempt, 'Attempt metadata does not contain timefinish');
-        $this->assertObjectHasProperty('username', $attempt, 'Attempt metadata does not contain username');
-        $this->assertObjectHasProperty('firstname', $attempt, 'Attempt metadata does not contain firstname');
-        $this->assertObjectHasProperty('lastname', $attempt, 'Attempt metadata does not contain lastname');
+        $this->assertNotEmpty($attempt->attemptid, 'Attempt metadata does not contain attemptid');
+        $this->assertNotEmpty($attempt->userid, 'Attempt metadata does not contain userid');
+        $this->assertNotEmpty($attempt->attempt, 'Attempt metadata does not contain attempt');
+        $this->assertNotEmpty($attempt->state, 'Attempt metadata does not contain state');
+        $this->assertNotEmpty($attempt->timestart, 'Attempt metadata does not contain timestart');
+        $this->assertNotEmpty($attempt->timefinish, 'Attempt metadata does not contain timefinish');
+        $this->assertNotEmpty($attempt->username, 'Attempt metadata does not contain username');
+        $this->assertNotEmpty($attempt->firstname, 'Attempt metadata does not contain firstname');
+        $this->assertNotEmpty($attempt->lastname, 'Attempt metadata does not contain lastname');
 
         // Test filtered
         $attempts_filtered_existing = $report->get_attempts_metadata($rc->attemptids);
