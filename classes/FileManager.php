@@ -272,8 +272,9 @@ class FileManager {
         }
 
         // Get requested data from DB
-        $job = ArchiveJob::get_by_id($jobid);
-        if (!$job) {
+        try {
+            $job = ArchiveJob::get_by_id($jobid);
+        } catch (\dml_exception $e) {
             throw new \InvalidArgumentException("Job with ID {$jobid} not found");
         }
 
@@ -313,6 +314,12 @@ class FileManager {
         header('Content-Length: '.strlen($filecontents));
         echo $filecontents;
         ob_flush();
+
+        // Do not kill tests
+        if (PHPUNIT_TEST === true) {
+            return;
+        }
+
         die;
     }
 
@@ -369,12 +376,13 @@ class FileManager {
             // All files must be given explicitly to tgz_packer::extract_to_pathname(). Wildcards
             // are unsupported. Therefore, we list the contents and filter the index. This reduces
             // space and time complexity compared to extracting the whole archive at once.
-            $attemptfiles = array_map(
+            $attemptfiles = array_unique(array_values(array_map(
                 fn($file): string => $file->pathname,
-                array_filter($packer->list_files($artifactfile), function($file) use ($attemptpath) {
+                array_filter($packer->list_files($artifactfile), function ($file) use ($attemptpath) {
                     return strpos($file->pathname, ltrim($attemptpath, '/')) === 0;
                 })
-            );
+            )));
+
             if (!$packer->extract_to_pathname($artifactfile, $workdir."/attemptdata", $attemptfiles)) {
                 throw new \moodle_exception('Failed to extract attempt data from artifact archive');
             }
