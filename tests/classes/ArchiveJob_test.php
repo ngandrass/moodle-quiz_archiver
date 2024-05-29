@@ -25,6 +25,7 @@
 namespace quiz_archiver;
 
 use context_course;
+use context_module;
 use context_system;
 
 /**
@@ -829,6 +830,143 @@ class ArchiveJob_test extends \advanced_testcase {
                 'pattern' => '',
                 'isValid' => false,
             ],
+        ];
+    }
+
+    /**
+     * Test generation of valid archive filenames
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     */
+    public function test_generate_archive_filename(): void {
+        // Generate data
+        $mocks = $this->generateMockQuiz();
+        $cm = context_module::instance($mocks->quiz->cmid);
+
+        // Full pattern
+        $fullPattern = 'archive';
+        foreach (ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES as $var) {
+            $fullPattern .= '-${'.$var.'}';
+        }
+        $filename = ArchiveJob::generate_archive_filename(
+            $mocks->course,
+            $cm,
+            $mocks->quiz,
+            $fullPattern
+        );
+        $this->assertStringContainsString($mocks->course->id, $filename, 'Course ID was not found in filename');
+        $this->assertStringContainsString($cm->id, $filename, 'Course module ID was not found in filename');
+        $this->assertStringContainsString($mocks->quiz->id, $filename, 'Quiz ID was not found in filename');
+        $this->assertStringContainsString($mocks->course->fullname, $filename, 'Course name was not found in filename');
+        $this->assertStringContainsString($mocks->course->shortname, $filename, 'Course shortname was not found in filename');
+        $this->assertStringContainsString($mocks->quiz->name, $filename, 'Quiz name was not found in filename');
+    }
+
+    /**
+     * Test generation of archive filenames without variables
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     */
+    public function test_generate_archive_filename_without_variables(): void {
+        // Generate data
+        $mocks = $this->generateMockQuiz();
+        $cm = context_module::instance($mocks->quiz->cmid);
+
+        // Full pattern
+        $filename = ArchiveJob::generate_archive_filename(
+            $mocks->course,
+            $cm,
+            $mocks->quiz,
+            'archive'
+        );
+        $this->assertSame('archive', $filename, 'Filename was not generated correctly');
+    }
+
+    /**
+     * Test generation of archive filenames with invalid patterns
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     */
+    public function test_generate_archive_filename_invalid_pattern(): void {
+        // Generate data
+        $mocks = $this->generateMockQuiz();
+        $cm = context_module::instance($mocks->quiz->cmid);
+
+        // Test filename generation
+        $this->expectException(\invalid_parameter_exception::class);
+        ArchiveJob::generate_archive_filename(
+            $mocks->course,
+            $cm,
+            $mocks->quiz,
+            '.'
+        );
+    }
+
+    /**
+     * Test generation of archive filenames with invalid variables
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     */
+    public function test_generate_archive_filename_invalid_variables(): void {
+        // Generate data
+        $mocks = $this->generateMockQuiz();
+        $cm = context_module::instance($mocks->quiz->cmid);
+
+        // Test filename generation
+        $this->expectException(\invalid_parameter_exception::class);
+        $filename = ArchiveJob::generate_archive_filename(
+            $mocks->course,
+            $cm,
+            $mocks->quiz,
+            'archive-${foo}${bar}${baz}${courseid}'
+        );
+    }
+
+    /**
+     * Test retrieval of human-readable job status
+     *
+     * @dataProvider status_display_args_data_provider
+     *
+     * @param string $status
+     * @return void
+     * @throws \coding_exception
+     */
+    public function test_status_display_args(string $status): void {
+        $res = ArchiveJob::get_status_display_args($status);
+        $this->assertSame(
+            get_string('job_status_'.$status, 'quiz_archiver'),
+            $res['text'],
+            'Status display args were not returned correctly for status: '.$status
+        );
+        $this->assertNotEmpty(
+            $res['color'],
+            'Status display args did not contain a color for status: '.$status
+        );
+    }
+
+    /**
+     * Data provider for test_status_display_args()
+     *
+     * @return array List of job status values to test
+     */
+    public function status_display_args_data_provider(): array {
+        return [
+            ArchiveJob::STATUS_UNKNOWN => ['status' => ArchiveJob::STATUS_UNKNOWN],
+            ArchiveJob::STATUS_UNINITIALIZED => ['status' => ArchiveJob::STATUS_UNINITIALIZED],
+            ArchiveJob::STATUS_AWAITING_PROCESSING => ['status' => ArchiveJob::STATUS_AWAITING_PROCESSING],
+            ArchiveJob::STATUS_RUNNING => ['status' => ArchiveJob::STATUS_RUNNING],
+            ArchiveJob::STATUS_FINISHED => ['status' => ArchiveJob::STATUS_FINISHED],
+            ArchiveJob::STATUS_FAILED => ['status' => ArchiveJob::STATUS_FAILED],
+            ArchiveJob::STATUS_TIMEOUT => ['status' => ArchiveJob::STATUS_TIMEOUT],
+            ArchiveJob::STATUS_DELETED => ['status' => ArchiveJob::STATUS_DELETED],
         ];
     }
 
