@@ -42,7 +42,7 @@ See: https://moodledev.io/general/development/tools/phpunit
     ```
 - Run a single test suite:
     ```bash
-    vendor/bin/phpunit --colors --testdox mod/quiz/report/archiver/tests/classes/Report_test.php
+    vendor/bin/phpunit --colors --testdox mod/quiz/report/archiver/tests/Report_test.php
     ```
 
 ### Automatic test execution for all supported software configurations
@@ -59,7 +59,7 @@ reports!**
 
 1. Run PHPUnit with coverage report:
    ```bash
-   XDEBUG_MODE=coverage vendor/bin/phpunit --colors --testdox --coverage-html /tmp/coverage --filter quiz_archiver
+   XDEBUG_MODE=coverage vendor/bin/phpunit --colors --testdox --coverage-html /tmp/coverage --filter quiz_archiver/*
    ```
 2. Copy the generated report to your machin:
     ```bash
