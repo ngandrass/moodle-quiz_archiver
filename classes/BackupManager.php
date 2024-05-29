@@ -114,12 +114,30 @@ class BackupManager {
     }
 
     /**
+     * Retrieves the backupid of this instance
+     *
+     * @return string Backup ID
+     */
+    public function get_backupid(): string {
+        return $this->backup_metadata->backupid;
+    }
+
+    /**
      * Retrieves the type of this backup controller
      *
      * @return string Type of this backup controller (e.g. course, activity)
      */
     public function get_type(): string {
         return $this->backup_metadata->type;
+    }
+
+    /**
+     * Retrieves the ID of the user that initiated this backup
+     *
+     * @return int User-ID of the backup initiator
+     */
+    public function get_userid(): int {
+        return $this->backup_metadata->userid;
     }
 
     /**
