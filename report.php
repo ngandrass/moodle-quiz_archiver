@@ -343,7 +343,7 @@ class quiz_archiver_report extends report_base {
         string $attempts_filename_pattern,
         ?int $retention_seconds = null
     ): ?ArchiveJob {
-        global $USER;
+        global $CFG, $USER;
 
         // Check permissions.
         require_capability('mod/quiz_archiver:create', $this->context);
@@ -354,7 +354,7 @@ class quiz_archiver_report extends report_base {
         }
 
         // Create temporary webservice token
-        if (class_exists('core_external\util')) {
+        if ($CFG->branch > 401 && class_exists('core_external\util')) {
             // Moodle 4.2 and above
             $wstoken = core_external\util::generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
