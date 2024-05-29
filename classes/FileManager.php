@@ -362,7 +362,7 @@ class FileManager {
             // Search for attempt path
             $attemptpath = null;
             foreach ($metadata as $row) {
-                if ($row[0] == $attemptid) {
+                if (intval($row[0]) === $attemptid) {
                     $attemptpath = $row[9];
                     break;
                 }

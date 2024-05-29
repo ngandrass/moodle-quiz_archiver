@@ -605,7 +605,7 @@ class FileManager_test extends \advanced_testcase {
         // Extract userdata from artifact into temporary stored_file
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Attempt not found/');
-        $fm->extract_attempt_data_from_artifact($storedArtifact, $job->get_id(), 0);
+        $fm->extract_attempt_data_from_artifact($storedArtifact, $job->get_id(), 9999999);
     }
 
     /**
