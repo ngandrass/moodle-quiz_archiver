@@ -90,7 +90,7 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtext('quiz_archiver/job_timeout_min',
             get_string('setting_job_timeout_min', 'quiz_archiver'),
             get_string('setting_job_timeout_min_desc', 'quiz_archiver'),
-            '120',
+            '60',
             PARAM_INT
         ));
 
