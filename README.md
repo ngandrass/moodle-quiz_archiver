@@ -315,6 +315,12 @@ Options:
 
 ### Known Pitfalls
 
+- **Job timeout prior to configured value**
+  - Be aware that there is a configurable job timeout within the Moodle plugin
+    settings (`quiz_archiver | job_timeout_min`) as well as one within the quiz
+    archive worker service (`QUIZ_ARCHIVER_REQUEST_TIMEOUT_SEC`). Since the
+    shortest timeout always takes precedence, make sure to adjust both settings
+    as required.
 - **Access to (some) webservice functions fails**
   - Ensure that webservices and the REST protocol are enabled globally.
   - Ensure that all required webservice functions are enabled for the 

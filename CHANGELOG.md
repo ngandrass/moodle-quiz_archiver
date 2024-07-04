@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.2.9 (XXXXXXXXXX)
+
+- Synchronize default job timeout setting with quiz archive worker and add hint about the additional timeout inside the 
+  archive worker config
+- Describe different job timeout settings inside the "Known Pitfalls" section of
+  the README file.
+
 ## Version 1.2.8 (2024052900)
 
 - Fix autoinstall admin UI form for Moodle 4.1 (LTS)
