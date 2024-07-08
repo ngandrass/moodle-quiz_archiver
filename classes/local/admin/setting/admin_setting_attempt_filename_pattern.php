@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
+ * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class admin_setting_attempt_filename_pattern extends \admin_setting_configtext {
 

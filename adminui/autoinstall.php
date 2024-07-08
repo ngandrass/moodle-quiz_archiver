@@ -19,7 +19,7 @@
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
+ * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__.'/../../../../../config.php');
