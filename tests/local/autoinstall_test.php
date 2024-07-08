@@ -39,10 +39,10 @@ class autoinstall_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
 
-        // Gain privileges
+        // Gain privileges.
         $this->setAdminUser();
 
-        // Execute autoinstall
+        // Execute autoinstall.
         $workerurl = 'http://foo.bar:1337';
         $wsname = 'test_webservice_name';
         $rolename = 'test_role_name';
@@ -55,30 +55,30 @@ class autoinstall_test extends \advanced_testcase {
             $username
         );
 
-        // Check function return
+        // Check function return.
         $this->assertTrue($success, 'Autoinstall returned success=false');
         $this->assertNotEmpty($log, 'Autoinstall returned empty log');
 
-        // Check worker URL
+        // Check worker URL.
         $this->assertSame($workerurl, get_config('quiz_archiver', 'worker_url'), 'Worker URL was not set correctly');
 
-        // Check global config
-        $this->assertEquals(true, get_config('moodle', 'enablewebservices'), 'Webservices were not globally enabled');  // This can not be assertTrue, since Moodle stores a '1'
+        // Check global config.
+        $this->assertEquals(true, get_config('moodle', 'enablewebservices'), 'Webservices were not globally enabled');  // This can not be assertTrue, since Moodle stores a '1'.
         $this->assertStringContainsString('rest', get_config('moodle', 'webserviceprotocols'), 'REST protocol was not globally enabled');
 
-        // Check webservice
+        // Check webservice.
         $webservice = $DB->get_record('external_services', ['name' => $wsname]);
         $this->assertNotEmpty($webservice, 'Webservice was not created');
         $this->assertSame($webservice->name, $wsname, 'Webservice name was not set correctly');
         $this->assertNotEmpty($DB->get_records('external_services_functions', ['externalserviceid' => $webservice->id]), 'Webservice functions were not assigned');
         $this->assertSame($webservice->id, get_config('quiz_archiver', 'webservice_id'), 'Webservice ID was not set correctly');
 
-        // Check role
+        // Check role.
         $role = $DB->get_record('role', ['shortname' => $rolename]);
         $this->assertNotEmpty($role, 'Role was not created');
         $this->assertNotEmpty($DB->get_records('role_capabilities', ['roleid' => $role->id]), 'Role capabilities were not assigned');
 
-        // Check user
+        // Check user.
         $user = $DB->get_record('user', ['username' => $username]);
         $this->assertNotEmpty($user, 'User was not created');
         $this->assertNotEmpty($DB->get_records('role_assignments', ['userid' => $user->id, 'roleid' => $role->id]), 'User role was not assigned');
@@ -95,20 +95,20 @@ class autoinstall_test extends \advanced_testcase {
     public function test_autoinstall_detection(): void {
         $this->resetAfterTest();
 
-        // Gain privileges
+        // Gain privileges.
         $this->setAdminUser();
 
-        // Plugin should be unconfigured
+        // Plugin should be unconfigured.
         $this->assertTrue(autoinstall::plugin_is_unconfigured(), 'Plugin was not unconfigured');
 
-        // Perform autoinstall
+        // Perform autoinstall.
         list($success, $log) = autoinstall::execute('http://foo.bar:1337');
         $this->assertTrue($success, 'First autoinstall failed');
 
-        // Try to detect autoinstall
+        // Try to detect autoinstall.
         $this->assertFalse(autoinstall::plugin_is_unconfigured(), 'Successful autoinstall was not detected');
 
-        // Try to autoinstall a second time
+        // Try to autoinstall a second time.
         list($success, $log) = autoinstall::execute('http://foo.bar:1337');
         $this->assertFalse($success, 'Second autoinstall was successful');
         $this->assertNotEmpty($log, 'Second autoinstall returned empty log');

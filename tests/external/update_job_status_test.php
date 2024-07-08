@@ -38,10 +38,10 @@ class update_job_status_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -65,7 +65,7 @@ class update_job_status_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_capability_requirement(): void {
-        // Create mock quiz and job
+        // Create mock quiz and job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
@@ -80,7 +80,7 @@ class update_job_status_test extends \advanced_testcase {
         );
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
-        // Check that a user without the required capability is rejected
+        // Check that a user without the required capability is rejected.
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
         update_job_status::execute($job->get_jobid(), ArchiveJob::STATUS_UNINITIALIZED);
@@ -97,10 +97,10 @@ class update_job_status_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_wstoken_validation(): void {
-        // Gain access to webservice
+        // Gain access to webservice.
         $this->setAdminUser();
 
-        // Create mock quiz and job
+        // Create mock quiz and job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
@@ -114,7 +114,7 @@ class update_job_status_test extends \advanced_testcase {
             [],
         );
 
-        // Check that a valid token is accepted
+        // Check that a valid token is accepted.
         $_GET['wstoken'] = 'TEST-WS-TOKEN-VALID';
         $this->assertSame(
             ['status' => 'OK'],
@@ -122,7 +122,7 @@ class update_job_status_test extends \advanced_testcase {
             'Valid token was rejected'
         );
 
-        // Check that an invalid token is rejected
+        // Check that an invalid token is rejected.
         $_GET['wstoken'] = 'TEST-WS-TOKEN-INVALID';
         $this->assertSame(
             ['status' => 'E_ACCESS_DENIED'],
@@ -198,11 +198,11 @@ class update_job_status_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_update_job_status(string $originstatus, string $targetstatus, array $expected) {
-        // Gain privileges
+        // Gain privileges.
         $this->setAdminUser();
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
-        // Create mock quiz and job
+        // Create mock quiz and job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
@@ -217,10 +217,10 @@ class update_job_status_test extends \advanced_testcase {
             $originstatus
         );
 
-        // Ensure job is in the expected state
+        // Ensure job is in the expected state.
         $this->assertSame($originstatus, $job->get_status());
 
-        // Execute the external function and check the result
+        // Execute the external function and check the result.
         $result = update_job_status::execute(
             $job->get_jobid(),
             $targetstatus

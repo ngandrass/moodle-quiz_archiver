@@ -34,7 +34,7 @@ class util {
      * @return string Human readable duration string
      */
     public static function duration_to_human_readable(int $duration): string {
-        // Calculate isolated time units
+        // Calculate isolated time units.
         $years = floor($duration / YEARSECS);
         $months = floor(($duration % YEARSECS) / (YEARSECS / 12));
         $days = floor(($duration % (YEARSECS / 12)) / DAYSECS);
@@ -42,7 +42,7 @@ class util {
         $minutes = floor(($duration % HOURSECS) / MINSECS);
         $seconds = floor($duration % MINSECS);
 
-        // Generate human readable string
+        // Generate human readable string.
         $humanreadable = '';
         if ($years > 0) {
             $humanreadable .= $years . 'y ';

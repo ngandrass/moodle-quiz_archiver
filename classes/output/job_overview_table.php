@@ -140,11 +140,11 @@ class job_overview_table extends \table_sql {
     public function col_actions($values) {
         $html = '';
 
-        // Action: Show details
+        // Action: Show details.
         // @codingStandardsIgnoreLine
         $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
 
-        // Action: Download
+        // Action: Download.
         if ($values->pathnamehash) {
             $artifactfile = get_file_storage()->get_file_by_hash($values->pathnamehash);
             $artifacturl = \moodle_url::make_pluginfile_url(
@@ -165,7 +165,7 @@ class job_overview_table extends \table_sql {
             $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }
 
-        // Action: Delete
+        // Action: Delete.
         $deleteurl = new \moodle_url('', [
             'id' => optional_param('id', null, PARAM_INT),
             'mode' => 'archiver',

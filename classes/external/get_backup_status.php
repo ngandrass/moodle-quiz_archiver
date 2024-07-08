@@ -26,7 +26,7 @@ namespace quiz_archiver\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use core_external\external_api;
@@ -77,29 +77,29 @@ class get_backup_status extends external_api {
         string $jobidraw,
         string $backupidraw
     ): array {
-        // Validate request
+        // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobidraw,
             'backupid' => $backupidraw,
         ]);
 
-        // Validate that the jobid exists
+        // Validate that the jobid exists.
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
         } catch (\dml_exception $e) {
             return ['status' => 'E_JOB_NOT_FOUND'];
         }
 
-        // Check access rights
+        // Check access rights.
         if (!$job->has_read_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return ['status' => 'E_ACCESS_DENIED'];
         }
 
-        // Check capabilities
+        // Check capabilities.
         $context = \context_module::instance($job->get_cmid());
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
-        // Get backup
+        // Get backup.
         try {
             $bm = new BackupManager($params['backupid']);
 
@@ -118,7 +118,7 @@ class get_backup_status extends external_api {
             return ['status' => 'E_BACKUP_NOT_FOUND'];
         }
 
-        // Report success
+        // Report success.
         return ['status' => 'SUCCESS'];
     }
 

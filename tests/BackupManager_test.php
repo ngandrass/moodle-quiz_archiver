@@ -39,10 +39,10 @@ class BackupManager_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -88,13 +88,13 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_course_backup(): void {
-        // Initiate a mock course backup
+        // Initiate a mock course backup.
         $this->setAdminUser();
         $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $backup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
 
-        // Check if the backup was created correctly
+        // Check if the backup was created correctly.
         $this->assertNotEmpty($backup, 'Backup was not created');
         $this->assertNotEmpty($backup->backupid, 'Backup ID was not set');
         $this->assertEquals($mock->user->id, $backup->userid, 'User ID was not set correctly');
@@ -116,13 +116,13 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_quiz_backup(): void {
-        // Initiate a mock course backup
+        // Initiate a mock course backup.
         $this->setAdminUser();
         $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $backup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
-        // Check if the backup was created correctly
+        // Check if the backup was created correctly.
         $this->assertNotEmpty($backup, 'Backup was not created');
         $this->assertNotEmpty($backup->backupid, 'Backup ID was not set');
         $this->assertEquals($mock->user->id, $backup->userid, 'User ID was not set correctly');
@@ -230,21 +230,21 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_initialization_by_existing_backupid(): void {
-        // Prepare a course and a quiz backup
+        // Prepare a course and a quiz backup.
         $this->setAdminUser();
         $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
-        // Course backup
+        // Course backup.
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
         $this->assertNotEmpty($actualcoursebackup, 'Course backup was not created correctly from backup ID');
         $this->assertEquals($expectedcoursebackup->backupid, $actualcoursebackup->get_backupid(), 'Course backup ID was not set correctly');
         $this->assertEquals($expectedcoursebackup->userid, $actualcoursebackup->get_userid(), 'Course user ID was not set correctly');
         $this->assertSame(backup::TYPE_1COURSE, $actualcoursebackup->get_type(), 'Course backup type was not set correctly');
 
-        // Quiz backup
+        // Quiz backup.
         $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
         $this->assertNotEmpty($actualquizbackup, 'Quiz backup was not created correctly from backup ID');
         $this->assertEquals($expectedquizbackup->backupid, $actualquizbackup->get_backupid(), 'Quiz backup ID was not set correctly');
@@ -272,20 +272,20 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_backup_status(): void {
-        // Prepare a course and a quiz backup
+        // Prepare a course and a quiz backup.
         $this->setAdminUser();
         $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
-        // Course backup
+        // Course backup.
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
         $this->assertSame(backup::TYPE_1COURSE, $actualcoursebackup->get_type(), 'Course backup type was not retrieved correctly');
         $actualcoursebackup->is_finished_successfully();
         $actualcoursebackup->is_failed();
 
-        // Quiz backup
+        // Quiz backup.
         $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
         $this->assertSame(backup::TYPE_1ACTIVITY, $actualquizbackup->get_type(), 'Quiz backup type was not retrieved correctly');
         $actualquizbackup->is_finished_successfully();
@@ -302,7 +302,7 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_backup_job_association(): void {
-        // Prepare a course and a quiz backup
+        // Prepare a course and a quiz backup.
         $this->setAdminUser();
         $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
@@ -320,11 +320,11 @@ class BackupManager_test extends \advanced_testcase {
         $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
-        // Course backup
+        // Course backup.
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
         $this->assertTrue($actualcoursebackup->is_associated_with_job($job), 'Course backup was not detected as associated with the given job');
 
-        // Quiz backup
+        // Quiz backup.
         $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
         $this->assertTrue($actualquizbackup->is_associated_with_job($job), 'Quiz backup was not detected as associated with the given job');
     }
@@ -339,7 +339,7 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_backup_invalid_job_association(): void {
-        // Prepare a course and a quiz backup
+        // Prepare a course and a quiz backup.
         $this->setAdminUser();
         $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
@@ -357,11 +357,11 @@ class BackupManager_test extends \advanced_testcase {
         $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
-        // Course backup
+        // Course backup.
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
         $this->assertFalse($actualcoursebackup->is_associated_with_job($job), 'Course backup was detected as associated with an unrelated job');
 
-        // Quiz backup
+        // Quiz backup.
         $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
         $this->assertFalse($actualquizbackup->is_associated_with_job($job), 'Quiz backup was detected as associated with an unrelated job');
     }

@@ -32,12 +32,12 @@ use quiz_archiver\local\autoinstall;
 /** @var bool Disables output buffering */
 const NO_OUTPUT_BUFFERING = true;
 
-// Ensure user has permissions
+// Ensure user has permissions.
 require_login();
 $ctx = context_system::instance();
 require_capability('moodle/site:config', $ctx);
 
-// Setup page
+// Setup page.
 $PAGE->set_context($ctx);
 $PAGE->set_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
 $title = get_string('autoinstall_plugin', 'quiz_archiver');
@@ -51,16 +51,16 @@ $returnlink = html_writer::link(
 echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
-// Content
+// Content.
 if (autoinstall::plugin_is_unconfigured()) {
     $form = new autoinstall_form();
 
     if ($form->is_cancelled()) {
-        // Cancelled
+        // Cancelled.
         echo '<p>'.get_string('autoinstall_cancelled', 'quiz_archiver').'</p>';
         echo '<p>'.$returnlink.'</p>';
     } else if ($data = $form->get_data()) {
-        // Perform autoinstall
+        // Perform autoinstall.
         list($success, $log) = autoinstall::execute(
             $data->workerurl,
             $data->wsname,
@@ -68,7 +68,7 @@ if (autoinstall::plugin_is_unconfigured()) {
             $data->username
         );
 
-        // Show result
+        // Show result.
         echo '<p>'.get_string('autoinstall_started', 'quiz_archiver').'</p>';
         echo '<p>'.get_string('logs').'</p>';
         echo "<pre>{$log}</pre><br/>";
@@ -90,5 +90,5 @@ if (autoinstall::plugin_is_unconfigured()) {
     echo '<p>'.$returnlink.'</p>';
 }
 
-// End page
+// End page.
 echo $OUTPUT->footer();

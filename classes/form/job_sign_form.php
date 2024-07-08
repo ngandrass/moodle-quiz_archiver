@@ -42,7 +42,7 @@ class job_sign_form extends \moodleform {
     public function definition() {
         $mform = $this->_form;
 
-        // Warning message
+        // Warning message.
         $warnhead = get_string('areyousure', 'moodle');
         $warnmsg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
         $warndetails = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
@@ -55,19 +55,19 @@ class job_sign_form extends \moodleform {
             </div>
         EOD);
 
-        // Preserve internal information of mod_quiz
+        // Preserve internal information of mod_quiz.
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', 'archiver');
         $mform->setType('mode', PARAM_TEXT);
 
-        // Options
+        // Options.
         $mform->addElement('hidden', 'action', 'sign_job');
         $mform->setType('action', PARAM_TEXT);
         $mform->addElement('hidden', 'jobid', $this->optional_param('jobid', null, PARAM_TEXT));
         $mform->setType('jobid', PARAM_TEXT);
 
-        // Action buttons
+        // Action buttons.
         $this->add_action_buttons(true, get_string('sign_archive', 'quiz_archiver'));
     }
 

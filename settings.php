@@ -41,13 +41,13 @@ if ($hassiteconfig) {
 
     // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
     if ($ADMIN->fulltree) {
-        // Descriptive text
+        // Descriptive text.
         $settings->add(new admin_setting_heading('quiz_archiver/header_docs',
             null,
             get_string('setting_header_docs_desc', 'quiz_archiver')
         ));
 
-        // Autoinstall
+        // Autoinstall.
         if (autoinstall::plugin_is_unconfigured()) {
             $autoinstallurl = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
             $autoinstalldesc = "<a href='{$autoinstallurl}' class='btn btn-primary'>".get_string('autoinstall_start_now', 'quiz_archiver')."</a>";
@@ -60,7 +60,7 @@ if ($hassiteconfig) {
             $autoinstalldesc
         ));
 
-        // Generic settings
+        // Generic settings.
         $settings->add(new admin_setting_heading('quiz_archiver/header_archive_worker',
             get_string('setting_header_archive_worker', 'quiz_archiver'),
             get_string('setting_header_archive_worker_desc', 'quiz_archiver')
@@ -101,7 +101,7 @@ if ($hassiteconfig) {
             PARAM_TEXT
         ));
 
-        // Job Presets
+        // Job Presets.
         $settings->add(new admin_setting_heading('quiz_archiver/header_job_presets',
             get_string('setting_header_job_presets', 'quiz_archiver'),
             get_string('setting_header_job_presets_desc', 'quiz_archiver'),
@@ -211,7 +211,7 @@ if ($hassiteconfig) {
         $set->add_dependent_on('quiz_archiver/job_preset_archive_autodelete');
         $settings->add($set);
 
-        // Time-Stamp Protocol settings
+        // Time-Stamp Protocol settings.
         $settings->add(new admin_setting_heading('quit_archiver/header_tsp',
             get_string('setting_header_tsp', 'quiz_archiver'),
             get_string('setting_header_tsp_desc', 'quiz_archiver')

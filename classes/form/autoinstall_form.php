@@ -48,7 +48,7 @@ class autoinstall_form extends \moodleform {
         $mform = $this->_form;
         $mform->addElement('header', 'header', get_string('settings', 'plugin'));
 
-        // Add configuration options
+        // Add configuration options.
         $mform->addElement('text', 'workerurl', get_string('setting_worker_url', 'quiz_archiver'), ['size' => 50]);
         $mform->addElement('static', 'workerurl_help', '', get_string('setting_worker_url_desc', 'quiz_archiver'));
         $mform->setType('workerurl', PARAM_TEXT);
@@ -72,7 +72,7 @@ class autoinstall_form extends \moodleform {
         $mform->setType('username', PARAM_TEXT);
         $mform->addRule('username', null, 'required', null, 'client');
 
-        // Action buttons
+        // Action buttons.
         $this->add_action_buttons(true, get_string('confirm', 'moodle'));
     }
 

@@ -127,12 +127,12 @@ class FileManager {
      * @throws \stored_file_creation_exception
      */
     public function store_uploaded_artifact(stored_file $draftfile): ?stored_file {
-        // Check draftfile
+        // Check draftfile.
         if ($draftfile->get_filearea() != "draft" || $draftfile->get_component() != "user") {
             throw new \file_exception('Passed draftfile does not reside inside the draft area of the webservice user. Aborting');
         }
 
-        // Create the final stored archive file from draft file
+        // Create the final stored archive file from draft file.
         $fs = get_file_storage();
         $artifactfile = $fs->create_file_from_storedfile([
             'contextid'    => $this->context->id,
@@ -145,7 +145,7 @@ class FileManager {
             'timemodified' => time(),
         ], $draftfile);
 
-        // Unlink old draft file
+        // Unlink old draft file.
         $draftfile->delete();
 
         return $artifactfile;
@@ -189,12 +189,12 @@ class FileManager {
      * @return string|null Hexadecimal hash
      */
     public static function hash_file(stored_file $file, string $algo = 'sha256'): ?string {
-        // Validate requested hash algorithm
+        // Validate requested hash algorithm.
         if (!array_search($algo, hash_algos())) {
             return null;
         }
 
-        // Calculate file hash chunk-wise
+        // Calculate file hash chunk-wise.
         $fh = $file->get_content_file_handle(stored_file::FILE_HANDLE_FOPEN);
         $hashctx = hash_init($algo);
         while (!feof($fh)) {
@@ -251,7 +251,7 @@ class FileManager {
      * @throws \dml_exception On database error
      */
     protected function send_virtual_file_tsp(string $relativepath): void {
-        // Validate relativepath
+        // Validate relativepath.
         $args = explode('/', $relativepath);
         if (count($args) !== 6) {
             throw new \InvalidArgumentException("Invalid relativepath {$relativepath}");
@@ -271,7 +271,7 @@ class FileManager {
             throw new \InvalidArgumentException("Invalid filename {$filename}");
         }
 
-        // Get requested data from DB
+        // Get requested data from DB.
         try {
             $job = ArchiveJob::get_by_id($jobid);
         } catch (\dml_exception $e) {
@@ -287,7 +287,7 @@ class FileManager {
             throw new \InvalidArgumentException("No TSP data found for job with ID {$jobid}");
         }
 
-        // Get requested file contents
+        // Get requested file contents.
         switch ($filename) {
             case self::TSP_DATA_QUERY_FILENAME:
                 $filecontents = $tspdata->query;
@@ -301,7 +301,7 @@ class FileManager {
                 throw new \InvalidArgumentException("Invalid filename {$filename}");
         }
 
-        // Send file to the client
+        // Send file to the client.
         \core\session\manager::write_close(); // Unlock session during file serving.
         ob_clean();
         header('Content-Description: File Transfer');
@@ -315,7 +315,7 @@ class FileManager {
         echo $filecontents;
         ob_flush();
 
-        // Do not kill tests
+        // Do not kill tests.
         if (PHPUNIT_TEST === true) {
             return;
         }
@@ -338,20 +338,20 @@ class FileManager {
     public function extract_attempt_data_from_artifact(stored_file $artifactfile, int $jobid, int $attemptid): ?stored_file {
         global $CFG;
 
-        // Prepare
+        // Prepare.
         $packer = get_file_packer('application/x-gzip');
         $workdir = "{$CFG->tempdir}/quiz_archiver/jid{$jobid}_cid{$this->courseid}_cmid{$this->cmid}_qid{$this->quizid}_aid{$attemptid}";
 
-        // Wrap in try-catch to ensure cleanup on exit
+        // Wrap in try-catch to ensure cleanup on exit.
         try {
-            // Extract metadata file from artifact and find relevant path information
+            // Extract metadata file from artifact and find relevant path information.
             $packer->extract_to_pathname($artifactfile, $workdir, [
                 self::ARTIFACT_METADATA_FILE,
             ]);
             $metadata = array_map('str_getcsv', file($workdir."/".self::ARTIFACT_METADATA_FILE));
 
             if ($metadata[0][0] !== 'attemptid' || $metadata[0][9] !== 'path') {
-                // Fail silently for old archives for now
+                // Fail silently for old archives for now.
                 if ($metadata[0][9] === 'report_filename') {
                     throw new \invalid_state_exception('Old artifact format is skipped');
                 } else {
@@ -359,7 +359,7 @@ class FileManager {
                 }
             }
 
-            // Search for attempt path
+            // Search for attempt path.
             $attemptpath = null;
             foreach ($metadata as $row) {
                 if (intval($row[0]) === $attemptid) {
@@ -372,7 +372,7 @@ class FileManager {
                 throw new \moodle_exception('Attempt not found in metadata file');
             }
 
-            // Extract attempt data from artifact
+            // Extract attempt data from artifact.
             // All files must be given explicitly to tgz_packer::extract_to_pathname(). Wildcards
             // are unsupported. Therefore, we list the contents and filter the index. This reduces
             // space and time complexity compared to extracting the whole archive at once.
@@ -387,7 +387,7 @@ class FileManager {
                 throw new \moodle_exception('Failed to extract attempt data from artifact archive');
             }
 
-            // Create new archive from extracted attempt data into temp filearea
+            // Create new archive from extracted attempt data into temp filearea.
             $exportexpiry = time() + self::ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS;
             $exportfile = $packer->archive_to_storage(
                 [
@@ -412,7 +412,7 @@ class FileManager {
                 throw $e;
             }
         } finally {
-            // Cleanup
+            // Cleanup.
             remove_dir($workdir);
         }
 
@@ -432,12 +432,12 @@ class FileManager {
     public static function cleanup_temp_files(): int {
         global $DB;
 
-        // Prepare
+        // Prepare.
         $fs = get_file_storage();
         $now = time();
         $numfilesdeleted = 0;
 
-        // Query using raw SQL to get temp files independent of contextid to speed this up a LOT
+        // Query using raw SQL to get temp files independent of contextid to speed this up a LOT.
         $tempfilerecords = $DB->get_records_sql("
             SELECT id, filepath, filesize FROM {files}
             WHERE component = '".self::COMPONENT_NAME."'
@@ -445,7 +445,7 @@ class FileManager {
                 AND filepath != '/';
         ");
 
-        // Delete files that are expired (expiry date in path is smaller than now)
+        // Delete files that are expired (expiry date in path is smaller than now).
         foreach ($tempfilerecords as $f) {
             $match = preg_match('/^\/(?P<expiry>\d+)\/.*$/m', $f->filepath, $matches);
             if ($match) {

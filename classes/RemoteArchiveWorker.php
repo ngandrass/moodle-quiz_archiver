@@ -83,7 +83,7 @@ class RemoteArchiveWorker {
         global $CFG;
         $moodleurlbase = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
-        // Prepare request payload
+        // Prepare request payload.
         $payload = json_encode(array_merge(
             [
             "api_version" => self::API_VERSION,
@@ -100,9 +100,9 @@ class RemoteArchiveWorker {
             $joboptions
         ));
 
-        // Execute request
+        // Execute request.
         // Moodle curl wrapper automatically closes curl handle after requests. No need to call curl_close() manually.
-        $c = new curl(['ignoresecurity' => true]); // Ignore URL filter since we require custom ports and the URL is only configurable by admins
+        $c = new curl(['ignoresecurity' => true]); // Ignore URL filter since we require custom ports and the URL is only configurable by admins.
         $result = $c->post($this->serverurl, $payload, [
             'CURLOPT_CONNECTTIMEOUT' => $this->connectiontimeout,
             'CURLOPT_TIMEOUT' => $this->requesttimeout,
@@ -112,10 +112,10 @@ class RemoteArchiveWorker {
             ],
         ]);
 
-        $httpstatus = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string
+        $httpstatus = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string.
         $data = json_decode($result);
 
-        // Handle errors
+        // Handle errors.
         if ($httpstatus != 200) {
             if ($data === null) {
                 throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $httpstatus");
@@ -127,7 +127,7 @@ class RemoteArchiveWorker {
             }
         }
 
-        // Decoded JSON data containing jobid and job_status returned on success
+        // Decoded JSON data containing jobid and job_status returned on success.
         return $data;
     }
 

@@ -50,17 +50,17 @@ function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $for
     require_capability('quiz/grading:viewstudentnames', $context);
     require_capability('quiz/grading:viewidnumber', $context);
 
-    // Validate course
+    // Validate course.
     if ($args[1] !== $course->id) {
         send_file_not_found();
     }
 
-    // Try to serve file
+    // Try to serve file.
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
     $fullpath = "/$context->id/".FileManager::COMPONENT_NAME."/$filearea/$relativepath";
 
-    // Catch virtual files
+    // Catch virtual files.
     if (FileManager::filearea_is_virtual($filearea)) {
         try {
             $fm = new FileManager($args[1], $args[2], $args[3]);
@@ -70,7 +70,7 @@ function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $for
         }
     }
 
-    // Try to serve physical files
+    // Try to serve physical files.
     $file = $fs->get_file_by_hash(sha1($fullpath));
     if (!$file || $file->is_directory()) {
         send_file_not_found();

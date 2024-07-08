@@ -38,10 +38,10 @@ class get_backup_status_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -66,7 +66,7 @@ class get_backup_status_test extends \advanced_testcase {
      * @throws \DOMException
      */
     public function test_capability_requirement(): void {
-        // Create job
+        // Create job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
@@ -81,7 +81,7 @@ class get_backup_status_test extends \advanced_testcase {
         );
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
-        // Check that a user without the required capability is rejected
+        // Check that a user without the required capability is rejected.
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
         get_backup_status::execute($job->get_jobid(), 'f1d2d2f924e986ac86fdf7b36c94bcdf32beec15');
@@ -114,7 +114,7 @@ class get_backup_status_test extends \advanced_testcase {
             get_backup_status::execute($jobid, $backupid);
         // @codingStandardsIgnoreLine
         } catch (\dml_exception $e) {
-            // Ignore
+            // Ignore.
         }
     }
 
@@ -126,7 +126,7 @@ class get_backup_status_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function parameter_data_provider(): array {
-        // Create job
+        // Create job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
@@ -162,10 +162,10 @@ class get_backup_status_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_wstoken_access_check(): void {
-        // Gain webservice permission
+        // Gain webservice permission.
         $this->setAdminUser();
 
-        // Create job
+        // Create job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
@@ -179,7 +179,7 @@ class get_backup_status_test extends \advanced_testcase {
             []
         );
 
-        // Check that correct wstoken allows access
+        // Check that correct wstoken allows access.
         $_GET['wstoken'] = 'TEST-WS-TOKEN-VALID';
         $this->assertSame(
             ['status' => 'E_BACKUP_NOT_FOUND'],
@@ -187,7 +187,7 @@ class get_backup_status_test extends \advanced_testcase {
             'Valid wstoken was falsely rejected'
         );
 
-        // Check that incorrect wstoken is rejected
+        // Check that incorrect wstoken is rejected.
         $_GET['wstoken'] = 'TEST-WS-TOKEN-INVALID';
         $this->assertSame(
             ['status' => 'E_ACCESS_DENIED'],

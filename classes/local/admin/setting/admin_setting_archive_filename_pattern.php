@@ -36,13 +36,13 @@ class admin_setting_archive_filename_pattern extends \admin_setting_configtext {
      * @throws \coding_exception
      */
     public function validate($data) {
-        // Basic data validation
+        // Basic data validation.
         $parentvalidation = parent::validate($data);
         if ($parentvalidation !== true) {
             return $parentvalidation;
         }
 
-        // Validate filename pattern
+        // Validate filename pattern.
         if (!ArchiveJob::is_valid_archive_filename_pattern($data)) {
             return get_string('error_invalid_archive_filename_pattern', 'quiz_archiver');
         }

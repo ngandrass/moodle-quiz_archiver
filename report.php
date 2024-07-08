@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use mod_quiz\local\reports\report_base;
@@ -96,7 +96,7 @@ class quiz_archiver_report extends report_base {
             'jobOverviewTable' => "",
         ];
 
-        // Handle job delete form
+        // Handle job delete form.
         if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
             $jobdeleteform = new job_delete_form();
 
@@ -108,7 +108,7 @@ class quiz_archiver_report extends report_base {
                 // Check permissions.
                 require_capability('mod/quiz_archiver:delete', $this->context);
 
-                // Execute deletion
+                // Execute deletion.
                 $formdata = $jobdeleteform->get_data();
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete();
             } else {
@@ -117,7 +117,7 @@ class quiz_archiver_report extends report_base {
             }
         }
 
-        // Handle artifact delete form
+        // Handle artifact delete form.
         if (optional_param('action', null, PARAM_TEXT) === 'delete_artifact') {
             $arfifactdeleteform = new artifact_delete_form();
 
@@ -129,7 +129,7 @@ class quiz_archiver_report extends report_base {
                 // Check permissions.
                 require_capability('mod/quiz_archiver:delete', $this->context);
 
-                // Execute deletion
+                // Execute deletion.
                 $formdata = $arfifactdeleteform->get_data();
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
             } else {
@@ -138,7 +138,7 @@ class quiz_archiver_report extends report_base {
             }
         }
 
-        // Handle job sign form
+        // Handle job sign form.
         if (optional_param('action', null, PARAM_TEXT) === 'sign_job') {
             $jobsignform = new job_sign_form();
 
@@ -150,7 +150,7 @@ class quiz_archiver_report extends report_base {
                 // Check permissions.
                 require_capability('mod/quiz_archiver:create', $this->context);
 
-                // Execute signing
+                // Execute signing.
                 $formdata = $jobsignform->get_data();
                 $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
                 $jobidlogstr = ' ('.get_string('jobid', 'quiz_archiver').': '.$formdata->jobid.')';
@@ -188,7 +188,7 @@ class quiz_archiver_report extends report_base {
             }
         }
 
-        // Determine page to display
+        // Determine page to display.
         if (!quiz_has_questions($quiz->id)) {
             $tplctx['quizMissingSomethingWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
         } else {
@@ -201,7 +201,7 @@ class quiz_archiver_report extends report_base {
             }
         }
 
-        // Archive quiz form
+        // Archive quiz form.
         if (!array_key_exists('quizMissingSomethingWarning', $tplctx)) {
             $archivequizform = new archive_quiz_form(
                 $this->quiz->name,
@@ -239,7 +239,7 @@ class quiz_archiver_report extends report_base {
                     ];
                 }
 
-                // Do not print job overview table if job creation failed
+                // Do not print job overview table if job creation failed.
                 if ($job == null) {
                     unset($tplctx['jobOverviewTable']);
                 }
@@ -248,9 +248,9 @@ class quiz_archiver_report extends report_base {
             }
         }
 
-        // Job overview table
+        // Job overview table.
         if (array_key_exists('jobOverviewTable', $tplctx)) {
-            // Generate table
+            // Generate table.
             $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
             $jobtbl->define_baseurl($this->base_url());
             ob_start();
@@ -259,9 +259,9 @@ class quiz_archiver_report extends report_base {
             ob_end_clean();
             $tplctx['jobOverviewTable'] = $jobtblhtml;
 
-            // Prepare job metadata for job detail modals
+            // Prepare job metadata for job detail modals.
             $tplctx['jobs'] = array_map(function($jm): array {
-                // Generate action URLs
+                // Generate action URLs.
                 $jm['action_urls'] = [
                     'delete_job' => (new moodle_url($this->base_url(), [
                         'id' => optional_param('id', null, PARAM_INT),
@@ -292,7 +292,7 @@ class quiz_archiver_report extends report_base {
                     ]))->out(),
                 ];
 
-                // Inject global TSP settings
+                // Inject global TSP settings.
                 $jm['tsp_enabled'] = ($this->config->tsp_enable == true); // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
 
                 return [
@@ -302,12 +302,12 @@ class quiz_archiver_report extends report_base {
             }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
         }
 
-        // Housekeeping for jobs associated with this quiz
+        // Housekeeping for jobs associated with this quiz.
         foreach (ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id) as $job) {
             $job->timeout_if_overdue($this->config->job_timeout_min);
         }
 
-        // Render output
+        // Render output.
         echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplctx);
 
         return true;
@@ -348,14 +348,14 @@ class quiz_archiver_report extends report_base {
         // Check permissions.
         require_capability('mod/quiz_archiver:create', $this->context);
 
-        // Check if webservice is configured properly
+        // Check if webservice is configured properly.
         if (autoinstall::plugin_is_unconfigured()) {
             throw new \RuntimeException(get_string('error_plugin_is_not_configured', 'quiz_archiver'));
         }
 
-        // Create temporary webservice token
+        // Create temporary webservice token.
         if ($CFG->branch > 401 && class_exists('core_external\util')) {
-            // Moodle 4.2 and above
+            // Moodle 4.2 and above.
             $wstoken = core_external\util::generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
                 core_external\util::get_service_by_id($this->config->webservice_id),
@@ -365,8 +365,8 @@ class quiz_archiver_report extends report_base {
                 0
             );
         } else {
-            // Moodle 4.1 and below
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+            // Moodle 4.1 and below.
+            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             $wstoken = external_generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
                 $this->config->webservice_id,
@@ -377,10 +377,10 @@ class quiz_archiver_report extends report_base {
             );
         }
 
-        // Get attempt metadata
+        // Get attempt metadata.
         $attempts = $this->report->get_attempts();
 
-        // Prepare task: Export quiz attempts
+        // Prepare task: Export quiz attempts.
         $taskarchivequizattempts = null;
         if ($exportattempts) {
             $taskarchivequizattempts = [
@@ -393,7 +393,7 @@ class quiz_archiver_report extends report_base {
             ];
         }
 
-        // Prepare task: Moodle backups
+        // Prepare task: Moodle backups.
         $taskmoodlebackups = null;
         if ($exportquizbackup || $exportcoursebackup) {
             $taskmoodlebackups = [];
@@ -407,7 +407,7 @@ class quiz_archiver_report extends report_base {
             }
         }
 
-        // Generate job settings array
+        // Generate job settings array.
         $jobsettings = [];
         $jobsettings['num_attempts'] = count($attempts);
         $jobsettings['export_attempts'] = $exportattempts;
@@ -423,7 +423,7 @@ class quiz_archiver_report extends report_base {
             $jobsettings['archive_retention_time'] = util::duration_to_human_readable($retentionseconds);
         }
 
-        // Request archive worker
+        // Request archive worker.
         $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/').'/archive', 10, 20);
         try {
             $jobmetadata = $worker->enqueue_archive_job(
@@ -438,7 +438,7 @@ class quiz_archiver_report extends report_base {
                 $taskmoodlebackups,
             );
 
-            // Persist job in database
+            // Persist job in database.
             $job = ArchiveJob::create(
                 $jobmetadata->jobid,
                 $this->course->id,
@@ -452,7 +452,7 @@ class quiz_archiver_report extends report_base {
                 $jobmetadata->status
             );
 
-            // Link all temporary files to be created, if present
+            // Link all temporary files to be created, if present.
             if ($taskmoodlebackups) {
                 foreach ($taskmoodlebackups as $task) {
                     $job->link_temporary_file($task->pathnamehash);

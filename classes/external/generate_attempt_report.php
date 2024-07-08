@@ -26,7 +26,7 @@ namespace quiz_archiver\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use core_external\external_api;
@@ -125,7 +125,7 @@ class generate_attempt_report extends external_api {
     ): array {
         global $DB, $PAGE;
 
-        // Validate request
+        // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'courseid' => $courseidraw,
             'cmid' => $cmidraw,
@@ -136,11 +136,11 @@ class generate_attempt_report extends external_api {
             'attachments' => $attachmentsraw,
         ]);
 
-        // Check capabilities
+        // Check capabilities.
         $context = \context_module::instance($params['cmid']);
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
-        // Acquire required data objects
+        // Acquire required data objects.
         if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
             throw new \invalid_parameter_exception("No course with given courseid found");
         }
@@ -151,12 +151,12 @@ class generate_attempt_report extends external_api {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
         }
 
-        // Validate filename pattern
+        // Validate filename pattern.
         if (!ArchiveJob::is_valid_attempt_filename_pattern($params['filenamepattern'])) {
             throw new \invalid_parameter_exception("Report filename pattern is invalid");
         }
 
-        // Prepare response
+        // Prepare response.
         $res = [
             'courseid' => $params['courseid'],
             'cmid' => $params['cmid'],
@@ -164,10 +164,10 @@ class generate_attempt_report extends external_api {
             'attemptid' => $params['attemptid'],
         ];
 
-        // Forcefully set URL in $PAGE to the webservice handler to prevent further warnings
+        // Forcefully set URL in $PAGE to the webservice handler to prevent further warnings.
         $PAGE->set_url(new \moodle_url('/webservice/rest/server.php', ['wsfunction' => 'quiz_archiver_generate_attempt_report']));
 
-        // Generate report
+        // Generate report.
         $report = new Report($course, $cm, $quiz);
         if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
@@ -180,17 +180,17 @@ class generate_attempt_report extends external_api {
 
         $res['report'] = $report->generate_full_page($params['attemptid'], $params['sections']);
 
-        // Check for attachments
+        // Check for attachments.
         if ($params['attachments']) {
             $res['attachments'] = $report->get_attempt_attachments_metadata($params['attemptid']);
         } else {
             $res['attachments'] = [];
         }
 
-        // Generate filename
+        // Generate filename.
         $res['filename'] = ArchiveJob::generate_attempt_filename($course, $cm, $quiz, $params['attemptid'], $params['filenamepattern']);
 
-        // Return response
+        // Return response.
         $res['status'] = 'OK';
 
         return $res;

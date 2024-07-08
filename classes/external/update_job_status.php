@@ -26,7 +26,7 @@ namespace quiz_archiver\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use core_external\external_api;
@@ -75,7 +75,7 @@ class update_job_status extends external_api {
         string $jobidraw,
         string $statusraw
     ): array {
-        // Validate request
+        // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobidraw,
             'status' => $statusraw,
@@ -84,7 +84,7 @@ class update_job_status extends external_api {
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
 
-            // Check capabilities
+            // Check capabilities.
             $context = \context_module::instance($job->get_cmid());
             require_capability('mod/quiz_archiver:use_webservice', $context);
 
@@ -107,7 +107,7 @@ class update_job_status extends external_api {
             ];
         }
 
-        // Report success
+        // Report success.
         return [
             'status' => 'OK',
         ];

@@ -171,7 +171,7 @@ class BackupManager {
     protected static function initiate_backup(string $type, int $id, int $userid): object {
         global $CFG;
 
-        // Validate type and set variables accordingly
+        // Validate type and set variables accordingly.
         switch ($type) {
             case backup::TYPE_1COURSE:
                 $contextid = context_course::instance($id)->id;
@@ -183,7 +183,7 @@ class BackupManager {
                 throw new \ValueError("Backup type not supported");
         }
 
-        // Initialize backup
+        // Initialize backup.
         $bc = new backup_controller(
             $type,
             $id,
@@ -196,7 +196,7 @@ class BackupManager {
         $backupid = $bc->get_backupid();
         $filename = 'quiz_archiver-'.$type.'-backup-'.$id.'-'.date("Ymd-His").'.mbz';
 
-        // Configure backup
+        // Configure backup.
         $tasks = $bc->get_plan()->get_tasks();
         foreach ($tasks as $task) {
             if ($task instanceof \backup_root_task) {
@@ -208,14 +208,14 @@ class BackupManager {
             }
         }
 
-        // Enqueue as adhoc task
+        // Enqueue as adhoc task.
         $bc->set_status(backup::STATUS_AWAITING);
         $asynctask = new \core\task\asynchronous_backup_task();
         $asynctask->set_custom_data(['backupid' => $backupid]);
         $asynctask->set_userid($userid);
         \core\task\manager::queue_adhoc_task($asynctask);
 
-        // Generate backup file url
+        // Generate backup file url.
         $url = strval(\moodle_url::make_webservice_pluginfile_url(
             $contextid,
             'backup',

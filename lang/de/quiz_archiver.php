@@ -32,18 +32,18 @@ $string['thanks_for_installing'] = 'Vielen Dank für die Installation des Quiz A
 $string['go_to_plugin_settings'] = 'Plugin-Einstellungen öffnen';
 $string['manual_configuration_continue'] = 'Um alle Plugin-Einstellungen manuell zu setzen, verwenden Sie die Schaltfläche "Weiter" am Ende dieser Seite.';
 
-// Capabilities
+// Capabilities.
 $string['quiz_archiver:view'] = 'Quiz Archiver Berichtsseite anzeigen';
 $string['quiz_archiver:archive'] = 'Erstellen und Löschen von Testarchiven';
 $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen (lesend und schreibend)';
 
-// General
+// General.
 $string['quiz_archive'] = 'Testarchiv';
 $string['quiz_archive_details'] = 'Details des Testarchivs';
 $string['quiz_archive_not_found'] = 'Testarchiv nicht gefunden';
 $string['quiz_archive_not_ready'] = 'Testarchiv noch nicht bereit';
 
-// Template: Overview
+// Template: Overview.
 $string['archived'] = 'Archiviert';
 $string['users_with_attempts'] = 'Nutzende mit Versuchen';
 $string['archive_autodelete'] = 'Automatische Löschung';
@@ -88,10 +88,10 @@ $string['job_overview'] = 'Testarchive';
 $string['num_attempts'] = 'Anzahl Testversuche';
 $string['error_plugin_is_not_configured'] = 'Fehler: Das Quiz Archiver Plugin ist noch nicht konfiguriert. Bitte kontaktieren Sie Ihren Website-Administrator.';
 
-// Job creation form: Filename pattern
+// Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archivname';
 $string['archive_filename_pattern_help'] = 'Name des erzeugten Archivs. Variablen <b>müssen</b> dem <code>${variablename}</code> Muster folgen. Die Dateiendung wird automatisch hinzugefügt.<br><br><b>Verfügbare Variablen</b>: <ul>{$a->variables}</ul><b>Verbotene Zeichen</b>: <code>{$a->forbiddenchars}</code>';
-// TODO: Remove the following 2 lines after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove the following 2 lines after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 $string['archive_filename_pattern_moodle42'] = 'Archivname';
 $string['archive_filename_pattern_moodle42_help'] = 'Name des erzeugten Archivs. Variablen <b>müssen</b> dem <code>${variablename}</code> Muster folgen. Die Dateiendung wird automatisch hinzugefügt.<br><br><b>Verfügbare Variablen</b>: <ul><li><code>${courseid}</code>: Kurs-ID</li><li><code>${coursename}</code>: Kursname</li><li><code>${courseshortname}</code>: Kurzer Kursname</li><li><code>${cmid}</code>: Kursmodul-ID</li><li><code>${quizid}</code>: Test-ID</li><li><code>${quizname}</code>: Testname</li><li><code>${date}</code>: Aktuelles Datum <small>(YYYY-MM-DD)</small></li><li><code>${time}</code>: Aktuelle Uhrzeit <small>(HH-MM-SS)</small></li><li><code>${timestamp}</code>: Aktueller Unix Timestamp</li></ul><b>Verbotene Zeichen</b>: <code>\/.:;*?!"&lt;&gt;|</code>';
 $string['archive_filename_pattern_variable_courseid'] = 'Kurs-ID';
@@ -106,7 +106,7 @@ $string['archive_filename_pattern_variable_timestamp'] = 'Aktueller Unix Timesta
 $string['error_invalid_archive_filename_pattern'] = 'Ungültiger Archivname. Bitte korrigieren Sie Ihre Eingabe und versuchen Sie es erneut.';
 $string['export_attempts_filename_pattern'] = 'Versuchsname';
 $string['export_attempts_filename_pattern_help'] = 'Name eines archivierten Versuchs. Variablen <b>müssen</b> dem <code>${variablename}</code> Muster folgen. Die Dateiendung wird automatisch hinzugefügt.<br><br><b>Verfügbare Variablen</b>: <ul>{$a->variables}</ul><b>Verbotene Zeichen</b>: <code>{$a->forbiddenchars}</code>';
-// TODO: Remove the following 2 lines after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove the following 2 lines after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 $string['export_attempts_filename_pattern_moodle42'] = 'Versuchsname';
 $string['export_attempts_filename_pattern_moodle42_help'] = 'Name eines archivierten Versuchs. Variablen <b>müssen</b> dem <code>${variablename}</code> Muster folgen. Die Dateiendung wird automatisch hinzugefügt.<br><br><b>Verfügbare Variablen</b>: <ul><li><code>${courseid}</code>: Kurs-ID</li><li><code>${coursename}</code>: Kursname</li><li><code>${courseshortname}</code>: Kurzer Kursname</li><li><code>${cmid}</code>: Kursmodul-ID</li><li><code>${quizid}</code>: Test-ID</li><li><code>${quizname}</code>: Testname</li><li><code>${attemptid}</code>: Versuchs-ID</li><li><code>${username}</code>: Nutzer Anmeldename</li><li><code>${firstname}</code>: Nutzer Vorname</li><li><code>${lastname}</code>: Nutzer Nachname</li><li><code>${timestart}</code>: Versuchsstart (Unix Timestamp)</li><li><code>${timefinish}</code>: Versuchsende (Unix Timestamp)</li><li><code>${date}</code>: Aktuelles Datum <small>(YYYY-MM-DD)</small></li><li><code>${time}</code>: Aktuelle Uhrzeit <small>(HH-MM-SS)</small></li><li><code>${timestamp}</code>: Aktueller Unix Timestamp</li></ul><b>Verbotene Zeichen</b>: <code>\/.:;*?!"&lt;&gt;|</code>';
 $string['export_attempts_filename_pattern_variable_courseid'] = 'Kurs-ID';
@@ -126,7 +126,7 @@ $string['export_attempts_filename_pattern_variable_time'] = 'Aktuelle Uhrzeit <s
 $string['export_attempts_filename_pattern_variable_timestamp'] = 'Aktueller Unix Timestamp';
 $string['error_invalid_attempt_filename_pattern'] = 'Ungültiger Versuchsname. Bitte korrigieren Sie Ihre Eingabe und versuchen Sie es erneut.';
 
-// Job
+// Job.
 $string['delete_artifact'] = 'Testarchiv löschen';
 $string['delete_artifact_warning'] = 'Sind Sie sicher, dass Sie dieses Testarchiv inklusive <b>aller archivierten Daten</b> löschen möchten?. Die Metadaten des Archivierungsauftrags werden hierbei nicht gelöscht.';
 $string['delete_job'] = 'Archivierungsauftrag löschen';
@@ -143,7 +143,7 @@ $string['job_status_FAILED'] = 'Fehler';
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
 $string['job_status_DELETED'] = 'Gelöscht';
 
-// Job details
+// Job details.
 $string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
 $string['archive_autodelete_deleted'] = 'Testarchive wurde automatisch gelöscht';
 $string['archive_autodelete_in'] = 'Testarchiv wird gelöscht in {$a}';
@@ -163,12 +163,12 @@ $string['signed_by'] = 'von';
 $string['tsp_query_filename'] = 'query.tsq';
 $string['tsp_reply_filename'] = 'reply.tsr';
 
-// TimeStampProtocolClient
+// TimeStampProtocolClient.
 $string['tsp_client_error_content_type'] = 'TSP Server hat einen unerwarteten Content-Type {$a} zurückgegeben';
 $string['tsp_client_error_curl'] = 'Fehler beim senden des TSP Requests: {$a}';
 $string['tsp_client_error_http_code'] = 'TSP Server hat unerwarteten HTTP Statuscode {$a} zurückgegeben';
 
-// Settings
+// Settings.
 $string['setting_autoconfigure'] = 'Automatische Konfiguration';
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Konfiguration des Archive Worker Services und des Moodle Webservices.';
@@ -193,12 +193,12 @@ $string['setting_webservice_userid_desc'] = 'User-ID des Moodle Nutzers, der vom
 $string['setting_worker_url'] = 'Archive Worker URL';
 $string['setting_worker_url_desc'] = 'URL des Archive Worker Services, der für die Ausführung von Archivierungsaufträgen genutzt wird.<br/>Beispiel: <code>http://127.0.0.1:8080</code> oder <code>http://moodle-quiz-archive-worker:8080</code>';
 
-// Errors
+// Errors.
 $string['error_worker_connection_failed'] = 'Verbindung zum Archive Worker fehlgeschlagen.';
 $string['error_worker_reported_error'] = 'Der Archive Worker hat einen Fehler gemeldet: {$a}';
 $string['error_worker_unknown'] = 'Ein unbekannter Fehler ist beim Senden des Auftrags zum Archive Worker aufgetreten.';
 
-// Privacy
+// Privacy.
 $string['privacy:metadata:core_files'] = 'Das Quiz Archiver Plugin speichert erstellte Testarchive im Moodle Dateisystem.';
 $string['privacy:metadata:quiz_archiver_jobs'] = 'Metadaten über erstellte Testarchive.';
 $string['privacy:metadata:quiz_archiver_jobs:courseid'] = 'ID des Kurses der zu einem Testarchiv gehört.';
@@ -216,7 +216,7 @@ $string['privacy:metadata:quiz_archiver_tsp:server'] = 'Die URL des TSP Servers,
 $string['privacy:metadata:quiz_archiver_tsp:timestampquery'] = 'Die TimestampQuery, der an den TSP Server gesendet wurde.';
 $string['privacy:metadata:quiz_archiver_tsp:timestampreply'] = 'Die TimestampReply, die vom TSP Server empfangen wurde.';
 
-// Tasks
+// Tasks.
 $string['task_cleanup_temp_files'] = 'Bereinigen temporärer Dateien';
 $string['task_cleanup_temp_files_start'] = 'Räume temporäre Dateien auf ...';
 $string['task_cleanup_temp_files_report'] = '{$a} temporäre Dateien gelöscht.';
@@ -225,7 +225,7 @@ $string['task_autodelete_job_artifacts'] = 'Löschen abgelaufener Testarchive';
 $string['task_autodelete_job_artifacts_start'] = 'Lösche abgelaufene Testarchive ...';
 $string['task_autodelete_job_artifacts_report'] = '{$a} Testarchive gelöscht.';
 
-// Autoinstall
+// Autoinstall.
 $string['autoinstall_already_configured'] = 'Plugin ist bereits konfiguriert';
 $string['autoinstall_already_configured_long'] = 'Das Quiz Archiver Plugin ist bereits konfiguriert. Eine erneute automatische Konfiguration ist nicht möglich.';
 $string['autoinstall_cancelled'] = 'Die automatische Konfiguration des Quiz Archiver Plugins wurde abgebrochen. Es wurden keine Einstellungen verändert.';

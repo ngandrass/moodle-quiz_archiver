@@ -140,22 +140,22 @@ class TSPManager {
     public function timestamp(): void {
         global $DB;
 
-        // Get artifact checksum
+        // Get artifact checksum.
         $artifactchecksum = $this->job->get_artifact_checksum();
         if ($artifactchecksum === null) {
             throw new \RuntimeException(get_string('archive_signing_failed_no_artifact', 'quiz_archiver'));
         }
 
-        // Check if TSP signing globally is enabled
+        // Check if TSP signing globally is enabled.
         if (!$this->config->tsp_enable) {
             throw new \Exception(get_string('archive_signing_failed_tsp_disabled', 'quiz_archiver'));
         }
 
-        // Issue TSP timestamp
+        // Issue TSP timestamp.
         $tspclient = $this->get_timestampprotocolclient();
         $tspdata = $tspclient->sign($artifactchecksum);
 
-        // Store TSP data
+        // Store TSP data.
         $DB->insert_record(self::TSP_TABLE_NAME, [
             'jobid' => $this->job->get_id(),
             'timecreated' => time(),

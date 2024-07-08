@@ -32,9 +32,7 @@ use quiz_archiver\local\autoinstall;
 /** @var bool Identifies this script as a CLI script */
 const CLI_SCRIPT = true;
 
-// #######################
-// # CLI options parsing #
-// #######################
+// XXX-> CLI options parsing.
 
 list($options, $unrecognised) = cli_get_params(
     [
@@ -84,9 +82,7 @@ if ($options['help']) {
     exit(2);
 }
 
-// ################################
-// # Begin of autoinstall routine #
-// ################################
+// XXX-> Begin of autoinstall routine.
 
 // Set admin user.
 $USER = get_admin();

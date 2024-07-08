@@ -37,10 +37,10 @@ class FileManager_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -228,13 +228,13 @@ class FileManager_test extends \advanced_testcase {
         $draftfile = $this->generate_draft_file('testfile.tar.gz');
         $draftfilehash = $draftfile->get_contenthash();
 
-        // Store draftfile as artifact
+        // Store draftfile as artifact.
         $storedfile = $fm->store_uploaded_artifact($draftfile);
         $this->assertInstanceOf(\stored_file::class, $storedfile, 'Invalid storage handle returned');
         $this->assertEquals($draftfilehash, $storedfile->get_contenthash(), 'Stored file hash does not match draft file hash');
         $this->assertEmpty(get_file_storage()->get_file_by_id($draftfile->get_id()), 'Draft file was deleted');
 
-        // Retrieve artifact
+        // Retrieve artifact.
         $storedfiles = $fm->get_stored_artifacts();
         $this->assertEquals($storedfile, array_shift($storedfiles), 'Stored file handle does not match retrieved file handle');
     }
@@ -315,7 +315,7 @@ class FileManager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        // Generate mock TSP data
+        // Generate mock TSP data.
         $DB->insert_record(TSPManager::TSP_TABLE_NAME, [
             'jobid' => $job->get_id(),
             'timecreated' => time(),
@@ -324,7 +324,7 @@ class FileManager_test extends \advanced_testcase {
             'timestampreply' => 'tspreply1',
         ]);
 
-        // Try to send file
+        // Try to send file.
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
@@ -362,7 +362,7 @@ class FileManager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        // Generate mock TSP data
+        // Generate mock TSP data.
         $DB->insert_record(TSPManager::TSP_TABLE_NAME, [
             'jobid' => $job->get_id(),
             'timecreated' => time(),
@@ -371,7 +371,7 @@ class FileManager_test extends \advanced_testcase {
             'timestampreply' => 'tspreply2',
         ]);
 
-        // Try to send file
+        // Try to send file.
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
@@ -403,7 +403,7 @@ class FileManager_test extends \advanced_testcase {
         );
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test invalid job
+        // Test invalid job.
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/resource id/');
         $fm->send_virtual_file(
@@ -435,7 +435,7 @@ class FileManager_test extends \advanced_testcase {
         );
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test unsigned job
+        // Test unsigned job.
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/No TSP data found/');
         $fm->send_virtual_file(
@@ -454,7 +454,7 @@ class FileManager_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test invalid filearea
+        // Test invalid filearea.
         $this->expectException(\InvalidArgumentException::class);
         $fm->send_virtual_file('invalid', '/invalid');
     }
@@ -469,7 +469,7 @@ class FileManager_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test invalid path
+        // Test invalid path.
         $this->expectException(\InvalidArgumentException::class);
         $fm->send_virtual_file(FileManager::TSP_DATA_FILEAREA_NAME, '../../42/secrets');
     }
@@ -484,7 +484,7 @@ class FileManager_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test invalid job-id
+        // Test invalid job-id.
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/jobid/');
         $fm->send_virtual_file(
@@ -503,7 +503,7 @@ class FileManager_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test missing job
+        // Test missing job.
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/not found/');
         $fm->send_virtual_file(
@@ -522,7 +522,7 @@ class FileManager_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Test missing job
+        // Test missing job.
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/Invalid filename/');
         $fm->send_virtual_file(FileManager::TSP_DATA_FILEAREA_NAME, '/0/0/0/0/secrets');
@@ -539,7 +539,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_extract_attempt_data_from_artifact(): void {
-        // Prepare a finished archive job that has a valid artifact file
+        // Prepare a finished archive job that has a valid artifact file.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000042',
@@ -562,7 +562,7 @@ class FileManager_test extends \advanced_testcase {
         $storedartifacts = $fm->get_stored_artifacts();
         $storedartifact = array_shift($storedartifacts);
 
-        // Extract userdata from artifact into temporary stored_file
+        // Extract userdata from artifact into temporary stored_file.
         $tempfile = $fm->extract_attempt_data_from_artifact($storedartifact, $job->get_id(), $attemptid);
         $this->assertNotEmpty($tempfile, 'No temp file was returned');
         $this->assertNotEmpty($tempfile->get_contenthash(), 'Temp file has no valid content hash');
@@ -580,7 +580,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_extract_attempt_data_for_nonexisting_attemptid(): void {
-        // Prepare a finished archive job that has a valid artifact file
+        // Prepare a finished archive job that has a valid artifact file.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000021',
@@ -600,7 +600,7 @@ class FileManager_test extends \advanced_testcase {
         $storedartifacts = $fm->get_stored_artifacts();
         $storedartifact = array_shift($storedartifacts);
 
-        // Extract userdata from artifact into temporary stored_file
+        // Extract userdata from artifact into temporary stored_file.
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Attempt not found/');
         $fm->extract_attempt_data_from_artifact($storedartifact, $job->get_id(), 9999999);
@@ -617,7 +617,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_extract_attempt_data_from_invalid_artifact(): void {
-        // Prepare an unfinished archive job that has no artifact file
+        // Prepare an unfinished archive job that has no artifact file.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000043',
@@ -633,7 +633,7 @@ class FileManager_test extends \advanced_testcase {
         );
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
-        // Attempt to extract data from nonexisting artifact
+        // Attempt to extract data from nonexisting artifact.
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Error processing archive file/');
         $fm->extract_attempt_data_from_artifact($this->generate_draft_file('not-an-artifact.tar.gz'), $job->get_id(), 1337);
@@ -648,7 +648,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_cleanup_temp_files(): void {
-        // Prepare tempfiles
+        // Prepare tempfiles.
         $overduetempfiles = [
             $this->generate_temp_file('tempfile1.tar.gz', 0),
             $this->generate_temp_file('tempfile2.tar.gz', 0),
@@ -660,7 +660,7 @@ class FileManager_test extends \advanced_testcase {
             $this->generate_temp_file('tempfile6.tar.gz', time() + 3600),
         ];
 
-        // Perform cleanup
+        // Perform cleanup.
         FileManager::cleanup_temp_files();
 
         foreach ($overduetempfiles as $file) {

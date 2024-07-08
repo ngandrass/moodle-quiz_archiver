@@ -72,11 +72,11 @@ class TimeStampProtocolClient {
      *                    invalid data was received
      */
     public function sign(string $sha256hash): array {
-        // Prepare TimeStampRequest
+        // Prepare TimeStampRequest.
         $nonce = self::generate_nonce();
         $tsreq = self::create_timestamp_request($sha256hash, $nonce);
 
-        // Send TimeStampRequest to TSP server
+        // Send TimeStampRequest to TSP server.
         $c = new curl();
         $tsresp = $c->post($this->serverurl, $tsreq, [
             'CURLOPT_SSL_VERIFYPEER' => true,
@@ -88,8 +88,8 @@ class TimeStampProtocolClient {
             ],
         ]);
 
-        // Error handling
-        if ($c->error) {  // Moodle curl wrapper provides no getter for curl error message
+        // Error handling.
+        if ($c->error) {  // Moodle curl wrapper provides no getter for curl error message.
             throw new \Exception(get_string('tsp_client_error_curl', 'quiz_archiver', $c->error));
         } else {
             $curlinfo = $c->get_info();
@@ -103,7 +103,7 @@ class TimeStampProtocolClient {
             throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curlinfo['content_type']));
         }
 
-        // Success
+        // Success.
         return [
             'query' => $tsreq,
             'reply' => $tsresp,
@@ -133,7 +133,7 @@ class TimeStampProtocolClient {
      * @throws \ValueError If the SHA256 hash or nonce are invalid
      */
     protected static function create_timestamp_request(string $sha256hash, string $nonce, bool $requesttsapublickey = false): string {
-        // Validate input
+        // Validate input.
         if (strlen($sha256hash) !== 64) {
             throw new \ValueError('Invalid hexadecimal SHA256 hash');
         }
@@ -141,43 +141,43 @@ class TimeStampProtocolClient {
             throw new \ValueError('Invalid nonce');
         }
 
-        // Generate ASN.1 encoded TimeStampReq
+        // Generate ASN.1 encoded TimeStampReq.
         $asn1 = [];
-        // -> Root DER SEQUENCE
-        $asn1[0] = chr(0x00) . chr(0x00); // SEQUENCE OF + Length (TBD)
-        // -> TimeStampRequest Version (INTEGER v1)
-        $asn1[1] = chr(0x02) . chr(0x01) . chr(0x01); // INTEGER + Length + Value
-        // -> MessageImprint
-        $asn1[2] = chr(0x00) . chr(0x00); // SEQUENCE OF + Length (TBD)
-        $asn1[3] = chr(0x30) . chr(0x0d); // SEQUENCE OF + Length (0x0d == 13)
-        // -> MessageImprint / Object ID, Length 0x09
-        $asn1[4] = chr(0x06) . chr(0x09) // OBJECT IDENTIFIER (length 9 bytes)
-            . chr(0x60) // 2 . 16
-            . chr(0x86) . chr(0x48) // 840
-            . chr(0x01) . chr(0x65) // 1 . 101
-            . chr(0x03) . chr(0x04) // 3 . 4
-            . chr(0x02) . chr(0x01) // 2 . 1
-            . chr(0x05) . chr(0x00); // OID Terminator == NULL + Length (0x00)
+        // X-> Root DER SEQUENCE.
+        $asn1[0] = chr(0x00) . chr(0x00); // SEQUENCE OF + Length (TBD).
+        // X-> TimeStampRequest Version (INTEGER v1).
+        $asn1[1] = chr(0x02) . chr(0x01) . chr(0x01); // INTEGER + Length + Value.
+        // X-> MessageImprint.
+        $asn1[2] = chr(0x00) . chr(0x00); // SEQUENCE OF + Length (TBD).
+        $asn1[3] = chr(0x30) . chr(0x0d); // SEQUENCE OF + Length (0x0d == 13).
+        // X-> MessageImprint / Object ID, Length 0x09.
+        $asn1[4] = chr(0x06) . chr(0x09) // OBJECT IDENTIFIER (length 9 bytes).
+            . chr(0x60) // 2 . 16.
+            . chr(0x86) . chr(0x48) // 840.
+            . chr(0x01) . chr(0x65) // 1 . 101.
+            . chr(0x03) . chr(0x04) // 3 . 4.
+            . chr(0x02) . chr(0x01) // 2 . 1.
+            . chr(0x05) . chr(0x00); // OID Terminator == NULL + Length (0x00).
 
-        // -> MessageImprint / Hash Value, Length 0x40
-        $asn1[5] = chr(0x04) . chr(0x20) . hex2bin($sha256hash); // OCTET STRING 0x42 == 32 Bytes (SHA256) + Hash value
+        // X-> MessageImprint / Hash Value, Length 0x40.
+        $asn1[5] = chr(0x04) . chr(0x20) . hex2bin($sha256hash); // OCTET STRING 0x42 == 32 Bytes (SHA256) + Hash value.
 
-        // -> Nonce
-        $asn1[] = chr(0x02) . chr(0x10) . $nonce; // INTEGER + Length (16 bytes) + nonce value
+        // X-> Nonce.
+        $asn1[] = chr(0x02) . chr(0x10) . $nonce; // INTEGER + Length (16 bytes) + nonce value.
 
-        // -> certReq
+        // X-> certReq.
         if ($requesttsapublickey) {
-            $asn1[] = chr(0x01) . chr(0x01) . chr(0xff); // BOOLEAN + Length + True
+            $asn1[] = chr(0x01) . chr(0x01) . chr(0xff); // BOOLEAN + Length + True.
         }
 
-        // Set correct message length metadata
-        // -> MessageImprint
+        // Set correct message length metadata.
+        // X-> MessageImprint.
         $asn1[2] = chr(0x30) . chr(strlen($asn1[3] . $asn1[4] . $asn1[5]));
 
-        // -> Root DER SEQUENCE
+        // X-> Root DER SEQUENCE.
         $asn1[0] = chr(0x30) . chr(strlen(implode('', array_slice($asn1, 1))));
 
-        // Build final ASN.1 encoded TimeStampReq
+        // Build final ASN.1 encoded TimeStampReq.
         return implode('', $asn1);
     }
 

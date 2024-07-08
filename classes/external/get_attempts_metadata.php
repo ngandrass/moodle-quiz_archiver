@@ -26,7 +26,7 @@ namespace quiz_archiver\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use core_external\external_api;
@@ -99,7 +99,7 @@ class get_attempts_metadata extends external_api {
     public static function execute(int $courseidraw, int $cmidraw, int $quizidraw, array $attemptidsraw): array {
         global $DB;
 
-        // Validate request
+        // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'courseid' => $courseidraw,
             'cmid' => $cmidraw,
@@ -107,11 +107,11 @@ class get_attempts_metadata extends external_api {
             'attemptids' => $attemptidsraw,
         ]);
 
-        // Check capabilities
+        // Check capabilities.
         $context = \context_module::instance($params['cmid']);
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
-        // Acquire required data objects
+        // Acquire required data objects.
         if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
             throw new \invalid_parameter_exception("No course with given courseid found");
         }
@@ -122,7 +122,7 @@ class get_attempts_metadata extends external_api {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
         }
 
-        // Extract attempt metadata
+        // Extract attempt metadata.
         $report = new Report($course, $cm, $quiz);
         if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [

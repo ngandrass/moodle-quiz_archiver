@@ -45,11 +45,11 @@ class artifact_delete_form extends \moodleform {
     public function definition() {
          $mform = $this->_form;
 
-        // Find job
+        // Find job.
         $job = ArchiveJob::get_by_jobid($this->optional_param('jobid', null, PARAM_TEXT));
         $artifactfile = $job->get_artifact();
 
-        // Generic warning message
+        // Generic warning message.
         $warnhead = get_string('delete_artifact', 'quiz_archiver');
 
         if ($artifactfile) {
@@ -58,7 +58,7 @@ class artifact_delete_form extends \moodleform {
             $warndetails .= '<br>';
             $warndetails .= get_string('quiz_archive', 'quiz_archiver').': ' .$artifactfile->get_filename().' ('.display_size($artifactfile->get_filesize()).')';
 
-            // Warn additionally if job is scheduled for automatic deletion
+            // Warn additionally if job is scheduled for automatic deletion.
             if ($job->is_autodelete_enabled()) {
                 if ($job->get_status() === ArchiveJob::STATUS_FINISHED) {
                     $warnmsg .= '<br><br>';
@@ -74,7 +74,7 @@ class artifact_delete_form extends \moodleform {
             $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
         }
 
-        // Print warning element
+        // Print warning element.
         $mform->addElement('html', <<<EOD
             <div class="alert alert-warning" role="alert">
                 <h4>$warnhead</h4>
@@ -84,20 +84,20 @@ class artifact_delete_form extends \moodleform {
             </div>
         EOD);
 
-        // Preserve internal information of mod_quiz
+        // Preserve internal information of mod_quiz.
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', 'archiver');
         $mform->setType('mode', PARAM_TEXT);
 
         if ($artifactfile) {
-            // Options
+            // Options.
             $mform->addElement('hidden', 'action', 'delete_artifact');
             $mform->setType('action', PARAM_TEXT);
             $mform->addElement('hidden', 'jobid', $job->get_jobid());
             $mform->setType('jobid', PARAM_TEXT);
 
-            // Action buttons
+            // Action buttons.
             $this->add_action_buttons(true, get_string('delete', 'moodle'));
         } else {
             $this->add_action_buttons(false, get_string('back'));

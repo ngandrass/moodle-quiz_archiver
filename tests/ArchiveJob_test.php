@@ -39,10 +39,10 @@ class ArchiveJob_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -118,7 +118,7 @@ class ArchiveJob_test extends \advanced_testcase {
     public function test_create_archive_job(): void {
         global $DB;
 
-        // Create new archive job
+        // Create new archive job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
@@ -132,7 +132,7 @@ class ArchiveJob_test extends \advanced_testcase {
             $mocks->settings
         );
 
-        // Check that the job was created
+        // Check that the job was created.
         $this->assertNotNull($job, 'Job was not created');
         $this->assertEquals(
             $job,
@@ -140,10 +140,10 @@ class ArchiveJob_test extends \advanced_testcase {
             'Job was not found in database'
         );
 
-        // Check that the job has the correct settings
+        // Check that the job has the correct settings.
         $this->assertEquals($mocks->settings, $job->get_settings(), 'Job settings were not stored correctly');
 
-        // Check if attempt ids were stored correctly
+        // Check if attempt ids were stored correctly.
         $this->assertEqualsCanonicalizing(
             array_values($mocks->attempts),
             array_values($DB->get_records(ArchiveJob::ATTEMPTS_TABLE_NAME, ['jobid' => $job->get_id()], '', 'userid, attemptid')),
@@ -160,7 +160,7 @@ class ArchiveJob_test extends \advanced_testcase {
     public function test_delete_archive_job(): void {
         global $DB;
 
-        // Create new archive job
+        // Create new archive job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
@@ -174,24 +174,24 @@ class ArchiveJob_test extends \advanced_testcase {
             $mocks->settings
         );
 
-        // Delete the job but remember its ID
+        // Delete the job but remember its ID.
         $this->assertNotNull(ArchiveJob::get_by_jobid('20000000-1234-5678-abcd-ef4242424242'));
         $jobid = $job->get_id();
         $job->delete();
 
-        // Confirm that the job was deleted
+        // Confirm that the job was deleted.
         $this->assertEmpty(
             $DB->get_records(ArchiveJob::JOB_TABLE_NAME, ['jobid' => $jobid]),
             'Job was not deleted from database'
         );
 
-        // Confirm that the attempt ids were deleted
+        // Confirm that the attempt ids were deleted.
         $this->assertEmpty(
             $DB->get_records(ArchiveJob::ATTEMPTS_TABLE_NAME, ['jobid' => $jobid]),
             'Attempt ids were not deleted from database'
         );
 
-        // Confirm that the settings were deleted
+        // Confirm that the settings were deleted.
         $this->assertEmpty(
             $DB->get_records(ArchiveJob::JOB_SETTINGS_TABLE_NAME, ['jobid' => $jobid]),
             'Settings were not deleted from database'
@@ -208,14 +208,14 @@ class ArchiveJob_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
 
-        // Generate data
+        // Generate data.
         $mocks = [];
         $jobs = [];
         $artifacts = [];
         for ($quizidx = 0; $quizidx < 3; $quizidx++) {
             $mocks[$quizidx] = $this->generate_mock_quiz();
             for ($jobidx = 0; $jobidx < 3; $jobidx++) {
-                // Create job
+                // Create job.
                 $jobs[$quizidx][$jobidx] = ArchiveJob::create(
                     '30000000-1234-5678-abcd-'.$quizidx.'0000000000'.$jobidx,
                     $mocks[$quizidx]->course->id,
@@ -228,7 +228,7 @@ class ArchiveJob_test extends \advanced_testcase {
                     $mocks[$quizidx]->settings
                 );
 
-                // Attach artifact
+                // Attach artifact.
                 $artifacts[$quizidx][$jobidx] = $this->generate_artifact_file(
                     $mocks[$quizidx]->course->id,
                     $mocks[$quizidx]->quiz->cmid,
@@ -240,7 +240,7 @@ class ArchiveJob_test extends \advanced_testcase {
                     hash('sha256', 'foo bar baz')
                 );
 
-                // Generate mock TSP data
+                // Generate mock TSP data.
                 $DB->insert_record(TSPManager::TSP_TABLE_NAME, [
                     'jobid' => $jobs[$quizidx][$jobidx]->get_id(),
                     'timecreated' => time(),
@@ -251,7 +251,7 @@ class ArchiveJob_test extends \advanced_testcase {
             }
         }
 
-        // Find jobs in database
+        // Find jobs in database.
         foreach ($mocks as $quizidx => $mock) {
             $this->assertEqualsCanonicalizing(
                 array_values($jobs[$quizidx]),
@@ -260,32 +260,32 @@ class ArchiveJob_test extends \advanced_testcase {
             );
         }
 
-        // Test metadata retrieval
+        // Test metadata retrieval.
         foreach ($mocks as $quizidx => $mock) {
             $metadata = ArchiveJob::get_metadata_for_jobs($mock->course->id, $mock->quiz->cmid, $mock->quiz->id);
 
-            // Check that the metadata array contains the correct number of jobs
+            // Check that the metadata array contains the correct number of jobs.
             $this->assertSameSize(
                 $jobs[$quizidx],
                 $metadata,
                 'Metadata for quiz '.$quizidx.' does not contain the correct number of jobs'
             );
 
-            // Check that the metadata array contains the correct data
+            // Check that the metadata array contains the correct data.
             foreach ($jobs[$quizidx] as $jobidx => $expectedjob) {
-                // Find job in metadata array
+                // Find job in metadata array.
                 $actualjobs = array_filter($metadata, function ($metadata) use ($expectedjob) {
                     return $metadata['id'] == $expectedjob->get_id();
                 });
 
-                // Assure that job was found
+                // Assure that job was found.
                 $this->assertCount(
                     1,
                     $actualjobs,
                     'Metadata for job '.$jobidx.' of quiz '.$quizidx.' could not uniquely be identified'
                 );
 
-                // Probe that the metadata contains the correct data
+                // Probe that the metadata contains the correct data.
                 $actualjob = array_pop($actualjobs);
                 $this->assertEquals($expectedjob->get_jobid(), $actualjob['jobid'], 'Jobid was not returned correctly');
                 $this->assertEquals($expectedjob->get_courseid(), $actualjob['course']['id'], 'Courseid was not returned correctly');
@@ -297,7 +297,7 @@ class ArchiveJob_test extends \advanced_testcase {
                 $this->assertArrayHasKey('autodelete_str', $actualjob, 'Autodelete string was not generated correctly');
                 $this->assertSameSize($expectedjob->get_settings(), $actualjob['settings'], 'Settings were not returned correctly');
 
-                // Check that the artifact file metadata was returned correctly
+                // Check that the artifact file metadata was returned correctly.
                 $this->assertArrayHasKey('artifactfile', $actualjob, 'Artifact file metadata was not returned');
                 $this->assertEquals($artifacts[$quizidx][$jobidx]->get_filename(), $actualjob['artifactfile']['name'], 'Artifact filename was not returned correctly');
                 $this->assertEquals($artifacts[$quizidx][$jobidx]->get_filesize(), $actualjob['artifactfile']['size'], 'Artifact size was not returned correctly');
@@ -305,7 +305,7 @@ class ArchiveJob_test extends \advanced_testcase {
                 $this->assertNotEmpty($actualjob['artifactfile']['size_human'], 'Artifact size in human readable format was not returned');
                 $this->assertEquals(hash('sha256', 'foo bar baz'), $actualjob['artifactfile']['checksum'], 'Artifact checksum was not returned correctly');
 
-                // Check that the TSP data was returned correctly
+                // Check that the TSP data was returned correctly.
                 $this->assertArrayHasKey('tsp', $actualjob, 'TSP data was not returned');
                 $this->assertEquals('localhost', $actualjob['tsp']['server'], 'TSP server was not returned correctly');
                 $this->assertNotEmpty($actualjob['tsp']['timecreated'], 'TSP creation time was not returned');
@@ -323,7 +323,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_set_job_status(): void {
-        // Job statuses to test and whether they should be considered completed
+        // Job statuses to test and whether they should be considered completed.
         $statusesandcompletion = [
             ArchiveJob::STATUS_UNKNOWN => false,
             ArchiveJob::STATUS_UNINITIALIZED => false,
@@ -335,7 +335,7 @@ class ArchiveJob_test extends \advanced_testcase {
             ArchiveJob::STATUS_DELETED => true,
         ];
 
-        // Create test job
+        // Create test job.
         $mocks = $this->generate_mock_quiz();
         $expectedjob = ArchiveJob::create(
             '40000000-1234-5678-abcd-ef4242424242',
@@ -350,14 +350,14 @@ class ArchiveJob_test extends \advanced_testcase {
             ArchiveJob::STATUS_UNINITIALIZED
         );
 
-        // Initial job status
+        // Initial job status.
         $this->assertEquals(
             ArchiveJob::STATUS_UNINITIALIZED,
             ArchiveJob::get_by_jobid('40000000-1234-5678-abcd-ef4242424242')->get_status(),
             'Initial job status was not set correctly'
         );
 
-        // Test status changes
+        // Test status changes.
         foreach ($statusesandcompletion as $status => $completion) {
             $expectedjob->set_status($status);
             $actualjob = ArchiveJob::get_by_jobid('40000000-1234-5678-abcd-ef4242424242');
@@ -374,7 +374,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_wstoken_access_checks(): void {
-        // Generate test data
+        // Generate test data.
         $wstokens = [
             md5('TEST-WS-TOKEN-1'),
             md5('TEST-WS-TOKEN-2'),
@@ -384,7 +384,7 @@ class ArchiveJob_test extends \advanced_testcase {
         ];
         $mocks = $this->generate_mock_quiz();
 
-        // Create jobs and test all tokens against each job
+        // Create jobs and test all tokens against each job.
         foreach ($wstokens as $wstoken) {
             $job = ArchiveJob::create(
                 'xxx-'.$wstoken,
@@ -398,7 +398,7 @@ class ArchiveJob_test extends \advanced_testcase {
                 $mocks->settings
             );
 
-            // Validate token access
+            // Validate token access.
             foreach ($wstokens as $otherwstoken) {
                 $this->assertSame(
                     $wstoken === $otherwstoken,
@@ -417,17 +417,17 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_delete_webservice_token(): void {
-        // Create temporary webservice token
+        // Create temporary webservice token.
         global $CFG, $DB;
         if ($CFG->branch <= 401) {
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             require_once($CFG->dirroot.'/lib/externallib.php');
             $wstoken = \external_generate_token(EXTERNAL_TOKEN_PERMANENT, 1, 1, context_system::instance(), time() + 3600, 0);
         } else {
             $wstoken = \core_external\util::generate_token(EXTERNAL_TOKEN_PERMANENT, \core_external\util::get_service_by_id(1), 1, context_system::instance(), time() + 3600, 0);
         }
 
-        // Create job and test token access
+        // Create job and test token access.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             'xxx-'.$wstoken,
@@ -454,7 +454,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_job_timeout(): void {
-        // Prepare job
+        // Prepare job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '12300000-1234-5678-abcd-ef4242424242',
@@ -469,16 +469,16 @@ class ArchiveJob_test extends \advanced_testcase {
             ArchiveJob::STATUS_RUNNING,
         );
 
-        // Not timed out job should not he set to timed out
+        // Not timed out job should not he set to timed out.
         $this->assertFalse($job->timeout_if_overdue(60), 'Job seems to have been set to timed out before timeout');
         $this->assertSame(ArchiveJob::STATUS_RUNNING, $job->get_status(), 'Job status was changed to timed out before timeout');
 
-        // Time out job
-        sleep(1); // Ensure that at least one second has passed
+        // Time out job.
+        sleep(1); // Ensure that at least one second has passed.
         $this->assertTrue($job->timeout_if_overdue(0), 'Job seems to have not been set to timed out after timeout');
         $this->assertSame(ArchiveJob::STATUS_TIMEOUT, $job->get_status(), 'Job status was not changed to timed out after timeout');
 
-        // Do not timeout a finished job
+        // Do not timeout a finished job.
         $job->set_status(ArchiveJob::STATUS_FINISHED);
         $this->assertFalse($job->timeout_if_overdue(0), 'Finished job seems to have been set to timed out');
         $this->assertSame(ArchiveJob::STATUS_FINISHED, $job->get_status(), 'Finished job was changed to timed out');
@@ -494,7 +494,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_artifact_linking(): void {
-        // Create test job
+        // Create test job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '60000000-1234-5678-abcd-ef4242424242',
@@ -510,12 +510,12 @@ class ArchiveJob_test extends \advanced_testcase {
         $this->assertNull($job->get_artifact(), 'Job artifact file was not null before linking');
         $this->assertFalse($job->has_artifact(), 'New job believes that it has an artifact file');
 
-        // Create and link artifact file
+        // Create and link artifact file.
         $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
         $sha256dummy = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
-        // Check that the artifact file was linked correctly
+        // Check that the artifact file was linked correctly.
         $this->assertTrue($job->has_artifact(), 'Job artifact file was not linked');
         $this->assertEquals($artifact, $job->get_artifact(), 'Linked artifact file differs from original');
         $this->assertSame($sha256dummy, $job->get_artifact_checksum(), 'Artifact checksum was not stored correctly');
@@ -531,7 +531,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_artifact_deletion(): void {
-        // Create test job and link dummy artifact file
+        // Create test job and link dummy artifact file.
         $mocks = $this->generate_mock_quiz();
         $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
         $job = ArchiveJob::create(
@@ -547,7 +547,7 @@ class ArchiveJob_test extends \advanced_testcase {
         );
         $job->link_artifact($artifact->get_id(), hash('sha256', 'foo bar baz'));
 
-        // Delete artifact and ensure that the underlying file was delete correctly
+        // Delete artifact and ensure that the underlying file was delete correctly.
         $job->delete_artifact();
         $this->assertNull($job->get_artifact(), 'Job still returned an artifact file after deletion');
         $this->assertFalse($job->has_artifact(), 'Job believes it still has an artifact file');
@@ -565,7 +565,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_delete_expired_artifacts(): void {
-        // Create test job that instantly expires and link dummy artifact file
+        // Create test job that instantly expires and link dummy artifact file.
         $mocks = $this->generate_mock_quiz();
         $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
         $job = ArchiveJob::create(
@@ -581,7 +581,7 @@ class ArchiveJob_test extends \advanced_testcase {
         );
         $job->link_artifact($artifact->get_id(), hash('sha256', 'foo bar baz'));
 
-        // Ensure that the artifact is present
+        // Ensure that the artifact is present.
         $this->assertTrue($job->has_artifact(), 'Job does not have an artifact file');
         $this->assertSame(1, ArchiveJob::delete_expired_artifacts(), 'Unexpected number of artifacts were reported as deleted');
         $this->assertFalse($job->has_artifact(), 'Job still has an artifact file after deletion');
@@ -596,7 +596,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_artifact_checksum_non_existing(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '99000000-1234-5678-abcd-ef4242424242',
@@ -610,7 +610,7 @@ class ArchiveJob_test extends \advanced_testcase {
             $mocks->settings
         );
 
-        // Check that the artifact checksum is null for non-existing artifacts
+        // Check that the artifact checksum is null for non-existing artifacts.
         $this->assertNull($job->get_artifact_checksum(), 'Artifact checksum was not null for non-existing artifact');
     }
 
@@ -624,7 +624,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_temporary_file_linking(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $tmpfiles = [
             $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test1.tar.gz'),
@@ -632,7 +632,7 @@ class ArchiveJob_test extends \advanced_testcase {
             $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test3.tar.gz'),
         ];
 
-        // Create job
+        // Create job.
         $job = ArchiveJob::create(
             '90000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -645,10 +645,10 @@ class ArchiveJob_test extends \advanced_testcase {
             $mocks->settings
         );
 
-        // Ensure no temporary files are linked
+        // Ensure no temporary files are linked.
         $this->assertEmpty($job->get_temporary_files(), 'Job returned temporary files before linking');
 
-        // Link files and check that they were linked correctly
+        // Link files and check that they were linked correctly.
         foreach ($tmpfiles as $tmpfile) {
             $job->link_temporary_file($tmpfile->get_pathnamehash());
         }
@@ -669,7 +669,7 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_temporary_file_deletion(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $tmpfiles = [
             $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test1.tar.gz'),
@@ -677,7 +677,7 @@ class ArchiveJob_test extends \advanced_testcase {
             $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test3.tar.gz'),
         ];
 
-        // Create job and link files
+        // Create job and link files.
         $job = ArchiveJob::create(
             'a0000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -693,7 +693,7 @@ class ArchiveJob_test extends \advanced_testcase {
             $job->link_temporary_file($tmpfile->get_pathnamehash());
         }
 
-        // Ensure link state, delete and check
+        // Ensure link state, delete and check.
         $this->assertCount(3, $job->get_temporary_files(), 'Job did not link all temporary files');
         $job->delete_temporary_files();
 
@@ -841,11 +841,11 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \invalid_parameter_exception
      */
     public function test_generate_archive_filename(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
-        // Full pattern
+        // Full pattern.
         $fullpattern = 'archive';
         foreach (ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES as $var) {
             $fullpattern .= '-${'.$var.'}';
@@ -872,11 +872,11 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \invalid_parameter_exception
      */
     public function test_generate_archive_filename_without_variables(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
-        // Full pattern
+        // Full pattern.
         $filename = ArchiveJob::generate_archive_filename(
             $mocks->course,
             $cm,
@@ -894,11 +894,11 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \invalid_parameter_exception
      */
     public function test_generate_archive_filename_invalid_pattern(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
-        // Test filename generation
+        // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
         ArchiveJob::generate_archive_filename(
             $mocks->course,
@@ -916,11 +916,11 @@ class ArchiveJob_test extends \advanced_testcase {
      * @throws \invalid_parameter_exception
      */
     public function test_generate_archive_filename_invalid_variables(): void {
-        // Generate data
+        // Generate data.
         $mocks = $this->generate_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
-        // Test filename generation
+        // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
         $filename = ArchiveJob::generate_archive_filename(
             $mocks->course,

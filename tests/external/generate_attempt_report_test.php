@@ -37,10 +37,10 @@ class generate_attempt_report_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -86,7 +86,7 @@ class generate_attempt_report_test extends \advanced_testcase {
      * @throws \DOMException
      */
     public function test_capability_requirement(): void {
-        // Check that a user without the required capability is rejected
+        // Check that a user without the required capability is rejected.
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
@@ -138,7 +138,7 @@ class generate_attempt_report_test extends \advanced_testcase {
             generate_attempt_report::execute($courseid, $cmid, $quizid, $attemptid, $filenamepattern, $sections, $attachments);
         // @codingStandardsIgnoreLine
         } catch (\dml_missing_record_exception $e) {
-            // Ignore
+            // Ignore.
         }
     }
 

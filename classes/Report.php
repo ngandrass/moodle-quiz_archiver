@@ -102,7 +102,7 @@ class Report {
         global $DB;
 
         try {
-            // Check if job with given wstoken exists for this quiz
+            // Check if job with given wstoken exists for this quiz.
             $jobdata = $DB->get_record(ArchiveJob::JOB_TABLE_NAME, [
                 'courseid' => $this->course->id,
                 'cmid' => $this->cm->id,
@@ -110,12 +110,12 @@ class Report {
                 'wstoken' => $wstoken,
             ], 'status, timecreated', MUST_EXIST);
 
-            // Completed / aborted jobs invalidate access
+            // Completed / aborted jobs invalidate access.
             if ($jobdata->status == ArchiveJob::STATUS_FINISHED || $jobdata->status == ArchiveJob::STATUS_FAILED) {
                 return false;
             }
 
-            // Job must still be valid
+            // Job must still be valid.
             if (($jobdata->timecreated + ($this->config->job_timeout_min * 60)) > time()) {
                 return true;
             }
@@ -159,12 +159,12 @@ class Report {
     public function get_attempts_metadata(array $filterattemptids = null): array {
         global $DB;
 
-        // Handle attempt ID filter
+        // Handle attempt ID filter.
         if ($filterattemptids) {
             $filterwhereclause = "AND qa.id IN (".implode(', ', array_map(fn ($v): string => intval($v), $filterattemptids)). ")";
         }
 
-        // Get all requested attempts
+        // Get all requested attempts.
         return $DB->get_records_sql(
             "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, u.username, u.firstname, u.lastname ".
             "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id ".
@@ -255,13 +255,13 @@ class Report {
      * @return array Associative array containing the selected sections for export
      */
     public static function build_report_sections_from_formdata(object $archivequizformdata): array {
-        // Extract section settings from form data object
+        // Extract section settings from form data object.
         $reportsections = [];
         foreach (self::SECTIONS as $section) {
             $reportsections[$section] = $archivequizformdata->{'export_report_section_'.$section};
         }
 
-        // Disable all sections that depend on a disabled section
+        // Disable all sections that depend on a disabled section.
         foreach (self::SECTION_DEPENDENCIES as $section => $dependencies) {
             foreach ($dependencies as $dependency) {
                 if (!$reportsections[$dependency]) {
@@ -285,12 +285,12 @@ class Report {
      * @throws \moodle_exception
      */
     public function get_attempt_attachments(int $attemptid): array {
-        // Prepare
+        // Prepare.
         $files = [];
         $ctx = \context_module::instance($this->cm->id);
         $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
 
-        // Get all files from all questions inside this attempt
+        // Get all files from all questions inside this attempt.
         foreach ($attemptobj->get_slots() as $slot) {
             $qa = $attemptobj->get_question_attempt($slot);
             $qafiles = $qa->get_last_qt_files('attachments', $ctx->id);
@@ -327,8 +327,8 @@ class Report {
                 $attachment['file']->get_component(),
                 $attachment['file']->get_filearea(),
                 "{$attachment['usageid']}/{$attachment['slot']}/{$attachment['file']->get_itemid()}",
-                // ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
-                // creates while eating innocent programmers for breakfast ...
+                /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
+                   creates while eating innocent programmers for breakfast ... */
                 $attachment['file']->get_filepath(),
                 $attachment['file']->get_filename()
             ));
@@ -364,7 +364,7 @@ class Report {
         $renderer = $PAGE->get_renderer('mod_quiz');
         $html = '';
 
-        // Get quiz data and determine state / elapsed time
+        // Get quiz data and determine state / elapsed time.
         $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
         $attempt = $attemptobj->get_attempt();
         $quiz = $attemptobj->get_quiz();
@@ -388,7 +388,7 @@ class Report {
             $timetaken = get_string('unfinished', 'quiz');
         }
 
-        // ##### Section: Quiz header #####
+        // Section: Quiz header.
         if ($sections['header']) {
 
             $quizheaderdata = [];
@@ -403,7 +403,7 @@ class Report {
                 ),
             ];
 
-            // Quiz metadata
+            // Quiz metadata.
             $quizheaderdata['course'] = [
                 'title' => get_string('course'),
                 'content' => $this->course->fullname . ' (Course-ID: ' . $this->course->id . ')',
@@ -443,7 +443,7 @@ class Report {
                 ];
             }
 
-            // Grades
+            // Grades.
             $grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
             if ($options->marks >= \question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
                 if (is_null($grade)) {
@@ -495,15 +495,15 @@ class Report {
                 ];
             }
 
-            // Add export date
+            // Add export date.
             $quizheaderdata['exportdate'] = [
                 'title' => get_string('archived', 'quiz_archiver'),
                 'content' => userdate(time()),
             ];
 
-            // Add summary table to the html
+            // Add summary table to the html.
             if ($CFG->branch <= 403) {
-                // FIXME: Remove after Moodle 4.1 (LTS) support ends on 2025-12-08
+                // FIXME: Remove after Moodle 4.1 (LTS) support ends on 2025-12-08.
                 $html .= $renderer->review_summary_table($quizheaderdata, 0);
             } else {
                 // TODO: Rework into proper use of new 4.4 API but create appropriate test cases first.
@@ -514,11 +514,11 @@ class Report {
             }
         }
 
-        // ##### Section: Quiz questions #####
+        // Section: Quiz questions.
         if ($sections['question']) {
             $slots = $attemptobj->get_slots();
             foreach ($slots as $slot) {
-                // Define display options for this question
+                // Define display options for this question.
                 $originalslot = $attemptobj->get_original_slot($slot);
                 $number = $attemptobj->get_question_number($originalslot);
                 $displayoptions = $attemptobj->get_display_options_with_edit_link(true, $slot, "");
@@ -534,7 +534,7 @@ class Report {
                 $displayoptions->flags = 1;
                 $displayoptions->manualcommentlink = 0;
 
-                // Render question as HTML
+                // Render question as HTML.
                 if ($slot != $originalslot) {
                     $attemptobj->get_question_attempt($slot)->set_max_mark(
                         $attemptobj->get_question_attempt($originalslot)->get_max_mark());
@@ -569,28 +569,28 @@ class Report {
     public function generate_full_page(int $attemptid, array $sections, bool $fixrelativeurls = true, bool $minimal = true, bool $inlineimages = true): string {
         global $CFG, $OUTPUT;
 
-        // Build HTML tree
+        // Build HTML tree.
         $html = "";
         $html .= $OUTPUT->header();
         $html .= self::generate($attemptid, $sections);
         $html .= $OUTPUT->footer();
 
-        // Parse HTML as DOMDocument but supress consistency check warnings
+        // Parse HTML as DOMDocument but supress consistency check warnings.
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
         $dom->loadHTML($html);
         libxml_clear_errors();
 
-        // Patch relative URLs
+        // Patch relative URLs.
         if ($fixrelativeurls) {
             $basenode = $dom->createElement("base");
             $basenode->setAttribute("href", $CFG->wwwroot);
             $dom->getElementsByTagName('head')[0]->appendChild($basenode);
         }
 
-        // Cleanup DOM if desired
+        // Cleanup DOM if desired.
         if ($minimal) {
-            // We need to inject custom CSS to hide elements since the DOM generated by
+            // We need to inject custom CSS to hide elements since the DOM generated by.
             // Moodle can be corrupt which causes the PHP DOMDocument parser to die...
             $csshacksnode = $dom->createElement("style", "
                 nav.navbar {
@@ -619,7 +619,7 @@ class Report {
             $dom->getElementsByTagName('head')[0]->appendChild($csshacksnode);
         }
 
-        // Convert all local images to base64 if desired
+        // Convert all local images to base64 if desired.
         if ($inlineimages) {
             foreach ($dom->getElementsByTagName('img') as $img) {
                 if (!$this->convert_image_to_base64($img)) {
@@ -669,7 +669,7 @@ class Report {
     protected function convert_image_to_base64(\DOMElement $img): bool {
         global $CFG;
 
-        // Only process images with src attribute
+        // Only process images with src attribute.
         if (!$img->getAttribute('src')) {
             $img->setAttribute('x-debug-notice', 'no source present');
             return false;
@@ -677,10 +677,10 @@ class Report {
             $img->setAttribute('x-original-source', $img->getAttribute('src'));
         }
 
-        // Remove any parameters and anchors from URL
+        // Remove any parameters and anchors from URL.
         $imgsrc = preg_replace('/^([^\?\&\#]+).*$/', '${1}', $img->getAttribute('src'));
 
-        // Convert relative URLs to absolute URLs
+        // Convert relative URLs to absolute URLs.
         $config = get_config('quiz_archiver');
         $moodlebaseurl = rtrim($config->internal_wwwroot ?: $CFG->wwwroot, '/').'/';
         if ($config->internal_wwwroot) {
@@ -688,32 +688,32 @@ class Report {
         }
         $imgsrcurl = $this->ensure_absolute_url($imgsrc, $moodlebaseurl);
 
-        // Make sure to only process web URLs and nothing that somehow remained a valid local filepath
-        if (!substr($imgsrcurl, 0, 4) === "http") { // Yes, this includes https as well ;)
+        // Make sure to only process web URLs and nothing that somehow remained a valid local filepath.
+        if (!substr($imgsrcurl, 0, 4) === "http") { // Yes, this includes https as well ;).
             $img->setAttribute('x-debug-notice', 'not a web URL');
             return false;
         }
 
-        // Only process allowed image types
+        // Only process allowed image types.
         $imgext = pathinfo($imgsrcurl, PATHINFO_EXTENSION);
         if (!array_key_exists($imgext, self::ALLOWED_IMAGE_TYPES)) {
-            // Edge case: Moodle theme images must not always contain extensions
+            // Edge case: Moodle theme images must not always contain extensions.
             if (!preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $imgsrcurl)) {
                 $img->setAttribute('x-debug-notice', 'image type not allowed');
                 return false;
             }
         }
 
-        // Try to get image content based on link type
+        // Try to get image content based on link type.
         $regexmatches = null;
         $imgdata = null;
         $imgmime = array_key_exists($imgext, self::ALLOWED_IMAGE_TYPES) ? self::ALLOWED_IMAGE_TYPES[$imgext] : null;
 
-        // Handle special internal URLs first
+        // Handle special internal URLs first.
         $isinternalurl = substr($imgsrcurl, 0, strlen($moodlebaseurl)) === $moodlebaseurl;
         if ($isinternalurl) {
             if (preg_match(self::REGEX_MOODLE_URL_PLUGINFILE, $imgsrcurl, $regexmatches)) {
-                // ### Link type: Moodle pluginfile URL ###
+                // Link type: Moodle pluginfile URL.
                 $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
 
                 // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
@@ -725,17 +725,17 @@ class Report {
                     }
                 }
 
-                // Decode RFC 3986 URL escaped sequences
+                // Decode RFC 3986 URL escaped sequences.
                 $regexmatches['filename'] = urldecode($regexmatches['filename']);
 
-                // Get file content via Moodle File API
+                // Get file content via Moodle File API.
                 $fs = get_file_storage();
                 $file = $fs->get_file(
                     $regexmatches['contextid'],
                     $regexmatches['component'],
                     $regexmatches['filearea'],
                     !empty($regexmatches['itemid']) ? $regexmatches['itemid'] : 0,
-                    '/',  // Dirty simplification but works for now *sigh*
+                    '/',  // Dirty simplification but works for now *sigh*.
                     $regexmatches['filename'],
                 );
 
@@ -745,13 +745,13 @@ class Report {
                 }
                 $imgdata = $file->get_content();
             } else if (preg_match(self::REGEX_MOODLE_URL_STACKPLOT, $imgsrcurl, $regexmatches)) {
-                // ### Link type: qtype_stack plotfile ###
+                // Link type: qtype_stack plotfile.
                 $img->setAttribute('x-url-type', 'MOODLE_URL_STACKPLOT');
 
-                // Decode RFC 3986 URL escaped sequences
+                // Decode RFC 3986 URL escaped sequences.
                 $regexmatches['filename'] = urldecode($regexmatches['filename']);
 
-                // Get STACK plot file from disk
+                // Get STACK plot file from disk.
                 $filename = $CFG->dataroot . '/stack/plots/' . clean_filename($regexmatches['filename']);
                 if (!is_readable($filename)) {
                     $img->setAttribute('x-debug-notice', 'stack plot file not readable');
@@ -763,29 +763,29 @@ class Report {
             }
         }
 
-        // Fall back to generic URL handling if image data not already set by internal handling routines
+        // Fall back to generic URL handling if image data not already set by internal handling routines.
         if ($imgdata === null) {
             if (preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $imgsrcurl)) {
-                // ### Link type: Moodle theme image ###
-                // We should be able to download there images using a simple HTTP request
+                // Link type: Moodle theme image.
+                // We should be able to download there images using a simple HTTP request.
                 // Accessing them directly from disk is a little more complicated due to caching and other logic (see: /theme/image.php).
                 // Let's try to keep it this way until we encounter explicit problems.
                 $img->setAttribute('x-url-type', 'MOODLE_URL_THEME_IMAGE');
             } else {
-                // ### Link type: Generic ###
+                // Link type: Generic.
                 $img->setAttribute('x-url-type', 'GENERIC');
             }
 
-            // No special local file access. Try to download via HTTP request
+            // No special local file access. Try to download via HTTP request.
             $c = new curl(['ignoresecurity' => $isinternalurl]);
-            $imgdata = $c->get($imgsrcurl);  // Curl handle automatically closed
+            $imgdata = $c->get($imgsrcurl);  // Curl handle automatically closed.
             if ($c->get_info()['http_code'] !== 200 || $imgdata === false) {
                 $img->setAttribute('x-debug-more', $imgdata);
                 $img->setAttribute('x-debug-notice', 'HTTP request failed');
                 return false;
             }
 
-            // Check if we need to detect mime type from response headers
+            // Check if we need to detect mime type from response headers.
             if (!$imgmime) {
                 $imgmime = $c->get_info()['content_type'];
                 if (!in_array($imgmime, self::ALLOWED_IMAGE_TYPES)) {
@@ -795,7 +795,7 @@ class Report {
             }
         }
 
-        // Encode and replace image if present
+        // Encode and replace image if present.
         if (!$imgdata) {
             $img->setAttribute('x-debug-notice', 'no image data');
             return false;
@@ -816,40 +816,40 @@ class Report {
      * @return string Absolute URL
      */
     protected static function ensure_absolute_url(string $url, string $base): string {
-        /* return if already absolute URL */
+        // Return if already absolute URL.
         if (parse_url($url, PHP_URL_SCHEME) != '') {
             return $url;
         }
 
-        /* queries and anchors */
+        // Queries and anchors.
         if ($url[0] == '#' || $url[0] == '?') {
             return $base.$url;
         }
 
-        /* parse base URL and convert to local variables: $scheme, $host, $path */
+        // Parse base URL and convert to local variables: $scheme, $host, $path.
         $urlparsed = parse_url($base);
         $scheme = $urlparsed['scheme'];
         $host = $urlparsed['host'];
         $path = $urlparsed['path'];
 
-        /* remove non-directory element from path */
+        // Remove non-directory element from path.
         $path = preg_replace('#/[^/]*$#', '', $path);
 
-        /* destroy path if relative url points to root */
+        // Destroy path if relative url points to root.
         if ($url[0] == '/') {
             $path = '';
         }
 
-        /* dirty absolute URL */
+        // Dirty absolute URL.
         $abs = "$host$path/$url";
 
-        /* replace '//' or '/./' or '/foo/../' with '/' */
+        // Replace '//' or '/./' or '/foo/../' with '/'.
         $re = ['#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'];
         for ($n = 1; $n > 0; $abs = preg_replace($re, '/', $abs, -1, $n)) {
             continue;
         }
 
-        /* absolute URL is ready! */
+        // Absolute URL is ready!
         return $scheme.'://'.$abs;
     }
 

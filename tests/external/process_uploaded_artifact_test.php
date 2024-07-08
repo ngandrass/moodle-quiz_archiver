@@ -39,10 +39,10 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -88,11 +88,11 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_capability_requirement(): void {
-        // Check that a user without the required capability is rejected
+        // Check that a user without the required capability is rejected.
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
-        // Create job
+        // Create job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
@@ -106,7 +106,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
             []
         );
 
-        // Execute test call
+        // Execute test call.
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
         $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
         process_uploaded_artifact::execute(
@@ -202,7 +202,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_rejection_of_artifacts_for_complete_jobs(): void {
-        // Create job
+        // Create job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
@@ -217,7 +217,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        // Execute test call
+        // Execute test call.
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
         $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
         $this->assertSame(['status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'], process_uploaded_artifact::execute(
@@ -244,7 +244,7 @@ class process_uploaded_artifact_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_invalid_file_metadata(): void {
-        // Create job
+        // Create job.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
@@ -258,11 +258,11 @@ class process_uploaded_artifact_test extends \advanced_testcase {
             []
         );
 
-        // Gain access
+        // Gain access.
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
         $this->setAdminUser();
 
-        // Execute test call
+        // Execute test call.
         $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
         $this->assertSame(['status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'], process_uploaded_artifact::execute(
             $r['jobid'],

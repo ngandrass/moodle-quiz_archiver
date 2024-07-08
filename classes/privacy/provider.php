@@ -51,10 +51,10 @@ class provider implements
      * @return collection A listing of user data stored through this system.
      */
     public static function get_metadata(collection $collection): collection {
-        // Quiz archive files
+        // Quiz archive files.
         $collection->add_subsystem_link('core_files', [], 'privacy:metadata:core_files');
 
-        // Database tables
+        // Database tables.
         $collection->add_database_table('quiz_archiver_jobs', [
             'courseid' => 'privacy:metadata:quiz_archiver_jobs:courseid',
             'cmid' => 'privacy:metadata:quiz_archiver_jobs:cmid',
@@ -88,7 +88,7 @@ class provider implements
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
 
-        // Get all contexts where the user has a quiz archiver job
+        // Get all contexts where the user has a quiz archiver job.
         // Note: The context stays the same across all entries for a single
         // archive job. Hence, we only query the main job table.
         $contextlist->add_from_sql("
@@ -107,7 +107,7 @@ class provider implements
             ]
         );
 
-        // Add all contexts where the user is part of a quiz archive
+        // Add all contexts where the user is part of a quiz archive.
         $contextlist->add_from_sql("
             SELECT DISTINCT c.id
             FROM {context} c
@@ -141,10 +141,10 @@ class provider implements
 
         $userid = $contextlist->get_user()->id;
 
-        // Process all contexts
+        // Process all contexts.
         $subctxbase = get_string('pluginname', 'quiz_archiver');
         foreach ($contextlist->get_contexts() as $ctx) {
-            // Get existing jobs for current context
+            // Get existing jobs for current context.
             $jobs = $DB->get_records_sql("
                 SELECT *
                 FROM {context} c
@@ -161,12 +161,12 @@ class provider implements
                 'userid' => $userid,
             ]);
 
-            // Export each job
+            // Export each job.
             foreach ($jobs as $job) {
-                // Set correct subcontext for the job
+                // Set correct subcontext for the job.
                 $subctx = [$subctxbase, "Job: {$job->jobid}"];
 
-                // Get job settings
+                // Get job settings.
                 $jobsettings = $DB->get_records(
                     ArchiveJob::JOB_SETTINGS_TABLE_NAME,
                     ['jobid' => $job->id],
@@ -174,7 +174,7 @@ class provider implements
                     'key, value'
                 );
 
-                // Get TSP data
+                // Get TSP data.
                 $tspdata = $DB->get_record(
                     TSPManager::TSP_TABLE_NAME,
                     ['jobid' => $job->id],
@@ -182,13 +182,13 @@ class provider implements
                     IGNORE_MISSING
                 );
 
-                // Encode TSP data as base64 if present
+                // Encode TSP data as base64 if present.
                 if ($tspdata) {
                     $tspdata->timestampquery = base64_encode($tspdata->timestampquery);
                     $tspdata->timestampreply = base64_encode($tspdata->timestampreply);
                 }
 
-                // Add job data to current context
+                // Add job data to current context.
                 writer::with_context($ctx)->export_data($subctx, (object) [
                     'courseid' => $job->courseid,
                     'cmid' => $job->cmid,
@@ -208,7 +208,7 @@ class provider implements
                 }
             }
 
-            // Process artifact files for the user in the given context
+            // Process artifact files for the user in the given context.
             $attemptartifacts = $DB->get_records_sql("
                 SELECT a.id, j.id AS jobid, j.courseid, j.cmid, j.quizid, j.artifactfileid, a.attemptid
                 FROM {context} c
@@ -250,7 +250,7 @@ class provider implements
             return;
         }
 
-        // Job metadata
+        // Job metadata.
         $userlist->add_from_sql(
             'userid',
             "
@@ -267,7 +267,7 @@ class provider implements
             ]
         );
 
-        // Quiz archive file contents
+        // Quiz archive file contents.
         $userlist->add_from_sql(
             'userid',
             "
@@ -292,7 +292,7 @@ class provider implements
      * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
-        // We cannot simply delete data that needs to be archived for a specified amount of time
+        // We cannot simply delete data that needs to be archived for a specified amount of time.
     }
 
     /**
@@ -301,7 +301,7 @@ class provider implements
      * @param \context $context The specific context to delete data for.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
-        // We cannot simply delete data that needs to be archived for a specified amount of time
+        // We cannot simply delete data that needs to be archived for a specified amount of time.
     }
 
     /**
@@ -310,7 +310,7 @@ class provider implements
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
-        // We cannot simply delete data that needs to be archived for a specified amount of time
+        // We cannot simply delete data that needs to be archived for a specified amount of time.
     }
 
 }

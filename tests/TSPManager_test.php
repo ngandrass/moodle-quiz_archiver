@@ -37,10 +37,10 @@ class TSPManager_test extends \advanced_testcase {
      * @return \stdClass Created mock objects
      */
     protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz
+        // Create course, course module and quiz.
         $this->resetAfterTest();
 
-        // Prepare user and course
+        // Prepare user and course.
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
         $quiz = $this->getDataGenerator()->create_module('quiz', [
@@ -101,7 +101,7 @@ class TSPManager_test extends \advanced_testcase {
         string     $dummyquery = 'tsp-dummy-query',
         string     $dummyreply = 'tsp-dummy-reply-0123456789abcdef'
     ): TSPManager {
-        // Prepare TimeStampProtocolClient that returns dummy data
+        // Prepare TimeStampProtocolClient that returns dummy data.
         $tspclientmock = $this->getMockBuilder(TimeStampProtocolClient::class)
             ->onlyMethods(['sign'])
             ->setConstructorArgs([$dummyserver])
@@ -113,7 +113,7 @@ class TSPManager_test extends \advanced_testcase {
                 'reply' => $dummyreply,
             ]);
 
-        // Create TSPManager that uses the mocked TimeStampProtocolClient
+        // Create TSPManager that uses the mocked TimeStampProtocolClient.
         $tspmanager = $this->getMockBuilder(TSPManager::class)
             ->onlyMethods(['get_timestampprotocolclient'])
             ->setConstructorArgs([$job])
@@ -135,11 +135,11 @@ class TSPManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_tsp_timestamp(): void {
-        // Prepare plugin settings
+        // Prepare plugin settings.
         set_config('tsp_server_url', 'localhost', 'quiz_archiver');
         set_config('tsp_enable', true, 'quiz_archiver');
 
-        // Generate job with artifact
+        // Generate job with artifact.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
@@ -158,23 +158,23 @@ class TSPManager_test extends \advanced_testcase {
         $sha256dummy = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
-        // Ensure that artifact was not yet signed
+        // Ensure that artifact was not yet signed.
         $this->assertFalse($job->tspmanager()->has_tsp_timestamp(), 'Artifact was detected as signed without it being signed');
 
-        // Ensure that the artifact wants to be signed
+        // Ensure that the artifact wants to be signed.
         $this->assertTrue($job->tspmanager()->wants_tsp_timestamp(), 'Artifact was not detected as wanting to be signed');
 
-        // Try signing the artifact using TSP
+        // Try signing the artifact using TSP.
         $tspmanager = $this->create_mock_tspmanager($job);
         $tspmanager->timestamp();
         $this->assertTrue($tspmanager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
 
-        // Ensure that the TSP data was stored correctly
+        // Ensure that the TSP data was stored correctly.
         $this->assertEquals('tsp-dummy-query', $tspmanager->get_tsp_data()->query, 'TSP query was not stored correctly');
         $this->assertEquals('tsp-dummy-reply-0123456789abcdef', $tspmanager->get_tsp_data()->reply, 'TSP reply was not stored correctly');
         $this->assertEquals('localhost', $tspmanager->get_tsp_data()->server, 'TSP server URL was not stored correctly');
 
-        // Ensure that the artifact does not want to be signed again
+        // Ensure that the artifact does not want to be signed again.
         $this->assertFalse($job->tspmanager()->wants_tsp_timestamp(), 'Artifact was detected as wanting to be signed after it was signed');
     }
 
@@ -188,11 +188,11 @@ class TSPManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_delete_tsp_data(): void {
-        // Prepare plugin settings
+        // Prepare plugin settings.
         set_config('tsp_server_url', 'localhost', 'quiz_archiver');
         set_config('tsp_enable', true, 'quiz_archiver');
 
-        // Generate job with artifact
+        // Generate job with artifact.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
@@ -211,12 +211,12 @@ class TSPManager_test extends \advanced_testcase {
         $sha256dummy = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
-        // Sign the artifact using TSP
+        // Sign the artifact using TSP.
         $tspmanager = $this->create_mock_tspmanager($job);
         $tspmanager->timestamp();
         $this->assertTrue($tspmanager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
 
-        // Delete the TSP data
+        // Delete the TSP data.
         $tspmanager->delete_tsp_data();
         $this->assertFalse($tspmanager->has_tsp_timestamp(), 'Artifact was detected as signed after deleting the TSP data');
     }
@@ -230,11 +230,11 @@ class TSPManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_signing_invalid_artifact(): void {
-        // Prepare plugin settings
+        // Prepare plugin settings.
         set_config('tsp_server_url', 'localhost', 'quiz_archiver');
         set_config('tsp_enable', true, 'quiz_archiver');
 
-        // Generate job without artifact
+        // Generate job without artifact.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
@@ -249,7 +249,7 @@ class TSPManager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        // Try signing the artifact using TSP
+        // Try signing the artifact using TSP.
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage(get_string('archive_signing_failed_no_artifact', 'quiz_archiver'));
         $this->create_mock_tspmanager($job)->timestamp();
@@ -266,10 +266,10 @@ class TSPManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_signing_disabled(): void {
-        // Ensure signing is disabled
+        // Ensure signing is disabled.
         set_config('tsp_enable', false, 'quiz_archiver');
 
-        // Generate job with artifact
+        // Generate job with artifact.
         $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '40000000-1234-5678-abcd-ef4242424242',
@@ -288,10 +288,10 @@ class TSPManager_test extends \advanced_testcase {
         $sha256sum = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256sum);
 
-        // Check that the artifact does not want to be signed
+        // Check that the artifact does not want to be signed.
         $this->assertFalse($job->tspmanager()->wants_tsp_timestamp(), 'Artifact was detected as wanting to be signed while TSP is disabled');
 
-        // Try signing the artifact using TSP
+        // Try signing the artifact using TSP.
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage(get_string('archive_signing_failed_tsp_disabled', 'quiz_archiver'));
         $this->create_mock_tspmanager($job)->timestamp();

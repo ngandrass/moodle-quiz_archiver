@@ -114,11 +114,11 @@ class autoinstall {
         string $username = self::DEFAULT_USERNAME,
         bool $force = false
     ): array {
-        // Prepare return values
+        // Prepare return values.
         $success = false;
 
         try {
-            // Init log array
+            // Init log array.
             $log = [];
 
             // Ensure current user is an admin.
@@ -137,7 +137,7 @@ class autoinstall {
                 }
             }
 
-            // Apply default values for all plugin settings
+            // Apply default values for all plugin settings.
             $adminroot = admin_get_root();
             $adminsearch = $adminroot->search('quiz_archiver_settings');
             if (!$adminsearch || !$adminsearch['quiz_archiver_settings']->page) {
@@ -153,7 +153,7 @@ class autoinstall {
                 $log[] = "  -> Default plugin settings applied.";
             }
 
-            // Check worker URL
+            // Check worker URL.
             if (empty($workerurl)) {
                 $log[] = "Error: The given worker URL is invalid.";
                 throw new \RuntimeException();
@@ -185,7 +185,7 @@ class autoinstall {
             } catch (dml_exception $e) {
                 $log[] = "Error: Cloud not create webservice user: ".$e->getMessage();
                 throw new \RuntimeException();
-            } catch (\Exception $e) {  // \Random\RandomException is only thrown with PHP >= 8.2, generic \Exception otherwise
+            } catch (\Exception $e) {  // Random\RandomException is only thrown with PHP >= 8.2, generic \Exception otherwise.
                 $log[] = "Error: Could not create webservice user: ".$e->getMessage();
                 throw new \RuntimeException();
             }
@@ -258,7 +258,7 @@ class autoinstall {
                 $log[] = "  -> Web service '{$wsname}' created with ID {$serviceid}.";
             }
 
-            // Add functions to the service
+            // Add functions to the service.
             foreach (self::WS_FUNCTIONS as $f) {
                 $webservicemanager->add_external_function_to_service($f, $serviceid);
                 $log[] = "    -> Function {$f} added to service '{$wsname}'.";
@@ -274,7 +274,7 @@ class autoinstall {
             $webservicemanager->update_external_service($service);
             $log[] = "  -> User '{$webserviceuser->username}' authorised to use service '{$wsname}'.";
 
-            // Configure quiz_archiver plugin settings
+            // Configure quiz_archiver plugin settings.
             try {
                 $log[] = "  -> Configuring the quiz archiver plugin...";
 

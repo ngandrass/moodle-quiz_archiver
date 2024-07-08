@@ -26,7 +26,7 @@ namespace quiz_archiver\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use core_external\external_api;
@@ -98,7 +98,7 @@ class process_uploaded_artifact extends external_api {
         int    $artifactitemidraw,
         string $artifactsha256sumraw
     ): array {
-        // Validate request
+        // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobidraw,
             'artifact_component' => $artifactcomponentraw,
@@ -111,7 +111,7 @@ class process_uploaded_artifact extends external_api {
             'artifact_sha256sum' => $artifactsha256sumraw,
         ]);
 
-        // Validate that the jobid exists and no artifact was uploaded previously
+        // Validate that the jobid exists and no artifact was uploaded previously.
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
             if ($job->is_complete()) {
@@ -125,19 +125,19 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
-        // Check access rights
+        // Check access rights.
         if (!$job->has_write_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
                 'status' => 'E_ACCESS_DENIED',
             ];
         }
 
-        // Check capabilities
+        // Check capabilities.
         $context = \context_module::instance($job->get_cmid());
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
-        // Validate uploaded file
-        // Note: We use SHA256 instead of Moodle sha1, since SHA1 is prone to
+        // Validate uploaded file.
+        // Note: We use SHA256 instead of Moodle sha1, since SHA1 is prone to.
         // hash collisions!
         $draftfile = FileManager::get_draft_file(
             $params['artifact_contextid'],
@@ -160,7 +160,7 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
-        // Store uploaded file
+        // Store uploaded file.
         $fm = new FileManager($job->get_courseid(), $job->get_cmid(), $job->get_quizid());
         try {
             $artifact = $fm->store_uploaded_artifact($draftfile);
@@ -172,22 +172,24 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
-        // Timestamp artifact file using TSP
+        // Timestamp artifact file using TSP.
         if ($job->tspmanager()->wants_tsp_timestamp()) {
             try {
                 $job->tspmanager()->timestamp();
             // @codingStandardsIgnoreStart
             } catch (\Exception $e) {
                 // TODO: Fail silently for now ...
-                // $job->set_status(ArchiveJob::STATUS_FAILED);
-                // return [
-                //     'status' => 'E_TSP_TIMESTAMP_FAILED'
-                // ];
+                /*
+                $job->set_status(ArchiveJob::STATUS_FAILED);
+                return [
+                    'status' => 'E_TSP_TIMESTAMP_FAILED'
+                ];
+                */
             }
             // @codingStandardsIgnoreEnd
         }
 
-        // Report success
+        // Report success.
         $job->set_status(ArchiveJob::STATUS_FINISHED);
         return [
             'status' => 'OK',

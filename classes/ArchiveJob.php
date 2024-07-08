@@ -65,7 +65,7 @@ class ArchiveJob {
     /** @var string Name of the table to store attemptids and userids */
     const ATTEMPTS_TABLE_NAME = 'quiz_archiver_attempts';
 
-    // Job status values
+    // Job status values.
     /** @var string Job status: Unknown */
     const STATUS_UNKNOWN = 'UNKNOWN';
     /** @var string Job status: Uninitialized */
@@ -152,7 +152,7 @@ class ArchiveJob {
         $this->timecreated = $timecreated;
         $this->retentiontime = $retentiontime;
         $this->wstoken = $wstoken;
-        $this->tspmanager = null; // Lazy initialization
+        $this->tspmanager = null; // Lazy initialization.
     }
 
     /**
@@ -207,7 +207,7 @@ class ArchiveJob {
             throw new \moodle_exception('encryption_keyalreadyexists');
         }
 
-        // Create database entry and return ArchiveJob object to represent it
+        // Create database entry and return ArchiveJob object to represent it.
         $now = time();
         $retentiontime = $retentionseconds ? $now + $retentionseconds : null;
         $id = $DB->insert_record(self::JOB_TABLE_NAME, [
@@ -223,7 +223,7 @@ class ArchiveJob {
             'wstoken' => $wstoken,
         ]);
 
-        // Store job settings
+        // Store job settings.
         $DB->insert_records(self::JOB_SETTINGS_TABLE_NAME, array_map(function($key, $value) use ($id): array {
             return [
                 'jobid' => $id,
@@ -232,7 +232,7 @@ class ArchiveJob {
             ];
         }, array_keys($settings), $settings));
 
-        // Remember attempts associated with this archive
+        // Remember attempts associated with this archive.
         $DB->insert_records(self::ATTEMPTS_TABLE_NAME, array_map(function($data) use ($id): array {
             return [
                 'jobid' => $id,
@@ -375,7 +375,7 @@ class ArchiveJob {
         );
 
         return array_values(array_map(function($j): array {
-            // Get artifactfile metadata if available
+            // Get artifactfile metadata if available.
             $artifactfilemetadata = null;
             if ($j->artifactfileid) {
                 $artifactfile = get_file_storage()->get_file_by_id($j->artifactfileid);
@@ -400,7 +400,7 @@ class ArchiveJob {
                 }
             }
 
-            // Prepate TSP data
+            // Prepate TSP data.
             $tspdata = null;
             if ($j->tsp_timecreated && $j->artifactfileid) {
                 $tspdata = [
@@ -427,7 +427,7 @@ class ArchiveJob {
                 ];
             }
 
-            // Calculate autodelete metadata
+            // Calculate autodelete metadata.
             if ($j->retentiontime !== null) {
                 if ($j->status == self::STATUS_DELETED) {
                     $autodeletestr = get_string('archive_deleted', 'quiz_archiver');
@@ -445,7 +445,7 @@ class ArchiveJob {
                 $autodeletestr = get_string('archive_autodelete_disabled', 'quiz_archiver');
             }
 
-            // Build job metadata array
+            // Build job metadata array.
             return [
                 'id' => $j->id,
                 'jobid' => $j->jobid,
@@ -534,7 +534,7 @@ class ArchiveJob {
     public function delete(): void {
         global $DB;
 
-        // Delete additional data
+        // Delete additional data.
         $this->delete_webservice_token();
         $this->delete_temporary_files();
         $this->delete_artifact();
@@ -542,10 +542,10 @@ class ArchiveJob {
         $DB->delete_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]);
         $DB->delete_records(self::ATTEMPTS_TABLE_NAME, ['jobid' => $this->id]);
 
-        // Delete job from DB
+        // Delete job from DB.
         $DB->delete_records(self::JOB_TABLE_NAME, ['id' => $this->id]);
 
-        // Invalidate self
+        // Invalidate self.
         $this->id = -1;
         $this->jobid = '';
         $this->courseid = -1;
@@ -567,7 +567,7 @@ class ArchiveJob {
             return false;
         }
 
-        // Check if job is overdue
+        // Check if job is overdue.
         if ($this->timecreated < (time() - ($timeoutmin * 60))) {
             $this->set_status(self::STATUS_TIMEOUT);
             return true;
@@ -975,18 +975,18 @@ class ArchiveJob {
      * @return bool True if the pattern is valid
      */
     protected static function is_valid_filename_pattern(string $pattern, array $allowedvariables): bool {
-        // Check for minimal length
+        // Check for minimal length.
         if (strlen($pattern) < 1) {
             return false;
         }
 
-        // Check for variables
+        // Check for variables.
         $residue = preg_replace('/\$\{\s*('.implode('|', $allowedvariables).')\s*\}/m', '', $pattern);
         if (strpos($residue, '$') !== false) {
             return false;
         }
 
-        // Check for forbidden characters
+        // Check for forbidden characters.
         foreach (self::FILENAME_FORBIDDEN_CHARACTERS as $char) {
             if (strpos($pattern, $char) !== false) {
                 return false;
@@ -1045,12 +1045,12 @@ class ArchiveJob {
      * @throws \coding_exception
      */
     public static function generate_archive_filename($course, $cm, $quiz, string $pattern): string {
-        // Validate pattern
+        // Validate pattern.
         if (!self::is_valid_archive_filename_pattern($pattern)) {
             throw new \invalid_parameter_exception(get_string('error_invalid_archive_filename_pattern', 'quiz_archiver'));
         }
 
-        // Prepare data
+        // Prepare data.
         $data = [
             'courseid' => $course->id,
             'cmid' => $cm->id,
@@ -1063,7 +1063,7 @@ class ArchiveJob {
             'time' => date('H-i-s'),
         ];
 
-        // Substitute variables
+        // Substitute variables.
         $filename = $pattern;
         foreach ($data as $key => $value) {
             $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
@@ -1088,13 +1088,13 @@ class ArchiveJob {
     public static function generate_attempt_filename($course, $cm, $quiz, int $attemptid, string $pattern): string {
         global $DB;
 
-        // Validate pattern
+        // Validate pattern.
         if (!self::is_valid_attempt_filename_pattern($pattern)) {
             throw new \invalid_parameter_exception(get_string('error_invalid_attempt_filename_pattern', 'quiz_archiver'));
         }
 
-        // Prepare data
-        // We query the DB directly to prevent a full question_attempt object from being created
+        // Prepare data.
+        // We query the DB directly to prevent a full question_attempt object from being created.
         $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
         $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
         $data = [
@@ -1115,7 +1115,7 @@ class ArchiveJob {
             'lastname' => $userinfo->lastname,
         ];
 
-        // Substitute variables
+        // Substitute variables.
         $filename = $pattern;
         foreach ($data as $key => $value) {
             $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);

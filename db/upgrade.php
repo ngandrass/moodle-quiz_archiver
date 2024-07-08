@@ -86,13 +86,13 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
     }
 
     if ($oldversion < 2023080104) {
-        // Remove foreign key constraints with reftables to be renamed
+        // Remove foreign key constraints with reftables to be renamed.
         $dbman->drop_key(
             new xmldb_table('quiz_report_archiver_files'),
             new xmldb_key('jobid', XMLDB_KEY_FOREIGN, ['jobid'], 'quiz_report_archiver_jobs', ['id'])
         );
 
-        // Rename tables to remove the "report_" prefix
+        // Rename tables to remove the "report_" prefix.
         $dbman->rename_table(
             new xmldb_table('quiz_report_archiver_jobs'),
             'quiz_archiver_jobs'
@@ -102,7 +102,7 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
             'quiz_archiver_files'
         );
 
-        // Restore foreign key constraints
+        // Restore foreign key constraints.
         $dbman->add_key(
             new xmldb_table('quiz_archiver_files'),
             new xmldb_key('jobid', XMLDB_KEY_FOREIGN, ['jobid'], 'quiz_archiver_jobs', ['id'])

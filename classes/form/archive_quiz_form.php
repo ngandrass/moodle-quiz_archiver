@@ -66,23 +66,23 @@ class archive_quiz_form extends \moodleform {
         $config = get_config('quiz_archiver');
         $mform = $this->_form;
 
-        // Title and description
+        // Title and description.
         $mform->addElement('html', '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>');
         $mform->addElement('html', '<p>'.get_string('archive_quiz_form_desc', 'quiz_archiver').'</p>');
 
-        // Internal information of mod_quiz
+        // Internal information of mod_quiz.
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', 'archiver');
         $mform->setType('mode', PARAM_TEXT);
 
-        // Options
+        // Options.
         $mform->addElement('header', 'header_settings', get_string('settings'));
 
-        // Options: Test
+        // Options: Test.
         $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quizname);
 
-        // Options: Attempts
+        // Options: Attempts.
         $mform->addElement(
             'advcheckbox',
             'export_attempts',
@@ -111,7 +111,7 @@ class archive_quiz_form extends \moodleform {
             }
         }
 
-        // Options: Backups
+        // Options: Backups.
         $mform->addElement(
             'advcheckbox',
             'export_quiz_backup',
@@ -132,7 +132,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_course_backup', 'export_course_backup', 'quiz_archiver');
         $mform->setDefault('export_course_backup', $config->job_preset_export_course_backup);
 
-        // Advanced options
+        // Advanced options.
         $mform->addElement('header', 'header_advanced_settings', get_string('advancedsettings'));
         $mform->setExpanded('header_advanced_settings', false);
 
@@ -172,7 +172,7 @@ class archive_quiz_form extends \moodleform {
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
             ]);
         } else {
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern_moodle42', 'quiz_archiver');
         }
         $mform->setType('archive_filename_pattern', PARAM_TEXT);
@@ -195,7 +195,7 @@ class archive_quiz_form extends \moodleform {
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
             ]);
         } else {
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern_moodle42', 'quiz_archiver');
         }
         $mform->setType('export_attempts_filename_pattern', PARAM_TEXT);
@@ -235,7 +235,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('archive_retention_time', 'archive_retention_time', 'quiz_archiver');
         $mform->hideIf('archive_retention_time', 'archive_autodelete', 'notchecked');
 
-        // Submit
+        // Submit.
         $mform->closeHeaderBefore('submitbutton');
         $mform->addElement('submit', 'submitbutton', get_string('archive_quiz', 'quiz_archiver'));
     }
@@ -251,7 +251,7 @@ class archive_quiz_form extends \moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        // Validate filename pattern
+        // Validate filename pattern.
         if (!ArchiveJob::is_valid_archive_filename_pattern($data['archive_filename_pattern'])) {
             $errors['archive_filename_pattern'] = get_string('error_invalid_archive_filename_pattern', 'quiz_archiver');
         }
@@ -273,7 +273,7 @@ class archive_quiz_form extends \moodleform {
         $data = parent::get_data();
         $config = get_config('quiz_archiver');
 
-        // Force locked fields to their preset values
+        // Force locked fields to their preset values.
         foreach ($config as $key => $value) {
             if (strpos($key, 'job_preset_') === 0 && strrpos($key, '_locked') === strlen($key) - 7) {
                 if ($value) {
