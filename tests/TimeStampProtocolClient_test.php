@@ -24,7 +24,6 @@
 
 namespace quiz_archiver;
 
-
 /**
  * Tests for the TimeStampProtocolClient class
  */
@@ -38,7 +37,7 @@ class TimeStampProtocolClient_test extends \advanced_testcase {
     public function test_creation(): void {
         $client = new TimeStampProtocolClient('http://localhost:12345');
         $this->assertInstanceOf(TimeStampProtocolClient::class, $client);
-        $this->assertEquals('http://localhost:12345', $client->get_server_url());
+        $this->assertEquals('http://localhost:12345', $client->get_serverurl());
     }
 
     /**
@@ -48,14 +47,14 @@ class TimeStampProtocolClient_test extends \advanced_testcase {
      * @throws \Exception
      */
     public function test_generate_nonce(): void {
-        $nonce = TimeStampProtocolClient::generateNonce();
+        $nonce = TimeStampProtocolClient::generate_nonce();
         $this->assertNotEmpty($nonce, 'Nonce is empty');
         $this->assertSame(16, strlen($nonce), 'Nonce length is not 16 bytes');
 
         for ($i = 0; $i < 100; $i++) {
             $this->assertNotEquals(
                 $nonce,
-                TimeStampProtocolClient::generateNonce(),
+                TimeStampProtocolClient::generate_nonce(),
                 'Repeated calls to generate_nonce() return the same nonce'
             );
         }

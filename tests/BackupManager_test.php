@@ -24,7 +24,6 @@
 
 namespace quiz_archiver;
 
-
 use backup;
 use context_course;
 use context_module;
@@ -39,7 +38,7 @@ class BackupManager_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generate_mock_quiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -49,7 +48,7 @@ class BackupManager_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object) [
@@ -91,7 +90,7 @@ class BackupManager_test extends \advanced_testcase {
     public function test_course_backup(): void {
         // Initiate a mock course backup
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $backup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
 
@@ -119,7 +118,7 @@ class BackupManager_test extends \advanced_testcase {
     public function test_quiz_backup(): void {
         // Initiate a mock course backup
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $backup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
@@ -177,7 +176,7 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_backup_course_without_privileges(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
 
         $this->expectException(\backup_controller_exception::class);
         $this->expectExceptionMessageMatches('/backup_user_missing_capability/');
@@ -193,7 +192,7 @@ class BackupManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_backup_quiz_without_privileges(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
 
         $this->expectException(\backup_controller_exception::class);
         $this->expectExceptionMessageMatches('/backup_user_missing_capability/');
@@ -210,7 +209,7 @@ class BackupManager_test extends \advanced_testcase {
      */
     public function test_backup_download_url_generation_with_internal_wwwroot(): void {
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         set_config('internal_wwwroot', 'http://my-internal-hostname', 'quiz_archiver');
 
@@ -233,24 +232,24 @@ class BackupManager_test extends \advanced_testcase {
     public function test_initialization_by_existing_backupid(): void {
         // Prepare a course and a quiz backup
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
-        $expectedCourseBackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
-        $expectedQuizBackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
+        $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
+        $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
         // Course backup
-        $actualCourseBackup = new BackupManager($expectedCourseBackup->backupid);
-        $this->assertNotEmpty($actualCourseBackup, 'Course backup was not created correctly from backup ID');
-        $this->assertEquals($expectedCourseBackup->backupid, $actualCourseBackup->get_backupid(), 'Course backup ID was not set correctly');
-        $this->assertEquals($expectedCourseBackup->userid, $actualCourseBackup->get_userid(), 'Course user ID was not set correctly');
-        $this->assertSame(backup::TYPE_1COURSE, $actualCourseBackup->get_type(), 'Course backup type was not set correctly');
+        $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
+        $this->assertNotEmpty($actualcoursebackup, 'Course backup was not created correctly from backup ID');
+        $this->assertEquals($expectedcoursebackup->backupid, $actualcoursebackup->get_backupid(), 'Course backup ID was not set correctly');
+        $this->assertEquals($expectedcoursebackup->userid, $actualcoursebackup->get_userid(), 'Course user ID was not set correctly');
+        $this->assertSame(backup::TYPE_1COURSE, $actualcoursebackup->get_type(), 'Course backup type was not set correctly');
 
         // Quiz backup
-        $actualQuizBackup = new BackupManager($expectedQuizBackup->backupid);
-        $this->assertNotEmpty($actualQuizBackup, 'Quiz backup was not created correctly from backup ID');
-        $this->assertEquals($expectedQuizBackup->backupid, $actualQuizBackup->get_backupid(), 'Quiz backup ID was not set correctly');
-        $this->assertEquals($expectedQuizBackup->userid, $actualQuizBackup->get_userid(), 'Quiz user ID was not set correctly');
-        $this->assertSame(backup::TYPE_1ACTIVITY, $actualQuizBackup->get_type(), 'Quiz backup type was not set correctly');
+        $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
+        $this->assertNotEmpty($actualquizbackup, 'Quiz backup was not created correctly from backup ID');
+        $this->assertEquals($expectedquizbackup->backupid, $actualquizbackup->get_backupid(), 'Quiz backup ID was not set correctly');
+        $this->assertEquals($expectedquizbackup->userid, $actualquizbackup->get_userid(), 'Quiz user ID was not set correctly');
+        $this->assertSame(backup::TYPE_1ACTIVITY, $actualquizbackup->get_type(), 'Quiz backup type was not set correctly');
     }
 
     /**
@@ -275,22 +274,22 @@ class BackupManager_test extends \advanced_testcase {
     public function test_backup_status(): void {
         // Prepare a course and a quiz backup
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
-        $expectedCourseBackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
-        $expectedQuizBackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
+        $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
+        $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
         // Course backup
-        $actualCourseBackup = new BackupManager($expectedCourseBackup->backupid);
-        $this->assertSame(backup::TYPE_1COURSE, $actualCourseBackup->get_type(), 'Course backup type was not retrieved correctly');
-        $actualCourseBackup->is_finished_successfully();
-        $actualCourseBackup->is_failed();
+        $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
+        $this->assertSame(backup::TYPE_1COURSE, $actualcoursebackup->get_type(), 'Course backup type was not retrieved correctly');
+        $actualcoursebackup->is_finished_successfully();
+        $actualcoursebackup->is_failed();
 
         // Quiz backup
-        $actualQuizBackup = new BackupManager($expectedQuizBackup->backupid);
-        $this->assertSame(backup::TYPE_1ACTIVITY, $actualQuizBackup->get_type(), 'Quiz backup type was not retrieved correctly');
-        $actualQuizBackup->is_finished_successfully();
-        $actualQuizBackup->is_failed();
+        $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
+        $this->assertSame(backup::TYPE_1ACTIVITY, $actualquizbackup->get_type(), 'Quiz backup type was not retrieved correctly');
+        $actualquizbackup->is_finished_successfully();
+        $actualquizbackup->is_failed();
     }
 
     /**
@@ -305,7 +304,7 @@ class BackupManager_test extends \advanced_testcase {
     public function test_backup_job_association(): void {
         // Prepare a course and a quiz backup
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $job = ArchiveJob::create(
             '90000000-1234-5678-abcd-ef4242424242',
@@ -318,16 +317,16 @@ class BackupManager_test extends \advanced_testcase {
             $mock->attempts,
             $mock->settings
         );
-        $expectedCourseBackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
-        $expectedQuizBackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
+        $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
+        $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
         // Course backup
-        $actualCourseBackup = new BackupManager($expectedCourseBackup->backupid);
-        $this->assertTrue($actualCourseBackup->is_associated_with_job($job), 'Course backup was not detected as associated with the given job');
+        $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
+        $this->assertTrue($actualcoursebackup->is_associated_with_job($job), 'Course backup was not detected as associated with the given job');
 
         // Quiz backup
-        $actualQuizBackup = new BackupManager($expectedQuizBackup->backupid);
-        $this->assertTrue($actualQuizBackup->is_associated_with_job($job), 'Quiz backup was not detected as associated with the given job');
+        $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
+        $this->assertTrue($actualquizbackup->is_associated_with_job($job), 'Quiz backup was not detected as associated with the given job');
     }
 
     /**
@@ -342,7 +341,7 @@ class BackupManager_test extends \advanced_testcase {
     public function test_backup_invalid_job_association(): void {
         // Prepare a course and a quiz backup
         $this->setAdminUser();
-        $mock = $this->generateMockQuiz();
+        $mock = $this->generate_mock_quiz();
         $mock->user = get_admin();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
@@ -355,16 +354,16 @@ class BackupManager_test extends \advanced_testcase {
             $mock->attempts,
             $mock->settings
         );
-        $expectedCourseBackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
-        $expectedQuizBackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
+        $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
+        $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
         // Course backup
-        $actualCourseBackup = new BackupManager($expectedCourseBackup->backupid);
-        $this->assertFalse($actualCourseBackup->is_associated_with_job($job), 'Course backup was detected as associated with an unrelated job');
+        $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
+        $this->assertFalse($actualcoursebackup->is_associated_with_job($job), 'Course backup was detected as associated with an unrelated job');
 
         // Quiz backup
-        $actualQuizBackup = new BackupManager($expectedQuizBackup->backupid);
-        $this->assertFalse($actualQuizBackup->is_associated_with_job($job), 'Quiz backup was detected as associated with an unrelated job');
+        $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
+        $this->assertFalse($actualquizbackup->is_associated_with_job($job), 'Quiz backup was detected as associated with an unrelated job');
     }
 
 }

@@ -24,7 +24,6 @@
 
 namespace quiz_archiver;
 
-
 /**
  * Tests for the RemoteArchiveWorker class
  */

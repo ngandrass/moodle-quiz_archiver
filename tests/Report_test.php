@@ -24,13 +24,13 @@
 
 namespace quiz_archiver;
 
-global $CFG;
-
 use backup;
+
+// @codingStandardsIgnoreLine
+global $CFG;
 
 require_once($CFG->dirroot . '/mod/quiz/report/archiver/patch_401_class_renames.php');
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
-
 
 /**
  * Tests for the Report class
@@ -68,7 +68,7 @@ class Report_test extends \advanced_testcase {
      * attempt ids inside the reference quiz), 'userids' (array of all user ids
      * with attempts in the reference quiz)
      */
-    protected function prepareReferenceCourse(): \stdClass {
+    protected function prepare_reference_course(): \stdClass {
         global $DB, $USER;
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -100,16 +100,16 @@ class Report_test extends \advanced_testcase {
         // 2024-05-14: Do not destroy restore_controller. This will drop temptables without removing them from
         // $DB->temptables properly, causing DB reset to fail in subsequent tests due to missing tables. Destroying the
         // restore_controller is optional and not necessary for this test.
-        //$rc->destroy();
+        // $rc->destroy();
 
         // Get course and find the reference quiz
         $course = get_course($rc->get_courseid());
         $modinfo = get_fast_modinfo($course);
         $cms = $modinfo->get_cms();
         $cm = null;
-        foreach ($cms as $curCm) {
-            if ($curCm->modname == 'quiz' && strpos($curCm->name, 'Reference Quiz') === 0) {
-                $cm = $curCm;
+        foreach ($cms as $curcm) {
+            if ($curcm->modname == 'quiz' && strpos($curcm->name, 'Reference Quiz') === 0) {
+                $cm = $curcm;
                 break;
             }
         }
@@ -134,9 +134,11 @@ class Report_test extends \advanced_testcase {
     }
 
     /**
+     * Generates an report section settings array with all sections enabled
+     *
      * @return array To pass to Report::generate(), with all report sections enabled
      */
-    protected static function getAllReportSectionsEnabled(): array {
+    protected static function get_all_report_sections_enabled(): array {
         $sections = [];
         foreach (Report::SECTIONS as $section) {
             $sections[$section] = true;
@@ -145,9 +147,11 @@ class Report_test extends \advanced_testcase {
     }
 
     /**
+     * Generates an archive_form formdata object with all report sections enabled
+     *
      * @return \stdClass That emulates the data received from the archive_form
      */
-    protected static function getFormdataAllReportsSectionsEnabled(): object {
+    protected static function get_formdata_all_reports_sections_enabled(): object {
         $formdata = new \stdClass();
         foreach (Report::SECTIONS as $section) {
             $formdata->{'export_report_section_'.$section} = 1;
@@ -164,10 +168,10 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_webservice_token_access_validation() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $validToken = md5("VALID-TEST-TOKEN");
-        $invalidToken = md5("INVALID-TEST-TOKEN");
+        $validtoken = md5("VALID-TEST-TOKEN");
+        $invalidtoken = md5("INVALID-TEST-TOKEN");
         $job = ArchiveJob::create(
             'test-job',
             $rc->course->id,
@@ -175,21 +179,21 @@ class Report_test extends \advanced_testcase {
             $rc->quiz->id,
             2,
             null,
-            $validToken,
+            $validtoken,
             [],
             [],
         );
 
-        $this->assertTrue($report->has_access($validToken), 'Valid token rejected');
-        $this->assertFalse($report->has_access($invalidToken), 'Invalid token accepted');
+        $this->assertTrue($report->has_access($validtoken), 'Valid token rejected');
+        $this->assertFalse($report->has_access($invalidtoken), 'Invalid token accepted');
 
         $job->set_status(ArchiveJob::STATUS_FINISHED);
-        $this->assertFalse($report->has_access($validToken), 'Valid token accepted for finished job');
-        $this->assertFalse($report->has_access($invalidToken), 'Invalid token accepted for finished job');
+        $this->assertFalse($report->has_access($validtoken), 'Valid token accepted for finished job');
+        $this->assertFalse($report->has_access($invalidtoken), 'Invalid token accepted for finished job');
     }
 
     /**
-     * Test generation of a full page report with all sections
+     * Test generation of a full attempt report with all sections
      *
      * @return void
      * @throws \DOMException
@@ -197,47 +201,61 @@ class Report_test extends \advanced_testcase {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-     public function test_generate_full_report() {
-         $rc = $this->prepareReferenceCourse();
+    public function test_generate_full_report() {
+        $rc = $this->prepare_reference_course();
 
-         // Generate full report with all sections
-         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-         $html = $report->generate($rc->attemptids[0], self::getAllReportSectionsEnabled());
-         $this->assertNotEmpty($html, 'Generated report is empty');
+        // Generate full report with all sections
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $html = $report->generate($rc->attemptids[0], self::get_all_report_sections_enabled());
+        $this->assertNotEmpty($html, 'Generated report is empty');
 
-         // Verify quiz header
-         $this->assertMatchesRegularExpression('/<table[^<>]*quizreviewsummary[^<>]*>/', $html, 'Quiz header table not found');
-         $this->assertMatchesRegularExpression('/<td[^<>]*>'.preg_quote($rc->course->fullname, '/').'[^<>]+<\/td>/', $html, 'Course name not found');
-         $this->assertMatchesRegularExpression('/<td[^<>]*>'.preg_quote($rc->quiz->name, '/').'[^<>]+<\/td>/', $html, 'Quiz name not found');
+        // Verify quiz header
+        $this->assertMatchesRegularExpression('/<table[^<>]*quizreviewsummary[^<>]*>/', $html, 'Quiz header table not found');
+        $this->assertMatchesRegularExpression('/<td[^<>]*>' . preg_quote($rc->course->fullname, '/') . '[^<>]+<\/td>/', $html, 'Course name not found');
+        $this->assertMatchesRegularExpression('/<td[^<>]*>' . preg_quote($rc->quiz->name, '/') . '[^<>]+<\/td>/', $html, 'Quiz name not found');
 
-         // Verify overall quiz feedback
-         // TODO: Add proper overall feedback to reference quiz and check its contents
-         $this->assertMatchesRegularExpression('/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/', $html, 'Overall feedback header not found');
+        // Verify overall quiz feedback
+        // TODO: Add proper overall feedback to reference quiz and check its contents
+        $this->assertMatchesRegularExpression('/<th[^<>]*>\s*' . preg_quote(get_string('feedback', 'quiz'), '/') . '\s*<\/th>/', $html, 'Overall feedback header not found');
 
-         // Verify questions
-         foreach (self::QUESTION_TYPES_IN_REFERENCE_QUIZ as $qtype) {
-             $this->assertMatchesRegularExpression('/<[^<>]*class="[^\"<>]*que[^\"<>]*'.preg_quote($qtype, '/').'[^\"<>]*"[^<>]*>/', $html, 'Question of type '.$qtype.' not found');
-         }
+        // Verify questions
+        foreach (self::QUESTION_TYPES_IN_REFERENCE_QUIZ as $qtype) {
+            $this->assertMatchesRegularExpression(
+                '/<[^<>]*class="[^\"<>]*que[^\"<>]*'.preg_quote($qtype, '/').'[^\"<>]*"[^<>]*>/',
+                $html,
+                'Question of type '.$qtype.' not found'
+            );
+        }
 
-         // Verify individual question feedback
-         $this->assertMatchesRegularExpression('/<div class="specificfeedback">/', $html, 'Individual question feedback not found');
+        // Verify individual question feedback
+        $this->assertMatchesRegularExpression('/<div class="specificfeedback">/', $html, 'Individual question feedback not found');
 
-         // Verify general question feedback
-         $this->assertMatchesRegularExpression('/<div class="generalfeedback">/', $html, 'General question feedback not found');
+        // Verify general question feedback
+        $this->assertMatchesRegularExpression('/<div class="generalfeedback">/', $html, 'General question feedback not found');
 
-         // Verify correct answers
-         $this->assertMatchesRegularExpression('/<div class="rightanswer">/', $html, 'Correct question answers not found');
+        // Verify correct answers
+        $this->assertMatchesRegularExpression('/<div class="rightanswer">/', $html, 'Correct question answers not found');
 
-         // Verify answer history
-         $this->assertMatchesRegularExpression('/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/', $html, 'Answer history not found');
+        // Verify answer history
+        $this->assertMatchesRegularExpression('/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/', $html, 'Answer history not found');
     }
 
+    /**
+     * Tests generation of a full page report with all sections
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
     public function test_generate_full_page_stub() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $html = $report->generate_full_page(
             $rc->attemptids[0],
-            self::getAllReportSectionsEnabled(),
+            self::get_all_report_sections_enabled(),
             false,  // We need to disable this since $OUTPUT->header() is not working during tests
             false,  // We need to disable this since $OUTPUT->header() is not working during tests
             true
@@ -254,20 +272,28 @@ class Report_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_generate_report_no_header() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without a header
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['header'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that quiz header is absent
-        $this->assertDoesNotMatchRegularExpression('/<table[^<>]*quizreviewsummary[^<>]*>/', $html, 'Quiz header table found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<table[^<>]*quizreviewsummary[^<>]*>/',
+            $html,
+            'Quiz header table found when it should be absent'
+        );
 
         // If the quiz header is disabled, the quiz feedback should also be absent
-        $this->assertDoesNotMatchRegularExpression('/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/', $html, 'Overall feedback header found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/',
+            $html,
+            'Overall feedback header found when it should be absent'
+        );
     }
 
     /**
@@ -280,19 +306,27 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_generate_report_no_quiz_feedback() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without quiz feedback
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['quiz_feedback'] = false;
         $sections['questions'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that quiz feedback is absent
-        $this->assertMatchesRegularExpression('/<table[^<>]*quizreviewsummary[^<>]*>/', $html, 'Quiz header table not found');
-        $this->assertDoesNotMatchRegularExpression('/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/', $html, 'Overall feedback header found when it should be absent');
+        $this->assertMatchesRegularExpression(
+            '/<table[^<>]*quizreviewsummary[^<>]*>/',
+            $html,
+            'Quiz header table not found'
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/',
+            $html,
+            'Overall feedback header found when it should be absent'
+        );
     }
 
     /**
@@ -305,11 +339,11 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_generate_report_no_questions() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without questions
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['question'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
@@ -334,11 +368,11 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_generate_report_no_question_feedback() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without question feedback
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['question_feedback'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
@@ -357,11 +391,11 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_generate_report_no_general_feedback() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without general feedback
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['general_feedback'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
@@ -380,11 +414,11 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_generate_report_no_rightanswers() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without right answers
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['rightanswer'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
@@ -403,11 +437,11 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_generate_report_no_history() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
 
         // Generate report without answer history
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $sections = self::getAllReportSectionsEnabled();
+        $sections = self::get_all_report_sections_enabled();
         $sections['history'] = false;
         $html = $report->generate($rc->attemptids[0], $sections);
         $this->assertNotEmpty($html, 'Generated report is empty');
@@ -425,7 +459,7 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_attempt_attachments() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attachments = $report->get_attempt_attachments($rc->attemptids[0]);
         $this->assertNotEmpty($attachments, 'No attachments found');
@@ -443,7 +477,7 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_attempt_attachments_metadata() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attachments = $report->get_attempt_attachments_metadata($rc->attemptids[0]);
         $this->assertNotEmpty($attachments, 'No attachments found');
@@ -471,7 +505,7 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_attempts() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attempts = $report->get_attempts();
 
@@ -488,7 +522,7 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_attempts_metadata() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         // Test without filters
@@ -508,12 +542,12 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($attempt->lastname, 'Attempt metadata does not contain lastname');
 
         // Test filtered
-        $attempts_filtered_existing = $report->get_attempts_metadata($rc->attemptids);
-        $this->assertNotEmpty($attempts_filtered_existing, 'No attempts found with existing attempt ids');
-        $this->assertCount(count($rc->attemptids), $attempts_filtered_existing, 'Incorrect number of attempts found with existing attempt ids');
+        $attemptsfilteredexisting = $report->get_attempts_metadata($rc->attemptids);
+        $this->assertNotEmpty($attemptsfilteredexisting, 'No attempts found with existing attempt ids');
+        $this->assertCount(count($rc->attemptids), $attemptsfilteredexisting, 'Incorrect number of attempts found with existing attempt ids');
 
-        $attempts_filtered_nonexisting = $report->get_attempts_metadata([-1, -2, -3]);
-        $this->assertEmpty($attempts_filtered_nonexisting, 'Attempts found for non-existing attempt ids');
+        $attemptsfilterednonexisting = $report->get_attempts_metadata([-1, -2, -3]);
+        $this->assertEmpty($attemptsfilterednonexisting, 'Attempts found for non-existing attempt ids');
     }
 
     /**
@@ -524,7 +558,7 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_users_with_attempts() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         $users = $report->get_users_with_attempts();
@@ -541,14 +575,14 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_latest_attempt_for_user() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
-        $latest_attempt = $report->get_latest_attempt_for_user($rc->userids[0]);
-        $this->assertNotEmpty($latest_attempt, 'No latest attempt found for user');
+        $latestattempt = $report->get_latest_attempt_for_user($rc->userids[0]);
+        $this->assertNotEmpty($latestattempt, 'No latest attempt found for user');
 
-        $latest_attempt_missing = $report->get_latest_attempt_for_user(-1);
-        $this->assertEmpty($latest_attempt_missing, 'Latest attempt found for non-existing user');
+        $latestattemptmissing = $report->get_latest_attempt_for_user(-1);
+        $this->assertEmpty($latestattemptmissing, 'Latest attempt found for non-existing user');
     }
 
     /**
@@ -560,7 +594,7 @@ class Report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_attempt_exists() {
-        $rc = $this->prepareReferenceCourse();
+        $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         $this->assertTrue($report->attempt_exists($rc->attemptids[0]), 'Existing attempt not found');
@@ -574,12 +608,12 @@ class Report_test extends \advanced_testcase {
      */
     public function test_build_report_sections_from_formdata() {
         // Test all sections enabled
-        $formdata = self::getFormdataAllReportsSectionsEnabled();
+        $formdata = self::get_formdata_all_reports_sections_enabled();
         $sections = Report::build_report_sections_from_formdata($formdata);
-        $this->assertEquals(self::getAllReportSectionsEnabled(), $sections, 'Full formdata not correctly converted to report sections');
+        $this->assertEquals(self::get_all_report_sections_enabled(), $sections, 'Full formdata not correctly converted to report sections');
 
         // Test removal of dependent sections
-        $formdata = self::getFormdataAllReportsSectionsEnabled();
+        $formdata = self::get_formdata_all_reports_sections_enabled();
         $formdata->export_report_section_question = 0;
         $sections = Report::build_report_sections_from_formdata($formdata);
         $this->assertEmpty($sections['question'], 'Root section not removed correctly');
@@ -590,10 +624,10 @@ class Report_test extends \advanced_testcase {
         $this->assertEmpty($sections['attachments'], 'Dependent section attachments not removed correctly');
 
         // Test removal of superfluous sections
-        $formdata = self::getFormdataAllReportsSectionsEnabled();
+        $formdata = self::get_formdata_all_reports_sections_enabled();
         $formdata->export_report_section_superfluous = 1;
         $sections = Report::build_report_sections_from_formdata($formdata);
-        $this->assertEquals(self::getAllReportSectionsEnabled(), $sections, 'Superfluous section not removed correctly');
+        $this->assertEquals(self::get_all_report_sections_enabled(), $sections, 'Superfluous section not removed correctly');
     }
 
 }

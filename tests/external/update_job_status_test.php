@@ -37,7 +37,7 @@ class update_job_status_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generate_mock_quiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -47,7 +47,7 @@ class update_job_status_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -66,7 +66,7 @@ class update_job_status_test extends \advanced_testcase {
      */
     public function test_capability_requirement(): void {
         // Create mock quiz and job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -101,7 +101,7 @@ class update_job_status_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Create mock quiz and job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -138,14 +138,14 @@ class update_job_status_test extends \advanced_testcase {
      *
      * @param string $jobid Raw jobid parameter
      * @param string $status Raw status parameter
-     * @param bool $shouldFail Whether a failure is expected
+     * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \coding_exception
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
      */
-    public function test_parameter_validation(string $jobid, string $status, bool $shouldFail): void {
-        if ($shouldFail) {
+    public function test_parameter_validation(string $jobid, string $status, bool $shouldfail): void {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
@@ -159,10 +159,26 @@ class update_job_status_test extends \advanced_testcase {
      */
     public function parameter_data_provider(): array {
         return [
-            'Valid' => ['jobid' => '00000000-1234-5678-abcd-ef4242424242', 'status' => ArchiveJob::STATUS_UNINITIALIZED, 'shouldFail' => false],
-            'Invalid jobid' => ['jobid' => '<a href="localhost">Foo</a>', 'status' => ArchiveJob::STATUS_UNINITIALIZED, 'shouldFail' => true],
-            'Invalid status' => ['jobid' => '00000000-1234-5678-abcd-ef4242424242', 'status' => '<a href="localhost">Bar</a>', 'shouldFail' => true],
-            'Invalid jobid and status' => ['jobid' => '<a href="localhost">Foo</a>', 'status' => '<a href="localhost">Bar</a>', 'shouldFail' => true],
+            'Valid' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNINITIALIZED,
+                'shouldfail' => false,
+            ],
+            'Invalid jobid' => [
+                'jobid' => '<a href="localhost">Foo</a>',
+                'status' => ArchiveJob::STATUS_UNINITIALIZED,
+                'shouldfail' => true,
+            ],
+            'Invalid status' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => '<a href="localhost">Bar</a>',
+                'shouldfail' => true,
+            ],
+            'Invalid jobid and status' => [
+                'jobid' => '<a href="localhost">Foo</a>',
+                'status' => '<a href="localhost">Bar</a>',
+                'shouldfail' => true,
+            ],
         ];
     }
 
@@ -171,8 +187,8 @@ class update_job_status_test extends \advanced_testcase {
      *
      * @dataProvider job_status_data_provider
      *
-     * @param string $originStatus Status to transition from
-     * @param string $targetStatus Status to transition to
+     * @param string $originstatus Status to transition from
+     * @param string $targetstatus Status to transition to
      * @param array $expected Expected result
      * @return void
      * @throws \coding_exception
@@ -181,13 +197,13 @@ class update_job_status_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \required_capability_exception
      */
-    public function test_update_job_status(string $originStatus, string $targetStatus, array $expected) {
+    public function test_update_job_status(string $originstatus, string $targetstatus, array $expected) {
         // Gain privileges
         $this->setAdminUser();
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
         // Create mock quiz and job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -198,16 +214,16 @@ class update_job_status_test extends \advanced_testcase {
             'TEST-WS-TOKEN',
             [],
             [],
-            $originStatus
+            $originstatus
         );
 
         // Ensure job is in the expected state
-        $this->assertSame($originStatus, $job->get_status());
+        $this->assertSame($originstatus, $job->get_status());
 
         // Execute the external function and check the result
         $result = update_job_status::execute(
             $job->get_jobid(),
-            $targetStatus
+            $targetstatus
         );
         $this->assertSame($expected, $result, 'Invalid webservice answer');
     }
@@ -219,19 +235,71 @@ class update_job_status_test extends \advanced_testcase {
      */
     public function job_status_data_provider(): array {
         return [
-            'Status: UNKNOWN -> UNINITIALIZED' => ['originStatus' => ArchiveJob::STATUS_UNKNOWN, 'targetStatus' => ArchiveJob::STATUS_UNINITIALIZED, 'expected' => ['status' => 'OK']],
-            'Status: UNINITIALIZED -> AWAITING_PROCESSING' => ['originStatus' => ArchiveJob::STATUS_UNINITIALIZED, 'targetStatus' => ArchiveJob::STATUS_AWAITING_PROCESSING, 'expected' => ['status' => 'OK']],
-            'Status: UNINITIALIZED -> FINISHED' => ['originStatus' => ArchiveJob::STATUS_UNINITIALIZED, 'targetStatus' => ArchiveJob::STATUS_FINISHED, 'expected' => ['status' => 'OK']],
-            'Status: AWAITING_PROCESSING -> RUNNING' => ['originStatus' => ArchiveJob::STATUS_AWAITING_PROCESSING, 'targetStatus' => ArchiveJob::STATUS_RUNNING, 'expected' => ['status' => 'OK']],
-            'Status: RUNNING -> FINISHED' => ['originStatus' => ArchiveJob::STATUS_RUNNING, 'targetStatus' => ArchiveJob::STATUS_FINISHED, 'expected' => ['status' => 'OK']],
-            'Status: RUNNING -> FAILED' => ['originStatus' => ArchiveJob::STATUS_RUNNING, 'targetStatus' => ArchiveJob::STATUS_FAILED, 'expected' => ['status' => 'OK']],
-            'Status: RUNNING -> TIMEOUT' => ['originStatus' => ArchiveJob::STATUS_RUNNING, 'targetStatus' => ArchiveJob::STATUS_TIMEOUT, 'expected' => ['status' => 'OK']],
-            'Status: FINISHED -> DELETED' => ['originStatus' => ArchiveJob::STATUS_FINISHED, 'targetStatus' => ArchiveJob::STATUS_DELETED, 'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED']],
-            'Status: FINISHED -> RUNNING' => ['originStatus' => ArchiveJob::STATUS_FINISHED, 'targetStatus' => ArchiveJob::STATUS_RUNNING, 'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED']],
-            'Status: FINISHED -> FAILED' => ['originStatus' => ArchiveJob::STATUS_FINISHED, 'targetStatus' => ArchiveJob::STATUS_FAILED, 'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED']],
-            'Status: FINISHED -> TIMEOUT' => ['originStatus' => ArchiveJob::STATUS_FINISHED, 'targetStatus' => ArchiveJob::STATUS_TIMEOUT, 'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED']],
-            'Status: FINISHED -> UNINITIALIZED' => ['originStatus' => ArchiveJob::STATUS_FINISHED, 'targetStatus' => ArchiveJob::STATUS_UNINITIALIZED, 'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED']],
-            'Status: FAILED -> DELETED' => ['originStatus' => ArchiveJob::STATUS_FAILED, 'targetStatus' => ArchiveJob::STATUS_DELETED, 'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED']],
+            'Status: UNKNOWN -> UNINITIALIZED' => [
+                'originstatus' => ArchiveJob::STATUS_UNKNOWN,
+                'targetstatus' => ArchiveJob::STATUS_UNINITIALIZED,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: UNINITIALIZED -> AWAITING_PROCESSING' => [
+                'originstatus' => ArchiveJob::STATUS_UNINITIALIZED,
+                'targetstatus' => ArchiveJob::STATUS_AWAITING_PROCESSING,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: UNINITIALIZED -> FINISHED' => [
+                'originstatus' => ArchiveJob::STATUS_UNINITIALIZED,
+                'targetstatus' => ArchiveJob::STATUS_FINISHED,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: AWAITING_PROCESSING -> RUNNING' => [
+                'originstatus' => ArchiveJob::STATUS_AWAITING_PROCESSING,
+                'targetstatus' => ArchiveJob::STATUS_RUNNING,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: RUNNING -> FINISHED' => [
+                'originstatus' => ArchiveJob::STATUS_RUNNING,
+                'targetstatus' => ArchiveJob::STATUS_FINISHED,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: RUNNING -> FAILED' => [
+                'originstatus' => ArchiveJob::STATUS_RUNNING,
+                'targetstatus' => ArchiveJob::STATUS_FAILED,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: RUNNING -> TIMEOUT' => [
+                'originstatus' => ArchiveJob::STATUS_RUNNING,
+                'targetstatus' => ArchiveJob::STATUS_TIMEOUT,
+                'expected' => ['status' => 'OK'],
+            ],
+            'Status: FINISHED -> DELETED' => [
+                'originstatus' => ArchiveJob::STATUS_FINISHED,
+                'targetstatus' => ArchiveJob::STATUS_DELETED,
+                'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED'],
+            ],
+            'Status: FINISHED -> RUNNING' => [
+                'originstatus' => ArchiveJob::STATUS_FINISHED,
+                'targetstatus' => ArchiveJob::STATUS_RUNNING,
+                'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED'],
+            ],
+            'Status: FINISHED -> FAILED' => [
+                'originstatus' => ArchiveJob::STATUS_FINISHED,
+                'targetstatus' => ArchiveJob::STATUS_FAILED,
+                'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED'],
+            ],
+            'Status: FINISHED -> TIMEOUT' => [
+                'originstatus' => ArchiveJob::STATUS_FINISHED,
+                'targetstatus' => ArchiveJob::STATUS_TIMEOUT,
+                'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED'],
+            ],
+            'Status: FINISHED -> UNINITIALIZED' => [
+                'originstatus' => ArchiveJob::STATUS_FINISHED,
+                'targetstatus' => ArchiveJob::STATUS_UNINITIALIZED,
+                'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED'],
+            ],
+            'Status: FAILED -> DELETED' => [
+                'originstatus' => ArchiveJob::STATUS_FAILED,
+                'targetstatus' => ArchiveJob::STATUS_DELETED,
+                'expected' => ['status' => 'E_JOB_ALREADY_COMPLETED'],
+            ],
         ];
     }
 

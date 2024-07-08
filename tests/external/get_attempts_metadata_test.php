@@ -34,7 +34,7 @@ class get_attempts_metadata_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generate_mock_quiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -44,7 +44,7 @@ class get_attempts_metadata_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -62,7 +62,7 @@ class get_attempts_metadata_test extends \advanced_testcase {
      * @param int $quizid Quiz ID
      * @return array Valid request parameters
      */
-    protected function generateValidRequest(int $courseid, int $cmid, int $quizid): array {
+    protected function generate_valid_request(int $courseid, int $cmid, int $quizid): array {
         return [
             'courseid' => $courseid,
             'cmid' => $cmid,
@@ -83,8 +83,8 @@ class get_attempts_metadata_test extends \advanced_testcase {
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
-        $mocks = $this->generateMockQuiz();
-        $r = $this->generateValidRequest($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        $mocks = $this->generate_mock_quiz();
+        $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         get_attempts_metadata::execute(
             $r['courseid'],
             $r['cmid'],
@@ -102,7 +102,7 @@ class get_attempts_metadata_test extends \advanced_testcase {
      * @param int $cmid Course module ID
      * @param int $quizid Quiz ID
      * @param array $attemptids Array of attempt IDs
-     * @param bool $shouldFail Whether a failure is expected
+     * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \moodle_exception
      */
@@ -111,15 +111,18 @@ class get_attempts_metadata_test extends \advanced_testcase {
         int $cmid,
         int $quizid,
         array $attemptids,
-        bool $shouldFail
+        bool $shouldfail
     ): void {
-        if ($shouldFail) {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
         try {
             get_attempts_metadata::execute($courseid, $cmid, $quizid, $attemptids);
-        } catch (\dml_exception $e) {}
+        // @codingStandardsIgnoreLine
+        } catch (\dml_exception $e) {
+            // Ignore
+        }
     }
 
     /**
@@ -128,12 +131,12 @@ class get_attempts_metadata_test extends \advanced_testcase {
      * @return array[] Test data
      */
     public function parameter_data_provider(): array {
-        $mocks = $this->generateMockQuiz();
-        $base = $this->generateValidRequest($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
+        $mocks = $this->generate_mock_quiz();
+        $base = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
         return [
-            'Valid' => array_merge($base, ['shouldFail' => false]),
-            'Invalid attemptids (simple)' => array_merge($base, ['attemptids' => ['a'], 'shouldFail' => true]),
-            'Invalid attemptids (mixed)' => array_merge($base, ['attemptids' => [1, 2, 3, 4, 5, 'a'], 'shouldFail' => true]),
+            'Valid' => array_merge($base, ['shouldfail' => false]),
+            'Invalid attemptids (simple)' => array_merge($base, ['attemptids' => ['a'], 'shouldfail' => true]),
+            'Invalid attemptids (mixed)' => array_merge($base, ['attemptids' => [1, 2, 3, 4, 5, 'a'], 'shouldfail' => true]),
         ];
     }
 

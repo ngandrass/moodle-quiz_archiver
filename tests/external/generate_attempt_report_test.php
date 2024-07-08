@@ -24,7 +24,6 @@
 
 namespace quiz_archiver\external;
 
-
 use quiz_archiver\Report;
 
 /**
@@ -37,7 +36,7 @@ class generate_attempt_report_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generate_mock_quiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -47,7 +46,7 @@ class generate_attempt_report_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -66,7 +65,7 @@ class generate_attempt_report_test extends \advanced_testcase {
      * @param int $attemptid Attempt ID
      * @return array Valid request parameters
      */
-    protected function generateValidRequest(int $courseid, int $cmid, int $quizid, int $attemptid): array {
+    protected function generate_valid_request(int $courseid, int $cmid, int $quizid, int $attemptid): array {
         return [
             'courseid' => $courseid,
             'cmid' => $cmid,
@@ -91,8 +90,8 @@ class generate_attempt_report_test extends \advanced_testcase {
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
-        $mocks = $this->generateMockQuiz();
-        $r = $this->generateValidRequest($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
+        $mocks = $this->generate_mock_quiz();
+        $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
         generate_attempt_report::execute(
             $r['courseid'],
             $r['cmid'],
@@ -116,7 +115,7 @@ class generate_attempt_report_test extends \advanced_testcase {
      * @param string $filenamepattern Filename pattern
      * @param array $sections Sections settings array
      * @param bool $attachments Whether to include attachments
-     * @param bool $shouldFail Whether a failure is expected
+     * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \DOMException
      * @throws \moodle_exception
@@ -129,15 +128,18 @@ class generate_attempt_report_test extends \advanced_testcase {
         string $filenamepattern,
         array $sections,
         bool $attachments,
-        bool $shouldFail
+        bool $shouldfail
     ): void {
-        if ($shouldFail) {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
         try {
             generate_attempt_report::execute($courseid, $cmid, $quizid, $attemptid, $filenamepattern, $sections, $attachments);
-        } catch (\dml_missing_record_exception $e) {}
+        // @codingStandardsIgnoreLine
+        } catch (\dml_missing_record_exception $e) {
+            // Ignore
+        }
     }
 
     /**
@@ -146,12 +148,12 @@ class generate_attempt_report_test extends \advanced_testcase {
      * @return array[] Test data
      */
     public function parameter_data_provider(): array {
-        $mocks = $this->generateMockQuiz();
-        $base = $this->generateValidRequest($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
+        $mocks = $this->generate_mock_quiz();
+        $base = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
         return [
-            'Valid' => array_merge($base, ['shouldFail' => false]),
-            'Invalid filenamepattern' => array_merge($base, ['filenamepattern' => '<a href="localhost">Foo</a>', 'shouldFail' => true]),
-            'Invalid sections' => array_merge($base, ['sections' => ['foo' => true], 'shouldFail' => true]),
+            'Valid' => array_merge($base, ['shouldfail' => false]),
+            'Invalid filenamepattern' => array_merge($base, ['filenamepattern' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
+            'Invalid sections' => array_merge($base, ['sections' => ['foo' => true], 'shouldfail' => true]),
         ];
     }
 

@@ -37,7 +37,7 @@ class get_backup_status_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generate_mock_quiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -47,7 +47,7 @@ class get_backup_status_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object)[
@@ -67,7 +67,7 @@ class get_backup_status_test extends \advanced_testcase {
      */
     public function test_capability_requirement(): void {
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -95,7 +95,7 @@ class get_backup_status_test extends \advanced_testcase {
      *
      * @param string $jobid Job ID
      * @param string $backupid Backup ID
-     * @param bool $shouldFail Whether a failure is expected
+     * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \coding_exception
      * @throws \invalid_parameter_exception
@@ -104,15 +104,18 @@ class get_backup_status_test extends \advanced_testcase {
     public function test_parameter_validation(
         string $jobid,
         string $backupid,
-        bool $shouldFail
+        bool   $shouldfail
     ): void {
-        if ($shouldFail) {
+        if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
         try {
             get_backup_status::execute($jobid, $backupid);
-        } catch (\dml_exception $e) {}
+        // @codingStandardsIgnoreLine
+        } catch (\dml_exception $e) {
+            // Ignore
+        }
     }
 
     /**
@@ -124,7 +127,7 @@ class get_backup_status_test extends \advanced_testcase {
      */
     public function parameter_data_provider(): array {
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -142,9 +145,9 @@ class get_backup_status_test extends \advanced_testcase {
         ];
 
         return [
-            'Valid' => array_merge($base, ['shouldFail' => false]),
-            'Invalid jobid' => array_merge($base, ['jobid' => '<a href="localhost">Foo</a>', 'shouldFail' => true]),
-            'Invalid backupid' => array_merge($base, ['backupid' => '<a href="localhost">Bar</a>', 'shouldFail' => true]),
+            'Valid' => array_merge($base, ['shouldfail' => false]),
+            'Invalid jobid' => array_merge($base, ['jobid' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
+            'Invalid backupid' => array_merge($base, ['backupid' => '<a href="localhost">Bar</a>', 'shouldfail' => true]),
         ];
     }
 
@@ -163,7 +166,7 @@ class get_backup_status_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Create job
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,

@@ -24,7 +24,6 @@
 
 namespace quiz_archiver;
 
-
 use context_user;
 
 /**
@@ -37,7 +36,7 @@ class FileManager_test extends \advanced_testcase {
      *
      * @return \stdClass Created mock objects
      */
-    protected function generateMockQuiz(): \stdClass {
+    protected function generate_mock_quiz(): \stdClass {
         // Create course, course module and quiz
         $this->resetAfterTest();
 
@@ -47,7 +46,7 @@ class FileManager_test extends \advanced_testcase {
         $quiz = $this->getDataGenerator()->create_module('quiz', [
             'course' => $course->id,
             'grade' => 100.0,
-            'sumgrades' => 100
+            'sumgrades' => 100,
         ]);
 
         return (object) [
@@ -70,7 +69,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    protected function importReferenceQuizArtifact(): \stored_file {
+    protected function import_reference_quiz_artifact(): \stored_file {
         $this->resetAfterTest();
         $ctx = context_user::instance($this->getDataGenerator()->create_user()->id);
 
@@ -95,7 +94,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    protected function generateDraftFile(string $filename, string $filearea = 'draft'): \stored_file {
+    protected function generate_draft_file(string $filename, string $filearea = 'draft'): \stored_file {
         $this->resetAfterTest();
         $ctx = context_user::instance($this->getDataGenerator()->create_user()->id);
 
@@ -123,7 +122,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    protected function generateTempFile(string $filename, int $expiry): \stored_file {
+    protected function generate_temp_file(string $filename, int $expiry): \stored_file {
         $this->resetAfterTest();
         $ctx = context_user::instance($this->getDataGenerator()->create_user()->id);
 
@@ -150,12 +149,11 @@ class FileManager_test extends \advanced_testcase {
      * @param int $courseid
      * @param int $cmid
      * @param int $quizid
-     * @param string $expectedPath
+     * @param string $expectedpath
      * @return void
      */
-    public function test_file_path_generator(int $courseid, int $cmid, int $quizid, string $expectedPath): void {
-        $this->assertEquals($expectedPath, FileManager::get_file_path($courseid, $cmid, $quizid));
-
+    public function test_file_path_generator(int $courseid, int $cmid, int $quizid, string $expectedpath): void {
+        $this->assertEquals($expectedpath, FileManager::get_file_path($courseid, $cmid, $quizid));
     }
 
     /**
@@ -169,49 +167,49 @@ class FileManager_test extends \advanced_testcase {
                 1,
                 2,
                 3,
-                '/1/2/3/'
+                '/1/2/3/',
             ],
             'Empty path' => [
                 0,
                 0,
                 0,
-                '/'
+                '/',
             ],
             'Only course' => [
                 1,
                 0,
                 0,
-                '/1/'
+                '/1/',
             ],
             'Only course and cm' => [
                 1,
                 2,
                 0,
-                '/1/2/'
+                '/1/2/',
             ],
             'Only course and quiz' => [
                 1,
                 0,
                 3,
-                '/1/'
+                '/1/',
             ],
             'Only cm' => [
                 0,
                 2,
                 0,
-                '/'
+                '/',
             ],
             'Only cm and quiz' => [
                 0,
                 2,
                 3,
-                '/'
+                '/',
             ],
             'Only quiz' => [
                 0,
                 0,
                 3,
-                '/'
+                '/',
             ],
         ];
     }
@@ -225,9 +223,9 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_artifact_storing(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $draftfile = $this->generateDraftFile('testfile.tar.gz');
+        $draftfile = $this->generate_draft_file('testfile.tar.gz');
         $draftfilehash = $draftfile->get_contenthash();
 
         // Store draftfile as artifact
@@ -249,13 +247,13 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_artifact_storing_invalid_file(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $invalidFile = $this->generateDraftFile('invalidfile.tar.gz', 'invalidarea');
+        $invalidfile = $this->generate_draft_file('invalidfile.tar.gz', 'invalidarea');
 
         $this->expectException(\file_exception::class);
         $this->expectExceptionMessageMatches('/draftfile/');
-        $fm->store_uploaded_artifact($invalidFile);
+        $fm->store_uploaded_artifact($invalidfile);
     }
 
     /**
@@ -266,7 +264,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_hash_valid_file(): void {
-        $file = $this->generateDraftFile('testartifact.tar.gz');
+        $file = $this->generate_draft_file('testartifact.tar.gz');
         $defaulthash = FileManager::hash_file($file);
         $this->assertNotEmpty($defaulthash, 'Default hash is empty');
         $this->assertSame(64, strlen($defaulthash), 'Default hash length is not 64 bytes, as expected from SHA256');
@@ -283,7 +281,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_hash_file_invalid_algorithm(): void {
-        $file = $this->generateDraftFile('testartifact.tar.gz');
+        $file = $this->generate_draft_file('testartifact.tar.gz');
         $this->assertNull(FileManager::hash_file($file, 'invalid-algorithm'), 'Invalid algorithm did not return null');
     }
 
@@ -303,7 +301,7 @@ class FileManager_test extends \advanced_testcase {
             $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
         }
 
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000001',
             $mocks->course->id,
@@ -350,7 +348,7 @@ class FileManager_test extends \advanced_testcase {
             $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
         }
 
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000002',
             $mocks->course->id,
@@ -390,7 +388,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_send_virtual_files_tsp_invalid_job(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000003',
             $mocks->course->id,
@@ -422,7 +420,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_send_virtual_files_tsp_unsigned_job(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000004',
             $mocks->course->id,
@@ -453,7 +451,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_filearea(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test invalid filearea
@@ -468,7 +466,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_path(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test invalid path
@@ -483,7 +481,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_jobid(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test invalid job-id
@@ -502,7 +500,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_missing_job(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test missing job
@@ -521,7 +519,7 @@ class FileManager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_filename(): void {
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test missing job
@@ -542,7 +540,7 @@ class FileManager_test extends \advanced_testcase {
      */
     public function test_extract_attempt_data_from_artifact(): void {
         // Prepare a finished archive job that has a valid artifact file
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000042',
             $mocks->course->id,
@@ -556,16 +554,16 @@ class FileManager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        $draftArtifact = $this->importReferenceQuizArtifact();
+        $draftartifact = $this->import_reference_quiz_artifact();
         $attemptid = 13775;
 
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $fm->store_uploaded_artifact($draftArtifact);
-        $storedArtifacts = $fm->get_stored_artifacts();
-        $storedArtifact = array_shift($storedArtifacts);
+        $fm->store_uploaded_artifact($draftartifact);
+        $storedartifacts = $fm->get_stored_artifacts();
+        $storedartifact = array_shift($storedartifacts);
 
         // Extract userdata from artifact into temporary stored_file
-        $tempfile = $fm->extract_attempt_data_from_artifact($storedArtifact, $job->get_id(), $attemptid);
+        $tempfile = $fm->extract_attempt_data_from_artifact($storedartifact, $job->get_id(), $attemptid);
         $this->assertNotEmpty($tempfile, 'No temp file was returned');
         $this->assertNotEmpty($tempfile->get_contenthash(), 'Temp file has no valid content hash');
         $this->assertTrue($tempfile->get_filesize() > 1024, 'Temp file is too small to be valid');
@@ -583,7 +581,7 @@ class FileManager_test extends \advanced_testcase {
      */
     public function test_extract_attempt_data_for_nonexisting_attemptid(): void {
         // Prepare a finished archive job that has a valid artifact file
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000021',
             $mocks->course->id,
@@ -596,16 +594,16 @@ class FileManager_test extends \advanced_testcase {
             [],
             ArchiveJob::STATUS_FINISHED
         );
-        $draftArtifact = $this->importReferenceQuizArtifact();
+        $draftartifact = $this->import_reference_quiz_artifact();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $fm->store_uploaded_artifact($draftArtifact);
-        $storedArtifacts = $fm->get_stored_artifacts();
-        $storedArtifact = array_shift($storedArtifacts);
+        $fm->store_uploaded_artifact($draftartifact);
+        $storedartifacts = $fm->get_stored_artifacts();
+        $storedartifact = array_shift($storedartifacts);
 
         // Extract userdata from artifact into temporary stored_file
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Attempt not found/');
-        $fm->extract_attempt_data_from_artifact($storedArtifact, $job->get_id(), 9999999);
+        $fm->extract_attempt_data_from_artifact($storedartifact, $job->get_id(), 9999999);
     }
 
     /**
@@ -620,7 +618,7 @@ class FileManager_test extends \advanced_testcase {
      */
     public function test_extract_attempt_data_from_invalid_artifact(): void {
         // Prepare an unfinished archive job that has no artifact file
-        $mocks = $this->generateMockQuiz();
+        $mocks = $this->generate_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000043',
             $mocks->course->id,
@@ -638,7 +636,7 @@ class FileManager_test extends \advanced_testcase {
         // Attempt to extract data from nonexisting artifact
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Error processing archive file/');
-        $fm->extract_attempt_data_from_artifact($this->generateDraftFile('not-an-artifact.tar.gz'), $job->get_id(), 1337);
+        $fm->extract_attempt_data_from_artifact($this->generate_draft_file('not-an-artifact.tar.gz'), $job->get_id(), 1337);
     }
 
     /**
@@ -651,25 +649,25 @@ class FileManager_test extends \advanced_testcase {
      */
     public function test_cleanup_temp_files(): void {
         // Prepare tempfiles
-        $overdueTempfiles = [
-            $this->generateTempFile('tempfile1.tar.gz', 0),
-            $this->generateTempFile('tempfile2.tar.gz', 0),
-            $this->generateTempFile('tempfile3.tar.gz', 0),
+        $overduetempfiles = [
+            $this->generate_temp_file('tempfile1.tar.gz', 0),
+            $this->generate_temp_file('tempfile2.tar.gz', 0),
+            $this->generate_temp_file('tempfile3.tar.gz', 0),
         ];
-        $activeTempfiles = [
-            $this->generateTempFile('tempfile4.tar.gz', time() + 3600),
-            $this->generateTempFile('tempfile5.tar.gz', time() + 3600),
-            $this->generateTempFile('tempfile6.tar.gz', time() + 3600),
+        $activetempfiles = [
+            $this->generate_temp_file('tempfile4.tar.gz', time() + 3600),
+            $this->generate_temp_file('tempfile5.tar.gz', time() + 3600),
+            $this->generate_temp_file('tempfile6.tar.gz', time() + 3600),
         ];
 
         // Perform cleanup
         FileManager::cleanup_temp_files();
 
-        foreach ($overdueTempfiles as $file) {
+        foreach ($overduetempfiles as $file) {
             $this->assertEmpty(get_file_storage()->get_file_by_id($file->get_id()), 'Temp file was not deleted');
         }
 
-        foreach ($activeTempfiles as $file) {
+        foreach ($activetempfiles as $file) {
             $this->assertNotEmpty(get_file_storage()->get_file_by_id($file->get_id()), 'Active temp file was falsely deleted');
         }
     }
