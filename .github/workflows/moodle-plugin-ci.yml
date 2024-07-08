@@ -106,10 +106,9 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpmd
 
-      # FIXME: Re-enable this step
-      #- name: Moodle Code Checker
-      #  if: ${{ !cancelled() }}
-      #  run: moodle-plugin-ci phpcs --max-warnings 0
+      - name: Moodle Code Checker
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
         if: ${{ !cancelled() }}
