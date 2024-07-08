@@ -29,18 +29,16 @@ defined('MOODLE_INTERNAL') || die();
  * Custom code to be run on installing the plugin.
  */
 function xmldb_quiz_archiver_install() {
-
     // Print welcome message
-    $autoinstall_url = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
-    $pluginsettings_url = new moodle_url('/admin/settings.php', ['section' => 'quiz_archiver_settings']);
+    $autoinstallurl = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
+    $pluginsettingsurl = new moodle_url('/admin/settings.php', ['section' => 'quiz_archiver_settings']);
 
     echo '<div class="alert alert-info" role="alert">';
         echo '<p>'.get_string('thanks_for_installing', 'quiz_archiver')."</p>";
         echo '<p>'.get_string('autoinstall_explanation', 'quiz_archiver')."</p>";
-        echo '<p><a href='.$autoinstall_url.' class="btn btn-primary text-white">'.get_string('autoinstall_start_now', 'quiz_archiver').'</a></p>';
+        echo '<p><a href='.$autoinstallurl.' class="btn btn-primary text-white">'.get_string('autoinstall_start_now', 'quiz_archiver').'</a></p>';
         echo '<p>'.get_string('manual_configuration_continue', 'quiz_archiver').'</p>';
     echo '</div>';
-
 
     return true;
 }

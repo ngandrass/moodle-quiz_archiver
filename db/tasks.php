@@ -22,6 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $tasks = [
     [
         'classname' => 'quiz_archiver\task\cleanup_temp_files',

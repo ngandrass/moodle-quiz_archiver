@@ -29,6 +29,5 @@ defined('MOODLE_INTERNAL') || die();
  * Custom uninstallation procedure.
  */
 function xmldb_quiz_archiver_uninstall() {
-
     return true;
 }
