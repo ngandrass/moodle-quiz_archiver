@@ -22,15 +22,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
  */
 
-/** @var bool Disables output buffering */
-const NO_OUTPUT_BUFFERING = true;
-
 require_once(__DIR__.'/../../../../../config.php');
 require_once("{$CFG->libdir}/moodlelib.php");
 require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/form/autoinstall_form.php");
 
 use quiz_archiver\form\autoinstall_form;
 use quiz_archiver\local\autoinstall;
+
+/** @var bool Disables output buffering */
+const NO_OUTPUT_BUFFERING = true;
 
 // Ensure user has permissions
 require_login();
