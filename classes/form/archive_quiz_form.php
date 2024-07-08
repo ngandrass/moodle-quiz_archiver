@@ -61,6 +61,8 @@ class archive_quiz_form extends \moodleform {
      * @throws \coding_exception
      */
     public function definition() {
+        global $CFG;
+
         $config = get_config('quiz_archiver');
         $mform = $this->_form;
 
@@ -160,14 +162,19 @@ class archive_quiz_form extends \moodleform {
             get_string('archive_filename_pattern', 'quiz_archiver'),
             $config->job_preset_archive_filename_pattern_locked ? 'disabled' : null
         );
-        $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern', 'quiz_archiver', '', false, [
-            'variables' => array_reduce(
-                ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
-                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('archive_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>",
-                ""
-            ),
-            'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
-        ]);
+        if ($CFG->branch > 402) {
+            $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern', 'quiz_archiver', '', false, [
+                'variables' => array_reduce(
+                    ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
+                    fn($res, $varname) => $res . "<li><code>\${" . $varname . "}</code>: " . get_string('archive_filename_pattern_variable_' . $varname, 'quiz_archiver') . "</li>",
+                    ""
+                ),
+                'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+            ]);
+        } else {
+            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+            $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern_moodle42', 'quiz_archiver');
+        }
         $mform->setType('archive_filename_pattern', PARAM_TEXT);
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
@@ -178,14 +185,19 @@ class archive_quiz_form extends \moodleform {
             get_string('export_attempts_filename_pattern', 'quiz_archiver'),
             $config->job_preset_export_attempts_filename_pattern_locked ? 'disabled' : null
         );
-        $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern', 'quiz_archiver', '', false, [
-            'variables' => array_reduce(
-                ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
-                fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>",
-                ""
-            ),
-            'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
-        ]);
+        if ($CFG->branch > 402) {
+            $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern', 'quiz_archiver', '', false, [
+                'variables' => array_reduce(
+                    ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
+                    fn($res, $varname) => $res . "<li><code>\${" . $varname . "}</code>: " . get_string('export_attempts_filename_pattern_variable_' . $varname, 'quiz_archiver') . "</li>",
+                    ""
+                ),
+                'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+            ]);
+        } else {
+            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
+            $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern_moodle42', 'quiz_archiver');
+        }
         $mform->setType('export_attempts_filename_pattern', PARAM_TEXT);
         $mform->setDefault('export_attempts_filename_pattern', $config->job_preset_export_attempts_filename_pattern);
         $mform->addRule('export_attempts_filename_pattern', null, 'maxlength', 255, 'client');

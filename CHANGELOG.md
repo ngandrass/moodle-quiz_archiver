@@ -6,6 +6,8 @@
   archive worker config
 - Describe different job timeout settings inside the "Known Pitfalls" section of
   the README file.
+- Fix display of variables in archive / report names help texts in Moodle <= 4.2
+
 
 ## Version 1.2.8 (2024052900)
 
