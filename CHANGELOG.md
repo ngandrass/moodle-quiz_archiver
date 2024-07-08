@@ -1,12 +1,15 @@
 # Changelog
 
-## Version 1.2.9 (XXXXXXXXXX)
+## Version 1.2.9 (2024070800)
 
 - Synchronize default job timeout setting with quiz archive worker and add hint about the additional timeout inside the 
   archive worker config
 - Describe different job timeout settings inside the "Known Pitfalls" section of
   the README file.
 - Fix display of variables in archive / report names help texts in Moodle <= 4.2
+
+_Note: Keep in mind to update your
+[Quiz Archive Worker](https://github.com/ngandrass/moodle-quiz-archive-worker) too!_
 
 
 ## Version 1.2.8 (2024052900)
