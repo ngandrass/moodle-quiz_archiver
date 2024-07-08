@@ -24,6 +24,8 @@
 
 namespace quiz_archiver\external;
 
+defined('MOODLE_INTERNAL') || die();
+
 // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
@@ -32,8 +34,6 @@ use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\ArchiveJob;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * API endpoint to update the status of a quiz archiver job
@@ -64,28 +64,28 @@ class update_job_status extends external_api {
     /**
      * Execute the webservice function
      *
-     * @param string $jobid_raw
-     * @param string $status_raw
+     * @param string $jobidraw
+     * @param string $statusraw
      * @return array
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
      * @throws \coding_exception
      */
     public static function execute(
-        string $jobid_raw,
-        string $status_raw
+        string $jobidraw,
+        string $statusraw
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'jobid' => $jobid_raw,
-            'status' => $status_raw,
+            'jobid' => $jobidraw,
+            'status' => $statusraw,
         ]);
 
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
 
             // Check capabilities
-            $context = \context_module::instance($job->get_cm_id());
+            $context = \context_module::instance($job->get_cmid());
             require_capability('mod/quiz_archiver:use_webservice', $context);
 
             if ($job->is_complete()) {

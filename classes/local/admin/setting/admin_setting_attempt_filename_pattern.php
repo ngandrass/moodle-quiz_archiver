@@ -18,6 +18,8 @@ namespace quiz_archiver\local\admin\setting;
 
 use quiz_archiver\ArchiveJob;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Custom admin setting for attempt filename pattern input fields
  *

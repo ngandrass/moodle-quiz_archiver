@@ -52,8 +52,8 @@ class autodelete_job_artifacts extends \core\task\scheduled_task {
      */
     public function execute(): void {
         echo get_string('task_autodelete_job_artifacts_start', 'quiz_archiver') . "\n";
-        $files_deleted = ArchiveJob::delete_expired_artifacts();
-        echo get_string('task_autodelete_job_artifacts_report', 'quiz_archiver', $files_deleted) . "\n";
+        $numfilesdeleted = ArchiveJob::delete_expired_artifacts();
+        echo get_string('task_autodelete_job_artifacts_report', 'quiz_archiver', $numfilesdeleted) . "\n";
     }
 
 }

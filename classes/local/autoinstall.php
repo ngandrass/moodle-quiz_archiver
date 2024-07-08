@@ -16,6 +16,8 @@
 
 namespace quiz_archiver\local;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once("{$CFG->dirroot}/user/lib.php");
 require_once("{$CFG->dirroot}/webservice/lib.php");
 require_once("{$CFG->dirroot}/lib/adminlib.php");
@@ -203,7 +205,7 @@ class autoinstall {
                 throw new \RuntimeException();
             }
 
-            foreach (self::WS_ROLECAPS as $cap){
+            foreach (self::WS_ROLECAPS as $cap) {
                 try {
                     assign_capability($cap, CAP_ALLOW, $wsroleid, $systemcontext->id, true);
                     $log[] = "    -> Capability {$cap} assigned to role '{$rolename}'.";
@@ -249,7 +251,7 @@ class autoinstall {
                 'uploadfiles' => true,
             ]);
 
-            if(!$serviceid){
+            if (!$serviceid) {
                 $log[] = "Error: Service {$wsname} could not be created.";
                 throw new \RuntimeException();
             } else {
@@ -265,7 +267,7 @@ class autoinstall {
             // Authorise the user to use the service.
             $webservicemanager->add_ws_authorised_user((object) [
                 'externalserviceid' => $serviceid,
-                'userid' => $webserviceuser->id
+                'userid' => $webserviceuser->id,
             ]);
 
             $service = $webservicemanager->get_external_service_by_id($serviceid);

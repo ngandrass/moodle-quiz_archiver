@@ -55,11 +55,11 @@ class FileManager {
     const ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS = 86400;
 
     /** @var int ID of the course this FileManager is associated with */
-    protected int $course_id;
+    protected int $courseid;
     /** @var int ID of the course module this FileManager is associated with */
-    protected int $cm_id;
+    protected int $cmid;
     /** @var int ID of the quiz this FileManager is associated with */
-    protected int $quiz_id;
+    protected int $quizid;
     /** @var context_course Context of the course this FileManager is associated with */
     protected context_course $context;
 
@@ -67,37 +67,37 @@ class FileManager {
      * Creates a new FileManager instance that is associated with the given quiz,
      * living inside a course module of a course.
      *
-     * @param int $course_id ID of the course
-     * @param int $cm_id ID of the course module
-     * @param int $quiz_id ID of the quiz
+     * @param int $courseid ID of the course
+     * @param int $cmid ID of the course module
+     * @param int $quizid ID of the quiz
      */
-    public function __construct(int $course_id, int $cm_id, int $quiz_id) {
-        $this->course_id = $course_id;
-        $this->cm_id = $cm_id;
-        $this->quiz_id = $quiz_id;
-        $this->context = context_course::instance($course_id);
+    public function __construct(int $courseid, int $cmid, int $quizid) {
+        $this->courseid = $courseid;
+        $this->cmid = $cmid;
+        $this->quizid = $quizid;
+        $this->context = context_course::instance($courseid);
     }
 
     /**
      * Generates a file path based on course, course module, and quiz. If any
      * part is left empty, the respective partial path is returned.
      *
-     * @param int $course_id ID of the course
-     * @param int $cm_id ID of the course module
-     * @param int $quiz_id ID of the quiz
+     * @param int $courseid ID of the course
+     * @param int $cmid ID of the course module
+     * @param int $quizid ID of the quiz
      * @return string Path according to passed IDs
      */
-    public static function get_file_path(int $course_id = -1, int $cm_id = -1, int $quiz_id = -1): string {
+    public static function get_file_path(int $courseid = -1, int $cmid = -1, int $quizid = -1): string {
         $path = '';
 
-        if ($course_id > 0) {
-            $path .= "/$course_id";
+        if ($courseid > 0) {
+            $path .= "/$courseid";
 
-            if ($cm_id > 0) {
-                $path .= "/$cm_id";
+            if ($cmid > 0) {
+                $path .= "/$cmid";
 
-                if ($quiz_id > 0) {
-                    $path .= "/$quiz_id";
+                if ($quizid > 0) {
+                    $path .= "/$quizid";
                 }
             }
         }
@@ -110,8 +110,8 @@ class FileManager {
      *
      * @return string Filepath for this FileManager instance
      */
-    protected function get_own_file_path() {
-        return self::get_file_path($this->course_id, $this->cm_id, $this->quiz_id);
+    protected function get_own_file_path(): string {
+        return self::get_file_path($this->courseid, $this->cmid, $this->quizid);
     }
 
     /**
@@ -196,12 +196,12 @@ class FileManager {
 
         // Calculate file hash chunk-wise
         $fh = $file->get_content_file_handle(stored_file::FILE_HANDLE_FOPEN);
-        $hash_ctx = hash_init($algo);
+        $hashctx = hash_init($algo);
         while (!feof($fh)) {
-            hash_update($hash_ctx, fgets($fh, 4096));
+            hash_update($hashctx, fgets($fh, 4096));
         }
 
-        return hash_final($hash_ctx);
+        return hash_final($hashctx);
     }
 
     /**
@@ -278,11 +278,11 @@ class FileManager {
             throw new \InvalidArgumentException("Job with ID {$jobid} not found");
         }
 
-        if ($courseid != $job->get_course_id() || $cmid != $job->get_cm_id() || $quizid != $job->get_quiz_id()) {
+        if ($courseid != $job->get_courseid() || $cmid != $job->get_cmid() || $quizid != $job->get_quizid()) {
             throw new \InvalidArgumentException("Invalid resource id in {$relativepath}");
         }
 
-        $tspdata = $job->TSPManager()->get_tsp_data();
+        $tspdata = $job->tspmanager()->get_tsp_data();
         if (!$tspdata) {
             throw new \InvalidArgumentException("No TSP data found for job with ID {$jobid}");
         }
@@ -340,7 +340,7 @@ class FileManager {
 
         // Prepare
         $packer = get_file_packer('application/x-gzip');
-        $workdir = "{$CFG->tempdir}/quiz_archiver/jid{$jobid}_cid{$this->course_id}_cmid{$this->cm_id}_qid{$this->quiz_id}_aid{$attemptid}";
+        $workdir = "{$CFG->tempdir}/quiz_archiver/jid{$jobid}_cid{$this->courseid}_cmid{$this->cmid}_qid{$this->quizid}_aid{$attemptid}";
 
         // Wrap in try-catch to ensure cleanup on exit
         try {
@@ -388,24 +388,24 @@ class FileManager {
             }
 
             // Create new archive from extracted attempt data into temp filearea
-            $export_expiry = time() + self::ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS;
-            $export_file = $packer->archive_to_storage(
+            $exportexpiry = time() + self::ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS;
+            $exportfile = $packer->archive_to_storage(
                 [
-                    $workdir."/attemptdata"
+                    $workdir."/attemptdata",
                 ],
                 $this->context->id,
                 self::COMPONENT_NAME,
                 self::TEMP_FILEAREA_NAME,
                 0,
-                "/{$export_expiry}/",
-                "attempt_export_jid{$jobid}_cid{$this->course_id}_cmid{$this->cm_id}_qid{$this->quiz_id}_aid{$attemptid}.tar.gz",
+                "/{$exportexpiry}/",
+                "attempt_export_jid{$jobid}_cid{$this->courseid}_cmid{$this->cmid}_qid{$this->quizid}_aid{$attemptid}.tar.gz",
             );
 
-            if (!$export_file) {
+            if (!$exportfile) {
                 throw new \moodle_exception('Failed to create attempt data archive');
             }
 
-            return $export_file;
+            return $exportfile;
         } catch (\Exception $e) {
             // Ignore skipped archives but always execute cleanup code!
             if (!($e instanceof \invalid_state_exception)) {
@@ -435,7 +435,7 @@ class FileManager {
         // Prepare
         $fs = get_file_storage();
         $now = time();
-        $files_deleted = 0;
+        $numfilesdeleted = 0;
 
         // Query using raw SQL to get temp files independent of contextid to speed this up a LOT
         $tempfilerecords = $DB->get_records_sql("
@@ -453,13 +453,13 @@ class FileManager {
                 if ($expiry < $now) {
                     $fs->get_file_by_id($f->id)->delete();
                     if ($f->filesize > 0) {
-                        $files_deleted++;
+                        $numfilesdeleted++;
                     }
                 }
             }
         }
 
-        return $files_deleted;
+        return $numfilesdeleted;
     }
 
 }

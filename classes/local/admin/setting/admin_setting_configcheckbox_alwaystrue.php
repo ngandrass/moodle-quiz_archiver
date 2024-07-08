@@ -16,6 +16,7 @@
 
 namespace quiz_archiver\local\admin\setting;
 
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Custom read-only admin setting checkbox that is always checked

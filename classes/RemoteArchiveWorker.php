@@ -35,11 +35,11 @@ defined('MOODLE_INTERNAL') || die();
 class RemoteArchiveWorker {
 
     /** @var string URL of the remote Quiz Archive Worker instance */
-    protected string $server_url;
+    protected string $serverurl;
     /** @var int Seconds to wait until a connection can be established before aborting */
-    protected int $connection_timeout;
+    protected int $connectiontimeout;
     /** @var int Seconds to wait for the request to complete before aborting */
-    protected int $request_timeout;
+    protected int $requesttimeout;
     /** @var \stdClass Moodle config object for this plugin */
     protected \stdClass $config;
 
@@ -49,15 +49,15 @@ class RemoteArchiveWorker {
     /**
      * RemoteArchiveWorker constructor
      *
-     * @param string $server_url URL of the remote Archive Worker instance
-     * @param int $connection_timeout Seconds to wait until a connection can be established before aborting
-     * @param int $request_timeout Seconds to wait for the request to complete before aborting
+     * @param string $serverurl URL of the remote Archive Worker instance
+     * @param int $connectiontimeout Seconds to wait until a connection can be established before aborting
+     * @param int $requesttimeout Seconds to wait for the request to complete before aborting
      * @throws \dml_exception If retrieving of the plugin config failed
      */
-    public function __construct(string $server_url, int $connection_timeout, int $request_timeout) {
-        $this->server_url = $server_url;
-        $this->connection_timeout = $connection_timeout;
-        $this->request_timeout = $request_timeout;
+    public function __construct(string $serverurl, int $connectiontimeout, int $requesttimeout) {
+        $this->serverurl = $serverurl;
+        $this->connectiontimeout = $connectiontimeout;
+        $this->requesttimeout = $requesttimeout;
         $this->config = get_config('quiz_archiver');
     }
 
@@ -68,10 +68,10 @@ class RemoteArchiveWorker {
      * @param int $courseid Moodle course id
      * @param int $cmid Moodle course module id
      * @param int $quizid Moodle quiz id
-     * @param array $job_options Associative array containing global job options
-     * @param mixed $task_archive_quiz_attempts Array containing payload data for
+     * @param array $joboptions Associative array containing global job options
+     * @param mixed $taskarchivequizattempts Array containing payload data for
      * the archive quiz attempts task, or null if it should not be executed
-     * @param mixed $task_moodle_backups Array containing payload data for
+     * @param mixed $taskmoodlebackups Array containing payload data for
      * the moodle backups task, or null if it should not be executed
      *
      * @return mixed Job information returned from the archive worker on success
@@ -79,46 +79,46 @@ class RemoteArchiveWorker {
      * service or decoding of the response failed
      * @throws \RuntimeException if the archive worker service reported an error
      */
-    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $job_options, $task_archive_quiz_attempts, $task_moodle_backups) {
+    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $joboptions, $taskarchivequizattempts, $taskmoodlebackups) {
         global $CFG;
-        $moodle_url_base = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
+        $moodleurlbase = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
         // Prepare request payload
-        $request_payload = json_encode(array_merge(
+        $payload = json_encode(array_merge(
             [
             "api_version" => self::API_VERSION,
-            "moodle_base_url" => $moodle_url_base,
-            "moodle_ws_url" => $moodle_url_base.'/webservice/rest/server.php',
-            "moodle_upload_url" => $moodle_url_base.'/webservice/upload.php',
+            "moodle_base_url" => $moodleurlbase,
+            "moodle_ws_url" => $moodleurlbase.'/webservice/rest/server.php',
+            "moodle_upload_url" => $moodleurlbase.'/webservice/upload.php',
             "wstoken" => $wstoken,
             "courseid" => $courseid,
             "cmid" => $cmid,
             "quizid" => $quizid,
-            "task_archive_quiz_attempts" => $task_archive_quiz_attempts,
-            "task_moodle_backups" => $task_moodle_backups,
+            "task_archive_quiz_attempts" => $taskarchivequizattempts,
+            "task_moodle_backups" => $taskmoodlebackups,
             ],
-            $job_options
+            $joboptions
         ));
 
         // Execute request
         // Moodle curl wrapper automatically closes curl handle after requests. No need to call curl_close() manually.
         $c = new curl(['ignoresecurity' => true]); // Ignore URL filter since we require custom ports and the URL is only configurable by admins
-        $result = $c->post($this->server_url, $request_payload, [
-            'CURLOPT_CONNECTTIMEOUT' => $this->connection_timeout,
-            'CURLOPT_TIMEOUT' => $this->request_timeout,
+        $result = $c->post($this->serverurl, $payload, [
+            'CURLOPT_CONNECTTIMEOUT' => $this->connectiontimeout,
+            'CURLOPT_TIMEOUT' => $this->requesttimeout,
             'CURLOPT_HTTPHEADER' => [
                 'Content-Type: application/json',
-                'Content-Length: '.strlen($request_payload),
-            ]
+                'Content-Length: '.strlen($payload),
+            ],
         ]);
 
-        $http_status = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string
+        $httpstatus = $c->get_info()['http_code'];  // Invalid PHPDoc in Moodle curl wrapper. Array returned instead of string
         $data = json_decode($result);
 
         // Handle errors
-        if ($http_status != 200) {
+        if ($httpstatus != 200) {
             if ($data === null) {
-                throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $http_status");
+                throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $httpstatus");
             }
             throw new \RuntimeException($data->error);
         } else {

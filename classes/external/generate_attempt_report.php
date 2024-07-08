@@ -24,6 +24,8 @@
 
 namespace quiz_archiver\external;
 
+defined('MOODLE_INTERNAL') || die();
+
 // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
@@ -34,8 +36,6 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\Report;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * API endpoint to generate a quiz attempt report
@@ -64,7 +64,7 @@ class generate_attempt_report extends external_api {
                 'Sections to include in the report',
                 VALUE_REQUIRED
             ),
-            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_REQUIRED)
+            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_REQUIRED),
         ]);
     }
 
@@ -99,13 +99,13 @@ class generate_attempt_report extends external_api {
     /**
      * Generate an quiz attempt report as HTML DOM
      *
-     * @param int $courseid_raw ID of the course
-     * @param int $cmid_raw ID of the course module
-     * @param int $quizid_raw ID of the quiz
-     * @param int $attemptid_raw ID of the quiz attempt
-     * @param string $filenamepattern_raw Filename pattern to use for report name generation
-     * @param array $sections_raw Sections to include in the report
-     * @param bool $attachments_raw Whether to check for attempts and include metadata if present
+     * @param int $courseidraw ID of the course
+     * @param int $cmidraw ID of the course module
+     * @param int $quizidraw ID of the quiz
+     * @param int $attemptidraw ID of the quiz attempt
+     * @param string $filenamepatternraw Filename pattern to use for report name generation
+     * @param array $sectionsraw Sections to include in the report
+     * @param bool $attachmentsraw Whether to check for attempts and include metadata if present
      *
      * @return array According to execute_returns()
      *
@@ -115,25 +115,25 @@ class generate_attempt_report extends external_api {
      * @throws \DOMException
      */
     public static function execute(
-        int $courseid_raw,
-        int $cmid_raw,
-        int $quizid_raw,
-        int $attemptid_raw,
-        string $filenamepattern_raw,
-        array $sections_raw,
-        bool $attachments_raw
+        int    $courseidraw,
+        int    $cmidraw,
+        int    $quizidraw,
+        int    $attemptidraw,
+        string $filenamepatternraw,
+        array  $sectionsraw,
+        bool   $attachmentsraw
     ): array {
         global $DB, $PAGE;
 
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'courseid' => $courseid_raw,
-            'cmid' => $cmid_raw,
-            'quizid' => $quizid_raw,
-            'attemptid' => $attemptid_raw,
-            'filenamepattern' => $filenamepattern_raw,
-            'sections' => $sections_raw,
-            'attachments' => $attachments_raw,
+            'courseid' => $courseidraw,
+            'cmid' => $cmidraw,
+            'quizid' => $quizidraw,
+            'attemptid' => $attemptidraw,
+            'filenamepattern' => $filenamepatternraw,
+            'sections' => $sectionsraw,
+            'attachments' => $attachmentsraw,
         ]);
 
         // Check capabilities

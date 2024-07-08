@@ -38,20 +38,20 @@ require_once($CFG->dirroot.'/lib/formslib.php');
  */
 class archive_quiz_form extends \moodleform {
 
-    /** @var string Name of the quiz to be exportet */
-    protected string $quiz_name;
+    /** @var string Name of the quiz to be exported */
+    protected string $quizname;
     /** @var int Number of attempts to be exported */
-    protected int $num_attempts;
+    protected int $numattempts;
 
     /**
      * Creates a new archive_quiz_form instance
      *
-     * @param string $quiz_name Name of the quiz to be exported
-     * @param int $num_attempts Number of attempts to be exported
+     * @param string $quizname Name of the quiz to be exported
+     * @param int $numattempts Number of attempts to be exported
      */
-    public function __construct(string $quiz_name, int $num_attempts) {
-        $this->quiz_name = $quiz_name;
-        $this->num_attempts = $num_attempts;
+    public function __construct(string $quizname, int $numattempts) {
+        $this->quizname = $quizname;
+        $this->numattempts = $numattempts;
         parent::__construct();
     }
 
@@ -80,14 +80,14 @@ class archive_quiz_form extends \moodleform {
         $mform->addElement('header', 'header_settings', get_string('settings'));
 
         // Options: Test
-        $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quiz_name);
+        $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quizname);
 
         // Options: Attempts
         $mform->addElement(
             'advcheckbox',
             'export_attempts',
             get_string('attempts', 'mod_quiz'),
-            get_string('export_attempts_num', 'quiz_archiver', $this->num_attempts),
+            get_string('export_attempts_num', 'quiz_archiver', $this->numattempts),
             ['disabled' => 'disabled'],
             ['1', '1']
         );
@@ -166,7 +166,7 @@ class archive_quiz_form extends \moodleform {
             $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern', 'quiz_archiver', '', false, [
                 'variables' => array_reduce(
                     ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
-                    fn($res, $varname) => $res . "<li><code>\${" . $varname . "}</code>: " . get_string('archive_filename_pattern_variable_' . $varname, 'quiz_archiver') . "</li>",
+                    fn($res, $varname) => $res."<li><code>\${".$varname."}</code>: ".get_string('archive_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>",
                     ""
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
@@ -189,7 +189,7 @@ class archive_quiz_form extends \moodleform {
             $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern', 'quiz_archiver', '', false, [
                 'variables' => array_reduce(
                     ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
-                    fn($res, $varname) => $res . "<li><code>\${" . $varname . "}</code>: " . get_string('export_attempts_filename_pattern_variable_' . $varname, 'quiz_archiver') . "</li>",
+                    fn($res, $varname) => $res."<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>",
                     ""
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
@@ -248,7 +248,7 @@ class archive_quiz_form extends \moodleform {
      * @return array Associative array with error messages for invalid fields
      * @throws \coding_exception
      */
-    function validation($data, $files) {
+    public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
         // Validate filename pattern
@@ -269,7 +269,7 @@ class archive_quiz_form extends \moodleform {
      * @return \stdClass Cleared, submitted form data
      * @throws \dml_exception
      */
-    public function get_data():\stdClass  {
+    public function get_data(): \stdClass {
         $data = parent::get_data();
         $config = get_config('quiz_archiver');
 

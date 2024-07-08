@@ -24,6 +24,8 @@
 
 namespace quiz_archiver\external;
 
+defined('MOODLE_INTERNAL') || die();
+
 // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
@@ -33,8 +35,6 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\Report;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * API endpoint to access quiz attempt metadata
@@ -85,10 +85,10 @@ class get_attempts_metadata extends external_api {
     /**
      * Generate an quiz attempt report as HTML DOM
      *
-     * @param int $courseid_raw ID of the course
-     * @param int $cmid_raw ID of the course module
-     * @param int $quizid_raw ID of the quiz
-     * @param array $attemptids_raw IDs of the quiz attempts
+     * @param int $courseidraw ID of the course
+     * @param int $cmidraw ID of the course module
+     * @param int $quizidraw ID of the quiz
+     * @param array $attemptidsraw IDs of the quiz attempts
      *
      * @return array According to execute_returns()
      *
@@ -96,15 +96,15 @@ class get_attempts_metadata extends external_api {
      * @throws \dml_transaction_exception
      * @throws \moodle_exception
      */
-    public static function execute(int $courseid_raw, int $cmid_raw, int $quizid_raw, array $attemptids_raw): array {
+    public static function execute(int $courseidraw, int $cmidraw, int $quizidraw, array $attemptidsraw): array {
         global $DB;
 
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'courseid' => $courseid_raw,
-            'cmid' => $cmid_raw,
-            'quizid' => $quizid_raw,
-            'attemptids' => $attemptids_raw
+            'courseid' => $courseidraw,
+            'cmid' => $cmidraw,
+            'quizid' => $quizidraw,
+            'attemptids' => $attemptidsraw,
         ]);
 
         // Check capabilities
@@ -126,17 +126,17 @@ class get_attempts_metadata extends external_api {
         $report = new Report($course, $cm, $quiz);
         if (!$report->has_access(optional_param('wstoken', null, PARAM_TEXT))) {
             return [
-                'status' => 'E_ACCESS_DENIED'
+                'status' => 'E_ACCESS_DENIED',
             ];
         }
-        $attempt_metadata = $report->get_attempts_metadata($params['attemptids']);
+        $attemptmetadata = $report->get_attempts_metadata($params['attemptids']);
 
         return [
             'courseid' => $params['courseid'],
             'cmid' => $params['cmid'],
             'quizid' => $params['quizid'],
-            'attempts' => $attempt_metadata,
-            'status' => 'OK'
+            'attempts' => $attemptmetadata,
+            'status' => 'OK',
         ];
     }
 

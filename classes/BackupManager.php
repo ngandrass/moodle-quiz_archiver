@@ -39,7 +39,7 @@ require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php');
 class BackupManager {
 
     /** @var \stdClass Backup controller metadata from DB */
-    protected \stdClass $backup_metadata;
+    protected \stdClass $backupmetadata;
 
     /** @var array Define what to include and exclude in backups */
     const BACKUP_SETTINGS = [
@@ -71,13 +71,13 @@ class BackupManager {
     public function __construct(string $backupid) {
         global $DB;
 
-        $this->backup_metadata = $DB->get_record(
+        $this->backupmetadata = $DB->get_record(
             'backup_controllers',
             ['backupid' => $backupid],
             'id, backupid, operation, type, itemid, userid',
             MUST_EXIST
         );
-        if ($this->backup_metadata->operation != 'backup') {
+        if ($this->backupmetadata->operation != 'backup') {
             throw new \ValueError('Only backup operations are supported.');
         }
     }
@@ -110,7 +110,7 @@ class BackupManager {
      */
     public function get_status(): int {
         global $DB;
-        return $DB->get_record('backup_controllers', ['id' => $this->backup_metadata->id], 'status')->status;
+        return $DB->get_record('backup_controllers', ['id' => $this->backupmetadata->id], 'status')->status;
     }
 
     /**
@@ -119,7 +119,7 @@ class BackupManager {
      * @return string Backup ID
      */
     public function get_backupid(): string {
-        return $this->backup_metadata->backupid;
+        return $this->backupmetadata->backupid;
     }
 
     /**
@@ -128,7 +128,7 @@ class BackupManager {
      * @return string Type of this backup controller (e.g. course, activity)
      */
     public function get_type(): string {
-        return $this->backup_metadata->type;
+        return $this->backupmetadata->type;
     }
 
     /**
@@ -137,7 +137,7 @@ class BackupManager {
      * @return int User-ID of the backup initiator
      */
     public function get_userid(): int {
-        return $this->backup_metadata->userid;
+        return $this->backupmetadata->userid;
     }
 
     /**
@@ -149,9 +149,9 @@ class BackupManager {
     public function is_associated_with_job(ArchiveJob $job): bool {
         switch ($this->get_type()) {
             case backup::TYPE_1ACTIVITY:
-                return $this->backup_metadata->itemid == $job->get_cm_id();
+                return $this->backupmetadata->itemid == $job->get_cmid();
             case backup::TYPE_1COURSE:
-                return $this->backup_metadata->itemid == $job->get_course_id();
+                return $this->backupmetadata->itemid == $job->get_courseid();
             default:
                 return false;
         }
@@ -162,13 +162,13 @@ class BackupManager {
      *
      * @param string $type Type of the backup, based on backup::TYPE_*
      * @param int $id ID of the backup object
-     * @param int $user_id User-ID to associate this backup with
+     * @param int $userid User-ID to associate this backup with
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
      * @throws \dml_exception
      */
-    protected static function initiate_backup(string $type, int $id, int $user_id): object {
+    protected static function initiate_backup(string $type, int $id, int $userid): object {
         global $CFG;
 
         // Validate type and set variables accordingly
@@ -190,7 +190,7 @@ class BackupManager {
             backup::FORMAT_MOODLE,
             backup::INTERACTIVE_NO,
             backup::MODE_ASYNC,
-            $user_id,
+            $userid,
             backup::RELEASESESSION_YES
         );
         $backupid = $bc->get_backupid();
@@ -202,8 +202,8 @@ class BackupManager {
             if ($task instanceof \backup_root_task) {
                 $task->get_setting('filename')->set_value($filename);
 
-                foreach (self::BACKUP_SETTINGS as $setting_name => $setting_value) {
-                    $task->get_setting($setting_name)->set_value($setting_value);
+                foreach (self::BACKUP_SETTINGS as $name => $value) {
+                    $task->get_setting($name)->set_value($value);
                 }
             }
         }
@@ -212,7 +212,7 @@ class BackupManager {
         $bc->set_status(backup::STATUS_AWAITING);
         $asynctask = new \core\task\asynchronous_backup_task();
         $asynctask->set_custom_data(['backupid' => $backupid]);
-        $asynctask->set_userid($user_id);
+        $asynctask->set_userid($userid);
         \core\task\manager::queue_adhoc_task($asynctask);
 
         // Generate backup file url
@@ -225,14 +225,14 @@ class BackupManager {
             $filename
         ));
 
-        $internal_wwwroot = get_config('quiz_archiver')->internal_wwwroot;
-        if ($internal_wwwroot) {
-            $url = str_replace(rtrim($CFG->wwwroot, '/'), rtrim($internal_wwwroot, '/'), $url);
+        $internalwwwroot = get_config('quiz_archiver')->internal_wwwroot;
+        if ($internalwwwroot) {
+            $url = str_replace(rtrim($CFG->wwwroot, '/'), rtrim($internalwwwroot, '/'), $url);
         }
 
         return (object) [
             'backupid' => $backupid,
-            'userid' => $user_id,
+            'userid' => $userid,
             'context' => $contextid,
             'component' => 'backup',
             'filearea' => $type,
@@ -244,33 +244,32 @@ class BackupManager {
         ];
     }
 
-
     /**
      * Initiates a new quiz backup
      *
-     * @param int $cm_id ID of the course module for the quiz
-     * @param int $user_id User-ID to associate this backup with
+     * @param int $cmid ID of the course module for the quiz
+     * @param int $userid User-ID to associate this backup with
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
      * @throws \dml_exception
      */
-    public static function initiate_quiz_backup(int $cm_id, int $user_id): object {
-        return self::initiate_backup(backup::TYPE_1ACTIVITY, $cm_id, $user_id);
+    public static function initiate_quiz_backup(int $cmid, int $userid): object {
+        return self::initiate_backup(backup::TYPE_1ACTIVITY, $cmid, $userid);
     }
 
     /**
      * Initiates a new course backup
      *
-     * @param int $course_id ID of the course module for the quiz
-     * @param int $user_id User-ID to associate this backup with
+     * @param int $courseid ID of the course module for the quiz
+     * @param int $userid User-ID to associate this backup with
      * @return object Backup metadata object
      * @throws \base_setting_exception
      * @throws \base_task_exception
      * @throws \dml_exception
      */
-    public static function initiate_course_backup(int $course_id, int $user_id): object {
-        return self::initiate_backup(backup::TYPE_1COURSE, $course_id, $user_id);
+    public static function initiate_course_backup(int $courseid, int $userid): object {
+        return self::initiate_backup(backup::TYPE_1COURSE, $courseid, $userid);
     }
 
 }

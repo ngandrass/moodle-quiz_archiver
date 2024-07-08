@@ -50,19 +50,19 @@ class artifact_delete_form extends \moodleform {
         $artifactfile = $job->get_artifact();
 
         // Generic warning message
-        $warn_head = get_string('delete_artifact', 'quiz_archiver');
+        $warnhead = get_string('delete_artifact', 'quiz_archiver');
 
         if ($artifactfile) {
-            $warn_msg = get_string('delete_artifact_warning', 'quiz_archiver');
-            $warn_details = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
-            $warn_details .= '<br>';
-            $warn_details .= get_string('quiz_archive', 'quiz_archiver').': ' .$artifactfile->get_filename().' ('.display_size($artifactfile->get_filesize()).')';
+            $warnmsg = get_string('delete_artifact_warning', 'quiz_archiver');
+            $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
+            $warndetails .= '<br>';
+            $warndetails .= get_string('quiz_archive', 'quiz_archiver').': ' .$artifactfile->get_filename().' ('.display_size($artifactfile->get_filesize()).')';
 
             // Warn additionally if job is scheduled for automatic deletion
             if ($job->is_autodelete_enabled()) {
                 if ($job->get_status() === ArchiveJob::STATUS_FINISHED) {
-                    $warn_msg .= '<br><br>';
-                    $warn_msg .= get_string(
+                    $warnmsg .= '<br><br>';
+                    $warnmsg .= get_string(
                         'delete_job_warning_retention',
                         'quiz_archiver',
                         userdate($job->get_retentiontime(), get_string('strftimedatetime', 'langconfig'))
@@ -70,17 +70,17 @@ class artifact_delete_form extends \moodleform {
                 }
             }
         } else {
-            $warn_msg = get_string('error').': '.get_string('quiz_archive_not_found', 'quiz_archiver', $job->get_jobid());
-            $warn_details = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
+            $warnmsg = get_string('error').': '.get_string('quiz_archive_not_found', 'quiz_archiver', $job->get_jobid());
+            $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
         }
 
         // Print warning element
         $mform->addElement('html', <<<EOD
             <div class="alert alert-warning" role="alert">
-                <h4>$warn_head</h4>
-                $warn_msg
+                <h4>$warnhead</h4>
+                $warnmsg
                 <hr/>
-                $warn_details
+                $warndetails
             </div>
         EOD);
 

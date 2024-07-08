@@ -51,8 +51,8 @@ class cleanup_temp_files extends \core\task\scheduled_task {
      */
     public function execute(): void {
         echo get_string('task_cleanup_temp_files_start', 'quiz_archiver') . "\n";
-        $files_deleted = FileManager::cleanup_temp_files();
-        echo get_string('task_cleanup_temp_files_report', 'quiz_archiver', $files_deleted) . "\n";
+        $numfilesdeleted = FileManager::cleanup_temp_files();
+        echo get_string('task_cleanup_temp_files_report', 'quiz_archiver', $numfilesdeleted) . "\n";
     }
 
 }

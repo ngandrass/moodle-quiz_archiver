@@ -24,6 +24,8 @@
 
 namespace quiz_archiver\external;
 
+defined('MOODLE_INTERNAL') || die();
+
 // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
@@ -33,8 +35,6 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\FileManager;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * API endpoint to process an artifact that was uploaded by the quiz archiver worker service
@@ -72,15 +72,15 @@ class process_uploaded_artifact extends external_api {
     /**
      * Execute the webservice function
      *
-     * @param string $jobid_raw
-     * @param string $artifact_component_raw
-     * @param int $artifact_contextid_raw
-     * @param int $artifact_userid_raw
-     * @param string $artifact_filearea_raw
-     * @param string $artifact_filename_raw
-     * @param string $artifact_filepath_raw
-     * @param int $artifact_itemid_raw
-     * @param string $artifact_sha256sum_raw
+     * @param string $jobidraw
+     * @param string $artifactcomponentraw
+     * @param int $artifactcontextidraw
+     * @param int $artifactuseridraw
+     * @param string $artifactfilearearaw
+     * @param string $artifactfilenameraw
+     * @param string $artifactfilepathraw
+     * @param int $artifactitemidraw
+     * @param string $artifactsha256sumraw
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception
@@ -88,27 +88,27 @@ class process_uploaded_artifact extends external_api {
      * @throws \required_capability_exception
      */
     public static function execute(
-        string $jobid_raw,
-        string $artifact_component_raw,
-        int $artifact_contextid_raw,
-        int $artifact_userid_raw,
-        string $artifact_filearea_raw,
-        string $artifact_filename_raw,
-        string $artifact_filepath_raw,
-        int $artifact_itemid_raw,
-        string $artifact_sha256sum_raw
+        string $jobidraw,
+        string $artifactcomponentraw,
+        int    $artifactcontextidraw,
+        int    $artifactuseridraw,
+        string $artifactfilearearaw,
+        string $artifactfilenameraw,
+        string $artifactfilepathraw,
+        int    $artifactitemidraw,
+        string $artifactsha256sumraw
     ): array {
         // Validate request
         $params = self::validate_parameters(self::execute_parameters(), [
-            'jobid' => $jobid_raw,
-            'artifact_component' => $artifact_component_raw,
-            'artifact_contextid' => $artifact_contextid_raw,
-            'artifact_userid' => $artifact_userid_raw,
-            'artifact_filearea' => $artifact_filearea_raw,
-            'artifact_filename' => $artifact_filename_raw,
-            'artifact_filepath' => $artifact_filepath_raw,
-            'artifact_itemid' => $artifact_itemid_raw,
-            'artifact_sha256sum' => $artifact_sha256sum_raw,
+            'jobid' => $jobidraw,
+            'artifact_component' => $artifactcomponentraw,
+            'artifact_contextid' => $artifactcontextidraw,
+            'artifact_userid' => $artifactuseridraw,
+            'artifact_filearea' => $artifactfilearearaw,
+            'artifact_filename' => $artifactfilenameraw,
+            'artifact_filepath' => $artifactfilepathraw,
+            'artifact_itemid' => $artifactitemidraw,
+            'artifact_sha256sum' => $artifactsha256sumraw,
         ]);
 
         // Validate that the jobid exists and no artifact was uploaded previously
@@ -133,7 +133,7 @@ class process_uploaded_artifact extends external_api {
         }
 
         // Check capabilities
-        $context = \context_module::instance($job->get_cm_id());
+        $context = \context_module::instance($job->get_cmid());
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Validate uploaded file
@@ -161,7 +161,7 @@ class process_uploaded_artifact extends external_api {
         }
 
         // Store uploaded file
-        $fm = new FileManager($job->get_course_id(), $job->get_cm_id(), $job->get_quiz_id());
+        $fm = new FileManager($job->get_courseid(), $job->get_cmid(), $job->get_quizid());
         try {
             $artifact = $fm->store_uploaded_artifact($draftfile);
             $job->link_artifact($artifact->get_id(), $params['artifact_sha256sum']);
@@ -173,9 +173,10 @@ class process_uploaded_artifact extends external_api {
         }
 
         // Timestamp artifact file using TSP
-        if ($job->TSPManager()->wants_tsp_timestamp()) {
+        if ($job->tspmanager()->wants_tsp_timestamp()) {
             try {
-                $job->TSPManager()->timestamp();
+                $job->tspmanager()->timestamp();
+            // @codingStandardsIgnoreStart
             } catch (\Exception $e) {
                 // TODO: Fail silently for now ...
                 // $job->set_status(ArchiveJob::STATUS_FAILED);
@@ -183,6 +184,7 @@ class process_uploaded_artifact extends external_api {
                 //     'status' => 'E_TSP_TIMESTAMP_FAILED'
                 // ];
             }
+            // @codingStandardsIgnoreEnd
         }
 
         // Report success

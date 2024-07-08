@@ -43,15 +43,15 @@ class job_sign_form extends \moodleform {
         $mform = $this->_form;
 
         // Warning message
-        $warn_head = get_string('areyousure', 'moodle');
-        $warn_msg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
-        $warn_details = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
+        $warnhead = get_string('areyousure', 'moodle');
+        $warnmsg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
+        $warndetails = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
         $mform->addElement('html', <<<EOD
             <div class="alert alert-info" role="alert">
-                <h4>$warn_head</h4>
-                $warn_msg
+                <h4>$warnhead</h4>
+                $warnmsg
                 <hr/>
-                $warn_details
+                $warndetails
             </div>
         EOD);
 

@@ -90,7 +90,7 @@ class provider implements
 
         // Get all contexts where the user has a quiz archiver job
         // Note: The context stays the same across all entries for a single
-        //       archive job. Hence, we only query the main job table.
+        // archive job. Hence, we only query the main job table.
         $contextlist->add_from_sql("
             SELECT DISTINCT c.id
             FROM {context} c
@@ -142,10 +142,8 @@ class provider implements
         $userid = $contextlist->get_user()->id;
 
         // Process all contexts
-        $subCtxBase = get_string('pluginname', 'quiz_archiver');
+        $subctxbase = get_string('pluginname', 'quiz_archiver');
         foreach ($contextlist->get_contexts() as $ctx) {
-            $ctxData = [];
-
             // Get existing jobs for current context
             $jobs = $DB->get_records_sql("
                 SELECT *
@@ -166,10 +164,10 @@ class provider implements
             // Export each job
             foreach ($jobs as $job) {
                 // Set correct subcontext for the job
-                $subCtx = [$subCtxBase, "Job: {$job->jobid}"];
+                $subctx = [$subctxbase, "Job: {$job->jobid}"];
 
                 // Get job settings
-                $job_settings = $DB->get_records(
+                $jobsettings = $DB->get_records(
                     ArchiveJob::JOB_SETTINGS_TABLE_NAME,
                     ['jobid' => $job->id],
                     '',
@@ -177,7 +175,7 @@ class provider implements
                 );
 
                 // Get TSP data
-                $tsp_data = $DB->get_record(
+                $tspdata = $DB->get_record(
                     TSPManager::TSP_TABLE_NAME,
                     ['jobid' => $job->id],
                     'timecreated, server, timestampquery, timestampreply',
@@ -185,26 +183,26 @@ class provider implements
                 );
 
                 // Encode TSP data as base64 if present
-                if ($tsp_data) {
-                    $tsp_data->timestampquery = base64_encode($tsp_data->timestampquery);
-                    $tsp_data->timestampreply = base64_encode($tsp_data->timestampreply);
+                if ($tspdata) {
+                    $tspdata->timestampquery = base64_encode($tspdata->timestampquery);
+                    $tspdata->timestampreply = base64_encode($tspdata->timestampreply);
                 }
 
                 // Add job data to current context
-                writer::with_context($ctx)->export_data($subCtx, (object) [
+                writer::with_context($ctx)->export_data($subctx, (object) [
                     'courseid' => $job->courseid,
                     'cmid' => $job->cmid,
                     'quizid' => $job->quizid,
                     'userid' => $job->userid,
                     'timecreated' => $job->timecreated,
                     'timemodified' => $job->timemodified,
-                    'settings' => $job_settings,
-                    'tsp' => $tsp_data,
+                    'settings' => $jobsettings,
+                    'tsp' => $tspdata,
                 ]);
 
                 if ($job->artifactfileid) {
                     writer::with_context($ctx)->export_file(
-                        $subCtx,
+                        $subctx,
                         get_file_storage()->get_file_by_id($job->artifactfileid)
                     );
                 }
@@ -234,7 +232,7 @@ class provider implements
                 $archive = $fm->extract_attempt_data_from_artifact($artifact, $row->jobid, $row->attemptid);
 
                 if ($archive) {
-                    writer::with_context($ctx)->export_file([$subCtxBase, "Attempts"], $archive);
+                    writer::with_context($ctx)->export_file([$subctxbase, "Attempts"], $archive);
                 }
             }
         }

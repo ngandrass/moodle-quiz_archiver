@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class TimeStampProtocolClient {
 
     /** @var string URL of the TSP server */
-    private string $server_url;
+    private string $serverurl;
 
     /** @var string Content-Type header for TimeStampQuery */
     const CONTENT_TYPE_TIMESTAMP_QUERY = 'application/timestamp-query';
@@ -47,10 +47,10 @@ class TimeStampProtocolClient {
     /**
      * Creates a new TimeStampProtocolClient instance.
      *
-     * @param string $server_url URL of the TSP server
+     * @param string $serverurl URL of the TSP server
      */
-    public function __construct(string $server_url) {
-        $this->server_url = $server_url;
+    public function __construct(string $serverurl) {
+        $this->serverurl = $serverurl;
     }
 
     /**
@@ -58,8 +58,8 @@ class TimeStampProtocolClient {
      *
      * @return string URL of the TSP server
      */
-    public function get_server_url() {
-        return $this->server_url;
+    public function get_serverurl() {
+        return $this->serverurl;
     }
 
     /**
@@ -73,12 +73,12 @@ class TimeStampProtocolClient {
      */
     public function sign(string $sha256hash): array {
         // Prepare TimeStampRequest
-        $nonce = self::generateNonce();
-        $tsreq = self::createTimeStampReq($sha256hash, $nonce);
+        $nonce = self::generate_nonce();
+        $tsreq = self::create_timestamp_request($sha256hash, $nonce);
 
         // Send TimeStampRequest to TSP server
         $c = new curl();
-        $tsresp = $c->post($this->server_url, $tsreq, [
+        $tsresp = $c->post($this->serverurl, $tsreq, [
             'CURLOPT_SSL_VERIFYPEER' => true,
             'CURLOPT_CONNECTTIMEOUT' => 15,
             'CURLOPT_TIMEOUT' => 15,
@@ -86,28 +86,27 @@ class TimeStampProtocolClient {
                 'Content-Type: ' . self::CONTENT_TYPE_TIMESTAMP_QUERY,
                 'Content-Length: ' . strlen($tsreq),
             ],
-
         ]);
 
         // Error handling
         if ($c->error) {  // Moodle curl wrapper provides no getter for curl error message
             throw new \Exception(get_string('tsp_client_error_curl', 'quiz_archiver', $c->error));
         } else {
-            $curl_info = $c->get_info();
+            $curlinfo = $c->get_info();
         }
 
-        if ($curl_info['http_code'] !== 200) {
-            throw new \Exception(get_string('tsp_client_error_http_code', 'quiz_archiver', $curl_info['http_code']));
+        if ($curlinfo['http_code'] !== 200) {
+            throw new \Exception(get_string('tsp_client_error_http_code', 'quiz_archiver', $curlinfo['http_code']));
         }
 
-        if ($curl_info['content_type'] !== self::CONTENT_TYPE_TIMESTAMP_REPLY) {
-            throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curl_info['content_type']));
+        if ($curlinfo['content_type'] !== self::CONTENT_TYPE_TIMESTAMP_REPLY) {
+            throw new \Exception(get_string('tsp_client_error_content_type', 'quiz_archiver', $curlinfo['content_type']));
         }
 
         // Success
         return [
             'query' => $tsreq,
-            'reply' => $tsresp
+            'reply' => $tsresp,
         ];
     }
 
@@ -117,7 +116,7 @@ class TimeStampProtocolClient {
      * @return string 128-bit nonce
      * @throws \Exception If an appropriate source of randomness cannot be found.
      */
-    public static function generateNonce(): string {
+    public static function generate_nonce(): string {
         return random_bytes(16);
     }
 
@@ -129,11 +128,11 @@ class TimeStampProtocolClient {
      *
      * @param string $sha256hash Hexadecimal SHA256 hash of the data to be signed
      * @param string $nonce 128-bit nonce to be used in the TimeStampReq
-     * @param bool $requestTSAPublicKey Whether to request the TSA's public key
+     * @param bool $requesttsapublickey Whether to request the TSA's public key
      * @return string ASN.1 encoded TimeStampReq
      * @throws \ValueError If the SHA256 hash or nonce are invalid
      */
-    protected static function createTimeStampReq(string $sha256hash, string $nonce, bool $requestTSAPublicKey = false): string {
+    protected static function create_timestamp_request(string $sha256hash, string $nonce, bool $requesttsapublickey = false): string {
         // Validate input
         if (strlen($sha256hash) !== 64) {
             throw new \ValueError('Invalid hexadecimal SHA256 hash');
@@ -167,7 +166,7 @@ class TimeStampProtocolClient {
         $asn1[] = chr(0x02) . chr(0x10) . $nonce; // INTEGER + Length (16 bytes) + nonce value
 
         // -> certReq
-        if ($requestTSAPublicKey) {
+        if ($requesttsapublickey) {
             $asn1[] = chr(0x01) . chr(0x01) . chr(0xff); // BOOLEAN + Length + True
         }
 

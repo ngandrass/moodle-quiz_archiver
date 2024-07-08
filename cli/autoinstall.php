@@ -23,18 +23,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/** @var bool Identifies this script as a CLI script */
-const CLI_SCRIPT = true;
-
 require_once(__DIR__ . '/../../../../../config.php');
 require_once("{$CFG->libdir}/clilib.php");
 require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/local/autoinstall.php");
 
 use quiz_archiver\local\autoinstall;
 
-#######################
-# CLI options parsing #
-#######################
+/** @var bool Identifies this script as a CLI script */
+const CLI_SCRIPT = true;
+
+// #######################
+// # CLI options parsing #
+// #######################
 
 list($options, $unrecognised) = cli_get_params(
     [
@@ -84,9 +84,9 @@ if ($options['help']) {
     exit(2);
 }
 
-################################
-# Begin of autoinstall routine #
-################################
+// ################################
+// # Begin of autoinstall routine #
+// ################################
 
 // Set admin user.
 $USER = get_admin();

@@ -70,7 +70,7 @@ class job_overview_table extends \table_sql {
 
         $this->set_sql(
             'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
-            '{'.ArchiveJob::JOB_TABLE_NAME.'} AS j JOIN {user} AS u ON j.userid = u.id LEFT JOIN {files} AS f ON j.artifactfileid = f.id',
+            '{'.ArchiveJob::JOB_TABLE_NAME.'} j JOIN {user} u ON j.userid = u.id LEFT JOIN {files} f ON j.artifactfileid = f.id',
             'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
                 'courseid' => $courseid,
@@ -141,6 +141,7 @@ class job_overview_table extends \table_sql {
         $html = '';
 
         // Action: Show details
+        // @codingStandardsIgnoreLine
         $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
 
         // Action: Download
@@ -156,9 +157,11 @@ class job_overview_table extends \table_sql {
                 true,
             );
 
-            $download_title = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" title="'.$download_title.'" alt="'.$download_title.'"><i class="fa fa-download"></i></a>';
+            $downloadtitle = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
+            // @codingStandardsIgnoreLine
+            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" title="'.$downloadtitle.'" alt="'.$downloadtitle.'"><i class="fa fa-download"></i></a>';
         } else {
+            // @codingStandardsIgnoreLine
             $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }
 

@@ -16,6 +16,8 @@
 
 namespace quiz_archiver\local;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Custom util functions
  *
