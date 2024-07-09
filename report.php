@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+// TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php');
 
 use mod_quiz\local\reports\report_base;
@@ -367,7 +367,7 @@ class quiz_archiver_report extends report_base {
             );
         } else {
             // Moodle 4.1 and below.
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             $wstoken = external_generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
                 $this->config->webservice_id,

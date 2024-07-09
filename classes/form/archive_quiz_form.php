@@ -182,7 +182,7 @@ class archive_quiz_form extends \moodleform {
                 ]
             );
         } else {
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             $mform->addHelpButton('archive_filename_pattern', 'archive_filename_pattern_moodle42', 'quiz_archiver');
         }
         $mform->setType('archive_filename_pattern', PARAM_TEXT);
@@ -215,7 +215,7 @@ class archive_quiz_form extends \moodleform {
                 ]
             );
         } else {
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             $mform->addHelpButton('export_attempts_filename_pattern', 'export_attempts_filename_pattern_moodle42', 'quiz_archiver');
         }
         $mform->setType('export_attempts_filename_pattern', PARAM_TEXT);

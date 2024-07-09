@@ -505,10 +505,10 @@ class Report {
 
             // Add summary table to the html.
             if ($CFG->branch <= 403) {
-                // FIXME: Remove after Moodle 4.1 (LTS) support ends on 2025-12-08.
+                // TODO (MDL-0): Remove after Moodle 4.1 (LTS) support ends on 2025-12-08.
                 $html .= $renderer->review_summary_table($quizheaderdata, 0);
             } else {
-                // TODO: Rework into proper use of new 4.4 API but create appropriate test cases first.
+                // TODO (MDL-0): Rework into proper use of new 4.4 API but create appropriate test cases first.
                 $html .= $renderer->review_attempt_summary(
                     \mod_quiz\output\attempt_summary_information::create_from_legacy_array($quizheaderdata),
                     0

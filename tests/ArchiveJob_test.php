@@ -423,7 +423,7 @@ class ArchiveJob_test extends \advanced_testcase {
         // Create temporary webservice token.
         global $CFG, $DB;
         if ($CFG->branch <= 401) {
-            // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             require_once($CFG->dirroot.'/lib/externallib.php');
             $wstoken = \external_generate_token(
                 EXTERNAL_TOKEN_PERMANENT,

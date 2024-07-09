@@ -227,7 +227,7 @@ class Report_test extends \advanced_testcase {
         );
 
         // Verify overall quiz feedback.
-        // TODO: Add proper overall feedback to reference quiz and check its contents.
+        // TODO (MDL-0): Add proper overall feedback to reference quiz and check its contents.
         $this->assertMatchesRegularExpression(
             '/<th[^<>]*>\s*' . preg_quote(get_string('feedback',
                 'quiz'),
