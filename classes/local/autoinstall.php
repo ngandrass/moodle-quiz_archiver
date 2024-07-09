@@ -16,6 +16,7 @@
 
 namespace quiz_archiver\local;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 require_once("{$CFG->dirroot}/user/lib.php");

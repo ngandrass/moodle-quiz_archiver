@@ -24,6 +24,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;

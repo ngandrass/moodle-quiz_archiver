@@ -18,6 +18,7 @@ namespace quiz_archiver\local\admin\setting;
 
 use quiz_archiver\ArchiveJob;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 /**

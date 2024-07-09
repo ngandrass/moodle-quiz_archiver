@@ -24,6 +24,7 @@
 
 namespace quiz_archiver;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 /**

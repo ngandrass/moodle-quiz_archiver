@@ -16,6 +16,7 @@
 
 namespace quiz_archiver\local\admin\setting;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 /**

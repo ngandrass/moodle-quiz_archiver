@@ -26,6 +26,7 @@ namespace quiz_archiver\output;
 
 use quiz_archiver\ArchiveJob;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;

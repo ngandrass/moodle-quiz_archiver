@@ -27,6 +27,7 @@ namespace quiz_archiver;
 use context_course;
 use stored_file;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 /**

@@ -27,6 +27,7 @@ namespace quiz_archiver;
 use curl;
 use mod_quiz\quiz_attempt;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/quiz/locallib.php");  // Required for legacy mod_quiz functions ...

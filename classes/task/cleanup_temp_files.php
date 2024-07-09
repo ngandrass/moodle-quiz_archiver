@@ -26,6 +26,7 @@ namespace quiz_archiver\task;
 
 use quiz_archiver\FileManager;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 

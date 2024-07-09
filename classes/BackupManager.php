@@ -29,6 +29,7 @@ use backup_controller;
 use context_course;
 use context_module;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php');

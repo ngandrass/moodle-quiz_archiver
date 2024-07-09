@@ -26,6 +26,7 @@ namespace quiz_archiver;
 
 use curl;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 /**

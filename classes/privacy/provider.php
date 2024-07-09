@@ -34,6 +34,7 @@ use quiz_archiver\ArchiveJob;
 use quiz_archiver\FileManager;
 use quiz_archiver\TSPManager;
 
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 /**
