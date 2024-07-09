@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 /**
  * Tests for the Report class
  */
-final class Report_test extends \advanced_testcase {
+final class report_test extends \advanced_testcase {
 
     /** @var string[] Question types present in the reference quiz */
     const QUESTION_TYPES_IN_REFERENCE_QUIZ = [

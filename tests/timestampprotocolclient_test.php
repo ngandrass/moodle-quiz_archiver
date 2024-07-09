@@ -27,7 +27,7 @@ namespace quiz_archiver;
 /**
  * Tests for the TimeStampProtocolClient class
  */
-final class TimeStampProtocolClient_test extends \advanced_testcase {
+final class timestampprotocolclient_test extends \advanced_testcase {
 
     /**
      * Tests the creation of a TimeStampProtocolClient instance

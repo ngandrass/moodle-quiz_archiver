@@ -29,7 +29,7 @@ use context_user;
 /**
  * Tests for the FileManager class
  */
-final class FileManager_test extends \advanced_testcase {
+final class filemanager_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

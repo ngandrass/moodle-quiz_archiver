@@ -29,7 +29,7 @@ use context_course;
 /**
  * Tests for the TSPManager class
  */
-final class TSPManager_test extends \advanced_testcase {
+final class tspmanager_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

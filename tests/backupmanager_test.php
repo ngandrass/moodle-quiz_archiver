@@ -31,7 +31,7 @@ use context_module;
 /**
  * Tests for the BackupManager class
  */
-final class BackupManager_test extends \advanced_testcase {
+final class backupmanager_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests
