@@ -157,7 +157,7 @@ class Report {
      * @return array
      * @throws \dml_exception
      */
-    public function get_attempts_metadata(array $filterattemptids = null): array {
+    public function get_attempts_metadata(?array $filterattemptids = null): array {
         global $DB;
 
         // Handle attempt ID filter.
