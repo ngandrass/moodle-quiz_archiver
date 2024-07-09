@@ -23,14 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Must be kept at old define syntax because Moodle CodeSniffer profile does not detect new const syntax properly.
+define('CLI_SCRIPT', true);
+
 require_once(__DIR__ . '/../../../../../config.php');
 require_once("{$CFG->libdir}/clilib.php");
 require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/local/autoinstall.php");
 
 use quiz_archiver\local\autoinstall;
-
-/** @var bool Identifies this script as a CLI script */
-const CLI_SCRIPT = true;
 
 // XXX-> CLI options parsing.
 
