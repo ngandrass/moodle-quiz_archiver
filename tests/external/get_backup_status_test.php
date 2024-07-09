@@ -128,9 +128,10 @@ final class get_backup_status_test extends \advanced_testcase {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function parameter_data_provider(): array {
+    public static function parameter_data_provider(): array {
         // Create job.
-        $mocks = $this->generate_mock_quiz();
+        $self = new self();
+        $mocks = $self->generate_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,

@@ -808,7 +808,7 @@ final class archivejob_test extends \advanced_testcase {
      *
      * @return array[] Array of test cases
      */
-    public function archive_filename_pattern_data_provider(): array {
+    public static function archive_filename_pattern_data_provider(): array {
         return [
             'Default pattern' => [
                 'pattern' => 'quiz-archive-${courseshortname}-${courseid}-${quizname}-${quizid}_${date}-${time}',
@@ -875,7 +875,7 @@ final class archivejob_test extends \advanced_testcase {
      *
      * @return array[] Array of test cases
      */
-    public function attempt_filename_pattern_data_provider(): array {
+    public static function attempt_filename_pattern_data_provider(): array {
         return [
             'Default pattern' => [
                 'pattern' => 'attempt-${attemptid}-${username}_${date}-${time}',
@@ -1052,7 +1052,7 @@ final class archivejob_test extends \advanced_testcase {
      *
      * @return array List of job status values to test
      */
-    public function status_display_args_data_provider(): array {
+    public static function status_display_args_data_provider(): array {
         return [
             ArchiveJob::STATUS_UNKNOWN => ['status' => ArchiveJob::STATUS_UNKNOWN],
             ArchiveJob::STATUS_UNINITIALIZED => ['status' => ArchiveJob::STATUS_UNINITIALIZED],

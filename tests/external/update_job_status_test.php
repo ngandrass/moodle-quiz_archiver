@@ -162,7 +162,7 @@ final class update_job_status_test extends \advanced_testcase {
      *
      * @return array[] Test data
      */
-    public function parameter_data_provider(): array {
+    public static function parameter_data_provider(): array {
         return [
             'Valid' => [
                 'jobid' => '00000000-1234-5678-abcd-ef4242424242',
@@ -239,7 +239,7 @@ final class update_job_status_test extends \advanced_testcase {
      *
      * @return array[] Test data
      */
-    public function job_status_data_provider(): array {
+    public static function job_status_data_provider(): array {
         return [
             'Status: UNKNOWN -> UNINITIALIZED' => [
                 'originstatus' => ArchiveJob::STATUS_UNKNOWN,

@@ -180,9 +180,10 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      *
      * @return array[] Test data
      */
-    public function parameter_data_provider(): array {
-        $mocks = $this->generate_mock_quiz();
-        $base = $this->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
+    public static function parameter_data_provider(): array {
+        $self = new self();
+        $mocks = $self->generate_mock_quiz();
+        $base = $self->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
         return [
             'Valid' => array_merge($base, [
                 'shouldfail' => false,

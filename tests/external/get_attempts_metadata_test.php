@@ -133,9 +133,10 @@ final class get_attempts_metadata_test extends \advanced_testcase {
      *
      * @return array[] Test data
      */
-    public function parameter_data_provider(): array {
-        $mocks = $this->generate_mock_quiz();
-        $base = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
+    public static function parameter_data_provider(): array {
+        $self = new self();
+        $mocks = $self->generate_mock_quiz();
+        $base = $self->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
         return [
             'Valid' => array_merge($base, ['shouldfail' => false]),
             'Invalid attemptids (simple)' => array_merge($base, ['attemptids' => ['a'], 'shouldfail' => true]),

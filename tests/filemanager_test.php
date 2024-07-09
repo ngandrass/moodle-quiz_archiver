@@ -165,7 +165,7 @@ final class filemanager_test extends \advanced_testcase {
      *
      * @return array Test data for test_file_path_generator
      */
-    public function file_path_generator_data_provider(): array {
+    public static function file_path_generator_data_provider(): array {
         return [
             'Full valid path' => [
                 1,
