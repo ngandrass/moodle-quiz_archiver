@@ -167,7 +167,8 @@ class Report {
 
         // Get all requested attempts.
         return $DB->get_records_sql(
-            "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, u.username, u.firstname, u.lastname ".
+            "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, ".
+            "       u.username, u.firstname, u.lastname ".
             "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id ".
             "WHERE qa.preview = 0 AND qa.quiz = :quizid " . ($filterwhereclause ?? ''),
             [
@@ -567,7 +568,13 @@ class Report {
      * @throws \moodle_exception
      * @throws \DOMException
      */
-    public function generate_full_page(int $attemptid, array $sections, bool $fixrelativeurls = true, bool $minimal = true, bool $inlineimages = true): string {
+    public function generate_full_page(
+        int   $attemptid,
+        array $sections,
+        bool  $fixrelativeurls = true,
+        bool  $minimal = true,
+        bool  $inlineimages = true
+    ): string {
         global $CFG, $OUTPUT;
 
         // Build HTML tree.
@@ -632,19 +639,19 @@ class Report {
         return $dom->saveHTML();
     }
 
+    // @codingStandardsIgnoreStart
     /** @var string Regex for URLs of qtype_stack plots */
     const REGEX_MOODLE_URL_STACKPLOT = '/^(?P<wwwroot>https?:\/\/.+)?(\/question\/type\/stack\/plot\.php\/)(?P<filename>[^\/\#\?\&]+\.(png|svg))$/m';
 
     /** @var string Regex for Moodle file API URLs */
-    // @codingStandardsIgnoreLine
     const REGEX_MOODLE_URL_PLUGINFILE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle file API URLs of specific types: component=(question|qtype_.*) */
-    // @codingStandardsIgnoreLine
     const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle theme image files */
     const REGEX_MOODLE_URL_THEME_IMAGE = '/^(?P<wwwroot>https?:\/\/.+)?(\/theme\/image\.php\/)(?P<themename>[^\/]+)\/(?P<component>[^\/]+)\/(?P<rev>[^\/]+)\/(?P<image>.+)$/m';
+    // @codingStandardsIgnoreEnd
 
     /** @var string[] Mapping of file extensions to file types that are allowed to process */
     const ALLOWED_IMAGE_TYPES = [
@@ -717,7 +724,8 @@ class Report {
                 // Link type: Moodle pluginfile URL.
                 $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE');
 
-                // Edge case detection: question / qtype files follow another pattern, inserting questionbank_id and question_slot after filearea ...
+                // Edge case detection: question / qtype files follow another pattern,
+                // inserting questionbank_id and question_slot after filearea ...
                 if ($regexmatches['component'] == 'question' || strpos($regexmatches['component'], 'qtype_') === 0) {
                     $regexmatches = null;
                     if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $imgsrcurl, $regexmatches)) {
@@ -769,7 +777,8 @@ class Report {
             if (preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $imgsrcurl)) {
                 // Link type: Moodle theme image.
                 // We should be able to download there images using a simple HTTP request.
-                // Accessing them directly from disk is a little more complicated due to caching and other logic (see: /theme/image.php).
+                // Accessing them directly from disk is a little more complicated due to
+                // caching and other logic (see: /theme/image.php).
                 // Let's try to keep it this way until we encounter explicit problems.
                 $img->setAttribute('x-url-type', 'MOODLE_URL_THEME_IMAGE');
             } else {

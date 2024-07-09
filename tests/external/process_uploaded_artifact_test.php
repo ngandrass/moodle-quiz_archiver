@@ -181,13 +181,33 @@ class process_uploaded_artifact_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $base = $this->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
         return [
-            'Valid' => array_merge($base, ['shouldfail' => false]),
-            'Invalid jobid' => array_merge($base, ['jobid' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
-            'Invalid artifact_component' => array_merge($base, ['artifact_component' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
-            'Invalid artifact_filearea' => array_merge($base, ['artifact_filearea' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
-            'Invalid artifact_filename' => array_merge($base, ['artifact_filename' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
-            'Invalid artifact_filepath' => array_merge($base, ['artifact_filepath' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
-            'Invalid artifact_sha256sum' => array_merge($base, ['artifact_sha256sum' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
+            'Valid' => array_merge($base, [
+                'shouldfail' => false,
+            ]),
+            'Invalid jobid' => array_merge($base, [
+                'jobid' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
+            'Invalid artifact_component' => array_merge($base, [
+                'artifact_component' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
+            'Invalid artifact_filearea' => array_merge($base, [
+                'artifact_filearea' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
+            'Invalid artifact_filename' => array_merge($base, [
+                'artifact_filename' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
+            'Invalid artifact_filepath' => array_merge($base, [
+                'artifact_filepath' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
+            'Invalid artifact_sha256sum' => array_merge($base, [
+                'artifact_sha256sum' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
         ];
     }
 

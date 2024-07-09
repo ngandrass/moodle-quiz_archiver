@@ -48,11 +48,31 @@ class generate_attempt_report extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'courseid' => new external_value(PARAM_INT, 'ID of course', VALUE_REQUIRED),
-            'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_REQUIRED),
-            'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_REQUIRED),
-            'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_REQUIRED),
-            'filenamepattern' => new external_value(PARAM_TEXT, 'Filename pattern to use for the generated archive', VALUE_REQUIRED),
+            'courseid' => new external_value(
+                PARAM_INT,
+                'ID of course',
+                VALUE_REQUIRED
+            ),
+            'cmid' => new external_value(
+                PARAM_INT,
+                'ID of the course module',
+                VALUE_REQUIRED
+            ),
+            'quizid' => new external_value(
+                PARAM_INT,
+                'ID of the quiz',
+                VALUE_REQUIRED
+            ),
+            'attemptid' => new external_value(
+                PARAM_INT,
+                'ID of the quiz attempt',
+                VALUE_REQUIRED
+            ),
+            'filenamepattern' => new external_value(
+                PARAM_TEXT,
+                'Filename pattern to use for the generated archive',
+                VALUE_REQUIRED
+            ),
             'sections' => new external_single_structure(
                 array_combine(Report::SECTIONS,
                     array_map(fn ($section): external_value => new external_value(
@@ -64,7 +84,11 @@ class generate_attempt_report extends external_api {
                 'Sections to include in the report',
                 VALUE_REQUIRED
             ),
-            'attachments' => new external_value(PARAM_BOOL, 'Whether to check for attempts and include metadata if present', VALUE_REQUIRED),
+            'attachments' => new external_value(
+                PARAM_BOOL,
+                'Whether to check for attempts and include metadata if present',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -74,25 +98,77 @@ class generate_attempt_report extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'courseid' => new external_value(PARAM_INT, 'ID of course', VALUE_OPTIONAL),
-            'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_OPTIONAL),
-            'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_OPTIONAL),
-            'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_OPTIONAL),
-            'filename' => new external_value(PARAM_TEXT, 'Desired filename of this quiz attempt report', VALUE_OPTIONAL),
-            'report' => new external_value(PARAM_RAW, 'HTML DOM of the generated quiz attempt report', VALUE_OPTIONAL),
+            'courseid' => new external_value(
+                PARAM_INT,
+                'ID of course',
+                VALUE_OPTIONAL
+            ),
+            'cmid' => new external_value(
+                PARAM_INT,
+                'ID of the course module',
+                VALUE_OPTIONAL
+            ),
+            'quizid' => new external_value(
+                PARAM_INT,
+                'ID of the quiz',
+                VALUE_OPTIONAL
+            ),
+            'attemptid' => new external_value(
+                PARAM_INT,
+                'ID of the quiz attempt',
+                VALUE_OPTIONAL
+            ),
+            'filename' => new external_value(
+                PARAM_TEXT,
+                'Desired filename of this quiz attempt report',
+                VALUE_OPTIONAL
+            ),
+            'report' => new external_value(
+                PARAM_RAW,
+                'HTML DOM of the generated quiz attempt report',
+                VALUE_OPTIONAL
+            ),
             'attachments' => new external_multiple_structure(
                 new external_single_structure([
-                    'slot' => new external_value(PARAM_INT, 'Number of the quiz slot this file is attached to', VALUE_REQUIRED),
-                    'filename' => new external_value(PARAM_TEXT, 'Filename of the attachment', VALUE_REQUIRED),
-                    'filesize' => new external_value(PARAM_INT, 'Filesize of the attachment', VALUE_REQUIRED),
-                    'mimetype' => new external_value(PARAM_TEXT, 'Mimetype of the attachment', VALUE_REQUIRED),
-                    'contenthash' => new external_value(PARAM_TEXT, 'Contenthash (SHA-1) of the attachment', VALUE_REQUIRED),
-                    'downloadurl' => new external_value(PARAM_TEXT, 'URL to download the attachment', VALUE_REQUIRED),
+                    'slot' => new external_value(
+                        PARAM_INT,
+                        'Number of the quiz slot this file is attached to',
+                        VALUE_REQUIRED
+                    ),
+                    'filename' => new external_value(
+                        PARAM_TEXT,
+                        'Filename of the attachment',
+                        VALUE_REQUIRED
+                    ),
+                    'filesize' => new external_value(
+                        PARAM_INT,
+                        'Filesize of the attachment',
+                        VALUE_REQUIRED
+                    ),
+                    'mimetype' => new external_value(
+                        PARAM_TEXT,
+                        'Mimetype of the attachment',
+                        VALUE_REQUIRED
+                    ),
+                    'contenthash' => new external_value(
+                        PARAM_TEXT,
+                        'Contenthash (SHA-1) of the attachment',
+                        VALUE_REQUIRED
+                    ),
+                    'downloadurl' => new external_value(
+                        PARAM_TEXT,
+                        'URL to download the attachment',
+                        VALUE_REQUIRED
+                    ),
                 ]),
                 'Files attached to the quiz attempt',
                 VALUE_OPTIONAL
             ),
-            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction', VALUE_REQUIRED),
+            'status' => new external_value(
+                PARAM_TEXT,
+                'Status of the executed wsfunction',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -188,7 +264,13 @@ class generate_attempt_report extends external_api {
         }
 
         // Generate filename.
-        $res['filename'] = ArchiveJob::generate_attempt_filename($course, $cm, $quiz, $params['attemptid'], $params['filenamepattern']);
+        $res['filename'] = ArchiveJob::generate_attempt_filename(
+            $course,
+            $cm,
+            $quiz,
+            $params['attemptid'],
+            $params['filenamepattern']
+        );
 
         // Return response.
         $res['status'] = 'OK';

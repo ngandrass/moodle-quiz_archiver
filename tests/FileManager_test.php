@@ -109,7 +109,8 @@ class FileManager_test extends \advanced_testcase {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
 
@@ -137,7 +138,8 @@ class FileManager_test extends \advanced_testcase {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
 
@@ -298,6 +300,7 @@ class FileManager_test extends \advanced_testcase {
         global $CFG, $DB;
 
         if ($CFG->branch < 404) {
+            // @codingStandardsIgnoreLine
             $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
         }
 
@@ -345,6 +348,7 @@ class FileManager_test extends \advanced_testcase {
         global $CFG, $DB;
 
         if ($CFG->branch < 404) {
+            // @codingStandardsIgnoreLine
             $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
         }
 

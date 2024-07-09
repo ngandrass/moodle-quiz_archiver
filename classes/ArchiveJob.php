@@ -789,7 +789,10 @@ class ArchiveJob {
         global $DB;
         try {
             $file = $DB->get_record_sql(
-                'SELECT pathnamehash FROM {files} files JOIN {'.self::JOB_TABLE_NAME.'} AS jobs ON files.id = jobs.artifactfileid WHERE jobs.id = :id',
+                'SELECT pathnamehash '.
+                'FROM {files} files '.
+                'JOIN {'.self::JOB_TABLE_NAME.'} jobs ON files.id = jobs.artifactfileid '.
+                'WHERE jobs.id = :id',
                 ['id' => $this->id]
             );
 

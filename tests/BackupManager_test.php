@@ -238,6 +238,7 @@ class BackupManager_test extends \advanced_testcase {
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
         // Course backup.
+        // @codingStandardsIgnoreStart
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
         $this->assertNotEmpty($actualcoursebackup, 'Course backup was not created correctly from backup ID');
         $this->assertEquals($expectedcoursebackup->backupid, $actualcoursebackup->get_backupid(), 'Course backup ID was not set correctly');
@@ -250,6 +251,7 @@ class BackupManager_test extends \advanced_testcase {
         $this->assertEquals($expectedquizbackup->backupid, $actualquizbackup->get_backupid(), 'Quiz backup ID was not set correctly');
         $this->assertEquals($expectedquizbackup->userid, $actualquizbackup->get_userid(), 'Quiz user ID was not set correctly');
         $this->assertSame(backup::TYPE_1ACTIVITY, $actualquizbackup->get_type(), 'Quiz backup type was not set correctly');
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -322,11 +324,17 @@ class BackupManager_test extends \advanced_testcase {
 
         // Course backup.
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
-        $this->assertTrue($actualcoursebackup->is_associated_with_job($job), 'Course backup was not detected as associated with the given job');
+        $this->assertTrue(
+            $actualcoursebackup->is_associated_with_job($job),
+            'Course backup was not detected as associated with the given job'
+        );
 
         // Quiz backup.
         $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
-        $this->assertTrue($actualquizbackup->is_associated_with_job($job), 'Quiz backup was not detected as associated with the given job');
+        $this->assertTrue(
+            $actualquizbackup->is_associated_with_job($job),
+            'Quiz backup was not detected as associated with the given job'
+        );
     }
 
     /**
@@ -359,11 +367,17 @@ class BackupManager_test extends \advanced_testcase {
 
         // Course backup.
         $actualcoursebackup = new BackupManager($expectedcoursebackup->backupid);
-        $this->assertFalse($actualcoursebackup->is_associated_with_job($job), 'Course backup was detected as associated with an unrelated job');
+        $this->assertFalse(
+            $actualcoursebackup->is_associated_with_job($job),
+            'Course backup was detected as associated with an unrelated job'
+        );
 
         // Quiz backup.
         $actualquizbackup = new BackupManager($expectedquizbackup->backupid);
-        $this->assertFalse($actualquizbackup->is_associated_with_job($job), 'Quiz backup was detected as associated with an unrelated job');
+        $this->assertFalse(
+            $actualquizbackup->is_associated_with_job($job),
+            'Quiz backup was detected as associated with an unrelated job'
+        );
     }
 
 }

@@ -210,34 +210,66 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify quiz header.
-        $this->assertMatchesRegularExpression('/<table[^<>]*quizreviewsummary[^<>]*>/', $html, 'Quiz header table not found');
-        $this->assertMatchesRegularExpression('/<td[^<>]*>' . preg_quote($rc->course->fullname, '/') . '[^<>]+<\/td>/', $html, 'Course name not found');
-        $this->assertMatchesRegularExpression('/<td[^<>]*>' . preg_quote($rc->quiz->name, '/') . '[^<>]+<\/td>/', $html, 'Quiz name not found');
+        $this->assertMatchesRegularExpression(
+            '/<table[^<>]*quizreviewsummary[^<>]*>/',
+            $html,
+            'Quiz header table not found'
+        );
+        $this->assertMatchesRegularExpression(
+            '/<td[^<>]*>' . preg_quote($rc->course->fullname,
+                '/') . '[^<>]+<\/td>/',
+            $html, 'Course name not found'
+        );
+        $this->assertMatchesRegularExpression(
+            '/<td[^<>]*>' . preg_quote($rc->quiz->name,
+                '/') . '[^<>]+<\/td>/',
+            $html, 'Quiz name not found'
+        );
 
         // Verify overall quiz feedback.
         // TODO: Add proper overall feedback to reference quiz and check its contents.
-        $this->assertMatchesRegularExpression('/<th[^<>]*>\s*' . preg_quote(get_string('feedback', 'quiz'), '/') . '\s*<\/th>/', $html, 'Overall feedback header not found');
+        $this->assertMatchesRegularExpression(
+            '/<th[^<>]*>\s*' . preg_quote(get_string('feedback',
+                'quiz'),
+                '/'
+            ) . '\s*<\/th>/', $html, 'Overall feedback header not found');
 
         // Verify questions.
         foreach (self::QUESTION_TYPES_IN_REFERENCE_QUIZ as $qtype) {
             $this->assertMatchesRegularExpression(
-                '/<[^<>]*class="[^\"<>]*que[^\"<>]*'.preg_quote($qtype, '/').'[^\"<>]*"[^<>]*>/',
+                '/<[^<>]*class="[^\"<>]*que[^\"<>]*' . preg_quote($qtype, '/') . '[^\"<>]*"[^<>]*>/',
                 $html,
-                'Question of type '.$qtype.' not found'
+                'Question of type ' . $qtype . ' not found'
             );
         }
 
         // Verify individual question feedback.
-        $this->assertMatchesRegularExpression('/<div class="specificfeedback">/', $html, 'Individual question feedback not found');
+        $this->assertMatchesRegularExpression(
+            '/<div class="specificfeedback">/',
+            $html,
+            'Individual question feedback not found'
+        );
 
         // Verify general question feedback.
-        $this->assertMatchesRegularExpression('/<div class="generalfeedback">/', $html, 'General question feedback not found');
+        $this->assertMatchesRegularExpression(
+            '/<div class="generalfeedback">/',
+            $html,
+            'General question feedback not found'
+        );
 
         // Verify correct answers.
-        $this->assertMatchesRegularExpression('/<div class="rightanswer">/', $html, 'Correct question answers not found');
+        $this->assertMatchesRegularExpression(
+            '/<div class="rightanswer">/',
+            $html,
+            'Correct question answers not found'
+        );
 
         // Verify answer history.
-        $this->assertMatchesRegularExpression('/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/', $html, 'Answer history not found');
+        $this->assertMatchesRegularExpression(
+            '/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/',
+            $html,
+            'Answer history not found'
+        );
     }
 
     /**
@@ -349,13 +381,33 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that no questions are present.
-        $this->assertDoesNotMatchRegularExpression('/<[^<>]*class="[^\"<>]*que[^<>]*>/', $html, 'Question found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<[^<>]*class="[^\"<>]*que[^<>]*>/',
+            $html,
+            'Question found when it should be absent'
+        );
 
         // If questions are disabled, question_feedback, general_feedback, rightanswer and history should be absent.
-        $this->assertDoesNotMatchRegularExpression('/<div class="specificfeedback">/', $html, 'Individual question feedback found when it should be absent');
-        $this->assertDoesNotMatchRegularExpression('/<div class="generalfeedback">/', $html, 'General question feedback found when it should be absent');
-        $this->assertDoesNotMatchRegularExpression('/<div class="rightanswer">/', $html, 'Correct question answers found when they should be absent');
-        $this->assertDoesNotMatchRegularExpression('/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/', $html, 'Answer history found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div class="specificfeedback">/',
+            $html,
+            'Individual question feedback found when it should be absent'
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div class="generalfeedback">/',
+            $html,
+            'General question feedback found when it should be absent'
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div class="rightanswer">/',
+            $html,
+            'Correct question answers found when they should be absent'
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/',
+            $html,
+            'Answer history found when it should be absent'
+        );
     }
 
     /**
@@ -378,7 +430,11 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that question feedback is absent.
-        $this->assertDoesNotMatchRegularExpression('/<div class="specificfeedback">/', $html, 'Individual question feedback found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div class="specificfeedback">/',
+            $html,
+            'Individual question feedback found when it should be absent'
+        );
     }
 
     /**
@@ -401,7 +457,11 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that general feedback is absent.
-        $this->assertDoesNotMatchRegularExpression('/<div class="generalfeedback">/', $html, 'General question feedback found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div class="generalfeedback">/',
+            $html,
+            'General question feedback found when it should be absent'
+        );
     }
 
     /**
@@ -424,7 +484,11 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that right answers are absent.
-        $this->assertDoesNotMatchRegularExpression('/<div class="rightanswer">/', $html, 'Correct question answers found when they should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div class="rightanswer">/',
+            $html,
+            'Correct question answers found when they should be absent'
+        );
     }
 
     /**
@@ -447,7 +511,11 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($html, 'Generated report is empty');
 
         // Verify that answer history is absent.
-        $this->assertDoesNotMatchRegularExpression('/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/', $html, 'Answer history found when it should be absent');
+        $this->assertDoesNotMatchRegularExpression(
+            '/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/',
+            $html,
+            'Answer history found when it should be absent'
+        );
     }
 
     /**
@@ -465,7 +533,13 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($attachments, 'No attachments found');
 
         // Find cake.md attachment.
-        $this->assertNotEmpty(array_filter($attachments, fn($a) => $a['file']->get_filename() === 'cake.md'), 'cake.md attachment not found');
+        $this->assertNotEmpty(
+            array_filter(
+                $attachments,
+                fn($a) => $a['file']->get_filename() === 'cake.md'
+            ),
+            'cake.md attachment not found'
+        );
     }
 
     /**
@@ -493,7 +567,11 @@ class Report_test extends \advanced_testcase {
         $this->assertNotEmpty($cake->contenthash, 'Attachment contenthash not set');
         $this->assertNotEmpty($cake->downloadurl, 'Attachment downloadurl not set');
 
-        $this->assertEquals(sha1_file(__DIR__.'/fixtures/cake.md'), $cake->contenthash, 'Attachment contenthash (SHA1) does not match');
+        $this->assertEquals(
+            sha1_file(__DIR__ . '/fixtures/cake.md'),
+            $cake->contenthash,
+            'Attachment contenthash (SHA1) does not match'
+        );
     }
 
     /**
@@ -544,7 +622,11 @@ class Report_test extends \advanced_testcase {
         // Test filtered.
         $attemptsfilteredexisting = $report->get_attempts_metadata($rc->attemptids);
         $this->assertNotEmpty($attemptsfilteredexisting, 'No attempts found with existing attempt ids');
-        $this->assertCount(count($rc->attemptids), $attemptsfilteredexisting, 'Incorrect number of attempts found with existing attempt ids');
+        $this->assertCount(
+            count($rc->attemptids),
+            $attemptsfilteredexisting,
+            'Incorrect number of attempts found with existing attempt ids'
+        );
 
         $attemptsfilterednonexisting = $report->get_attempts_metadata([-1, -2, -3]);
         $this->assertEmpty($attemptsfilterednonexisting, 'Attempts found for non-existing attempt ids');
@@ -610,7 +692,11 @@ class Report_test extends \advanced_testcase {
         // Test all sections enabled.
         $formdata = self::get_formdata_all_reports_sections_enabled();
         $sections = Report::build_report_sections_from_formdata($formdata);
-        $this->assertEquals(self::get_all_report_sections_enabled(), $sections, 'Full formdata not correctly converted to report sections');
+        $this->assertEquals(
+            self::get_all_report_sections_enabled(),
+            $sections,
+            'Full formdata not correctly converted to report sections'
+        );
 
         // Test removal of dependent sections.
         $formdata = self::get_formdata_all_reports_sections_enabled();

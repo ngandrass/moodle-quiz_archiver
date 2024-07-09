@@ -151,9 +151,17 @@ class generate_attempt_report_test extends \advanced_testcase {
         $mocks = $this->generate_mock_quiz();
         $base = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
         return [
-            'Valid' => array_merge($base, ['shouldfail' => false]),
-            'Invalid filenamepattern' => array_merge($base, ['filenamepattern' => '<a href="localhost">Foo</a>', 'shouldfail' => true]),
-            'Invalid sections' => array_merge($base, ['sections' => ['foo' => true], 'shouldfail' => true]),
+            'Valid' => array_merge($base, [
+                'shouldfail' => false,
+            ]),
+            'Invalid filenamepattern' => array_merge($base, [
+                'filenamepattern' => '<a href="localhost">Foo</a>',
+                'shouldfail' => true,
+            ]),
+            'Invalid sections' => array_merge($base, [
+                'sections' => ['foo' => true],
+                'shouldfail' => true,
+            ]),
         ];
     }
 

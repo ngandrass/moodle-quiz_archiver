@@ -37,7 +37,9 @@ function xmldb_quiz_archiver_install() {
     echo '<div class="alert alert-info" role="alert">';
         echo '<p>'.get_string('thanks_for_installing', 'quiz_archiver')."</p>";
         echo '<p>'.get_string('autoinstall_explanation', 'quiz_archiver')."</p>";
-        echo '<p><a href='.$autoinstallurl.' class="btn btn-primary text-white">'.get_string('autoinstall_start_now', 'quiz_archiver').'</a></p>';
+        echo '<p><a href='.$autoinstallurl.' class="btn btn-primary text-white">'.
+                get_string('autoinstall_start_now', 'quiz_archiver').
+            '</a></p>';
         echo '<p>'.get_string('manual_configuration_continue', 'quiz_archiver').'</p>';
     echo '</div>';
 

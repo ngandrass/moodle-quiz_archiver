@@ -47,8 +47,16 @@ class get_backup_status extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'jobid' => new external_value(PARAM_TEXT, 'UUID of the job this artifact is associated with', VALUE_REQUIRED),
-            'backupid' => new external_value(PARAM_TEXT, 'ID of the backup controller', VALUE_REQUIRED),
+            'jobid' => new external_value(
+                PARAM_TEXT,
+                'UUID of the job this artifact is associated with',
+                VALUE_REQUIRED
+            ),
+            'backupid' => new external_value(
+                PARAM_TEXT,
+                'ID of the backup controller',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -58,7 +66,11 @@ class get_backup_status extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'status' => new external_value(PARAM_TEXT, 'Status of the requested backup', VALUE_REQUIRED),
+            'status' => new external_value(
+                PARAM_TEXT,
+                'Status of the requested backup',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 

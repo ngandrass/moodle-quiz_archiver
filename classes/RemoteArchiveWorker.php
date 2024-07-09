@@ -80,7 +80,15 @@ class RemoteArchiveWorker {
      * service or decoding of the response failed
      * @throws \RuntimeException if the archive worker service reported an error
      */
-    public function enqueue_archive_job(string $wstoken, int $courseid, int $cmid, int $quizid, array $joboptions, $taskarchivequizattempts, $taskmoodlebackups) {
+    public function enqueue_archive_job(
+        string $wstoken,
+        int    $courseid,
+        int    $cmid,
+        int    $quizid,
+        array  $joboptions,
+               $taskarchivequizattempts,
+               $taskmoodlebackups
+    ) {
         global $CFG;
         $moodleurlbase = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
@@ -103,7 +111,8 @@ class RemoteArchiveWorker {
 
         // Execute request.
         // Moodle curl wrapper automatically closes curl handle after requests. No need to call curl_close() manually.
-        $c = new curl(['ignoresecurity' => true]); // Ignore URL filter since we require custom ports and the URL is only configurable by admins.
+        // Ignore URL filter since we require custom ports and the URL is only configurable by admins.
+        $c = new curl(['ignoresecurity' => true]);
         $result = $c->post($this->serverurl, $payload, [
             'CURLOPT_CONNECTTIMEOUT' => $this->connectiontimeout,
             'CURLOPT_TIMEOUT' => $this->requesttimeout,

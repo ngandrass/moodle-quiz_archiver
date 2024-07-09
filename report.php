@@ -293,7 +293,8 @@ class quiz_archiver_report extends report_base {
                 ];
 
                 // Inject global TSP settings.
-                $jm['tsp_enabled'] = ($this->config->tsp_enable == true); // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
+                // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
+                $jm['tsp_enabled'] = ($this->config->tsp_enable == true);
 
                 return [
                     'jobid' => $jm['jobid'],
@@ -432,7 +433,12 @@ class quiz_archiver_report extends report_base {
                 $this->cm->id,
                 $this->quiz->id,
                 [
-                    'archive_filename' => ArchiveJob::generate_archive_filename($this->course, $this->cm, $this->quiz, $archivefilenamepattern),
+                    'archive_filename' => ArchiveJob::generate_archive_filename(
+                        $this->course,
+                        $this->cm,
+                        $this->quiz,
+                        $archivefilenamepattern
+                    ),
                 ],
                 $taskarchivequizattempts,
                 $taskmoodlebackups,

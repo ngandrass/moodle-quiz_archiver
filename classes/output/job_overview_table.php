@@ -70,8 +70,11 @@ class job_overview_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
-            '{'.ArchiveJob::JOB_TABLE_NAME.'} j JOIN {user} u ON j.userid = u.id LEFT JOIN {files} f ON j.artifactfileid = f.id',
+            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, '.
+                'f.pathnamehash, f.filesize, u.username',
+            '{'.ArchiveJob::JOB_TABLE_NAME.'} j '.
+                'JOIN {user} u ON j.userid = u.id '.
+                'LEFT JOIN {files} f ON j.artifactfileid = f.id',
             'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
                 'courseid' => $courseid,
@@ -105,7 +108,8 @@ class job_overview_table extends \table_sql {
      */
     public function col_status($values) {
         $s = ArchiveJob::get_status_display_args($values->status);
-        return '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/><small>'.date('H:i:s', $values->timemodified).'</small>';
+        return '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/>'.
+               '<small>'.date('H:i:s', $values->timemodified).'</small>';
     }
 
     /**
@@ -158,7 +162,8 @@ class job_overview_table extends \table_sql {
                 true,
             );
 
-            $downloadtitle = get_string('download').': '.$artifactfile->get_filename().' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
+            $downloadtitle = get_string('download').': '.$artifactfile->get_filename().
+                             ' ('.get_string('size').': '.display_size($artifactfile->get_filesize()).')';
             // @codingStandardsIgnoreLine
             $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" title="'.$downloadtitle.'" alt="'.$downloadtitle.'"><i class="fa fa-download"></i></a>';
         } else {
@@ -173,6 +178,7 @@ class job_overview_table extends \table_sql {
             'action' => 'delete_job',
             'jobid' => $values->jobid,
         ]);
+        // @codingStandardsIgnoreLine
         $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" alt="'.get_string('delete', 'moodle').'"><i class="fa fa-times"></i></a>';
 
         return $html;

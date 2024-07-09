@@ -47,15 +47,51 @@ class process_uploaded_artifact extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'jobid' => new external_value(PARAM_TEXT, 'UUID of the job this artifact is associated with', VALUE_REQUIRED),
-            'artifact_component' => new external_value(PARAM_TEXT, 'File API component', VALUE_REQUIRED),
-            'artifact_contextid' => new external_value(PARAM_INT, 'File API contextid', VALUE_REQUIRED),
-            'artifact_userid' => new external_value(PARAM_INT, 'File API userid', VALUE_REQUIRED),
-            'artifact_filearea' => new external_value(PARAM_TEXT, 'File API filearea', VALUE_REQUIRED),
-            'artifact_filename' => new external_value(PARAM_TEXT, 'File API filename', VALUE_REQUIRED),
-            'artifact_filepath' => new external_value(PARAM_TEXT, 'File API filepath', VALUE_REQUIRED),
-            'artifact_itemid' => new external_value(PARAM_INT, 'File API itemid', VALUE_REQUIRED),
-            'artifact_sha256sum' => new external_value(PARAM_TEXT, 'SHA256 checksum of the file', VALUE_REQUIRED),
+            'jobid' => new external_value(
+                PARAM_TEXT,
+                'UUID of the job this artifact is associated with',
+                VALUE_REQUIRED
+            ),
+            'artifact_component' => new external_value(
+                PARAM_TEXT,
+                'File API component',
+                VALUE_REQUIRED
+            ),
+            'artifact_contextid' => new external_value(
+                PARAM_INT,
+                'File API contextid',
+                VALUE_REQUIRED
+            ),
+            'artifact_userid' => new external_value(
+                PARAM_INT,
+                'File API userid',
+                VALUE_REQUIRED
+            ),
+            'artifact_filearea' => new external_value(
+                PARAM_TEXT,
+                'File API filearea',
+                VALUE_REQUIRED
+            ),
+            'artifact_filename' => new external_value(
+                PARAM_TEXT,
+                'File API filename',
+                VALUE_REQUIRED
+            ),
+            'artifact_filepath' => new external_value(
+                PARAM_TEXT,
+                'File API filepath',
+                VALUE_REQUIRED
+            ),
+            'artifact_itemid' => new external_value(
+                PARAM_INT,
+                'File API itemid',
+                VALUE_REQUIRED
+            ),
+            'artifact_sha256sum' => new external_value(
+                PARAM_TEXT,
+                'SHA256 checksum of the file',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -65,7 +101,10 @@ class process_uploaded_artifact extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction'),
+            'status' => new external_value(
+                PARAM_TEXT,
+                'Status of the executed wsfunction'),
+
         ]);
     }
 

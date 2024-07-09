@@ -63,25 +63,46 @@ class autoinstall_test extends \advanced_testcase {
         $this->assertSame($workerurl, get_config('quiz_archiver', 'worker_url'), 'Worker URL was not set correctly');
 
         // Check global config.
-        $this->assertEquals(true, get_config('moodle', 'enablewebservices'), 'Webservices were not globally enabled');  // This can not be assertTrue, since Moodle stores a '1'.
-        $this->assertStringContainsString('rest', get_config('moodle', 'webserviceprotocols'), 'REST protocol was not globally enabled');
+        $this->assertEquals(  // This can not be assertTrue, since Moodle stores a '1'.
+            true,
+            get_config('moodle', 'enablewebservices'),
+            'Webservices were not globally enabled'
+        );
+        $this->assertStringContainsString(
+            'rest',
+            get_config('moodle', 'webserviceprotocols'),
+            'REST protocol was not globally enabled'
+        );
 
         // Check webservice.
         $webservice = $DB->get_record('external_services', ['name' => $wsname]);
         $this->assertNotEmpty($webservice, 'Webservice was not created');
         $this->assertSame($webservice->name, $wsname, 'Webservice name was not set correctly');
-        $this->assertNotEmpty($DB->get_records('external_services_functions', ['externalserviceid' => $webservice->id]), 'Webservice functions were not assigned');
-        $this->assertSame($webservice->id, get_config('quiz_archiver', 'webservice_id'), 'Webservice ID was not set correctly');
+        $this->assertNotEmpty(
+            $DB->get_records('external_services_functions', ['externalserviceid' => $webservice->id]),
+            'Webservice functions were not assigned'
+        );
+        $this->assertSame(
+            $webservice->id,
+            get_config('quiz_archiver', 'webservice_id'),
+            'Webservice ID was not set correctly'
+        );
 
         // Check role.
         $role = $DB->get_record('role', ['shortname' => $rolename]);
         $this->assertNotEmpty($role, 'Role was not created');
-        $this->assertNotEmpty($DB->get_records('role_capabilities', ['roleid' => $role->id]), 'Role capabilities were not assigned');
+        $this->assertNotEmpty(
+            $DB->get_records('role_capabilities', ['roleid' => $role->id]),
+            'Role capabilities were not assigned'
+        );
 
         // Check user.
         $user = $DB->get_record('user', ['username' => $username]);
         $this->assertNotEmpty($user, 'User was not created');
-        $this->assertNotEmpty($DB->get_records('role_assignments', ['userid' => $user->id, 'roleid' => $role->id]), 'User role was not assigned');
+        $this->assertNotEmpty(
+            $DB->get_records('role_assignments', ['userid' => $user->id, 'roleid' => $role->id]),
+            'User role was not assigned'
+        );
         $this->assertSame($user->id, get_config('quiz_archiver', 'webservice_userid'), 'User ID was not set correctly');
     }
 

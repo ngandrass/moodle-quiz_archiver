@@ -47,12 +47,30 @@ class get_attempts_metadata extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'courseid' => new external_value(PARAM_INT, 'ID of course', VALUE_REQUIRED),
-            'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_REQUIRED),
-            'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_REQUIRED),
+            'courseid' => new external_value(
+                PARAM_INT,
+                'ID of course',
+                VALUE_REQUIRED
+            ),
+            'cmid' => new external_value(
+                PARAM_INT,
+                'ID of the course module',
+                VALUE_REQUIRED
+            ),
+            'quizid' => new external_value(
+                PARAM_INT,
+                'ID of the quiz',
+                VALUE_REQUIRED
+            ),
             'attemptids' => new external_multiple_structure(
-                new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_REQUIRED)
-            , 'List of quiz attempt IDs to query', VALUE_REQUIRED),
+                new external_value(
+                    PARAM_INT,
+                    'ID of the quiz attempt',
+                    VALUE_REQUIRED
+                ),
+                'List of quiz attempt IDs to query',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -62,23 +80,77 @@ class get_attempts_metadata extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction', VALUE_REQUIRED),
-            'courseid' => new external_value(PARAM_INT, 'ID of course', VALUE_OPTIONAL),
-            'cmid' => new external_value(PARAM_INT, 'ID of the course module', VALUE_OPTIONAL),
-            'quizid' => new external_value(PARAM_INT, 'ID of the quiz', VALUE_OPTIONAL),
+            'status' => new external_value(
+                PARAM_TEXT,
+                'Status of the executed wsfunction',
+                VALUE_REQUIRED
+            ),
+            'courseid' => new external_value(
+                PARAM_INT,
+                'ID of course',
+                VALUE_OPTIONAL
+            ),
+            'cmid' => new external_value(
+                PARAM_INT,
+                'ID of the course module',
+                VALUE_OPTIONAL
+            ),
+            'quizid' => new external_value(
+                PARAM_INT,
+                'ID of the quiz',
+                VALUE_OPTIONAL
+            ),
             'attempts' => new external_multiple_structure(
                 new external_single_structure([
-                    'attemptid' => new external_value(PARAM_INT, 'ID of the quiz attempt', VALUE_REQUIRED),
-                    'userid' => new external_value(PARAM_INT, 'ID of the user for this quit attempt', VALUE_REQUIRED),
-                    'username' => new external_value(PARAM_TEXT, 'Username for this quiz attempt', VALUE_REQUIRED),
-                    'firstname' => new external_value(PARAM_TEXT, 'First name for this quiz attempt', VALUE_REQUIRED),
-                    'lastname' => new external_value(PARAM_TEXT, 'Last name for this quiz attempt', VALUE_REQUIRED),
-                    'timestart' => new external_value(PARAM_INT, 'Timestamp of when the quiz attempt started', VALUE_REQUIRED),
-                    'timefinish' => new external_value(PARAM_INT, 'Timestamp of when the quiz attempt finished', VALUE_REQUIRED),
-                    'attempt' => new external_value(PARAM_INT, 'Sequential attempt number', VALUE_REQUIRED),
-                    'state' => new external_value(PARAM_TEXT, 'State of the quiz attempt', VALUE_REQUIRED),
-                ])
-            , 'Attempt metadata for each attempt ID', VALUE_OPTIONAL),
+                    'attemptid' => new external_value(
+                        PARAM_INT,
+                        'ID of the quiz attempt',
+                        VALUE_REQUIRED
+                    ),
+                    'userid' => new external_value(
+                        PARAM_INT,
+                        'ID of the user for this quit attempt',
+                        VALUE_REQUIRED
+                    ),
+                    'username' => new external_value(
+                        PARAM_TEXT,
+                        'Username for this quiz attempt',
+                        VALUE_REQUIRED
+                    ),
+                    'firstname' => new external_value(
+                        PARAM_TEXT,
+                        'First name for this quiz attempt',
+                        VALUE_REQUIRED
+                    ),
+                    'lastname' => new external_value(
+                        PARAM_TEXT,
+                        'Last name for this quiz attempt',
+                        VALUE_REQUIRED
+                    ),
+                    'timestart' => new external_value(
+                        PARAM_INT,
+                        'Timestamp of when the quiz attempt started',
+                        VALUE_REQUIRED
+                    ),
+                    'timefinish' => new external_value(
+                        PARAM_INT,
+                        'Timestamp of when the quiz attempt finished',
+                        VALUE_REQUIRED
+                    ),
+                    'attempt' => new external_value(
+                        PARAM_INT,
+                        'Sequential attempt number',
+                        VALUE_REQUIRED
+                    ),
+                    'state' => new external_value(
+                        PARAM_TEXT,
+                        'State of the quiz attempt',
+                        VALUE_REQUIRED
+                    ),
+                ]),
+                'Attempt metadata for each attempt ID',
+                VALUE_OPTIONAL
+            ),
         ]);
     }
 

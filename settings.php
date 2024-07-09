@@ -49,9 +49,11 @@ if ($hassiteconfig) {
 
         // Autoinstall.
         if (autoinstall::plugin_is_unconfigured()) {
+            // @codingStandardsIgnoreStart
             $autoinstallurl = new moodle_url('/mod/quiz/report/archiver/adminui/autoinstall.php');
             $autoinstalldesc = "<a href='{$autoinstallurl}' class='btn btn-primary'>".get_string('autoinstall_start_now', 'quiz_archiver')."</a>";
             $autoinstalldesc .= "<br><br><p>".get_string('autoinstall_explanation', 'quiz_archiver')."</p>";
+            // @codingStandardsIgnoreEnd
         } else {
             $autoinstalldesc = get_string('autoinstall_already_configured', 'quiz_archiver');
         }
@@ -166,7 +168,9 @@ if ($hassiteconfig) {
             get_string('archive_filename_pattern_help', 'quiz_archiver', [
                 'variables' => array_reduce(
                     ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
-                    fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
+                    fn ($res, $varname) => $res."<li><code>\${".$varname."}</code>: ".
+                            get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                        "</li>"
                     , ""
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
@@ -182,7 +186,9 @@ if ($hassiteconfig) {
             get_string('export_attempts_filename_pattern_help', 'quiz_archiver', [
                 'variables' => array_reduce(
                     ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
-                    fn ($res, $varname) => $res . "<li><code>\${".$varname."}</code>: ".get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver')."</li>"
+                    fn ($res, $varname) => $res."<li><code>\${".$varname."}</code>: ".
+                            get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                        "</li>"
                     , ""
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),

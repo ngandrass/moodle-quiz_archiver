@@ -56,7 +56,8 @@ class artifact_delete_form extends \moodleform {
             $warnmsg = get_string('delete_artifact_warning', 'quiz_archiver');
             $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
             $warndetails .= '<br>';
-            $warndetails .= get_string('quiz_archive', 'quiz_archiver').': ' .$artifactfile->get_filename().' ('.display_size($artifactfile->get_filesize()).')';
+            $warndetails .= get_string('quiz_archive', 'quiz_archiver').': '.$artifactfile->get_filename().
+                            ' ('.display_size($artifactfile->get_filesize()).')';
 
             // Warn additionally if job is scheduled for automatic deletion.
             if ($job->is_autodelete_enabled()) {

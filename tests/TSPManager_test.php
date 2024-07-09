@@ -82,7 +82,8 @@ class TSPManager_test extends \advanced_testcase {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
 
@@ -170,12 +171,27 @@ class TSPManager_test extends \advanced_testcase {
         $this->assertTrue($tspmanager->has_tsp_timestamp(), 'Artifact was not detected as signed after signing it');
 
         // Ensure that the TSP data was stored correctly.
-        $this->assertEquals('tsp-dummy-query', $tspmanager->get_tsp_data()->query, 'TSP query was not stored correctly');
-        $this->assertEquals('tsp-dummy-reply-0123456789abcdef', $tspmanager->get_tsp_data()->reply, 'TSP reply was not stored correctly');
-        $this->assertEquals('localhost', $tspmanager->get_tsp_data()->server, 'TSP server URL was not stored correctly');
+        $this->assertEquals(
+            'tsp-dummy-query',
+            $tspmanager->get_tsp_data()->query,
+            'TSP query was not stored correctly'
+        );
+        $this->assertEquals(
+            'tsp-dummy-reply-0123456789abcdef',
+            $tspmanager->get_tsp_data()->reply,
+            'TSP reply was not stored correctly'
+        );
+        $this->assertEquals(
+            'localhost',
+            $tspmanager->get_tsp_data()->server,
+            'TSP server URL was not stored correctly'
+        );
 
         // Ensure that the artifact does not want to be signed again.
-        $this->assertFalse($job->tspmanager()->wants_tsp_timestamp(), 'Artifact was detected as wanting to be signed after it was signed');
+        $this->assertFalse(
+            $job->tspmanager()->wants_tsp_timestamp(),
+            'Artifact was detected as wanting to be signed after it was signed'
+        );
     }
 
     /**
@@ -289,7 +305,10 @@ class TSPManager_test extends \advanced_testcase {
         $job->link_artifact($artifact->get_id(), $sha256sum);
 
         // Check that the artifact does not want to be signed.
-        $this->assertFalse($job->tspmanager()->wants_tsp_timestamp(), 'Artifact was detected as wanting to be signed while TSP is disabled');
+        $this->assertFalse(
+            $job->tspmanager()->wants_tsp_timestamp(),
+            'Artifact was detected as wanting to be signed while TSP is disabled'
+        );
 
         // Try signing the artifact using TSP.
         $this->expectException(\Exception::class);

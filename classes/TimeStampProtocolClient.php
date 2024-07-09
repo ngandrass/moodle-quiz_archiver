@@ -133,7 +133,11 @@ class TimeStampProtocolClient {
      * @return string ASN.1 encoded TimeStampReq
      * @throws \ValueError If the SHA256 hash or nonce are invalid
      */
-    protected static function create_timestamp_request(string $sha256hash, string $nonce, bool $requesttsapublickey = false): string {
+    protected static function create_timestamp_request(
+        string $sha256hash,
+        string $nonce,
+        bool   $requesttsapublickey = false
+    ): string {
         // Validate input.
         if (strlen($sha256hash) !== 64) {
             throw new \ValueError('Invalid hexadecimal SHA256 hash');

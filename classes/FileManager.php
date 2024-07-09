@@ -341,6 +341,7 @@ class FileManager {
 
         // Prepare.
         $packer = get_file_packer('application/x-gzip');
+        // @codingStandardsIgnoreLine
         $workdir = "{$CFG->tempdir}/quiz_archiver/jid{$jobid}_cid{$this->courseid}_cmid{$this->cmid}_qid{$this->quizid}_aid{$attemptid}";
 
         // Wrap in try-catch to ensure cleanup on exit.

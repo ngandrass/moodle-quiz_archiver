@@ -105,7 +105,8 @@ class ArchiveJob_test extends \advanced_testcase {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
 
@@ -287,6 +288,7 @@ class ArchiveJob_test extends \advanced_testcase {
 
                 // Probe that the metadata contains the correct data.
                 $actualjob = array_pop($actualjobs);
+                // @codingStandardsIgnoreStart
                 $this->assertEquals($expectedjob->get_jobid(), $actualjob['jobid'], 'Jobid was not returned correctly');
                 $this->assertEquals($expectedjob->get_courseid(), $actualjob['course']['id'], 'Courseid was not returned correctly');
                 $this->assertEquals($expectedjob->get_cmid(), $actualjob['quiz']['cmid'], 'Course module id was not returned correctly');
@@ -311,6 +313,7 @@ class ArchiveJob_test extends \advanced_testcase {
                 $this->assertNotEmpty($actualjob['tsp']['timecreated'], 'TSP creation time was not returned');
                 $this->assertNotEmpty($actualjob['tsp']['queryfiledownloadurl'], 'TSP queryfile download URL was not returned');
                 $this->assertNotEmpty($actualjob['tsp']['replyfiledownloadurl'], 'TSP replyfile download URL was not returned');
+                // @codingStandardsIgnoreEnd
             }
         }
     }
@@ -422,9 +425,23 @@ class ArchiveJob_test extends \advanced_testcase {
         if ($CFG->branch <= 401) {
             // TODO: Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
             require_once($CFG->dirroot.'/lib/externallib.php');
-            $wstoken = \external_generate_token(EXTERNAL_TOKEN_PERMANENT, 1, 1, context_system::instance(), time() + 3600, 0);
+            $wstoken = \external_generate_token(
+                EXTERNAL_TOKEN_PERMANENT,
+                1,
+                1,
+                context_system::instance(),
+                time() + 3600,
+                0
+            );
         } else {
-            $wstoken = \core_external\util::generate_token(EXTERNAL_TOKEN_PERMANENT, \core_external\util::get_service_by_id(1), 1, context_system::instance(), time() + 3600, 0);
+            $wstoken = \core_external\util::generate_token(
+                EXTERNAL_TOKEN_PERMANENT,
+                \core_external\util::get_service_by_id(1),
+                1,
+                context_system::instance(),
+                time() + 3600,
+                0
+            );
         }
 
         // Create job and test token access.
@@ -441,9 +458,15 @@ class ArchiveJob_test extends \advanced_testcase {
             $mocks->settings
         );
 
-        $this->assertNotEmpty($DB->get_record('external_tokens', ['token' => $wstoken]), 'Webservice token was not created correctly');
+        $this->assertNotEmpty(
+            $DB->get_record('external_tokens', ['token' => $wstoken]),
+            'Webservice token was not created correctly'
+        );
         $job->delete_webservice_token();
-        $this->assertEmpty($DB->get_record('external_tokens', ['token' => $wstoken]), 'Webservice token was not deleted correctly');
+        $this->assertEmpty(
+            $DB->get_record('external_tokens', ['token' => $wstoken]),
+            'Webservice token was not deleted correctly'
+        );
     }
 
     /**
@@ -549,10 +572,12 @@ class ArchiveJob_test extends \advanced_testcase {
 
         // Delete artifact and ensure that the underlying file was delete correctly.
         $job->delete_artifact();
+        // @codingStandardsIgnoreStart
         $this->assertNull($job->get_artifact(), 'Job still returned an artifact file after deletion');
         $this->assertFalse($job->has_artifact(), 'Job believes it still has an artifact file');
         $this->assertFalse(get_file_storage()->get_file_by_id($artifact->get_id()), 'Artifact file was not deleted from file storage');
         $this->assertSame(ArchiveJob::STATUS_DELETED, $job->get_status(), 'Job status was not set to deleted');
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -582,10 +607,12 @@ class ArchiveJob_test extends \advanced_testcase {
         $job->link_artifact($artifact->get_id(), hash('sha256', 'foo bar baz'));
 
         // Ensure that the artifact is present.
+        // @codingStandardsIgnoreStart
         $this->assertTrue($job->has_artifact(), 'Job does not have an artifact file');
         $this->assertSame(1, ArchiveJob::delete_expired_artifacts(), 'Unexpected number of artifacts were reported as deleted');
         $this->assertFalse($job->has_artifact(), 'Job still has an artifact file after deletion');
         $this->assertFalse(get_file_storage()->get_file_by_id($artifact->get_id()), 'Artifact file was not deleted from file storage');
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -699,7 +726,10 @@ class ArchiveJob_test extends \advanced_testcase {
 
         $this->assertEmpty($job->get_temporary_files(), 'Job still has temporary files after deletion');
         foreach ($tmpfiles as $tmpfile) {
-            $this->assertFalse(get_file_storage()->get_file_by_id($tmpfile->get_id()), 'Temporary file was not deleted from file storage');
+            $this->assertFalse(
+                get_file_storage()->get_file_by_id($tmpfile->get_id()),
+                'Temporary file was not deleted from file storage'
+            );
         }
     }
 

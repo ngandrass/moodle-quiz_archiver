@@ -46,8 +46,16 @@ class update_job_status extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'jobid' => new external_value(PARAM_TEXT, 'UUID of the job this artifact is associated with', VALUE_REQUIRED),
-            'status' => new external_value(PARAM_TEXT, 'New status to set for job with UUID of jobid', VALUE_REQUIRED),
+            'jobid' => new external_value(
+                PARAM_TEXT,
+                'UUID of the job this artifact is associated with',
+                VALUE_REQUIRED
+            ),
+            'status' => new external_value(
+                PARAM_TEXT,
+                'New status to set for job with UUID of jobid',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -57,7 +65,10 @@ class update_job_status extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'status' => new external_value(PARAM_TEXT, 'Status of the executed wsfunction'),
+            'status' => new external_value(
+                PARAM_TEXT,
+                'Status of the executed wsfunction'
+            ),
         ]);
     }
 
