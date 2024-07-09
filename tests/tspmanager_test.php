@@ -129,6 +129,11 @@ final class tspmanager_test extends \advanced_testcase {
     /**
      * Tests signing of valid artifacts using TSP
      *
+     * @covers \quiz_archiver\TSPManager::timestamp
+     * @covers \quiz_archiver\TSPManager::has_tsp_timestamp
+     * @covers \quiz_archiver\TSPManager::wants_tsp_timestamp
+     * @covers \quiz_archiver\TSPManager::get_tsp_data
+     *
      * @return void
      * @throws \dml_exception
      * @throws \file_exception
@@ -197,6 +202,8 @@ final class tspmanager_test extends \advanced_testcase {
     /**
      * Tests deletion of TSP data
      *
+     * @covers \quiz_archiver\TSPManager::delete_tsp_data
+     *
      * @return void
      * @throws \dml_exception
      * @throws \file_exception
@@ -240,6 +247,8 @@ final class tspmanager_test extends \advanced_testcase {
     /**
      * Tests error handling when trying to sign non-existing artifacts
      *
+     * @covers \quiz_archiver\TSPManager::timestamp
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -273,6 +282,9 @@ final class tspmanager_test extends \advanced_testcase {
 
     /**
      * Tests error handling when trying to sign an artifact while TSP is globally disabled
+     *
+     * @covers \quiz_archiver\TSPManager::timestamp
+     * @covers \quiz_archiver\TSPManager::wants_tsp_timestamp
      *
      * @return void
      * @throws \coding_exception

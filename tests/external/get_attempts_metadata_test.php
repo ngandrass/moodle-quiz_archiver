@@ -74,6 +74,8 @@ final class get_attempts_metadata_test extends \advanced_testcase {
     /**
      * Test that users without the required capabilities are rejected
      *
+     * @covers \quiz_archiver\external\get_attempts_metadata::execute
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -97,6 +99,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
+     * @covers \quiz_archiver\external\get_attempts_metadata::execute
      *
      * @param int $courseid Course ID
      * @param int $cmid Course module ID

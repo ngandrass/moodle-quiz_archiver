@@ -32,6 +32,8 @@ final class autoinstall_test extends \advanced_testcase {
     /**
      * Test one full autoinstall process
      *
+     * @covers \quiz_archiver\local\autoinstall::execute
+     *
      * @return void
      * @throws \dml_exception
      */
@@ -109,6 +111,9 @@ final class autoinstall_test extends \advanced_testcase {
     /**
      * Tests if autoinstalls are properly detected and repeated autoinstalls
      * are prevented.
+     *
+     * @covers \quiz_archiver\local\autoinstall::plugin_is_unconfigured
+     * @covers \quiz_archiver\local\autoinstall::execute
      *
      * @return void
      * @throws \dml_exception

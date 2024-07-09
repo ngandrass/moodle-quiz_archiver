@@ -60,6 +60,8 @@ final class update_job_status_test extends \advanced_testcase {
     /**
      * Test that users without the required capabilities are rejected
      *
+     * @covers \quiz_archiver\external\update_job_status::execute
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -88,6 +90,8 @@ final class update_job_status_test extends \advanced_testcase {
 
     /**
      * Tests that webservice tokens are validated against the requested job
+     *
+     * @covers \quiz_archiver\external\update_job_status::execute
      *
      * @return void
      * @throws \coding_exception
@@ -135,6 +139,7 @@ final class update_job_status_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
+     * @covers \quiz_archiver\external\update_job_status::execute
      *
      * @param string $jobid Raw jobid parameter
      * @param string $status Raw status parameter
@@ -186,6 +191,7 @@ final class update_job_status_test extends \advanced_testcase {
      * Test updating a valid job
      *
      * @dataProvider job_status_data_provider
+     * @covers \quiz_archiver\external\update_job_status::execute
      *
      * @param string $originstatus Status to transition from
      * @param string $targetstatus Status to transition to

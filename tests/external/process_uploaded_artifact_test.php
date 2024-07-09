@@ -83,6 +83,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
     /**
      * Test that users without the required capabilities are rejected
      *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -126,6 +128,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute
      *
      * @param string $jobid Job ID
      * @param string $artifactcomponent Component name
@@ -214,6 +217,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
     /**
      * Test that completed jobs reject further artifact uploads
      *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -255,6 +260,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
 
     /**
      * Test that missing files are reported correctly
+     *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute
      *
      * @return void
      * @throws \coding_exception

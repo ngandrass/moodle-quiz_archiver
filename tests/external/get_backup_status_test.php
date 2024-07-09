@@ -60,6 +60,8 @@ final class get_backup_status_test extends \advanced_testcase {
     /**
      * Test that users without the required capabilities are rejected
      *
+     * @covers \quiz_archiver\external\get_backup_status::execute
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -92,6 +94,7 @@ final class get_backup_status_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
+     * @covers \quiz_archiver\external\get_backup_status::execute
      *
      * @param string $jobid Job ID
      * @param string $backupid Backup ID
@@ -154,6 +157,8 @@ final class get_backup_status_test extends \advanced_testcase {
     /**
      * Test wstoken validation
      *
+     * @covers \quiz_archiver\external\get_backup_status::execute
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -198,6 +203,8 @@ final class get_backup_status_test extends \advanced_testcase {
 
     /**
      * Test that invalid jobs return no status
+     *
+     * @covers \quiz_archiver\external\get_backup_status::execute
      *
      * @return void
      * @throws \coding_exception

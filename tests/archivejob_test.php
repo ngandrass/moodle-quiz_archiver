@@ -113,6 +113,9 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Tests the creation of a new archive job
      *
+     * @covers \quiz_archiver\ArchiveJob::create
+     * @covers \quiz_archiver\ArchiveJob::get_by_jobid
+     *
      * @throws \dml_exception
      * @throws \moodle_exception
      */
@@ -154,6 +157,10 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Test the deletion of an archive job
+     *
+     * @covers \quiz_archiver\ArchiveJob::create
+     * @covers \quiz_archiver\ArchiveJob::get_by_jobid
+     * @covers \quiz_archiver\ArchiveJob::delete
      *
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -203,7 +210,25 @@ final class archivejob_test extends \advanced_testcase {
      * Tests the creation and retrieval of multiple jobs for different quizzes
      * as well as their metadata arrays.
      *
+     * @covers \quiz_archiver\ArchiveJob::create
+     * @covers \quiz_archiver\ArchiveJob::link_artifact
+     * @covers \quiz_archiver\ArchiveJob::get_jobs
+     * @covers \quiz_archiver\ArchiveJob::get_metadata_for_jobs
+     * @covers \quiz_archiver\ArchiveJob::get_jobid
+     * @covers \quiz_archiver\ArchiveJob::get_courseid
+     * @covers \quiz_archiver\ArchiveJob::get_cmid
+     * @covers \quiz_archiver\ArchiveJob::get_quizid
+     * @covers \quiz_archiver\ArchiveJob::get_userid
+     * @covers \quiz_archiver\ArchiveJob::get_retentiontime
+     * @covers \quiz_archiver\ArchiveJob::is_autodelete_enabled
+     * @covers \quiz_archiver\ArchiveJob::get_settings
+     *
      * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \moodle_exception
+     * @throws \stored_file_creation_exception
      */
     public function test_multiple_jobs_retrieval_and_metadata(): void {
         global $DB;
@@ -321,6 +346,10 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test status changes of jobs
      *
+     * @covers \quiz_archiver\ArchiveJob::set_status
+     * @covers \quiz_archiver\ArchiveJob::get_status
+     * @covers \quiz_archiver\ArchiveJob::is_complete
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -372,6 +401,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test webservice token access checks
      *
+     * @covers \quiz_archiver\ArchiveJob::has_write_access
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -414,6 +445,8 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Test the deletion of a webservice token
+     *
+     * @covers \quiz_archiver\ArchiveJob::delete_webservice_token
      *
      * @return void
      * @throws \dml_exception
@@ -472,6 +505,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test job timeout
      *
+     * @covers \quiz_archiver\ArchiveJob::timeout_if_overdue
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -510,6 +545,11 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Tests the linking of an artifact file to a job
      *
+     * @covers \quiz_archiver\ArchiveJob::link_artifact
+     * @covers \quiz_archiver\ArchiveJob::has_artifact
+     * @covers \quiz_archiver\ArchiveJob::get_artifact
+     * @covers \quiz_archiver\ArchiveJob::get_artifact_checksum
+     *
      * @return void
      * @throws \dml_exception
      * @throws \file_exception
@@ -547,6 +587,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Tests the deletion of an artifact file
      *
+     * @covers \quiz_archiver\ArchiveJob::delete_artifact
+     *
      * @return void
      * @throws \dml_exception
      * @throws \file_exception
@@ -583,6 +625,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Tests the deletion of expired artifact files
      *
+     * @covers \quiz_archiver\ArchiveJob::delete_expired_artifacts
+     *
      * @return void
      * @throws \dml_exception
      * @throws \file_exception
@@ -618,6 +662,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Tests that the artifact checksum is null for non-existing artifacts
      *
+     * @covers \quiz_archiver\ArchiveJob::get_artifact_checksum
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -643,6 +689,9 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Tests that temporary files can be linked to a job
+     *
+     * @covers \quiz_archiver\ArchiveJob::link_temporary_file
+     * @covers \quiz_archiver\ArchiveJob::get_temporary_files
      *
      * @return void
      * @throws \dml_exception
@@ -688,6 +737,8 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Tests that temporary files are deleted properly
+     *
+     * @covers \quiz_archiver\ArchiveJob::delete_temporary_files
      *
      * @return void
      * @throws \dml_exception
@@ -735,6 +786,8 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Test archive filename pattern validation
+     *
+     * @covers \quiz_archiver\ArchiveJob::is_valid_archive_filename_pattern
      *
      * @dataProvider archive_filename_pattern_data_provider
      *
@@ -801,6 +854,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test attempt filename pattern validation
      *
+     * @covers \quiz_archiver\ArchiveJob::is_valid_attempt_filename_pattern
+     *
      * @dataProvider attempt_filename_pattern_data_provider
      *
      * @param string $pattern Pattern to test
@@ -866,6 +921,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test generation of valid archive filenames
      *
+     * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     *
      * @return void
      * @throws \coding_exception
      * @throws \invalid_parameter_exception
@@ -897,6 +954,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test generation of archive filenames without variables
      *
+     * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     *
      * @return void
      * @throws \coding_exception
      * @throws \invalid_parameter_exception
@@ -918,6 +977,8 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Test generation of archive filenames with invalid patterns
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
      *
      * @return void
      * @throws \coding_exception
@@ -941,6 +1002,8 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test generation of archive filenames with invalid variables
      *
+     * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     *
      * @return void
      * @throws \coding_exception
      * @throws \invalid_parameter_exception
@@ -962,6 +1025,8 @@ final class archivejob_test extends \advanced_testcase {
 
     /**
      * Test retrieval of human-readable job status
+     *
+     * @covers \quiz_archiver\ArchiveJob::get_status_display_args
      *
      * @dataProvider status_display_args_data_provider
      *

@@ -32,6 +32,8 @@ final class timestampprotocolclient_test extends \advanced_testcase {
     /**
      * Tests the creation of a TimeStampProtocolClient instance
      *
+     * @covers \quiz_archiver\TimeStampProtocolClient::__construct
+     *
      * @return void
      */
     public function test_creation(): void {
@@ -42,6 +44,8 @@ final class timestampprotocolclient_test extends \advanced_testcase {
 
     /**
      * Tests the generation of a nonce
+     *
+     * @covers \quiz_archiver\TimeStampProtocolClient::generate_nonce
      *
      * @return void
      * @throws \Exception
@@ -63,6 +67,8 @@ final class timestampprotocolclient_test extends \advanced_testcase {
     /**
      * Tests the generation of a TSP request from valid data
      *
+     * @covers \quiz_archiver\TimeStampProtocolClient::sign
+     *
      * @return void
      * @throws \coding_exception
      */
@@ -76,6 +82,8 @@ final class timestampprotocolclient_test extends \advanced_testcase {
 
     /**
      * Test the generation of a TSP request from invalid data
+     *
+     * @covers \quiz_archiver\TimeStampProtocolClient::sign
      *
      * @return void
      * @throws \Exception

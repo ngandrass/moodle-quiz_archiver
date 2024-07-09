@@ -146,6 +146,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Tests the generation of file paths based on context data
      *
+     * @covers \quiz_archiver\FileManager::get_file_path
+     *
      * @dataProvider file_path_generator_data_provider
      *
      * @param int $courseid
@@ -219,6 +221,10 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Test artifact storing and retrieval
      *
+     * @covers \quiz_archiver\FileManager::__construct
+     * @covers \quiz_archiver\FileManager::store_uploaded_artifact
+     * @covers \quiz_archiver\FileManager::get_stored_artifacts
+     *
      * @return void
      * @throws \coding_exception
      * @throws \file_exception
@@ -244,6 +250,9 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Test that only uploaded draftfiles are stored and others are rejected
      *
+     * @covers \quiz_archiver\FileManager::__construct
+     * @covers \quiz_archiver\FileManager::store_uploaded_artifact
+     *
      * @return void
      * @throws \file_exception
      * @throws \stored_file_creation_exception
@@ -260,6 +269,8 @@ final class filemanager_test extends \advanced_testcase {
 
     /**
      * Tests the hash generation for a valid stored_file
+     *
+     * @covers \quiz_archiver\FileManager::hash_file
      *
      * @return void
      * @throws \file_exception
@@ -278,6 +289,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Tests hash generation using an invalid hash algorithm
      *
+     * @covers \quiz_archiver\FileManager::hash_file
+     *
      * @return void
      * @throws \file_exception
      * @throws \stored_file_creation_exception
@@ -291,6 +304,7 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending a TSP query as a virtual file
      *
      * @runInSeparateProcess
+     * @covers \quiz_archiver\FileManager::send_virtual_file
      *
      * @return void
      * @throws \dml_exception
@@ -339,6 +353,7 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending a TSP reply as a virtual file
      *
      * @runInSeparateProcess
+     * @covers \quiz_archiver\FileManager::send_virtual_file
      *
      * @return void
      * @throws \dml_exception
@@ -387,6 +402,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending a virtual TSP file for a relativepath that does not match
      * the information of the respective job.
      *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -418,6 +435,8 @@ final class filemanager_test extends \advanced_testcase {
 
     /**
      * Tests sending a virtual TSP file for a job that has no TSP data.
+     *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
      *
      * @return void
      * @throws \dml_exception
@@ -451,6 +470,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Tests sending virtual file from invalid filearea.
      *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
+     *
      * @return void
      * @throws \dml_exception
      */
@@ -466,6 +487,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Tests sending virtual file from invalid path.
      *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
+     *
      * @return void
      * @throws \dml_exception
      */
@@ -480,6 +503,8 @@ final class filemanager_test extends \advanced_testcase {
 
     /**
      * Tests sending virtual file with invalid jobid.
+     *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
      *
      * @return void
      * @throws \dml_exception
@@ -500,6 +525,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Tests sending virtual file for non-existing job.
      *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
+     *
      * @return void
      * @throws \dml_exception
      */
@@ -519,6 +546,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Tests sending virtual file with invalid filename.
      *
+     * @covers \quiz_archiver\FileManager::send_virtual_file
+     *
      * @return void
      * @throws \dml_exception
      */
@@ -534,6 +563,8 @@ final class filemanager_test extends \advanced_testcase {
 
     /**
      * Test extracting the data of a single attempt from a job artifact file.
+     *
+     * @covers \quiz_archiver\FileManager::extract_attempt_data_from_artifact
      *
      * @return void
      * @throws \coding_exception
@@ -576,6 +607,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Test extracting a non-existing attempt from an artifact file.
      *
+     * @covers \quiz_archiver\FileManager::extract_attempt_data_from_artifact
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -613,6 +646,8 @@ final class filemanager_test extends \advanced_testcase {
     /**
      * Test extracting userdata from an invalid artifact file.
      *
+     * @covers \quiz_archiver\FileManager::extract_attempt_data_from_artifact
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -645,6 +680,8 @@ final class filemanager_test extends \advanced_testcase {
 
     /**
      * Tests cleanup of temporary files produced by the attempt data extraction routine.
+     *
+     * @covers \quiz_archiver\FileManager::cleanup_temp_files
      *
      * @return void
      * @throws \dml_exception

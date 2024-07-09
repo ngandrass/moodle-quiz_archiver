@@ -32,6 +32,9 @@ final class remotearchiveworker_test extends \advanced_testcase {
     /**
      * Test creation of request and interaction with the Moodle curl wrapper
      *
+     * @covers \quiz_archiver\RemoteArchiveWorker::__construct
+     * @covers \quiz_archiver\RemoteArchiveWorker::enqueue_archive_job
+     *
      * @return void
      * @throws \dml_exception
      */

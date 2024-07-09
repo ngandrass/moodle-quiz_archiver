@@ -80,6 +80,8 @@ final class generate_attempt_report_test extends \advanced_testcase {
     /**
      * Test that users without the required capabilities are rejected
      *
+     * @covers \quiz_archiver\external\generate_attempt_report::execute
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -107,6 +109,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
+     * @covers \quiz_archiver\external\generate_attempt_report::execute
      *
      * @param int $courseid Course ID
      * @param int $cmid Course module ID

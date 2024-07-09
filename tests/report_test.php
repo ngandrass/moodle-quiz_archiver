@@ -162,6 +162,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests validation of webservice tokens
      *
+     * @covers \quiz_archiver\quiz_archiverReport::has_access
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -194,6 +196,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Test generation of a full attempt report with all sections
+     *
+     * @covers \quiz_archiver\quiz_archiverReport::generate
      *
      * @return void
      * @throws \DOMException
@@ -275,6 +279,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests generation of a full page report with all sections
      *
+     * @covers \quiz_archiver\Report::generate_full_page
+     *
      * @return void
      * @throws \DOMException
      * @throws \coding_exception
@@ -297,6 +303,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests generation of a report with no header
+     *
+     * @covers \quiz_archiver\Report::generate
      *
      * @throws \restore_controller_exception
      * @throws \coding_exception
@@ -331,6 +339,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests generation of a report with no quiz feedback
      *
+     * @covers \quiz_archiver\Report::generate
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -363,6 +373,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests generation of a report with no questions
+     *
+     * @covers \quiz_archiver\Report::generate
      *
      * @return void
      * @throws \coding_exception
@@ -413,6 +425,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests generation of a report with no individual question feedback
      *
+     * @covers \quiz_archiver\Report::generate
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -439,6 +453,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests generation of a report with no general question feedback
+     *
+     * @covers \quiz_archiver\Report::generate
      *
      * @return void
      * @throws \coding_exception
@@ -467,6 +483,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests generation of a report without showing correct answers for questions
      *
+     * @covers \quiz_archiver\Report::generate
+     *
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -493,6 +511,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests generation of a report without showing answer histories
+     *
+     * @covers \quiz_archiver\Report::generate
      *
      * @return void
      * @throws \coding_exception
@@ -521,6 +541,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests to get the attachments of an attempt
      *
+     * @covers \quiz_archiver\Report::get_attempt_attachments
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -544,6 +566,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests metadata retrieval for attempt attachments
+     *
+     * @covers \quiz_archiver\Report::get_attempt_attachments_metadata
      *
      * @return void
      * @throws \dml_exception
@@ -577,6 +601,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests to get the attempts of a quiz
      *
+     * @covers \quiz_archiver\Report::get_attempts
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -593,6 +619,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests to get the attempt metadata array for a quiz
+     *
+     * @covers \quiz_archiver\Report::get_attempts_metadata
      *
      * @return void
      * @throws \dml_exception
@@ -634,6 +662,9 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests to get the IDs of users with attempts in a quiz
+     *
+     * @covers \quiz_archiver\Report::get_users_with_attempts
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -650,6 +681,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests to retrieve the latest attemptid of a user
+     *
+     * @covers \quiz_archiver\Report::get_latest_attemptid_for_user
      *
      * @return void
      * @throws \dml_exception
@@ -670,6 +703,8 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests to retrieve existing and nonexisting attempts
      *
+     * @covers \quiz_archiver\Report::attempt_exists
+     *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -685,6 +720,8 @@ final class report_test extends \advanced_testcase {
 
     /**
      * Tests conversion/sanitization of formdata to report section settings
+     *
+     * @covers \quiz_archiver\Report::build_report_sections_from_formdata
      *
      * @return void
      */
