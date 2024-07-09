@@ -31,7 +31,7 @@ use quiz_archiver\FileManager;
 /**
  * Tests for the process_uploaded_artifact external service
  */
-class process_uploaded_artifact_test extends \advanced_testcase {
+final class process_uploaded_artifact_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

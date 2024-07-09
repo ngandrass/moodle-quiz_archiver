@@ -30,7 +30,7 @@ use quiz_archiver\ArchiveJob;
 /**
  * Tests for the update_job_status external service
  */
-class update_job_status_test extends \advanced_testcase {
+final class update_job_status_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

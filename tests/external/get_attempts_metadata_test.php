@@ -27,7 +27,7 @@ namespace quiz_archiver\external;
 /**
  * Tests for the get_attempts_metadata external service
  */
-class get_attempts_metadata_test extends \advanced_testcase {
+final class get_attempts_metadata_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

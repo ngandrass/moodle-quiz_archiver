@@ -30,7 +30,7 @@ use quiz_archiver\ArchiveJob;
 /**
  * Tests for the get_backup_status external service
  */
-class get_backup_status_test extends \advanced_testcase {
+final class get_backup_status_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

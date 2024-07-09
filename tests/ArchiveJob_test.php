@@ -31,7 +31,7 @@ use context_system;
 /**
  * Tests for the ArchiveJob class
  */
-class ArchiveJob_test extends \advanced_testcase {
+final class ArchiveJob_test extends \advanced_testcase {
 
     /**
      * Generates a mock quiz to use in the tests

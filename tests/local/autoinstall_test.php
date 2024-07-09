@@ -27,7 +27,7 @@ namespace quiz_archiver\local;
 /**
  * Tests for the autoinstall class
  */
-class autoinstall_test extends \advanced_testcase {
+final class autoinstall_test extends \advanced_testcase {
 
     /**
      * Test one full autoinstall process
