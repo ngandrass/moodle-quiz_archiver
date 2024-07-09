@@ -169,7 +169,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_webservice_token_access_validation() {
+    public function test_webservice_token_access_validation(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $validtoken = md5("VALID-TEST-TOKEN");
@@ -205,7 +205,7 @@ final class report_test extends \advanced_testcase {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function test_generate_full_report() {
+    public function test_generate_full_report(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate full report with all sections.
@@ -288,7 +288,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_full_page_stub() {
+    public function test_generate_full_page_stub(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $html = $report->generate_full_page(
@@ -311,7 +311,7 @@ final class report_test extends \advanced_testcase {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function test_generate_report_no_header() {
+    public function test_generate_report_no_header(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without a header.
@@ -347,7 +347,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_report_no_quiz_feedback() {
+    public function test_generate_report_no_quiz_feedback(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without quiz feedback.
@@ -382,7 +382,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_report_no_questions() {
+    public function test_generate_report_no_questions(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without questions.
@@ -433,7 +433,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_report_no_question_feedback() {
+    public function test_generate_report_no_question_feedback(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without question feedback.
@@ -462,7 +462,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_report_no_general_feedback() {
+    public function test_generate_report_no_general_feedback(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without general feedback.
@@ -491,7 +491,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_report_no_rightanswers() {
+    public function test_generate_report_no_rightanswers(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without right answers.
@@ -520,7 +520,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_generate_report_no_history() {
+    public function test_generate_report_no_history(): void {
         $rc = $this->prepare_reference_course();
 
         // Generate report without answer history.
@@ -548,7 +548,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_attempt_attachments() {
+    public function test_get_attempt_attachments(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attachments = $report->get_attempt_attachments($rc->attemptids[0]);
@@ -574,7 +574,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_attempt_attachments_metadata() {
+    public function test_get_attempt_attachments_metadata(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attachments = $report->get_attempt_attachments_metadata($rc->attemptids[0]);
@@ -608,7 +608,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_attempts() {
+    public function test_get_attempts(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attempts = $report->get_attempts();
@@ -627,7 +627,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_attempts_metadata() {
+    public function test_get_attempts_metadata(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
@@ -670,7 +670,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_users_with_attempts() {
+    public function test_get_users_with_attempts(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
@@ -689,7 +689,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_latest_attempt_for_user() {
+    public function test_get_latest_attempt_for_user(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
@@ -710,7 +710,7 @@ final class report_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_attempt_exists() {
+    public function test_attempt_exists(): void {
         $rc = $this->prepare_reference_course();
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
@@ -725,7 +725,7 @@ final class report_test extends \advanced_testcase {
      *
      * @return void
      */
-    public function test_build_report_sections_from_formdata() {
+    public function test_build_report_sections_from_formdata(): void {
         // Test all sections enabled.
         $formdata = self::get_formdata_all_reports_sections_enabled();
         $sections = Report::build_report_sections_from_formdata($formdata);

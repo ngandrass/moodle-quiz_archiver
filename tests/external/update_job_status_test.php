@@ -203,7 +203,7 @@ final class update_job_status_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \required_capability_exception
      */
-    public function test_update_job_status(string $originstatus, string $targetstatus, array $expected) {
+    public function test_update_job_status(string $originstatus, string $targetstatus, array $expected): void {
         // Gain privileges.
         $this->setAdminUser();
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
