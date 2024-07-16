@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.11 (XXXXXXXXXX)
+
+- Fix image inlining for files with non-lowercase file extensions (e.g., `image.JPG`)
+
+
 ## Version 1.2.10 (2024070900)
 
 - Full code overhaul to comply with the [Moodle Coding Style](https://moodledev.io/general/development/policies/codingstyle)

@@ -703,7 +703,7 @@ class Report {
         }
 
         // Only process allowed image types.
-        $imgext = pathinfo($imgsrcurl, PATHINFO_EXTENSION);
+        $imgext = strtolower(pathinfo($imgsrcurl, PATHINFO_EXTENSION));
         if (!array_key_exists($imgext, self::ALLOWED_IMAGE_TYPES)) {
             // Edge case: Moodle theme images must not always contain extensions.
             if (!preg_match(self::REGEX_MOODLE_URL_THEME_IMAGE, $imgsrcurl)) {
