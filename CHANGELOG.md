@@ -1,8 +1,11 @@
 # Changelog
 
-## Version 1.2.11 (XXXXXXXXXX)
+## Version 1.3.0 (XXXXXXXXXX)
 
+- Optionally scale down large images within quiz reports to preserve space and keep PDF files compact
 - Fix image inlining for files with non-lowercase file extensions (e.g., `image.JPG`)
+- Fix conditional hide/show of retention time in quiz archive form when locked
+- Optimize order of settings in quiz archive form and plugin admin settings
 
 
 ## Version 1.2.10 (2024070900)

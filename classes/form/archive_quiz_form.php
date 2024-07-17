@@ -214,6 +214,78 @@ class archive_quiz_form extends \moodleform {
 
         $mform->addElement(
             'advcheckbox',
+            'export_attempts_image_resize',
+            get_string('export_attempts_image_resize', 'quiz_archiver'),
+            get_string('enable'),
+            $config->job_preset_export_attempts_image_resize_locked ? 'disabled' : null,
+            ['0', '1']
+        );
+        $mform->addHelpButton('export_attempts_image_resize', 'export_attempts_image_resize', 'quiz_archiver');
+        $mform->setDefault('export_attempts_image_resize', $config->job_preset_export_attempts_image_resize);
+
+        $mformgroup = [];
+        $mformgroupfieldseperator = 'x';
+        if ($config->job_preset_export_attempts_image_resize_width_locked) {
+            $mformgroup[] = $mform->createElement(
+                'static',
+                'export_attempts_image_resize_width_static',
+                '',
+                $config->job_preset_export_attempts_image_resize_width
+            );
+            $mform->addElement(
+                'hidden',
+                'export_attempts_image_resize_width',
+                $config->job_preset_export_attempts_image_resize_width
+            );
+        } else {
+            $mformgroup[] = $mform->createElement(
+                'text',
+                'export_attempts_image_resize_width',
+                get_string('export_attempts_image_resize_width', 'quiz_archiver'),
+                ['size' => 4]
+            );
+            $mform->setDefault('export_attempts_image_resize_width', $config->job_preset_export_attempts_image_resize_width);
+        }
+        $mform->setType('export_attempts_image_resize_width', PARAM_INT);
+
+        if ($config->job_preset_export_attempts_image_resize_height_locked) {
+            $mformgroup[] = $mform->createElement(
+                'static',
+                'export_attempts_image_resize_height_static',
+                '',
+                $config->job_preset_export_attempts_image_resize_height
+            );
+            $mform->addElement(
+                'hidden',
+                'export_attempts_image_resize_height',
+                $config->job_preset_export_attempts_image_resize_height
+            );
+        } else {
+            $mformgroup[] = $mform->createElement(
+                'text',
+                'export_attempts_image_resize_height',
+                get_string('export_attempts_image_resize_height', 'quiz_archiver'),
+                ['size' => 4]
+            );
+            $mform->setDefault('export_attempts_image_resize_height', $config->job_preset_export_attempts_image_resize_height);
+            $mformgroupfieldseperator .= '&nbsp;';
+        }
+        $mform->setType('export_attempts_image_resize_height', PARAM_INT);
+
+        $mformgroup[] = $mform->createElement('static', 'export_attempts_image_resize_px', '', 'px');
+
+        $mform->addGroup(
+            $mformgroup,
+            'export_attempts_image_resize_group',
+            get_string('export_attempts_image_resize_group', 'quiz_archiver'),
+            [$mformgroupfieldseperator, ''],
+            false
+        );
+        $mform->addHelpButton('export_attempts_image_resize_group', 'export_attempts_image_resize_group', 'quiz_archiver');
+        $mform->hideIf('export_attempts_image_resize_group', 'export_attempts_image_resize', 'notchecked');
+
+        $mform->addElement(
+            'advcheckbox',
             'export_attempts_keep_html_files',
             get_string('export_attempts_keep_html_files', 'quiz_archiver'),
             get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'),
@@ -233,7 +305,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('archive_autodelete', 'archive_autodelete', 'quiz_archiver');
         $mform->setDefault('archive_autodelete', $config->job_preset_archive_autodelete);
 
-        $mformgroup = [];  // This is wrapped in a form group to make hideIf() work with static elements
+        $mformgroup = [];  // This is wrapped in a form group to make hideIf() work with static elements.
         if ($config->job_preset_archive_retention_time_locked) {
             $durationwithunit = util::duration_to_unit($config->job_preset_archive_retention_time);
             $mformgroup[] = $mform->createElement(
@@ -253,7 +325,14 @@ class archive_quiz_form extends \moodleform {
             $mform->setDefault('archive_retention_time', $config->job_preset_archive_retention_time);
         }
         $mform->setType('archive_retention_time', PARAM_INT);
-        $mform->addGroup($mformgroup, 'archive_retention_time_group', get_string('archive_retention_time', 'quiz_archiver'), '', false);
+
+        $mform->addGroup(
+            $mformgroup,
+            'archive_retention_time_group',
+            get_string('archive_retention_time', 'quiz_archiver'),
+            '',
+            false
+        );
         $mform->addHelpButton('archive_retention_time_group', 'archive_retention_time', 'quiz_archiver');
         $mform->hideIf('archive_retention_time_group', 'archive_autodelete', 'notchecked');
 

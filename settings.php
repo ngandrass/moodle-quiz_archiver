@@ -191,6 +191,34 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_image_resize',
+            get_string('export_attempts_image_resize', 'quiz_archiver'),
+            get_string('export_attempts_image_resize_help', 'quiz_archiver'),
+            '0',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_image_resize_width',
+            get_string('export_attempts_image_resize_width', 'quiz_archiver'),
+            get_string('export_attempts_image_resize_width_help', 'quiz_archiver'),
+            '1280',
+            PARAM_INT
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_resize');
+        $settings->add($set);
+
+        $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_image_resize_height',
+            get_string('export_attempts_image_resize_height', 'quiz_archiver'),
+            get_string('export_attempts_image_resize_height_help', 'quiz_archiver'),
+            '1280',
+            PARAM_INT
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_resize');
+        $settings->add($set);
+
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
             get_string('export_attempts_keep_html_files', 'quiz_archiver'),
             get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),
