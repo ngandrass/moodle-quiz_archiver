@@ -233,27 +233,29 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('archive_autodelete', 'archive_autodelete', 'quiz_archiver');
         $mform->setDefault('archive_autodelete', $config->job_preset_archive_autodelete);
 
+        $mformgroup = [];  // This is wrapped in a form group to make hideIf() work with static elements
         if ($config->job_preset_archive_retention_time_locked) {
             $durationwithunit = util::duration_to_unit($config->job_preset_archive_retention_time);
-            $mform->addElement(
+            $mformgroup[] = $mform->createElement(
                 'static',
                 'archive_retention_time_static',
-                get_string('archive_retention_time', 'quiz_archiver'),
+                '',
                 $durationwithunit[0].' '.$durationwithunit[1]
             );
             $mform->addElement('hidden', 'archive_retention_time', $config->job_preset_archive_retention_time);
         } else {
-            $mform->addElement(
+            $mformgroup[] = $mform->createElement(
                 'duration',
                 'archive_retention_time',
-                get_string('archive_retention_time', 'quiz_archiver'),
+                '',
                 ['optional' => false, 'defaultunit' => DAYSECS],
             );
             $mform->setDefault('archive_retention_time', $config->job_preset_archive_retention_time);
         }
         $mform->setType('archive_retention_time', PARAM_INT);
-        $mform->addHelpButton('archive_retention_time', 'archive_retention_time', 'quiz_archiver');
-        $mform->hideIf('archive_retention_time', 'archive_autodelete', 'notchecked');
+        $mform->addGroup($mformgroup, 'archive_retention_time_group', get_string('archive_retention_time', 'quiz_archiver'), '', false);
+        $mform->addHelpButton('archive_retention_time_group', 'archive_retention_time', 'quiz_archiver');
+        $mform->hideIf('archive_retention_time_group', 'archive_autodelete', 'notchecked');
 
         // Submit.
         $mform->closeHeaderBefore('submitbutton');
