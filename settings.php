@@ -155,14 +155,6 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
-        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
-            get_string('export_attempts_keep_html_files', 'quiz_archiver'),
-            get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),
-            '0',
-        );
-        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
-        $settings->add($set);
-
         $set = new admin_setting_archive_filename_pattern('quiz_archiver/job_preset_archive_filename_pattern',
             get_string('archive_filename_pattern', 'quiz_archiver'),
             get_string('archive_filename_pattern_help', 'quiz_archiver', [
@@ -195,6 +187,14 @@ if ($hassiteconfig) {
             ]),
             'attempt-${attemptid}-${username}_${date}-${time}',
             PARAM_TEXT,
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
+            get_string('export_attempts_keep_html_files', 'quiz_archiver'),
+            get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),
+            '0',
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);

@@ -147,16 +147,6 @@ class archive_quiz_form extends \moodleform {
         $mform->setDefault('export_attempts_paper_format', $config->job_preset_export_attempts_paper_format);
 
         $mform->addElement(
-            'advcheckbox',
-            'export_attempts_keep_html_files',
-            get_string('export_attempts_keep_html_files', 'quiz_archiver'),
-            get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'),
-            $config->job_preset_export_attempts_keep_html_files_locked ? 'disabled' : null
-        );
-        $mform->addHelpButton('export_attempts_keep_html_files', 'export_attempts_keep_html_files', 'quiz_archiver');
-        $mform->setDefault('export_attempts_keep_html_files', $config->job_preset_export_attempts_keep_html_files);
-
-        $mform->addElement(
             'text',
             'archive_filename_pattern',
             get_string('archive_filename_pattern', 'quiz_archiver'),
@@ -221,6 +211,16 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('export_attempts_filename_pattern', PARAM_TEXT);
         $mform->setDefault('export_attempts_filename_pattern', $config->job_preset_export_attempts_filename_pattern);
         $mform->addRule('export_attempts_filename_pattern', null, 'maxlength', 255, 'client');
+
+        $mform->addElement(
+            'advcheckbox',
+            'export_attempts_keep_html_files',
+            get_string('export_attempts_keep_html_files', 'quiz_archiver'),
+            get_string('export_attempts_keep_html_files_desc', 'quiz_archiver'),
+            $config->job_preset_export_attempts_keep_html_files_locked ? 'disabled' : null
+        );
+        $mform->addHelpButton('export_attempts_keep_html_files', 'export_attempts_keep_html_files', 'quiz_archiver');
+        $mform->setDefault('export_attempts_keep_html_files', $config->job_preset_export_attempts_keep_html_files);
 
         $mform->addElement(
             'advcheckbox',
