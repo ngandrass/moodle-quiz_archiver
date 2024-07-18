@@ -8,6 +8,9 @@
 - Fix conditional hide/show of retention time in quiz archive form when locked
 - Optimize order of settings in quiz archive form and plugin admin settings
 
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.5.0`
+is required.
+
 
 ## Version 1.2.10 (2024070900)
 
