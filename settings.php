@@ -68,6 +68,7 @@ if ($hassiteconfig) {
             get_string('setting_header_archive_worker_desc', 'quiz_archiver')
         ));
 
+        // Worker URL.
         $settings->add(new admin_setting_configtext('quiz_archiver/worker_url',
             get_string('setting_worker_url', 'quiz_archiver'),
             get_string('setting_worker_url_desc', 'quiz_archiver'),
@@ -75,6 +76,7 @@ if ($hassiteconfig) {
             PARAM_TEXT
         ));
 
+        // Webservice.
         $settings->add(new admin_setting_configselect('quiz_archiver/webservice_id',
             get_string('webservice', 'webservice'),
             get_string('setting_webservice_desc', 'quiz_archiver'),
@@ -82,6 +84,7 @@ if ($hassiteconfig) {
             [-1 => ''] + $DB->get_records_menu('external_services', null, 'name ASC', 'id, name')
         ));
 
+        // Webservice user.
         $settings->add(new admin_setting_configtext('quiz_archiver/webservice_userid',
             get_string('setting_webservice_userid', 'quiz_archiver'),
             get_string('setting_webservice_userid_desc', 'quiz_archiver'),
@@ -89,6 +92,7 @@ if ($hassiteconfig) {
             PARAM_INT
         ));
 
+        // Job timeout.
         $settings->add(new admin_setting_configtext('quiz_archiver/job_timeout_min',
             get_string('setting_job_timeout_min', 'quiz_archiver'),
             get_string('setting_job_timeout_min_desc', 'quiz_archiver'),
@@ -96,6 +100,7 @@ if ($hassiteconfig) {
             PARAM_INT
         ));
 
+        // Custom Moodle base URL.
         $settings->add(new admin_setting_configtext('quiz_archiver/internal_wwwroot',
             get_string('setting_internal_wwwroot', 'quiz_archiver'),
             get_string('setting_internal_wwwroot_desc', 'quiz_archiver'),
@@ -109,12 +114,14 @@ if ($hassiteconfig) {
             get_string('setting_header_job_presets_desc', 'quiz_archiver'),
         ));
 
+        // Export Attempts.
         $settings->add(new admin_setting_configcheckbox_alwaystrue('quiz_archiver/job_preset_export_attempts',
             get_string('export_attempts', 'quiz_archiver'),
             get_string('export_attempts_help', 'quiz_archiver'),
             '1',
         ));
 
+        // Attempt report sections.
         foreach (Report::SECTIONS as $section) {
             $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_report_section_'.$section,
                 get_string('export_report_section_'.$section, 'quiz_archiver'),
@@ -130,6 +137,7 @@ if ($hassiteconfig) {
             $settings->add($set);
         }
 
+        // Export Quiz Backup.
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_quiz_backup',
             get_string('export_quiz_backup', 'quiz_archiver'),
             get_string('export_quiz_backup_help', 'quiz_archiver'),
@@ -138,6 +146,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Export Course Backup.
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_course_backup',
             get_string('export_course_backup', 'quiz_archiver'),
             get_string('export_course_backup_help', 'quiz_archiver'),
@@ -146,6 +155,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Export paper format.
         $set = new admin_setting_configselect('quiz_archiver/job_preset_export_attempts_paper_format',
             get_string('export_attempts_paper_format', 'quiz_archiver'),
             get_string('export_attempts_paper_format_help', 'quiz_archiver'),
@@ -155,6 +165,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Archive filename pattern.
         $set = new admin_setting_archive_filename_pattern('quiz_archiver/job_preset_archive_filename_pattern',
             get_string('archive_filename_pattern', 'quiz_archiver'),
             get_string('archive_filename_pattern_help', 'quiz_archiver', [
@@ -173,6 +184,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Attempt filename pattern.
         $set = new admin_setting_attempt_filename_pattern('quiz_archiver/job_preset_export_attempts_filename_pattern',
             get_string('export_attempts_filename_pattern', 'quiz_archiver'),
             get_string('export_attempts_filename_pattern_help', 'quiz_archiver', [
@@ -191,6 +203,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Image optimization.
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_image_optimize',
             get_string('export_attempts_image_optimize', 'quiz_archiver'),
             get_string('export_attempts_image_optimize_help', 'quiz_archiver'),
@@ -199,6 +212,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Image optimization: Max width.
         $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_image_optimize_width',
             get_string('export_attempts_image_optimize_width', 'quiz_archiver'),
             get_string('export_attempts_image_optimize_width_help', 'quiz_archiver'),
@@ -209,6 +223,7 @@ if ($hassiteconfig) {
         $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_optimize');
         $settings->add($set);
 
+        // Image optimization: Max height.
         $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_image_optimize_height',
             get_string('export_attempts_image_optimize_height', 'quiz_archiver'),
             get_string('export_attempts_image_optimize_height_help', 'quiz_archiver'),
@@ -219,6 +234,7 @@ if ($hassiteconfig) {
         $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_optimize');
         $settings->add($set);
 
+        // Image optimization: Quality.
         $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_image_optimize_quality',
             get_string('export_attempts_image_optimize_quality', 'quiz_archiver'),
             get_string('export_attempts_image_optimize_quality_help', 'quiz_archiver'),
@@ -229,6 +245,7 @@ if ($hassiteconfig) {
         $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_optimize');
         $settings->add($set);
 
+        // Keep HTML files.
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
             get_string('export_attempts_keep_html_files', 'quiz_archiver'),
             get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),
@@ -237,6 +254,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Archive autodelete.
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_archive_autodelete',
             get_string('archive_autodelete', 'quiz_archiver'),
             get_string('archive_autodelete_help', 'quiz_archiver'),
@@ -245,6 +263,7 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, true);
         $settings->add($set);
 
+        // Archive autodelete: Retention time.
         $set = new admin_setting_configduration('quiz_archiver/job_preset_archive_retention_time',
             get_string('archive_retention_time', 'quiz_archiver'),
             get_string('archive_retention_time_help', 'quiz_archiver'),
@@ -261,18 +280,21 @@ if ($hassiteconfig) {
             get_string('setting_header_tsp_desc', 'quiz_archiver')
         ));
 
+        // Enable TSP.
         $settings->add(new admin_setting_configcheckbox('quiz_archiver/tsp_enable',
             get_string('setting_tsp_enable', 'quiz_archiver'),
             get_string('setting_tsp_enable_desc', 'quiz_archiver'),
             '0'
         ));
 
+        // TSP automatic signing.
         $settings->add(new admin_setting_configcheckbox('quiz_archiver/tsp_automatic_signing',
             get_string('setting_tsp_automatic_signing', 'quiz_archiver'),
             get_string('setting_tsp_automatic_signing_desc', 'quiz_archiver'),
             '1'
         ));
 
+        // TSP server URL.
         $settings->add(new admin_setting_configtext('quiz_archiver/tsp_server_url',
             get_string('setting_tsp_server_url', 'quiz_archiver'),
             get_string('setting_tsp_server_url_desc', 'quiz_archiver'),
