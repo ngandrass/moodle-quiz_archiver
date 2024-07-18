@@ -284,6 +284,48 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_image_optimize_group', 'export_attempts_image_optimize_group', 'quiz_archiver');
         $mform->hideIf('export_attempts_image_optimize_group', 'export_attempts_image_optimize', 'notchecked');
 
+        $mformgroup = [];
+        if ($config->job_preset_export_attempts_image_optimize_quality_locked) {
+            $mformgroup[] = $mform->createElement(
+                'static',
+                'export_attempts_image_optimize_quality_static',
+                '',
+                $config->job_preset_export_attempts_image_optimize_quality
+            );
+            $mform->addElement(
+                'hidden',
+                'export_attempts_image_optimize_quality',
+                $config->job_preset_export_attempts_image_optimize_quality
+            );
+        } else {
+            $mformgroup[] = $mform->createElement(
+                'text',
+                'export_attempts_image_optimize_quality',
+                get_string('export_attempts_image_optimize_quality', 'quiz_archiver'),
+                ['size' => 2]
+            );
+            $mform->setDefault(
+                'export_attempts_image_optimize_quality',
+                $config->job_preset_export_attempts_image_optimize_quality
+            );
+        }
+        $mform->setType('export_attempts_image_optimize_quality', PARAM_INT);
+
+        $mformgroup[] = $mform->createElement('static', 'export_attempts_image_optimize_quality_percent', '', '%');
+        $mform->addGroup(
+            $mformgroup,
+            'export_attempts_image_optimize_quality_group',
+            get_string('export_attempts_image_optimize_quality', 'quiz_archiver'),
+            '',
+            false
+        );
+        $mform->addHelpButton(
+            'export_attempts_image_optimize_quality_group',
+            'export_attempts_image_optimize_quality',
+            'quiz_archiver'
+        );
+        $mform->hideIf('export_attempts_image_optimize_quality_group', 'export_attempts_image_optimize', 'notchecked');
+
         $mform->addElement(
             'advcheckbox',
             'export_attempts_keep_html_files',
