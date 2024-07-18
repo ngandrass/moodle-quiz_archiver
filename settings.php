@@ -219,6 +219,16 @@ if ($hassiteconfig) {
         $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_optimize');
         $settings->add($set);
 
+        $set = new admin_setting_configtext('quiz_archiver/job_preset_export_attempts_image_optimize_quality',
+            get_string('export_attempts_image_optimize_quality', 'quiz_archiver'),
+            get_string('export_attempts_image_optimize_quality_help', 'quiz_archiver'),
+            '85',
+            PARAM_INT
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $set->add_dependent_on('quiz_archiver/job_preset_export_attempts_image_optimize');
+        $settings->add($set);
+
         $set = new admin_setting_configcheckbox('quiz_archiver/job_preset_export_attempts_keep_html_files',
             get_string('export_attempts_keep_html_files', 'quiz_archiver'),
             get_string('export_attempts_keep_html_files_help', 'quiz_archiver'),

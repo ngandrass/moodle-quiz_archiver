@@ -227,6 +227,7 @@ class quiz_archiver_report extends report_base {
                         $formdata->export_attempts_image_optimize ? [
                             'width' => (int) $formdata->export_attempts_image_optimize_width,
                             'height' => (int) $formdata->export_attempts_image_optimize_height,
+                            'quality' => (int) $formdata->export_attempts_image_optimize_quality,
                         ] : null,
                         $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
                     );
