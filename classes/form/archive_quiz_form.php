@@ -136,6 +136,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addElement('header', 'header_advanced_settings', get_string('advancedsettings'));
         $mform->setExpanded('header_advanced_settings', false);
 
+        // Advanced options: Paper format.
         $mform->addElement(
             'select',
             'export_attempts_paper_format',
@@ -146,6 +147,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_paper_format', 'export_attempts_paper_format', 'quiz_archiver');
         $mform->setDefault('export_attempts_paper_format', $config->job_preset_export_attempts_paper_format);
 
+        // Advanced options: Archive filename pattern.
         $mform->addElement(
             'text',
             'archive_filename_pattern',
@@ -179,6 +181,7 @@ class archive_quiz_form extends \moodleform {
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
 
+        // Advanced options: Attempts filename pattern.
         $mform->addElement(
             'text',
             'export_attempts_filename_pattern',
@@ -212,6 +215,7 @@ class archive_quiz_form extends \moodleform {
         $mform->setDefault('export_attempts_filename_pattern', $config->job_preset_export_attempts_filename_pattern);
         $mform->addRule('export_attempts_filename_pattern', null, 'maxlength', 255, 'client');
 
+        // Advanced options: Image optimization.
         $mform->addElement(
             'advcheckbox',
             'export_attempts_image_optimize',
@@ -223,6 +227,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_image_optimize', 'export_attempts_image_optimize', 'quiz_archiver');
         $mform->setDefault('export_attempts_image_optimize', $config->job_preset_export_attempts_image_optimize);
 
+        // Image max width/height fields.
         $mformgroup = [];
         $mformgroupfieldseperator = 'x';
         if ($config->job_preset_export_attempts_image_optimize_width_locked) {
@@ -284,6 +289,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_image_optimize_group', 'export_attempts_image_optimize_group', 'quiz_archiver');
         $mform->hideIf('export_attempts_image_optimize_group', 'export_attempts_image_optimize', 'notchecked');
 
+        // Image quality field.
         $mformgroup = [];
         if ($config->job_preset_export_attempts_image_optimize_quality_locked) {
             $mformgroup[] = $mform->createElement(
@@ -326,6 +332,7 @@ class archive_quiz_form extends \moodleform {
         );
         $mform->hideIf('export_attempts_image_optimize_quality_group', 'export_attempts_image_optimize', 'notchecked');
 
+        // Advanced options: Keep HTML files.
         $mform->addElement(
             'advcheckbox',
             'export_attempts_keep_html_files',
@@ -336,6 +343,7 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_keep_html_files', 'export_attempts_keep_html_files', 'quiz_archiver');
         $mform->setDefault('export_attempts_keep_html_files', $config->job_preset_export_attempts_keep_html_files);
 
+        // Advanced options: Autodelete.
         $mform->addElement(
             'advcheckbox',
             'archive_autodelete',
