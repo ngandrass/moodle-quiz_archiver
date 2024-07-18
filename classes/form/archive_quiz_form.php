@@ -214,75 +214,75 @@ class archive_quiz_form extends \moodleform {
 
         $mform->addElement(
             'advcheckbox',
-            'export_attempts_image_resize',
-            get_string('export_attempts_image_resize', 'quiz_archiver'),
+            'export_attempts_image_optimize',
+            get_string('export_attempts_image_optimize', 'quiz_archiver'),
             get_string('enable'),
-            $config->job_preset_export_attempts_image_resize_locked ? 'disabled' : null,
+            $config->job_preset_export_attempts_image_optimize_locked ? 'disabled' : null,
             ['0', '1']
         );
-        $mform->addHelpButton('export_attempts_image_resize', 'export_attempts_image_resize', 'quiz_archiver');
-        $mform->setDefault('export_attempts_image_resize', $config->job_preset_export_attempts_image_resize);
+        $mform->addHelpButton('export_attempts_image_optimize', 'export_attempts_image_optimize', 'quiz_archiver');
+        $mform->setDefault('export_attempts_image_optimize', $config->job_preset_export_attempts_image_optimize);
 
         $mformgroup = [];
         $mformgroupfieldseperator = 'x';
-        if ($config->job_preset_export_attempts_image_resize_width_locked) {
+        if ($config->job_preset_export_attempts_image_optimize_width_locked) {
             $mformgroup[] = $mform->createElement(
                 'static',
-                'export_attempts_image_resize_width_static',
+                'export_attempts_image_optimize_width_static',
                 '',
-                $config->job_preset_export_attempts_image_resize_width
+                $config->job_preset_export_attempts_image_optimize_width
             );
             $mform->addElement(
                 'hidden',
-                'export_attempts_image_resize_width',
-                $config->job_preset_export_attempts_image_resize_width
+                'export_attempts_image_optimize_width',
+                $config->job_preset_export_attempts_image_optimize_width
             );
         } else {
             $mformgroup[] = $mform->createElement(
                 'text',
-                'export_attempts_image_resize_width',
-                get_string('export_attempts_image_resize_width', 'quiz_archiver'),
+                'export_attempts_image_optimize_width',
+                get_string('export_attempts_image_optimize_width', 'quiz_archiver'),
                 ['size' => 4]
             );
-            $mform->setDefault('export_attempts_image_resize_width', $config->job_preset_export_attempts_image_resize_width);
+            $mform->setDefault('export_attempts_image_optimize_width', $config->job_preset_export_attempts_image_optimize_width);
         }
-        $mform->setType('export_attempts_image_resize_width', PARAM_INT);
+        $mform->setType('export_attempts_image_optimize_width', PARAM_INT);
 
-        if ($config->job_preset_export_attempts_image_resize_height_locked) {
+        if ($config->job_preset_export_attempts_image_optimize_height_locked) {
             $mformgroup[] = $mform->createElement(
                 'static',
-                'export_attempts_image_resize_height_static',
+                'export_attempts_image_optimize_height_static',
                 '',
-                $config->job_preset_export_attempts_image_resize_height
+                $config->job_preset_export_attempts_image_optimize_height
             );
             $mform->addElement(
                 'hidden',
-                'export_attempts_image_resize_height',
-                $config->job_preset_export_attempts_image_resize_height
+                'export_attempts_image_optimize_height',
+                $config->job_preset_export_attempts_image_optimize_height
             );
         } else {
             $mformgroup[] = $mform->createElement(
                 'text',
-                'export_attempts_image_resize_height',
-                get_string('export_attempts_image_resize_height', 'quiz_archiver'),
+                'export_attempts_image_optimize_height',
+                get_string('export_attempts_image_optimize_height', 'quiz_archiver'),
                 ['size' => 4]
             );
-            $mform->setDefault('export_attempts_image_resize_height', $config->job_preset_export_attempts_image_resize_height);
+            $mform->setDefault('export_attempts_image_optimize_height', $config->job_preset_export_attempts_image_optimize_height);
             $mformgroupfieldseperator .= '&nbsp;';
         }
-        $mform->setType('export_attempts_image_resize_height', PARAM_INT);
+        $mform->setType('export_attempts_image_optimize_height', PARAM_INT);
 
-        $mformgroup[] = $mform->createElement('static', 'export_attempts_image_resize_px', '', 'px');
+        $mformgroup[] = $mform->createElement('static', 'export_attempts_image_optimize_px', '', 'px');
 
         $mform->addGroup(
             $mformgroup,
-            'export_attempts_image_resize_group',
-            get_string('export_attempts_image_resize_group', 'quiz_archiver'),
+            'export_attempts_image_optimize_group',
+            get_string('export_attempts_image_optimize_group', 'quiz_archiver'),
             [$mformgroupfieldseperator, ''],
             false
         );
-        $mform->addHelpButton('export_attempts_image_resize_group', 'export_attempts_image_resize_group', 'quiz_archiver');
-        $mform->hideIf('export_attempts_image_resize_group', 'export_attempts_image_resize', 'notchecked');
+        $mform->addHelpButton('export_attempts_image_optimize_group', 'export_attempts_image_optimize_group', 'quiz_archiver');
+        $mform->hideIf('export_attempts_image_optimize_group', 'export_attempts_image_optimize', 'notchecked');
 
         $mform->addElement(
             'advcheckbox',

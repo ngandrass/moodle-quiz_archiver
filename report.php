@@ -224,9 +224,9 @@ class quiz_archiver_report extends report_base {
                         $formdata->export_course_backup,
                         $formdata->archive_filename_pattern,
                         $formdata->export_attempts_filename_pattern,
-                        $formdata->export_attempts_image_resize ? [
-                            'width' => (int) $formdata->export_attempts_image_resize_width,
-                            'height' => (int) $formdata->export_attempts_image_resize_height,
+                        $formdata->export_attempts_image_optimize ? [
+                            'width' => (int) $formdata->export_attempts_image_optimize_width,
+                            'height' => (int) $formdata->export_attempts_image_optimize_height,
                         ] : null,
                         $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
                     );
@@ -330,8 +330,8 @@ class quiz_archiver_report extends report_base {
      * @param bool $exportcoursebackup Complete course backup will be archived if true
      * @param string $archivefilenamepattern Filename pattern to use for archive generation
      * @param string $attemptsfilenamepattern Filename pattern to use for attempt report generation
-     * @param array|null $imageresize If set, images in the attempt report will be downsized to the dimensions passed here as
-     * an array with keys 'width' and 'height'
+     * @param array|null $imageoptimize If set, images in the attempt report will be optimized according to the passed array
+     * containing 'width', 'height', and 'quality'
      * @param int|null $retentionseconds If set, the archive will be deleted automatically this many seconds after creation
      * @return ArchiveJob|null Created ArchiveJob on success
      * @throws coding_exception Handled by Moodle
@@ -348,7 +348,7 @@ class quiz_archiver_report extends report_base {
         bool   $exportcoursebackup,
         string $archivefilenamepattern,
         string $attemptsfilenamepattern,
-        ?array $imageresize = null,
+        ?array $imageoptimize = null,
         ?int   $retentionseconds = null
     ): ?ArchiveJob {
         global $CFG, $USER;
@@ -398,7 +398,7 @@ class quiz_archiver_report extends report_base {
                 'paper_format' => $paperformat,
                 'keep_html_files' => $reportkeephtmlfiles,
                 'filename_pattern' => $attemptsfilenamepattern,
-                'image_resize' => $imageresize ?? false,
+                'image_optimize' => $imageoptimize ?? false,
             ];
         }
 
