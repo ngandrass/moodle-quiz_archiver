@@ -126,6 +126,12 @@
             <span class="badge badge-{{status_display_args.color}}">
                 {{status_display_args.text}}
             </span>
+            {{#status_display_args.statusextras.progress}}
+                <span>
+                    &nbsp;&ndash;&nbsp;&nbsp;{{#str}} progress {{/str}}:
+                    {{status_display_args.statusextras.progress}}%
+                </span>
+            {{/status_display_args.statusextras.progress}}
         </td>
     </tr>
     <tr>

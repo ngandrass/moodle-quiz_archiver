@@ -30,6 +30,12 @@ defined('MOODLE_INTERNAL') || die();
  * Custom code to be run to update the plugin database.
  *
  * @param int $oldversion The version we are upgrading from
+ * @return true
+ * @throws ddl_exception
+ * @throws ddl_field_missing_exception
+ * @throws ddl_table_missing_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
  */
 function xmldb_quiz_archiver_upgrade($oldversion) {
     global $DB;
@@ -211,6 +217,20 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
 
         // Archiver savepoint reached.
         upgrade_plugin_savepoint(true, 2024011000, 'quiz', 'archiver');
+    }
+
+    if ($oldversion < 2024072200) {
+        // Define field statusextras to be added to quiz_archiver_jobs.
+        $table = new xmldb_table('quiz_archiver_jobs');
+        $field = new xmldb_field('statusextras', XMLDB_TYPE_TEXT, null, null, null, null, null, 'status');
+
+        // Conditionally launch add field statusextras.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2024072200, 'quiz', 'archiver');
     }
 
     return true;
