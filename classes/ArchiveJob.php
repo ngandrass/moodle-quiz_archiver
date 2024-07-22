@@ -75,6 +75,10 @@ class ArchiveJob {
     const STATUS_AWAITING_PROCESSING = 'AWAITING_PROCESSING';
     /** @var string Job status: Running */
     const STATUS_RUNNING = 'RUNNING';
+    /** @var string Job status: Waiting for backup */
+    const STATUS_WAITING_FOR_BACKUP = 'WAITING_FOR_BACKUP';
+    /** @var string Job status: Finalizing */
+    const STATUS_FINALIZING = 'FINALIZING';
     /** @var string Job status: Finished */
     const STATUS_FINISHED = 'FINISHED';
     /** @var string Job status: Failed */
