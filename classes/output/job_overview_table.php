@@ -70,7 +70,7 @@ class job_overview_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.retentiontime, j.artifactfilechecksum, '.
+            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.statusextras, j.retentiontime, j.artifactfilechecksum, '.
                 'f.pathnamehash, f.filesize, u.username',
             '{'.ArchiveJob::JOB_TABLE_NAME.'} j '.
                 'JOIN {user} u ON j.userid = u.id '.
@@ -107,9 +107,20 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_status($values) {
-        $s = ArchiveJob::get_status_display_args($values->status);
-        return '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/>'.
-               '<small>'.date('H:i:s', $values->timemodified).'</small>';
+        $html = '';
+        $s = ArchiveJob::get_status_display_args($values->status, json_decode($values->statusextras, true));
+
+        $html .= '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/>';
+
+        if (isset($s['statusextras']['progress'])) {
+            $html .= '<span title="'.get_string('progress').'">';
+            $html .= '<i class="fa fa-spinner"></i>&nbsp;'.$s['statusextras']['progress'].'%';
+            $html .= '</span><br/>';
+        }
+
+        $html .= '<small>'.date('H:i:s', $values->timemodified).'</small>';
+
+        return $html;
     }
 
     /**

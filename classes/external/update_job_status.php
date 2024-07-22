@@ -56,6 +56,11 @@ class update_job_status extends external_api {
                 'New status to set for job with UUID of jobid',
                 VALUE_REQUIRED
             ),
+            'statusextras' => new external_value(
+                PARAM_RAW,
+                'JSON containing additional information for the new job status',
+                VALUE_OPTIONAL
+            )
         ]);
     }
 
@@ -77,6 +82,7 @@ class update_job_status extends external_api {
      *
      * @param string $jobidraw
      * @param string $statusraw
+     * @param string $statusextrasraw
      * @return array
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
@@ -84,12 +90,14 @@ class update_job_status extends external_api {
      */
     public static function execute(
         string $jobidraw,
-        string $statusraw
+        string $statusraw,
+        string $statusextrasraw = ''
     ): array {
         // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobidraw,
             'status' => $statusraw,
+            'statusextras' => $statusextrasraw,
         ]);
 
         try {
@@ -111,10 +119,24 @@ class update_job_status extends external_api {
                 ];
             }
 
-            $job->set_status($params['status']);
+            // Prepare statusextras.
+            $statusextras = null;
+            if ($params['statusextras']) {
+                $statusextras = json_decode($params['statusextras'], true, 16, JSON_THROW_ON_ERROR);
+            }
+
+            // Update job status.
+            $job->set_status(
+                $params['status'],
+                $statusextras
+            );
         } catch (\dml_exception $e) {
             return [
                 'status' => 'E_UPDATE_FAILED',
+            ];
+        } catch (\JsonException $e) {
+            return [
+                'status' => 'E_INVALID_STATUSEXTRAS_JSON',
             ];
         }
 

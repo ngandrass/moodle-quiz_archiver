@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2024011000" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
+  <XMLDB PATH="mod/quiz/report/archiver/db" VERSION="2024072200" COMMENT="XMLDB file for Moodle mod/quiz/report/archiver">
     <TABLES>
       <TABLE NAME="quiz_archiver_jobs" COMMENT="Job status table for quiz archiver jobs">
         <FIELDS>
@@ -10,6 +10,7 @@
           <FIELD NAME="quizid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the quiz this job is associated with"/>
           <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID of the user that initiated this job"/>
           <FIELD NAME="status" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Status of this job"/>
+          <FIELD NAME="statusextras" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON containing additional information for the current job status"/>
           <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was created"/>
           <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time this job was updated"/>
           <FIELD NAME="retentiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The unix timestamp until when this archive has to be retained. It can be deleted automatically afterwards."/>
