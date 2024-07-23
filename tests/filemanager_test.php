@@ -357,6 +357,8 @@ final class filemanager_test extends \advanced_testcase {
      *
      * @runInSeparateProcess
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -406,6 +408,8 @@ final class filemanager_test extends \advanced_testcase {
      * the information of the respective job.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -440,6 +444,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending a virtual TSP file for a job that has no TSP data.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -474,6 +480,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending virtual file from invalid filearea.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -491,6 +499,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending virtual file from invalid path.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -508,6 +518,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending virtual file with invalid jobid.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -529,6 +541,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending virtual file for non-existing job.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
@@ -550,6 +564,8 @@ final class filemanager_test extends \advanced_testcase {
      * Tests sending virtual file with invalid filename.
      *
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
