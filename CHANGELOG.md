@@ -1,5 +1,14 @@
 # Changelog
 
+## Version X.X.X (XXXXXXXXXX)
+
+- Show periodically updated progress of running archive jobs in job overview table and job details modal
+- Creation of new job status values:
+  - `WAITING_FOR_BACKUP`: All attempt reports are generated and the archive worker service
+    is waiting for the Moodle backup to be ready.
+  - `FINALIZING`: The archive worker service is finalizing the archive creation process (checksums, compression, ...).
+
+
 ## Version 1.3.0 (2024071800)
 
 - Optionally scale down large images within quiz reports to preserve space and keep PDF files compact
