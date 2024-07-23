@@ -309,4 +309,139 @@ final class update_job_status_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Verifies that statusextras are decoded and stored correctly and that
+     * invalid JSON is properly rejected
+     *
+     * @dataProvider statusextras_data_provider
+     * @covers \quiz_archiver\external\update_job_status::execute
+     *
+     * @param string $jobid
+     * @param string $status
+     * @param string|null $statusextras
+     * @param bool $shouldfail
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     */
+    public function test_statusextras(string $jobid, string $status, ?string $statusextras, bool $shouldfail) {
+        // Gain privileges.
+        $this->setAdminUser();
+        $_GET['wstoken'] = 'TEST-WS-TOKEN';
+
+        // Create mock quiz and job.
+        $mocks = $this->generate_mock_quiz();
+        $job = ArchiveJob::create(
+            '00000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            [],
+            [],
+            ArchiveJob::STATUS_UNINITIALIZED
+        );
+
+        // Perform status update.
+        $result = update_job_status::execute($jobid, $status, $statusextras);
+
+        if ($shouldfail) {
+            $this->assertSame(
+                ['status' => 'E_INVALID_STATUSEXTRAS_JSON'],
+                $result,
+                'Invalid statusextras was accepted'
+            );
+        } else {
+            $this->assertSame(
+                ['status' => 'OK'],
+                $result,
+                'Valid statusextras was rejected'
+            );
+            $this->assertSame(
+                $status,
+                $job->get_status(),
+                'Job status was not updated correctly'
+            );
+            if ($statusextras) {
+                $this->assertSame(
+                    json_decode($statusextras, true),
+                    $job->get_statusextras(),
+                    'Populated statusextras were not updated correctly'
+                );
+            } else {
+                $this->assertNull(
+                    $job->get_statusextras(),
+                    'Empty statusextras were not updated correctly'
+                );
+            }
+        }
+    }
+
+    /**
+     * Data provider for test_statusextras
+     *
+     * @return array[] Test data
+     */
+    public static function statusextras_data_provider(): array {
+        return [
+            'No JSON' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_FINALIZING,
+                'statusextras' => null,
+                'shouldfail' => false,
+            ],
+            'Valid JSON 1' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => '{"foo": "bar"}',
+                'shouldfail' => false,
+            ],
+            'Valid JSON 2' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => '{"foo": "bar", "baz": []}',
+                'shouldfail' => false,
+            ],
+            'Invalid JSON 1' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNKNOWN,
+                'statusextras' => '{"foo": "bar"',
+                'shouldfail' => true,
+            ],
+            'Invalid JSON 2' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNKNOWN,
+                'statusextras' => '{"foo": "bar",}',
+                'shouldfail' => true,
+            ],
+            'Invalid JSON 3' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNKNOWN,
+                'statusextras' => '{"foo": "bar", "baz":}',
+                'shouldfail' => true,
+            ],
+            'Invalid JSON 4' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNKNOWN,
+                'statusextras' => '{"foo": "bar", "baz": []',
+                'shouldfail' => true,
+            ],
+            'Invalid JSON 5' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNKNOWN,
+                'statusextras' => '"foo": "bar", "baz": {}',
+                'shouldfail' => true,
+            ],
+            'Invalid JSON 6' => [
+                'jobid' => '00000000-1234-5678-abcd-ef4242424242',
+                'status' => ArchiveJob::STATUS_UNKNOWN,
+                'statusextras' => '{"foo":',
+                'shouldfail' => true,
+            ],
+        ];
+    }
+
 }
