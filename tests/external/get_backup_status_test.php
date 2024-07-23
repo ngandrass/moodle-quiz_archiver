@@ -89,6 +89,36 @@ final class get_backup_status_test extends \advanced_testcase {
         get_backup_status::execute($job->get_jobid(), 'f1d2d2f924e986ac86fdf7b36c94bcdf32beec15');
     }
 
+    /**
+     * Tests that the parameter spec is specified correctly and produces no exception.
+     *
+     * @covers \quiz_archiver\external\get_backup_status::execute_parameters
+     *
+     * @return void
+     */
+    public function test_assure_execute_parameter_spec(): void {
+        $this->resetAfterTest();
+        $this->assertInstanceOf(
+            \core_external\external_function_parameters::class,
+            get_backup_status::execute_parameters(),
+            'The execute_parameters() method should return an external_function_parameters.'
+        );
+    }
+
+    /**
+     * Tests that the return parameters are specified correctly and produce no exception.
+     *
+     * @covers \quiz_archiver\external\get_backup_status::execute_returns
+     *
+     * @return void
+     */
+    public function test_assure_return_parameter_spec(): void {
+        $this->assertInstanceOf(
+            \core_external\external_description::class,
+            get_backup_status::execute_returns(),
+            'The execute_returns() method should return an external_description.'
+        );
+    }
 
     /**
      * Verifies webservice parameter validation
@@ -96,8 +126,6 @@ final class get_backup_status_test extends \advanced_testcase {
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\get_backup_status::execute
      * @covers \quiz_archiver\external\get_backup_status::validate_parameters
-     * @covers \quiz_archiver\external\get_backup_status::execute_parameters
-     * @covers \quiz_archiver\external\get_backup_status::execute_returns
      *
      * @param string $jobid Job ID
      * @param string $backupid Backup ID
