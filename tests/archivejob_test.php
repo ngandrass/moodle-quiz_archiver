@@ -346,27 +346,18 @@ final class archivejob_test extends \advanced_testcase {
     /**
      * Test status changes of jobs
      *
-     * @covers \quiz_archiver\ArchiveJob::set_status
-     * @covers \quiz_archiver\ArchiveJob::get_status
-     * @covers \quiz_archiver\ArchiveJob::is_complete
+     * @dataProvider set_job_status_data_provider
+     * @covers       \quiz_archiver\ArchiveJob::set_status
+     * @covers       \quiz_archiver\ArchiveJob::get_status
+     * @covers       \quiz_archiver\ArchiveJob::is_complete
      *
+     * @param string $status
+     * @param bool $iscompleted
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function test_set_job_status(): void {
-        // Job statuses to test and whether they should be considered completed.
-        $statusesandcompletion = [
-            ArchiveJob::STATUS_UNKNOWN => false,
-            ArchiveJob::STATUS_UNINITIALIZED => false,
-            ArchiveJob::STATUS_AWAITING_PROCESSING => false,
-            ArchiveJob::STATUS_RUNNING => false,
-            ArchiveJob::STATUS_FINISHED => true,
-            ArchiveJob::STATUS_FAILED => true,
-            ArchiveJob::STATUS_TIMEOUT => true,
-            ArchiveJob::STATUS_DELETED => true,
-        ];
-
+    public function test_set_job_status(string $status, bool $iscompleted): void {
         // Create test job.
         $mocks = $this->generate_mock_quiz();
         $expectedjob = ArchiveJob::create(
@@ -390,12 +381,100 @@ final class archivejob_test extends \advanced_testcase {
         );
 
         // Test status changes.
-        foreach ($statusesandcompletion as $status => $completion) {
-            $expectedjob->set_status($status);
-            $actualjob = ArchiveJob::get_by_jobid('40000000-1234-5678-abcd-ef4242424242');
-            $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to '.$status);
-            $this->assertEquals($completion, $actualjob->is_complete(), 'Job completion was not detected correctly');
-        }
+        $expectedjob->set_status($status);
+        $actualjob = ArchiveJob::get_by_jobid('40000000-1234-5678-abcd-ef4242424242');
+        $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to '.$status);
+        $this->assertEquals($iscompleted, $actualjob->is_complete(), 'Job completion was not detected correctly');
+    }
+
+    /**
+     * Data provider for test_set_job_status
+     *
+     * @return array[] Test data
+     */
+    public static function set_job_status_data_provider(): array {
+        return [
+            'STATUS_UNKNOWN' => ['status' => ArchiveJob::STATUS_UNKNOWN, 'iscompleted' => false],
+            'STATUS_UNINITIALIZED' => ['status' => ArchiveJob::STATUS_UNINITIALIZED, 'iscompleted' => false],
+            'STATUS_AWAITING_PROCESSING' => ['status' => ArchiveJob::STATUS_AWAITING_PROCESSING, 'iscompleted' => false],
+            'STATUS_RUNNING' => ['status' => ArchiveJob::STATUS_RUNNING, 'iscompleted' => false],
+            'STATUS_WAITING_FOR_BACKUP' => ['status' => ArchiveJob::STATUS_WAITING_FOR_BACKUP, 'iscompleted' => false],
+            'STATUS_FINALIZING' => ['status' => ArchiveJob::STATUS_FINALIZING, 'iscompleted' => false],
+            'STATUS_FINISHED' => ['status' => ArchiveJob::STATUS_FINISHED, 'iscompleted' => true],
+            'STATUS_FAILED' => ['status' => ArchiveJob::STATUS_FAILED, 'iscompleted' => true],
+            'STATUS_TIMEOUT' => ['status' => ArchiveJob::STATUS_TIMEOUT, 'iscompleted' => true],
+            'STATUS_DELETED' => ['status' => ArchiveJob::STATUS_DELETED, 'iscompleted' => true],
+        ];
+    }
+
+    /**
+     * Test status changes of jobs with statusextras
+     *
+     * @dataProvider set_job_status_with_statusextras_data_provider
+     * @covers       \quiz_archiver\ArchiveJob::set_status
+     * @covers       \quiz_archiver\ArchiveJob::get_status
+     * @covers       \quiz_archiver\ArchiveJob::get_statusextras
+     *
+     * @param string $status Job status to set
+     * @param array|null $statusextras Statusextras to set
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_set_job_status_with_statusextras(string $status, ?array $statusextras): void {
+        // Create test job.
+        $mocks = $this->generate_mock_quiz();
+        $expectedjob = ArchiveJob::create(
+            '40000123-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings,
+            ArchiveJob::STATUS_UNINITIALIZED
+        );
+
+        // Initial job status.
+        $this->assertEquals(
+            ArchiveJob::STATUS_UNINITIALIZED,
+            ArchiveJob::get_by_jobid('40000123-1234-5678-abcd-ef4242424242')->get_status(),
+            'Initial job status was not set correctly'
+        );
+
+        // Test status changes.
+        $expectedjob->set_status($status, $statusextras);
+        $actualjob = ArchiveJob::get_by_jobid('40000123-1234-5678-abcd-ef4242424242');
+        $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to '.$status);
+        $this->assertEquals($statusextras, $actualjob->get_statusextras(), 'Job statusextras were not set correctly');
+    }
+
+    /**
+     * Data provider for test_set_job_status_with_statusextras
+     *
+     * @return array[] Test data
+     */
+    public static function set_job_status_with_statusextras_data_provider(): array {
+        return [
+            'No statusextras' => [
+                'status' => ArchiveJob::STATUS_AWAITING_PROCESSING,
+                'statusextras' => null,
+            ],
+            'Simple progress' => [
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => ['progress' => 42],
+            ],
+            'Complex data' => [
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => ['progress' => 100, 'foo' => 'bar'],
+            ],
+            'Nested data' => [
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => ['progress' => 0, 'nested' => ['foo' => 'bar']],
+            ],
+        ];
     }
 
     /**
@@ -1058,10 +1137,67 @@ final class archivejob_test extends \advanced_testcase {
             ArchiveJob::STATUS_UNINITIALIZED => ['status' => ArchiveJob::STATUS_UNINITIALIZED],
             ArchiveJob::STATUS_AWAITING_PROCESSING => ['status' => ArchiveJob::STATUS_AWAITING_PROCESSING],
             ArchiveJob::STATUS_RUNNING => ['status' => ArchiveJob::STATUS_RUNNING],
+            ArchiveJob::STATUS_WAITING_FOR_BACKUP => ['status' => ArchiveJob::STATUS_WAITING_FOR_BACKUP],
+            ArchiveJob::STATUS_FINALIZING => ['status' => ArchiveJob::STATUS_FINALIZING],
             ArchiveJob::STATUS_FINISHED => ['status' => ArchiveJob::STATUS_FINISHED],
             ArchiveJob::STATUS_FAILED => ['status' => ArchiveJob::STATUS_FAILED],
             ArchiveJob::STATUS_TIMEOUT => ['status' => ArchiveJob::STATUS_TIMEOUT],
             ArchiveJob::STATUS_DELETED => ['status' => ArchiveJob::STATUS_DELETED],
+        ];
+    }
+
+    /**
+     * Test retrieval of human-readable job status with statusextras
+     *
+     * @dataProvider status_display_args_with_statusextras_data_provider
+     * @covers       \quiz_archiver\ArchiveJob::get_status_display_args
+     *
+     * @param string $status
+     * @param array|null $statusextras
+     * @return void
+     * @throws \coding_exception
+     */
+    public function test_status_display_args_with_statusextras(string $status, ?array $statusextras): void {
+        $res = ArchiveJob::get_status_display_args($status, $statusextras);
+        $this->assertSame(
+            get_string('job_status_'.$status, 'quiz_archiver'),
+            $res['text'],
+            'Status display args were not returned correctly for status: '.$status
+        );
+        $this->assertNotEmpty(
+            $res['color'],
+            'Status display args did not contain a color for status: '.$status
+        );
+        $this->assertSame(
+            $statusextras ?? [],
+            $res['statusextras'],
+            'Status display args did not contain expected statusextras'
+        );
+    }
+
+    /**
+     * Data provider for test_status_display_args_with_statusextras
+     *
+     * @return array[] Test data
+     */
+    public static function status_display_args_with_statusextras_data_provider(): array {
+        return [
+            'No statusextras' => [
+                'status' => ArchiveJob::STATUS_AWAITING_PROCESSING,
+                'statusextras' => null,
+            ],
+            'Simple progress' => [
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => ['progress' => 42],
+            ],
+            'Complex data' => [
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => ['progress' => 100, 'foo' => 'bar'],
+            ],
+            'Nested data' => [
+                'status' => ArchiveJob::STATUS_RUNNING,
+                'statusextras' => ['progress' => 0, 'nested' => ['foo' => 'bar']],
+            ],
         ];
     }
 
