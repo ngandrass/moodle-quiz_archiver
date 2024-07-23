@@ -60,7 +60,7 @@ class update_job_status extends external_api {
                 PARAM_RAW,
                 'JSON containing additional information for the new job status',
                 VALUE_DEFAULT
-            )
+            ),
         ]);
     }
 
