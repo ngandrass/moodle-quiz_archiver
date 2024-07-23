@@ -23,7 +23,8 @@
  */
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 $functions = [
     'quiz_archiver_generate_attempt_report' => [

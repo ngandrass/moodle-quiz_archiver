@@ -26,7 +26,8 @@ namespace quiz_archiver\form;
 
 use quiz_archiver\local\autoinstall;
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 require_once($CFG->dirroot.'/mod/quiz/report/archiver/classes/local/autoinstall.php');

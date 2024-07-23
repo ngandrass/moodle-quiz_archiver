@@ -28,7 +28,8 @@ use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\util;
 use quiz_archiver\Report;
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 

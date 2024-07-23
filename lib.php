@@ -23,7 +23,8 @@
  */
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 use quiz_archiver\FileManager;
 

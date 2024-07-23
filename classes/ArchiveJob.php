@@ -27,7 +27,8 @@ namespace quiz_archiver;
 use quiz_archiver\local\util;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 
 /**

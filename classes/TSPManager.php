@@ -25,7 +25,8 @@
 namespace quiz_archiver;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 /**
  * Manages all Time-Stamp Protocol (TSP) related tasks for an ArchiveJob.

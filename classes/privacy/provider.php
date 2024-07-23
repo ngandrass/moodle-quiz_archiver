@@ -35,10 +35,13 @@ use quiz_archiver\FileManager;
 use quiz_archiver\TSPManager;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 /**
  * Privacy provider for quiz_archiver
+ *
+ * @codeCoverageIgnore This is handled by Moodle core tests
  */
 class provider implements
     \core_privacy\local\metadata\provider,

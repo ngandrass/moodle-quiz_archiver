@@ -23,7 +23,8 @@
  */
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 $capabilities = [
     // Capability to view the quiz archiver report page.

@@ -27,11 +27,14 @@ namespace quiz_archiver\task;
 use quiz_archiver\FileManager;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 
 /**
  * Scheduled task to periodically clean up temporary files.
+ *
+ * @codeCoverageIgnore This is just a wrapper for FileManager::cleanup_temp_files()
  */
 class cleanup_temp_files extends \core\task\scheduled_task {
 

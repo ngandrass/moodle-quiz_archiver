@@ -27,7 +27,7 @@ namespace quiz_archiver;
 use curl;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 /**
@@ -126,6 +126,7 @@ class RemoteArchiveWorker {
         $data = json_decode($result);
 
         // Handle errors.
+        // @codeCoverageIgnoreStart
         if ($httpstatus != 200) {
             if ($data === null) {
                 throw new \UnexpectedValueException("Decoding of the archive worker response failed. HTTP status code $httpstatus");
@@ -139,6 +140,7 @@ class RemoteArchiveWorker {
 
         // Decoded JSON data containing jobid and job_status returned on success.
         return $data;
+        // @codeCoverageIgnoreEnd
     }
 
 }

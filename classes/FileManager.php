@@ -28,7 +28,8 @@ use context_course;
 use stored_file;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 /**
  * Manages everything related to file handling via the Moodle File API.

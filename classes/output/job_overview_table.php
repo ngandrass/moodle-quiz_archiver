@@ -27,7 +27,8 @@ namespace quiz_archiver\output;
 use quiz_archiver\ArchiveJob;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 global $CFG;
 require_once($CFG->libdir.'/tablelib.php');
