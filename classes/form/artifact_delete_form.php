@@ -26,7 +26,8 @@ namespace quiz_archiver\form;
 
 use quiz_archiver\ArchiveJob;
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 require_once($CFG->dirroot.'/lib/formslib.php');
 

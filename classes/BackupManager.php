@@ -30,9 +30,10 @@ use context_course;
 use context_module;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php');
+
+require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php'); // @codeCoverageIgnore
 
 /**
  * Manages everything related to backups via the Moodle Backup API

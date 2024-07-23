@@ -27,7 +27,8 @@ namespace quiz_archiver;
 use curl;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 /**
  * A client implementation for the Time-Stamp Protocol (TSP) as defined by RFC 3161.

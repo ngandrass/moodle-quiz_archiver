@@ -19,10 +19,13 @@ namespace quiz_archiver\local\admin\setting;
 use quiz_archiver\ArchiveJob;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 /**
  * Custom admin setting for archive filename pattern input fields
+ *
+ * @codeCoverageIgnore
  *
  * @package   quiz_archiver
  * @copyright 2024 Niels Gandraß <niels@gandrass.de>

@@ -27,11 +27,14 @@ namespace quiz_archiver\task;
 use quiz_archiver\ArchiveJob;
 
 // @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
+
 
 
 /**
  * Scheduled task to delete job artifacts that have expired their retention time.
+ *
+ * @codeCoverageIgnore This is just a wrapper for ArchiveJob::delete_expired_artifacts()
  */
 class autodelete_job_artifacts extends \core\task\scheduled_task {
 
