@@ -81,6 +81,37 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that the parameter spec is specified correctly and produces no exception.
+     *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute_parameters
+     *
+     * @return void
+     */
+    public function test_assure_execute_parameter_spec(): void {
+        $this->resetAfterTest();
+        $this->assertInstanceOf(
+            \core_external\external_function_parameters::class,
+            process_uploaded_artifact::execute_parameters(),
+            'The execute_parameters() method should return an external_function_parameters.'
+        );
+    }
+
+    /**
+     * Tests that the return parameters are specified correctly and produce no exception.
+     *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute_returns
+     *
+     * @return void
+     */
+    public function test_assure_return_parameter_spec(): void {
+        $this->assertInstanceOf(
+            \core_external\external_description::class,
+            process_uploaded_artifact::execute_returns(),
+            'The execute_returns() method should return an external_description.'
+        );
+    }
+
+    /**
      * Test that users without the required capabilities are rejected
      *
      * @covers \quiz_archiver\external\process_uploaded_artifact::execute
@@ -130,8 +161,6 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\process_uploaded_artifact::execute
      * @covers \quiz_archiver\external\process_uploaded_artifact::validate_parameters
-     * @covers \quiz_archiver\external\process_uploaded_artifact::execute_parameters
-     * @covers \quiz_archiver\external\process_uploaded_artifact::execute_returns
      *
      * @param string $jobid Job ID
      * @param string $artifactcomponent Component name
