@@ -29,9 +29,10 @@ use quiz_archiver\ArchiveJob;
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-
+// @codeCoverageIgnoreStart
 global $CFG;
 require_once($CFG->libdir.'/tablelib.php');
+// @codeCoverageIgnoreEnd
 
 
 /**
@@ -109,7 +110,10 @@ class job_overview_table extends \table_sql {
      */
     public function col_status($values) {
         $html = '';
-        $s = ArchiveJob::get_status_display_args($values->status, json_decode($values->statusextras, true));
+        $s = ArchiveJob::get_status_display_args(
+            $values->status,
+            $values->statusextras ? json_decode($values->statusextras, true) : null
+        );
 
         $html .= '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/>';
 
