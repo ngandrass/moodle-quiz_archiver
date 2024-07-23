@@ -269,6 +269,45 @@ final class filemanager_test extends \advanced_testcase {
     }
 
     /**
+     * Test retrieval of draft files from the file storage
+     *
+     * @covers \quiz_archiver\FileManager::get_draft_file
+     *
+     * @return void
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_get_draft_file(): void {
+        // Prepare mocks.
+        $mocks = $this->generate_mock_quiz();
+        $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        $draftfile = $this->generate_draft_file('testfile.tar.gz');
+
+        // Retrieve valid draftfile.
+        $this->assertEquals(
+            $draftfile->get_id(),
+            $fm->get_draft_file(
+                $draftfile->get_contextid(),
+                $draftfile->get_itemid(),
+                $draftfile->get_filepath(),
+                $draftfile->get_filename()
+            )->get_id(),
+            'Draft file was not returned correctly'
+        );
+
+        // Retrieve invalid draftfile.
+        $this->assertNull(
+            $fm->get_draft_file(
+                $draftfile->get_contextid(),
+                $draftfile->get_itemid(),
+                $draftfile->get_filepath(),
+                'invalidfile.tar.gz'
+            ),
+            'A draft file that should not exist was returned'
+        );
+    }
+
+    /**
      * Tests the hash generation for a valid stored_file
      *
      * @covers \quiz_archiver\FileManager::hash_file
