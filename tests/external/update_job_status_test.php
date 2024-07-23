@@ -325,7 +325,7 @@ final class update_job_status_test extends \advanced_testcase {
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
      */
-    public function test_statusextras(string $jobid, string $status, ?string $statusextras, bool $shouldfail) {
+    public function test_statusextras(string $jobid, string $status, ?string $statusextras, bool $shouldfail): void {
         // Gain privileges.
         $this->setAdminUser();
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
