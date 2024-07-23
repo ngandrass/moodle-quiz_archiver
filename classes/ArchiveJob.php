@@ -749,6 +749,25 @@ class ArchiveJob {
     }
 
     /**
+     * Retrieves the statusextras of this job
+     *
+     * @return array|null Additional status information of this job, if available
+     */
+    public function get_statusextras(): ?array {
+        global $DB;
+        try {
+            $statusextras = $DB->get_field(self::JOB_TABLE_NAME, 'statusextras', ['jobid' => $this->jobid], MUST_EXIST);
+            if ($statusextras) {
+                return json_decode($statusextras, true);
+            } else {
+                return null;
+            }
+        } catch (\dml_exception $e) {
+            return null;
+        }
+    }
+
+    /**
      * Returns the status indicator display arguments based on the given job status
      *
      * @param string $status JOB_STATUS value to convert
