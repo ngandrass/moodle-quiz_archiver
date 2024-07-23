@@ -37,10 +37,20 @@ class util {
     public static function duration_to_human_readable(int $duration): string {
         // Calculate isolated time units.
         $years = floor($duration / YEARSECS);
-        $months = floor(($duration % YEARSECS) / (YEARSECS / 12));
-        $days = floor(($duration % (YEARSECS / 12)) / DAYSECS);
-        $hours = floor(($duration % DAYSECS) / HOURSECS);
-        $minutes = floor(($duration % HOURSECS) / MINSECS);
+        $duration -= $years * YEARSECS;
+
+        $months = floor($duration / (YEARSECS / 12));
+        $duration -= $months * (YEARSECS / 12);
+
+        $days = floor($duration / DAYSECS);
+        $duration -= $days * DAYSECS;
+
+        $hours = floor($duration / HOURSECS);
+        $duration -= $hours * HOURSECS;
+
+        $minutes = floor($duration / MINSECS);
+        $duration -= $minutes * MINSECS;
+
         $seconds = floor($duration % MINSECS);
 
         // Generate human readable string.
@@ -62,6 +72,10 @@ class util {
         }
         if ($seconds > 0) {
             $humanreadable .= $seconds . 's ';
+        }
+
+        if (!$humanreadable) {
+            $humanreadable = '0s';
         }
 
         return trim($humanreadable);
