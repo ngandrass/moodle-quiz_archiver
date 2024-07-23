@@ -162,7 +162,7 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests validation of webservice tokens
      *
-     * @covers \quiz_archiver\quiz_archiverReport::has_access
+     * @covers \quiz_archiver\Report::has_access
      *
      * @return void
      * @throws \dml_exception
@@ -197,7 +197,7 @@ final class report_test extends \advanced_testcase {
     /**
      * Test generation of a full attempt report with all sections
      *
-     * @covers \quiz_archiver\quiz_archiverReport::generate
+     * @covers \quiz_archiver\Report::generate
      *
      * @return void
      * @throws \DOMException
@@ -280,6 +280,8 @@ final class report_test extends \advanced_testcase {
      * Tests generation of a full page report with all sections
      *
      * @covers \quiz_archiver\Report::generate_full_page
+     * @covers \quiz_archiver\Report::convert_image_to_base64
+     * @covers \quiz_archiver\Report::ensure_absolute_url
      *
      * @return void
      * @throws \DOMException
@@ -682,7 +684,7 @@ final class report_test extends \advanced_testcase {
     /**
      * Tests to retrieve the latest attemptid of a user
      *
-     * @covers \quiz_archiver\Report::get_latest_attemptid_for_user
+     * @covers \quiz_archiver\Report::get_latest_attempt_for_user
      *
      * @return void
      * @throws \dml_exception

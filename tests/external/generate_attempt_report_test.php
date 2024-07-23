@@ -110,6 +110,9 @@ final class generate_attempt_report_test extends \advanced_testcase {
      *
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\generate_attempt_report::execute
+     * @covers \quiz_archiver\external\generate_attempt_report::validate_parameters
+     * @covers \quiz_archiver\external\generate_attempt_report::execute_parameters
+     * @covers \quiz_archiver\external\generate_attempt_report::execute_returns
      *
      * @param int $courseid Course ID
      * @param int $cmid Course module ID

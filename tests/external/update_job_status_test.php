@@ -140,6 +140,9 @@ final class update_job_status_test extends \advanced_testcase {
      *
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\update_job_status::execute
+     * @covers \quiz_archiver\external\update_job_status::validate_parameters
+     * @covers \quiz_archiver\external\update_job_status::execute_parameters
+     * @covers \quiz_archiver\external\update_job_status::execute_returns
      *
      * @param string $jobid Raw jobid parameter
      * @param string $status Raw status parameter

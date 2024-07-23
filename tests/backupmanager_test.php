@@ -83,6 +83,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests the backup of a course
      *
      * @covers \quiz_archiver\BackupManager::initiate_course_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -113,6 +114,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests the backup of a quiz
      *
      * @covers \quiz_archiver\BackupManager::initiate_quiz_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -143,6 +145,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests the backup of a non-existing course
      *
      * @covers \quiz_archiver\BackupManager::initiate_course_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -161,6 +164,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests the backup of a non-existing quiz
      *
      * @covers \quiz_archiver\BackupManager::initiate_quiz_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -179,6 +183,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests backing up a course without the required privileges
      *
      * @covers \quiz_archiver\BackupManager::initiate_course_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -197,6 +202,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests backing up a quiz without the required privileges
      *
      * @covers \quiz_archiver\BackupManager::initiate_quiz_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -215,6 +221,7 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests the download URL generation with an explicitly given internal_wwwroot
      *
      * @covers \quiz_archiver\BackupManager::initiate_course_backup
+     * @covers \quiz_archiver\BackupManager::initiate_backup
      *
      * @return void
      * @throws \base_setting_exception
@@ -239,6 +246,9 @@ final class backupmanager_test extends \advanced_testcase {
      * Tests BackupManager instantiation by backupid
      *
      * @covers \quiz_archiver\BackupManager::__construct
+     * @covers \quiz_archiver\BackupManager::get_backupid
+     * @covers \quiz_archiver\BackupManager::get_userid
+     * @covers \quiz_archiver\BackupManager::get_type
      *
      * @return void
      * @throws \base_setting_exception
@@ -286,6 +296,7 @@ final class backupmanager_test extends \advanced_testcase {
     /**
      * Tests access to backup status values
      *
+     * @covers \quiz_archiver\BackupManager::get_status
      * @covers \quiz_archiver\BackupManager::is_finished_successfully
      * @covers \quiz_archiver\BackupManager::is_failed
      * @covers \quiz_archiver\BackupManager::get_type

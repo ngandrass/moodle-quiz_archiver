@@ -224,6 +224,7 @@ final class filemanager_test extends \advanced_testcase {
      * @covers \quiz_archiver\FileManager::__construct
      * @covers \quiz_archiver\FileManager::store_uploaded_artifact
      * @covers \quiz_archiver\FileManager::get_stored_artifacts
+     * @covers \quiz_archiver\FileManager::get_own_file_path
      *
      * @return void
      * @throws \coding_exception
@@ -305,6 +306,8 @@ final class filemanager_test extends \advanced_testcase {
      *
      * @runInSeparateProcess
      * @covers \quiz_archiver\FileManager::send_virtual_file
+     * @covers \quiz_archiver\FileManager::send_virtual_file_tsp
+     * @covers \quiz_archiver\FileManager::filearea_is_virtual
      *
      * @return void
      * @throws \dml_exception
