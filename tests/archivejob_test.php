@@ -203,6 +203,51 @@ final class archivejob_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the duplicate UUID detection during job creation
+     *
+     * @covers \quiz_archiver\ArchiveJob::create
+     * @covers \quiz_archiver\ArchiveJob::get_by_jobid
+     * @covers \quiz_archiver\ArchiveJob::exists_in_db
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_create_job_duplicate_detection(): void {
+        // Create mock job.
+        $mocks = $this->generate_mock_quiz();
+        $jobid = '10000000-dupe-dupe-dupe-ef1234567890';
+        $job = ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-1',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Assert that job was created.
+        $this->assertNotNull(ArchiveJob::get_by_jobid($jobid), 'Job was not created');
+
+        // Try to create second job with same UUID
+        $this->expectException(\moodle_exception::class);
+        $jobduplicate = ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-1',
+            $mocks->attempts,
+            $mocks->settings
+        );
+    }
+
+    /**
      * Test the deletion of an archive job
      *
      * @covers \quiz_archiver\ArchiveJob::create
