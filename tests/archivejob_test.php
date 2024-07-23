@@ -114,6 +114,7 @@ final class archivejob_test extends \advanced_testcase {
      * Tests the creation of a new archive job
      *
      * @covers \quiz_archiver\ArchiveJob::create
+     * @covers \quiz_archiver\ArchiveJob::__construct
      * @covers \quiz_archiver\ArchiveJob::get_by_jobid
      *
      * @throws \dml_exception
@@ -268,6 +269,7 @@ final class archivejob_test extends \advanced_testcase {
      * @covers \quiz_archiver\ArchiveJob::get_retentiontime
      * @covers \quiz_archiver\ArchiveJob::is_autodelete_enabled
      * @covers \quiz_archiver\ArchiveJob::get_settings
+     * @covers \quiz_archiver\ArchiveJob::convert_archive_settings_for_display
      *
      * @return void
      * @throws \coding_exception
@@ -1055,6 +1057,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of valid archive filenames
      *
      * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
      *
      * @return void
      * @throws \coding_exception
@@ -1088,6 +1091,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of archive filenames without variables
      *
      * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
      *
      * @return void
      * @throws \coding_exception
@@ -1112,6 +1116,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of archive filenames with invalid patterns
      *
      * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
      *
      * @return void
      * @throws \coding_exception
@@ -1136,6 +1141,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of archive filenames with invalid variables
      *
      * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
      *
      * @return void
      * @throws \coding_exception

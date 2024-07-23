@@ -197,6 +197,7 @@ final class report_test extends \advanced_testcase {
     /**
      * Test generation of a full attempt report with all sections
      *
+     * @covers \quiz_archiver\Report::__construct
      * @covers \quiz_archiver\Report::generate
      *
      * @return void
