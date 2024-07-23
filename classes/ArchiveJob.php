@@ -455,7 +455,10 @@ class ArchiveJob {
                 'id' => $j->id,
                 'jobid' => $j->jobid,
                 'status' => $j->status,
-                'status_display_args' => self::get_status_display_args($j->status, json_decode($j->statusextras, true)),
+                'status_display_args' => self::get_status_display_args(
+                    $j->status,
+                    $j->statusextras ? json_decode($j->statusextras, true) : null
+                ),
                 'timecreated' => $j->timecreated,
                 'timemodified' => $j->timemodified,
                 'retentiontime' => $j->retentiontime,
@@ -754,8 +757,6 @@ class ArchiveJob {
      * @throws \coding_exception
      */
     public static function get_status_display_args(string $status, ?array $statusextras = null): array {
-        $res = [];
-
         // Translate status to display text and color.
         switch ($status) {
             case self::STATUS_UNKNOWN:
