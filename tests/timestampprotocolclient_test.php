@@ -33,6 +33,7 @@ final class timestampprotocolclient_test extends \advanced_testcase {
      * Tests the creation of a TimeStampProtocolClient instance
      *
      * @covers \quiz_archiver\TimeStampProtocolClient::__construct
+     * @covers \quiz_archiver\TimeStampProtocolClient::get_serverurl
      *
      * @return void
      */
@@ -68,6 +69,7 @@ final class timestampprotocolclient_test extends \advanced_testcase {
      * Tests the generation of a TSP request from valid data
      *
      * @covers \quiz_archiver\TimeStampProtocolClient::sign
+     * @covers \quiz_archiver\TimeStampProtocolClient::create_timestamp_request
      *
      * @return void
      * @throws \coding_exception

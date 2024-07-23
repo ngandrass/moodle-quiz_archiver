@@ -95,6 +95,9 @@ final class get_backup_status_test extends \advanced_testcase {
      *
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\get_backup_status::execute
+     * @covers \quiz_archiver\external\get_backup_status::validate_parameters
+     * @covers \quiz_archiver\external\get_backup_status::execute_parameters
+     * @covers \quiz_archiver\external\get_backup_status::execute_returns
      *
      * @param string $jobid Job ID
      * @param string $backupid Backup ID

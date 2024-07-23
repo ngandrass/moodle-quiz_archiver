@@ -100,6 +100,9 @@ final class get_attempts_metadata_test extends \advanced_testcase {
      *
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\get_attempts_metadata::execute
+     * @covers \quiz_archiver\external\get_attempts_metadata::validate_parameters
+     * @covers \quiz_archiver\external\get_attempts_metadata::execute_parameters
+     * @covers \quiz_archiver\external\get_attempts_metadata::execute_returns
      *
      * @param int $courseid Course ID
      * @param int $cmid Course module ID

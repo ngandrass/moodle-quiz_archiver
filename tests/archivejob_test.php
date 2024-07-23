@@ -156,6 +156,52 @@ final class archivejob_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the retrieval of an archive job by its internal database ID
+     *
+     * @dataProvider job_get_by_id_data_provider
+     * @covers \quiz_archiver\ArchiveJob::get_id
+     * @covers \quiz_archiver\ArchiveJob::get_by_id
+     *
+     * @param bool $shouldfail Whether the test should fail
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_job_get_by_id(bool $shouldfail): void {
+        $mocks = $this->generate_mock_quiz();
+        $job = ArchiveJob::create(
+            '10000000-1234-5678-abcd-ef4242123456',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-1',
+            $mocks->attempts,
+            $mocks->settings
+        );
+        $jobid = $job->get_id();
+
+        if ($shouldfail) {
+            $this->expectException(\dml_exception::class);
+            $jobid += 100000;
+        }
+        $this->assertEquals($job, ArchiveJob::get_by_id($jobid));
+    }
+
+    /**
+     * Data provider for test_job_get_by_id
+     *
+     * @return array Test data
+     */
+    public static function job_get_by_id_data_provider(): array {
+        return [
+            'Existing Job' => ['shouldfail' => false],
+            'Non-Existing Job' => ['shouldfail' => true],
+        ];
+    }
+
+    /**
      * Test the deletion of an archive job
      *
      * @covers \quiz_archiver\ArchiveJob::create
@@ -481,6 +527,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test webservice token access checks
      *
      * @covers \quiz_archiver\ArchiveJob::has_write_access
+     * @covers \quiz_archiver\ArchiveJob::has_read_access
      *
      * @return void
      * @throws \dml_exception
@@ -516,7 +563,12 @@ final class archivejob_test extends \advanced_testcase {
                 $this->assertSame(
                     $wstoken === $otherwstoken,
                     $job->has_write_access($otherwstoken),
-                    'Webservice token access was not validated correctly'
+                    'Webservice token access was not validated correctly (write access)'
+                );
+                $this->assertSame(
+                    $wstoken === $otherwstoken,
+                    $job->has_read_access($otherwstoken),
+                    'Webservice token access was not validated correctly (read access)'
                 );
             }
         }
@@ -867,6 +919,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test archive filename pattern validation
      *
      * @covers \quiz_archiver\ArchiveJob::is_valid_archive_filename_pattern
+     * @covers \quiz_archiver\ArchiveJob::is_valid_filename_pattern
      *
      * @dataProvider archive_filename_pattern_data_provider
      *
@@ -934,6 +987,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test attempt filename pattern validation
      *
      * @covers \quiz_archiver\ArchiveJob::is_valid_attempt_filename_pattern
+     * @covers \quiz_archiver\ArchiveJob::is_valid_filename_pattern
      *
      * @dataProvider attempt_filename_pattern_data_provider
      *
@@ -1199,6 +1253,38 @@ final class archivejob_test extends \advanced_testcase {
                 'statusextras' => ['progress' => 0, 'nested' => ['foo' => 'bar']],
             ],
         ];
+    }
+
+    /**
+     * Tests the retrieval of a TSPManager instance via an ArchiveJob
+     *
+     * @covers \quiz_archiver\ArchiveJob::tspmanager
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_tspmanager_get_instance(): void {
+        // Generate data.
+        $mocks = $this->generate_mock_quiz();
+        $job = ArchiveJob::create(
+            'asn00000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Test TSPManager creation.
+        $this->assertInstanceOf(
+            TSPManager::class,
+            $job->tspmanager(),
+            'ArchiveJob::tspmanager() did not return an instance of TSPManager'
+        );
     }
 
 }

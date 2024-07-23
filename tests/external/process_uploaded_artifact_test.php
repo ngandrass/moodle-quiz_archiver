@@ -129,6 +129,9 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      *
      * @dataProvider parameter_data_provider
      * @covers \quiz_archiver\external\process_uploaded_artifact::execute
+     * @covers \quiz_archiver\external\process_uploaded_artifact::validate_parameters
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute_parameters
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute_returns
      *
      * @param string $jobid Job ID
      * @param string $artifactcomponent Component name
