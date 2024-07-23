@@ -59,7 +59,7 @@ class update_job_status extends external_api {
             'statusextras' => new external_value(
                 PARAM_RAW,
                 'JSON containing additional information for the new job status',
-                VALUE_OPTIONAL
+                VALUE_DEFAULT
             )
         ]);
     }
@@ -82,16 +82,16 @@ class update_job_status extends external_api {
      *
      * @param string $jobidraw
      * @param string $statusraw
-     * @param string $statusextrasraw
+     * @param string|null $statusextrasraw
      * @return array
+     * @throws \coding_exception
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
-     * @throws \coding_exception
      */
     public static function execute(
         string $jobidraw,
         string $statusraw,
-        string $statusextrasraw = ''
+        ?string $statusextrasraw = null
     ): array {
         // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
