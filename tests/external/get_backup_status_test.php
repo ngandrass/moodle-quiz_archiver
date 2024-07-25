@@ -110,14 +110,15 @@ final class get_backup_status_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
-     * @covers \quiz_archiver\external\get_backup_status::execute
-     * @covers \quiz_archiver\external\get_backup_status::validate_parameters
+     * @covers       \quiz_archiver\external\get_backup_status::execute
+     * @covers       \quiz_archiver\external\get_backup_status::validate_parameters
      *
      * @param string $jobid Job ID
      * @param string $backupid Backup ID
      * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \coding_exception
+     * @throws \dml_exception
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
      */
@@ -132,12 +133,7 @@ final class get_backup_status_test extends \advanced_testcase {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
-        try {
-            get_backup_status::execute($jobid, $backupid);
-        // @codingStandardsIgnoreLine
-        } catch (\dml_exception $e) {
-            // Ignore.
-        }
+        get_backup_status::execute($jobid, $backupid);
     }
 
     /**

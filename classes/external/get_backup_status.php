@@ -112,6 +112,10 @@ class get_backup_status extends external_api {
         $context = \context_module::instance($job->get_cmid());
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
+        // The following code is tested covered by more specific tests.
+        // @codingStandardsIgnoreLine
+        // @codeCoverageIgnoreStart
+
         // Get backup.
         try {
             $bm = new BackupManager($params['backupid']);
@@ -133,6 +137,9 @@ class get_backup_status extends external_api {
 
         // Report success.
         return ['status' => 'SUCCESS'];
+
+        // @codingStandardsIgnoreLine
+        // @codeCoverageIgnoreEnd
     }
 
 }

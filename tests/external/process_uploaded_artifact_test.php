@@ -142,6 +142,54 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
     }
 
     /**
+     * Tests that only web service tokens with write access to a job can trigger
+     * artifact upload processing
+     *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     */
+    public function test_wstoken_write_access_check(): void {
+        // Create job.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '11000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            [],
+            []
+        );
+
+        // Execute test call.
+        $_GET['wstoken'] = 'INVALID-WS-TOKEN';
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $res = process_uploaded_artifact::execute(
+            $r['jobid'],
+            $r['artifact_component'],
+            $r['artifact_contextid'],
+            $r['artifact_userid'],
+            $r['artifact_filearea'],
+            $r['artifact_filename'],
+            $r['artifact_filepath'],
+            $r['artifact_itemid'],
+            $r['artifact_sha256sum']
+        );
+
+        // Ensure that the access was denied.
+        $this->assertSame(['status' => 'E_ACCESS_DENIED'], $res, 'Websertice token without access rights was falsely accepted');
+    }
+
+    /**
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
@@ -324,6 +372,56 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $r['artifact_filepath'],
             $r['artifact_itemid'],
             $r['artifact_sha256sum']
+        ));
+    }
+
+    /**
+     * Tests rejection of artifacts with mismatching checksums
+     *
+     * @covers \quiz_archiver\external\process_uploaded_artifact::execute
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_rejection_of_artifacts_with_checksum_mismatch(): void {
+        // Create job and draft artifact.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '40000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            [],
+            []
+        );
+        $artifact = $this->getDataGenerator()->create_draft_file('testartifact.tar.gz');
+
+        // Gain access.
+        $_GET['wstoken'] = 'TEST-WS-TOKEN';
+        $this->setAdminUser();
+
+        // Execute test call.
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $this->assertSame(['status' => 'E_ARTIFACT_CHECKSUM_INVALID'], process_uploaded_artifact::execute(
+            $r['jobid'],
+            $artifact->get_component(),
+            $artifact->get_contextid(),
+            (int) $artifact->get_userid(),  // Int cast is required since Moodle likes to return strings here...
+            $artifact->get_filearea(),
+            $artifact->get_filename(),
+            $artifact->get_filepath(),
+            $artifact->get_itemid(),
+            '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
         ));
     }
 

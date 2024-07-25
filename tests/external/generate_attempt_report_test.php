@@ -24,6 +24,7 @@
 
 namespace quiz_archiver\external;
 
+use quiz_archiver\ArchiveJob;
 use quiz_archiver\Report;
 
 /**
@@ -123,46 +124,108 @@ final class generate_attempt_report_test extends \advanced_testcase {
     }
 
     /**
+     * Test web service part of processing of a valid request
+     *
+     * @covers \quiz_archiver\external\generate_attempt_report::execute
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
+     * @throws \moodle_exception
+     */
+    public function test_execute(): void {
+        // Create mock quiz and archive job.
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $jobid = '10000000-0000-0000-0000-0123456789ab';
+        $wstoken = 'TEST-WS-TOKEN-1';
+        ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-1',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Create a valid request.
+        $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
+        $_GET['wstoken'] = $wstoken;
+
+        // Execute the request.
+        $this->expectException(\invalid_parameter_exception::class);
+        $this->expectExceptionMessage('No attempt with given attemptid found');
+        generate_attempt_report::execute(
+            $r['courseid'],
+            $r['cmid'],
+            $r['quizid'],
+            $r['attemptid'],
+            $r['filenamepattern'],
+            $r['sections'],
+            $r['attachments']
+        );
+    }
+
+    /**
      * Verifies webservice parameter validation
      *
-     * @dataProvider parameter_data_provider
+     * @dataProvider parameter_validation_data_provider
      * @covers \quiz_archiver\external\generate_attempt_report::execute
      * @covers \quiz_archiver\external\generate_attempt_report::validate_parameters
      *
-     * @param int $courseid Course ID
-     * @param int $cmid Course module ID
-     * @param int $quizid Quiz ID
-     * @param int $attemptid Attempt ID
-     * @param string $filenamepattern Filename pattern
-     * @param array $sections Sections settings array
-     * @param bool $attachments Whether to include attachments
-     * @param bool $shouldfail Whether a failure is expected
+     * @param string $invalidparameterkey Key of the parameter to invalidate
      * @return void
      * @throws \DOMException
+     * @throws \dml_exception
+     * @throws \dml_transaction_exception
      * @throws \moodle_exception
      */
-    public function test_parameter_validation(
-        int $courseid,
-        int $cmid,
-        int $quizid,
-        int $attemptid,
-        string $filenamepattern,
-        array $sections,
-        bool $attachments,
-        bool $shouldfail
-    ): void {
+    public function test_parameter_validation(string $invalidparameterkey): void {
+        // Create mock quiz and archive job.
         $this->resetAfterTest();
+        $this->setAdminUser();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $jobid = '20000000-0000-0000-0000-0123456789ab';
+        $wstoken = 'TEST-WS-TOKEN-2';
+        ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-2',
+            $mocks->attempts,
+            $mocks->settings
+        );
 
-        if ($shouldfail) {
-            $this->expectException(\invalid_parameter_exception::class);
-        }
+        // Create a request.
+        $r = $this->generate_valid_request(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->attempts[0]->attemptid
+        );
+        $_GET['wstoken'] = $wstoken;
 
-        try {
-            generate_attempt_report::execute($courseid, $cmid, $quizid, $attemptid, $filenamepattern, $sections, $attachments);
-        // @codingStandardsIgnoreLine
-        } catch (\dml_missing_record_exception $e) {
-            // Ignore.
-        }
+        // Execute the request.
+        $this->expectException(\invalid_parameter_exception::class);
+        $this->expectExceptionMessageMatches('/.*'.$invalidparameterkey.'.*/');
+        generate_attempt_report::execute(
+            $invalidparameterkey == 'courseid' ? 0 : $r['courseid'],
+            $invalidparameterkey == 'cmid' ? 0 : $r['cmid'],
+            $invalidparameterkey == 'quizid' ? 0 : $r['quizid'],
+            $invalidparameterkey == 'attemptid' ? 0 : $r['attemptid'],
+            $invalidparameterkey == 'filename pattern' ? 'invalid-${pattern' : $r['filenamepattern'],
+            $invalidparameterkey == 'sections' ? [] : $r['sections'],
+            $r['attachments']
+        );
     }
 
     /**
@@ -170,22 +233,14 @@ final class generate_attempt_report_test extends \advanced_testcase {
      *
      * @return array[] Test data
      */
-    public static function parameter_data_provider(): array {
-        $self = new self();
-        $mocks = $self->getDataGenerator()->create_mock_quiz();
-        $base = $self->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
+    public static function parameter_validation_data_provider(): array {
         return [
-            'Valid' => array_merge($base, [
-                'shouldfail' => false,
-            ]),
-            'Invalid filenamepattern' => array_merge($base, [
-                'filenamepattern' => '<a href="localhost">Foo</a>',
-                'shouldfail' => true,
-            ]),
-            'Invalid sections' => array_merge($base, [
-                'sections' => ['foo' => true],
-                'shouldfail' => true,
-            ]),
+            'Invalid courseid' => ['courseid'],
+            'Invalid cmid' => ['cmid'],
+            'Invalid quizid' => ['quizid'],
+            'Invalid attemptid' => ['attemptid'],
+            'Invalid filenamepattern' => ['filename pattern'],
+            'Invalid sections' => ['sections'],
         ];
     }
 
