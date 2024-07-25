@@ -126,6 +126,7 @@ class RemoteArchiveWorker {
         $data = json_decode($result);
 
         // Handle errors.
+        // @codingStandardsIgnoreLine
         // @codeCoverageIgnoreStart
         if ($httpstatus != 200) {
             if ($data === null) {
@@ -140,6 +141,7 @@ class RemoteArchiveWorker {
 
         // Decoded JSON data containing jobid and job_status returned on success.
         return $data;
+        // @codingStandardsIgnoreLine
         // @codeCoverageIgnoreEnd
     }
 

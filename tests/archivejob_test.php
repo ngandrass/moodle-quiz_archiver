@@ -24,7 +24,6 @@
 
 namespace quiz_archiver;
 
-use context_course;
 use context_module;
 use context_system;
 
@@ -34,80 +33,13 @@ use context_system;
 final class archivejob_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object) [
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-            'attempts' => [
-                (object) ['userid' => 1, 'attemptid' => 1],
-                (object) ['userid' => 2, 'attemptid' => 42],
-                (object) ['userid' => 3, 'attemptid' => 1337],
-            ],
-            'settings' => [
-                'num_attempts' => 3,
-                'export_attempts' => 1,
-                'export_report_section_header' => 1,
-                'export_report_section_quiz_feedback' => 1,
-                'export_report_section_question' => 1,
-                'export_report_section_question_feedback' => 0,
-                'export_report_section_general_feedback' => 1,
-                'export_report_section_rightanswer' => 0,
-                'export_report_section_history' => 1,
-                'export_report_section_attachments' => 1,
-                'export_quiz_backup' => 1,
-                'export_course_backup' => 0,
-                'archive_autodelete' => 1,
-                'archive_retention_time' => '42w',
-            ],
-        ];
-    }
-
-    /**
-     * Generates a dummy artifact file, stored in the context of the given course.
-     *
-     * @param int $courseid ID of the course to store the file in
-     * @param int $cmid ID of the course module to store the file in
-     * @param int $quizid ID of the quiz to store the file in
-     * @param string $filename Name of the file to create
-     * @return \stored_file The created file handle
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
-     */
-    protected function generate_artifact_file(int $courseid, int $cmid, int $quizid, string $filename): \stored_file {
-        $this->resetAfterTest();
-        $ctx = context_course::instance($courseid);
-
-        return get_file_storage()->create_file_from_string(
-            [
-                'contextid'    => $ctx->id,
-                'component'    => FileManager::COMPONENT_NAME,
-                'filearea'     => FileManager::ARTIFACTS_FILEAREA_NAME,
-                'itemid'       => 0,
-                'filepath'     => "/{$courseid}/{$cmid}/{$quizid}/",
-                'filename'     => $filename,
-                'timecreated'  => time(),
-                'timemodified' => time(),
-            ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
-            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        );
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -122,9 +54,10 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_create_archive_job(): void {
         global $DB;
+        $this->resetAfterTest();
 
         // Create new archive job.
-        $mocks = $this->generate_mock_quiz();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -169,7 +102,8 @@ final class archivejob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_job_get_by_id(bool $shouldfail): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242123456',
             $mocks->course->id,
@@ -215,7 +149,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_create_job_duplicate_detection(): void {
         // Create mock job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $jobid = '10000000-dupe-dupe-dupe-ef1234567890';
         $job = ArchiveJob::create(
             $jobid,
@@ -232,7 +167,7 @@ final class archivejob_test extends \advanced_testcase {
         // Assert that job was created.
         $this->assertNotNull(ArchiveJob::get_by_jobid($jobid), 'Job was not created');
 
-        // Try to create second job with same UUID
+        // Try to create second job with same UUID.
         $this->expectException(\moodle_exception::class);
         $jobduplicate = ArchiveJob::create(
             $jobid,
@@ -261,7 +196,8 @@ final class archivejob_test extends \advanced_testcase {
         global $DB;
 
         // Create new archive job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -332,7 +268,7 @@ final class archivejob_test extends \advanced_testcase {
         $jobs = [];
         $artifacts = [];
         for ($quizidx = 0; $quizidx < 3; $quizidx++) {
-            $mocks[$quizidx] = $this->generate_mock_quiz();
+            $mocks[$quizidx] = $this->getDataGenerator()->create_mock_quiz();
             for ($jobidx = 0; $jobidx < 3; $jobidx++) {
                 // Create job.
                 $jobs[$quizidx][$jobidx] = ArchiveJob::create(
@@ -348,7 +284,7 @@ final class archivejob_test extends \advanced_testcase {
                 );
 
                 // Attach artifact.
-                $artifacts[$quizidx][$jobidx] = $this->generate_artifact_file(
+                $artifacts[$quizidx][$jobidx] = $this->getDataGenerator()->create_artifact_file(
                     $mocks[$quizidx]->course->id,
                     $mocks[$quizidx]->quiz->cmid,
                     $mocks[$quizidx]->quiz->id,
@@ -452,7 +388,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_set_job_status(string $status, bool $iscompleted): void {
         // Create test job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $expectedjob = ArchiveJob::create(
             '40000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -516,7 +453,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_set_job_status_with_statusextras(string $status, ?array $statusextras): void {
         // Create test job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $expectedjob = ArchiveJob::create(
             '40000123-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -589,7 +527,8 @@ final class archivejob_test extends \advanced_testcase {
             md5('TEST-WS-TOKEN-4'),
             md5('TEST-WS-TOKEN-5'),
         ];
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
 
         // Create jobs and test all tokens against each job.
         foreach ($wstokens as $wstoken) {
@@ -656,7 +595,8 @@ final class archivejob_test extends \advanced_testcase {
         }
 
         // Create job and test token access.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             'xxx-'.$wstoken,
             $mocks->course->id,
@@ -691,7 +631,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_job_timeout(): void {
         // Prepare job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '12300000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -736,7 +677,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_artifact_linking(): void {
         // Create test job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '60000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -752,7 +694,12 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertFalse($job->has_artifact(), 'New job believes that it has an artifact file');
 
         // Create and link artifact file.
-        $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            'test.tar.gz'
+        );
         $sha256dummy = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
@@ -775,8 +722,14 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_artifact_deletion(): void {
         // Create test job and link dummy artifact file.
-        $mocks = $this->generate_mock_quiz();
-        $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            'test.tar.gz'
+        );
         $job = ArchiveJob::create(
             '70000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -813,8 +766,14 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_delete_expired_artifacts(): void {
         // Create test job that instantly expires and link dummy artifact file.
-        $mocks = $this->generate_mock_quiz();
-        $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            'test.tar.gz'
+        );
         $job = ArchiveJob::create(
             '80000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -848,7 +807,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_artifact_checksum_non_existing(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '99000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -879,11 +839,27 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_temporary_file_linking(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $tmpfiles = [
-            $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test1.tar.gz'),
-            $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test2.tar.gz'),
-            $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test3.tar.gz'),
+            $this->getDataGenerator()->create_artifact_file(
+                $mocks->course->id,
+                $mocks->quiz->cmid,
+                $mocks->quiz->id,
+                'test1.tar.gz'
+            ),
+            $this->getDataGenerator()->create_artifact_file(
+                $mocks->course->id,
+                $mocks->quiz->cmid,
+                $mocks->quiz->id,
+                'test2.tar.gz'
+            ),
+            $this->getDataGenerator()->create_artifact_file(
+                $mocks->course->id,
+                $mocks->quiz->cmid,
+                $mocks->quiz->id,
+                'test3.tar.gz'
+            ),
         ];
 
         // Create job.
@@ -926,11 +902,27 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_temporary_file_deletion(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $tmpfiles = [
-            $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test1.tar.gz'),
-            $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test2.tar.gz'),
-            $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test3.tar.gz'),
+            $this->getDataGenerator()->create_artifact_file(
+                $mocks->course->id,
+                $mocks->quiz->cmid,
+                $mocks->quiz->id,
+                'test1.tar.gz'
+            ),
+            $this->getDataGenerator()->create_artifact_file(
+                $mocks->course->id,
+                $mocks->quiz->cmid,
+                $mocks->quiz->id,
+                'test2.tar.gz'
+            ),
+            $this->getDataGenerator()->create_artifact_file(
+                $mocks->course->id,
+                $mocks->quiz->cmid,
+                $mocks->quiz->id,
+                'test3.tar.gz'
+            ),
         ];
 
         // Create job and link files.
@@ -1110,7 +1102,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_generate_archive_filename(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
         // Full pattern.
@@ -1144,7 +1137,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_generate_archive_filename_without_variables(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
         // Full pattern.
@@ -1169,7 +1163,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_generate_archive_filename_invalid_pattern(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
         // Test filename generation.
@@ -1194,7 +1189,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_generate_archive_filename_invalid_variables(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
 
         // Test filename generation.
@@ -1317,7 +1313,8 @@ final class archivejob_test extends \advanced_testcase {
      */
     public function test_tspmanager_get_instance(): void {
         // Generate data.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             'asn00000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,

@@ -34,49 +34,13 @@ use context_module;
 final class backupmanager_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object) [
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-            'attempts' => [
-                (object) ['userid' => 1, 'attemptid' => 1],
-                (object) ['userid' => 2, 'attemptid' => 42],
-                (object) ['userid' => 3, 'attemptid' => 1337],
-            ],
-            'settings' => [
-                'num_attempts' => 3,
-                'export_attempts' => 1,
-                'export_report_section_header' => 1,
-                'export_report_section_quiz_feedback' => 1,
-                'export_report_section_question' => 1,
-                'export_report_section_question_feedback' => 0,
-                'export_report_section_general_feedback' => 1,
-                'export_report_section_rightanswer' => 0,
-                'export_report_section_history' => 1,
-                'export_report_section_attachments' => 1,
-                'export_quiz_backup' => 1,
-                'export_course_backup' => 0,
-                'archive_autodelete' => 1,
-                'archive_retention_time' => '42w',
-            ],
-        ];
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -93,7 +57,8 @@ final class backupmanager_test extends \advanced_testcase {
     public function test_course_backup(): void {
         // Initiate a mock course backup.
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         $backup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
 
@@ -124,7 +89,8 @@ final class backupmanager_test extends \advanced_testcase {
     public function test_quiz_backup(): void {
         // Initiate a mock course backup.
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         $backup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
 
@@ -191,7 +157,8 @@ final class backupmanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_backup_course_without_privileges(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
 
         $this->expectException(\backup_controller_exception::class);
         $this->expectExceptionMessageMatches('/backup_user_missing_capability/');
@@ -210,7 +177,8 @@ final class backupmanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_backup_quiz_without_privileges(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
 
         $this->expectException(\backup_controller_exception::class);
         $this->expectExceptionMessageMatches('/backup_user_missing_capability/');
@@ -230,7 +198,8 @@ final class backupmanager_test extends \advanced_testcase {
      */
     public function test_backup_download_url_generation_with_internal_wwwroot(): void {
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         set_config('internal_wwwroot', 'http://my-internal-hostname', 'quiz_archiver');
 
@@ -258,7 +227,8 @@ final class backupmanager_test extends \advanced_testcase {
     public function test_initialization_by_existing_backupid(): void {
         // Prepare a course and a quiz backup.
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
@@ -309,7 +279,8 @@ final class backupmanager_test extends \advanced_testcase {
     public function test_backup_status(): void {
         // Prepare a course and a quiz backup.
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         $expectedcoursebackup = BackupManager::initiate_course_backup($mock->course->id, $mock->user->id);
         $expectedquizbackup = BackupManager::initiate_quiz_backup($mock->quiz->cmid, $mock->user->id);
@@ -341,7 +312,8 @@ final class backupmanager_test extends \advanced_testcase {
     public function test_backup_job_association(): void {
         // Prepare a course and a quiz backup.
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         $job = ArchiveJob::create(
             '90000000-1234-5678-abcd-ef4242424242',
@@ -386,7 +358,8 @@ final class backupmanager_test extends \advanced_testcase {
     public function test_backup_invalid_job_association(): void {
         // Prepare a course and a quiz backup.
         $this->setAdminUser();
-        $mock = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mock = $this->getDataGenerator()->create_mock_quiz();
         $mock->user = get_admin();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',

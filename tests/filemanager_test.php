@@ -24,123 +24,19 @@
 
 namespace quiz_archiver;
 
-use context_user;
-
 /**
  * Tests for the FileManager class
  */
 final class filemanager_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object) [
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-            'attempts' => [
-                (object) ['userid' => 1, 'attemptid' => 1],
-                (object) ['userid' => 2, 'attemptid' => 42],
-                (object) ['userid' => 3, 'attemptid' => 1337],
-            ],
-        ];
-    }
-
-    /**
-     * Imports the reference quiz artifact from the test fixtures directory into
-     * the a Moodle stored_file residing inside a users draft filearea.
-     *
-     * @return \stored_file
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
-     */
-    protected function import_reference_quiz_artifact(): \stored_file {
-        $this->resetAfterTest();
-        $ctx = context_user::instance($this->getDataGenerator()->create_user()->id);
-
-        return get_file_storage()->create_file_from_pathname([
-            'contextid'    => $ctx->id,
-            'component'    => 'user',
-            'filearea'     => 'draft',
-            'itemid'       => 0,
-            'filepath'     => "/",
-            'filename'     => 'reference_quiz_artifact.tar.gz',
-            'timecreated'  => time(),
-            'timemodified' => time(),
-        ], __DIR__.'/fixtures/referencequiz-artifact.tar.gz');
-    }
-
-    /**
-     * Generates a dummy draft file, stored in the draft filearea of a user.
-     *
-     * @param string $filename Name of the file to create
-     * @param string $filearea Filearea to store the file in
-     * @return \stored_file The created file handle
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
-     */
-    protected function generate_draft_file(string $filename, string $filearea = 'draft'): \stored_file {
-        $this->resetAfterTest();
-        $ctx = context_user::instance($this->getDataGenerator()->create_user()->id);
-
-        return get_file_storage()->create_file_from_string(
-            [
-                'contextid'    => $ctx->id,
-                'component'    => 'user',
-                'filearea'     => $filearea,
-                'itemid'       => 0,
-                'filepath'     => "/",
-                'filename'     => $filename,
-                'timecreated'  => time(),
-                'timemodified' => time(),
-            ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
-            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        );
-    }
-
-    /**
-     * Generates a dummy file inside the temp filearea of this plugin.
-     *
-     * @param string $filename
-     * @param int $expiry
-     * @return \stored_file
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
-     */
-    protected function generate_temp_file(string $filename, int $expiry): \stored_file {
-        $this->resetAfterTest();
-        $ctx = context_user::instance($this->getDataGenerator()->create_user()->id);
-
-        return get_file_storage()->create_file_from_string(
-            [
-                'contextid'    => $ctx->id,
-                'component'    => FileManager::COMPONENT_NAME,
-                'filearea'     => FileManager::TEMP_FILEAREA_NAME,
-                'itemid'       => 0,
-                'filepath'     => '/'.$expiry.'/',
-                'filename'     => $filename,
-                'timecreated'  => time(),
-                'timemodified' => time(),
-            ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
-            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        );
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -232,9 +128,10 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_artifact_storing(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $draftfile = $this->generate_draft_file('testfile.tar.gz');
+        $draftfile = $this->getDataGenerator()->create_draft_file('testfile.tar.gz');
         $draftfilehash = $draftfile->get_contenthash();
 
         // Store draftfile as artifact.
@@ -259,9 +156,10 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_artifact_storing_invalid_file(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $invalidfile = $this->generate_draft_file('invalidfile.tar.gz', 'invalidarea');
+        $invalidfile = $this->getDataGenerator()->create_draft_file('invalidfile.tar.gz', 'invalidarea');
 
         $this->expectException(\file_exception::class);
         $this->expectExceptionMessageMatches('/draftfile/');
@@ -279,9 +177,10 @@ final class filemanager_test extends \advanced_testcase {
      */
     public function test_get_draft_file(): void {
         // Prepare mocks.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $draftfile = $this->generate_draft_file('testfile.tar.gz');
+        $draftfile = $this->getDataGenerator()->create_draft_file('testfile.tar.gz');
 
         // Retrieve valid draftfile.
         $this->assertEquals(
@@ -317,7 +216,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_hash_valid_file(): void {
-        $file = $this->generate_draft_file('testartifact.tar.gz');
+        $this->resetAfterTest();
+        $file = $this->getDataGenerator()->create_draft_file('testartifact.tar.gz');
         $defaulthash = FileManager::hash_file($file);
         $this->assertNotEmpty($defaulthash, 'Default hash is empty');
         $this->assertSame(64, strlen($defaulthash), 'Default hash length is not 64 bytes, as expected from SHA256');
@@ -336,7 +236,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \stored_file_creation_exception
      */
     public function test_hash_file_invalid_algorithm(): void {
-        $file = $this->generate_draft_file('testartifact.tar.gz');
+        $this->resetAfterTest();
+        $file = $this->getDataGenerator()->create_draft_file('testartifact.tar.gz');
         $this->assertNull(FileManager::hash_file($file, 'invalid-algorithm'), 'Invalid algorithm did not return null');
     }
 
@@ -360,7 +261,8 @@ final class filemanager_test extends \advanced_testcase {
             $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
         }
 
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000001',
             $mocks->course->id,
@@ -411,7 +313,8 @@ final class filemanager_test extends \advanced_testcase {
             $this->markTestSkipped('This test requires Moodle 4.4 or higher. PHPUnit process isolation does not work properly with older versions.');
         }
 
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000002',
             $mocks->course->id,
@@ -455,7 +358,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_send_virtual_files_tsp_invalid_job(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000003',
             $mocks->course->id,
@@ -491,7 +395,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_send_virtual_files_tsp_unsigned_job(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000004',
             $mocks->course->id,
@@ -526,7 +431,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_filearea(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test invalid filearea.
@@ -545,7 +451,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_path(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test invalid path.
@@ -564,7 +471,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_jobid(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test invalid job-id.
@@ -587,7 +495,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_missing_job(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test missing job.
@@ -610,7 +519,8 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_send_virtual_files_invalid_filename(): void {
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
 
         // Test missing job.
@@ -633,7 +543,8 @@ final class filemanager_test extends \advanced_testcase {
      */
     public function test_extract_attempt_data_from_artifact(): void {
         // Prepare a finished archive job that has a valid artifact file.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000042',
             $mocks->course->id,
@@ -647,7 +558,7 @@ final class filemanager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        $draftartifact = $this->import_reference_quiz_artifact();
+        $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft();
         $attemptid = 13775;
 
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
@@ -676,7 +587,8 @@ final class filemanager_test extends \advanced_testcase {
      */
     public function test_extract_attempt_data_for_nonexisting_attemptid(): void {
         // Prepare a finished archive job that has a valid artifact file.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000021',
             $mocks->course->id,
@@ -689,7 +601,7 @@ final class filemanager_test extends \advanced_testcase {
             [],
             ArchiveJob::STATUS_FINISHED
         );
-        $draftartifact = $this->import_reference_quiz_artifact();
+        $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $fm->store_uploaded_artifact($draftartifact);
         $storedartifacts = $fm->get_stored_artifacts();
@@ -715,7 +627,8 @@ final class filemanager_test extends \advanced_testcase {
      */
     public function test_extract_attempt_data_from_invalid_artifact(): void {
         // Prepare an unfinished archive job that has no artifact file.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000000000000000000043',
             $mocks->course->id,
@@ -733,7 +646,11 @@ final class filemanager_test extends \advanced_testcase {
         // Attempt to extract data from nonexisting artifact.
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Error processing archive file/');
-        $fm->extract_attempt_data_from_artifact($this->generate_draft_file('not-an-artifact.tar.gz'), $job->get_id(), 1337);
+        $fm->extract_attempt_data_from_artifact(
+            $this->getDataGenerator()->create_draft_file('not-an-artifact.tar.gz'),
+            $job->get_id(),
+            1337
+        );
     }
 
     /**
@@ -748,15 +665,16 @@ final class filemanager_test extends \advanced_testcase {
      */
     public function test_cleanup_temp_files(): void {
         // Prepare tempfiles.
+        $this->resetAfterTest();
         $overduetempfiles = [
-            $this->generate_temp_file('tempfile1.tar.gz', 0),
-            $this->generate_temp_file('tempfile2.tar.gz', 0),
-            $this->generate_temp_file('tempfile3.tar.gz', 0),
+            $this->getDataGenerator()->create_temp_file('tempfile1.tar.gz', 0),
+            $this->getDataGenerator()->create_temp_file('tempfile2.tar.gz', 0),
+            $this->getDataGenerator()->create_temp_file('tempfile3.tar.gz', 0),
         ];
         $activetempfiles = [
-            $this->generate_temp_file('tempfile4.tar.gz', time() + 3600),
-            $this->generate_temp_file('tempfile5.tar.gz', time() + 3600),
-            $this->generate_temp_file('tempfile6.tar.gz', time() + 3600),
+            $this->getDataGenerator()->create_temp_file('tempfile4.tar.gz', time() + 3600),
+            $this->getDataGenerator()->create_temp_file('tempfile5.tar.gz', time() + 3600),
+            $this->getDataGenerator()->create_temp_file('tempfile6.tar.gz', time() + 3600),
         ];
 
         // Perform cleanup.
