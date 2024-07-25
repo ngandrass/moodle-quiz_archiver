@@ -160,7 +160,7 @@ final class archive_quiz_form_test extends \advanced_testcase {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function test_get_data(string $optionkey, mixed $optionpresetvalue, mixed $postvalue): void {
+    public function test_get_data(string $optionkey, $optionpresetvalue, $postvalue): void {
         global $USER;
 
         // Create a mock archive job.
