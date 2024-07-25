@@ -39,6 +39,7 @@ $string['quiz_archiver:archive'] = 'Create and delete quiz archives';
 $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
 
 // General.
+$string['progress'] = 'Progress';
 $string['quiz_archive'] = 'Quiz archive';
 $string['quiz_archive_details'] = 'Quiz archive details';
 $string['quiz_archive_not_found'] = 'Quiz archive not found';
