@@ -32,59 +32,13 @@ use context_course;
 final class tspmanager_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object) [
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-        ];
-    }
-
-    /**
-     * Generates a dummy artifact file, stored in the context of the given course.
-     *
-     * @param int $courseid ID of the course to store the file in
-     * @param int $cmid ID of the course module to store the file in
-     * @param int $quizid ID of the quiz to store the file in
-     * @param string $filename Name of the file to create
-     * @return \stored_file The created file handle
-     * @throws \file_exception
-     * @throws \stored_file_creation_exception
-     */
-    protected function generate_artifact_file(int $courseid, int $cmid, int $quizid, string $filename): \stored_file {
-        $this->resetAfterTest();
-        $ctx = context_course::instance($courseid);
-
-        return get_file_storage()->create_file_from_string(
-            [
-                'contextid'    => $ctx->id,
-                'component'    => FileManager::COMPONENT_NAME,
-                'filearea'     => FileManager::ARTIFACTS_FILEAREA_NAME,
-                'itemid'       => 0,
-                'filepath'     => "/{$courseid}/{$cmid}/{$quizid}/",
-                'filename'     => $filename,
-                'timecreated'  => time(),
-                'timemodified' => time(),
-            ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
-            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        );
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -146,7 +100,8 @@ final class tspmanager_test extends \advanced_testcase {
         set_config('tsp_enable', true, 'quiz_archiver');
 
         // Generate job with artifact.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -160,7 +115,12 @@ final class tspmanager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            'test.tar.gz'
+        );
         $sha256dummy = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
@@ -216,7 +176,8 @@ final class tspmanager_test extends \advanced_testcase {
         set_config('tsp_enable', true, 'quiz_archiver');
 
         // Generate job with artifact.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -230,7 +191,12 @@ final class tspmanager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            'test.tar.gz'
+        );
         $sha256dummy = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256dummy);
 
@@ -260,7 +226,8 @@ final class tspmanager_test extends \advanced_testcase {
         set_config('tsp_enable', true, 'quiz_archiver');
 
         // Generate job without artifact.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -298,7 +265,8 @@ final class tspmanager_test extends \advanced_testcase {
         set_config('tsp_enable', false, 'quiz_archiver');
 
         // Generate job with artifact.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '40000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -312,7 +280,12 @@ final class tspmanager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        $artifact = $this->generate_artifact_file($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 'test.tar.gz');
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            'test.tar.gz'
+        );
         $sha256sum = hash('sha256', 'foo bar baz');
         $job->link_artifact($artifact->get_id(), $sha256sum);
 

@@ -34,28 +34,13 @@ use quiz_archiver\FileManager;
 final class process_uploaded_artifact_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object)[
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-        ];
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -126,7 +111,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
         // Create job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '10000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -190,6 +176,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         string $artifactsha256sum,
         bool   $shouldfail
     ): void {
+        $this->resetAfterTest();
+
         if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
@@ -214,7 +202,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      */
     public static function parameter_data_provider(): array {
         $self = new self();
-        $mocks = $self->generate_mock_quiz();
+        $mocks = $self->getDataGenerator()->create_mock_quiz();
         $base = $self->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
         return [
             'Valid' => array_merge($base, [
@@ -261,7 +249,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      */
     public function test_rejection_of_artifacts_for_complete_jobs(): void {
         // Create job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '20000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -305,7 +294,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      */
     public function test_invalid_file_metadata(): void {
         // Create job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '30000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,

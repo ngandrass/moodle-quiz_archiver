@@ -30,28 +30,13 @@ namespace quiz_archiver\external;
 final class get_attempts_metadata_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object)[
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-        ];
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -116,7 +101,8 @@ final class get_attempts_metadata_test extends \advanced_testcase {
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
 
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         get_attempts_metadata::execute(
             $r['courseid'],
@@ -148,6 +134,8 @@ final class get_attempts_metadata_test extends \advanced_testcase {
         array $attemptids,
         bool $shouldfail
     ): void {
+        $this->resetAfterTest();
+
         if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
@@ -167,7 +155,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
      */
     public static function parameter_data_provider(): array {
         $self = new self();
-        $mocks = $self->generate_mock_quiz();
+        $mocks = $self->getDataGenerator()->create_mock_quiz();
         $base = $self->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id, 1);
         return [
             'Valid' => array_merge($base, ['shouldfail' => false]),

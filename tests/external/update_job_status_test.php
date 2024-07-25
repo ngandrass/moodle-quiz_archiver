@@ -33,28 +33,13 @@ use quiz_archiver\ArchiveJob;
 final class update_job_status_test extends \advanced_testcase {
 
     /**
-     * Generates a mock quiz to use in the tests
+     * Returns the data generator for the quiz_archiver plugin
      *
-     * @return \stdClass Created mock objects
+     * @return \quiz_archiver_generator The data generator for the quiz_archiver plugin
      */
-    protected function generate_mock_quiz(): \stdClass {
-        // Create course, course module and quiz.
-        $this->resetAfterTest();
-
-        // Prepare user and course.
-        $user = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $quiz = $this->getDataGenerator()->create_module('quiz', [
-            'course' => $course->id,
-            'grade' => 100.0,
-            'sumgrades' => 100,
-        ]);
-
-        return (object)[
-            'user' => $user,
-            'course' => $course,
-            'quiz' => $quiz,
-        ];
+    // @codingStandardsIgnoreLine
+    public static function getDataGenerator(): \quiz_archiver_generator {
+        return parent::getDataGenerator()->get_plugin_generator('quiz_archiver');
     }
 
     /**
@@ -99,7 +84,8 @@ final class update_job_status_test extends \advanced_testcase {
      */
     public function test_capability_requirement(): void {
         // Create mock quiz and job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -136,7 +122,8 @@ final class update_job_status_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Create mock quiz and job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -241,7 +228,8 @@ final class update_job_status_test extends \advanced_testcase {
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
         // Create mock quiz and job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
@@ -363,7 +351,8 @@ final class update_job_status_test extends \advanced_testcase {
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
         // Create mock quiz and job.
-        $mocks = $this->generate_mock_quiz();
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
             '00000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
