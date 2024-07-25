@@ -118,7 +118,7 @@ class job_overview_table extends \table_sql {
         $html .= '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/>';
 
         if (isset($s['statusextras']['progress'])) {
-            $html .= '<span title="'.get_string('progress').'">';
+            $html .= '<span title="'.get_string('progress', 'quiz_archiver').'">';
             $html .= '<i class="fa fa-spinner"></i>&nbsp;'.$s['statusextras']['progress'].'%';
             $html .= '</span><br/>';
         }
