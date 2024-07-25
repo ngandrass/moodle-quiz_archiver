@@ -214,15 +214,22 @@ class generate_attempt_report extends external_api {
         ]);
 
         // Check capabilities.
-        $context = \context_module::instance($params['cmid']);
+        try {
+            $context = \context_module::instance($params['cmid']);
+        } catch (\dml_exception $e) {
+            throw new \invalid_parameter_exception("No module context with given cmid found");
+        }
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Acquire required data objects.
         if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
             throw new \invalid_parameter_exception("No course with given courseid found");
         }
-        if (!$cm = get_coursemodule_from_instance("quiz", $params['quizid'], $params['courseid'])) {
+        if (!$cm = get_coursemodule_from_id("quiz", $params['cmid'])) {
+            // @codeCoverageIgnoreStart
+            // This should be covered by the context query above but stays as a safeguard nonetheless.
             throw new \invalid_parameter_exception("No course module with given cmid found");
+            // @codeCoverageIgnoreEnd
         }
         if (!$quiz = $DB->get_record('quiz', ['id' => $params['quizid']])) {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
@@ -243,6 +250,10 @@ class generate_attempt_report extends external_api {
 
         // Forcefully set URL in $PAGE to the webservice handler to prevent further warnings.
         $PAGE->set_url(new \moodle_url('/webservice/rest/server.php', ['wsfunction' => 'quiz_archiver_generate_attempt_report']));
+
+        // The following code is tested covered by more specific tests.
+        // @codingStandardsIgnoreLine
+        // @codeCoverageIgnoreStart
 
         // Generate report.
         $report = new Report($course, $cm, $quiz);
@@ -277,6 +288,8 @@ class generate_attempt_report extends external_api {
         $res['status'] = 'OK';
 
         return $res;
+        // @codingStandardsIgnoreLine
+        // @codeCoverageIgnoreEnd
     }
 
 }

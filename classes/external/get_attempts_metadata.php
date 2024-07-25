@@ -36,6 +36,7 @@ use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\Report;
+use Random\RandomError;
 
 /**
  * API endpoint to access quiz attempt metadata
@@ -181,15 +182,22 @@ class get_attempts_metadata extends external_api {
         ]);
 
         // Check capabilities.
-        $context = \context_module::instance($params['cmid']);
+        try {
+            $context = \context_module::instance($params['cmid']);
+        } catch (\dml_exception $e) {
+            throw new \invalid_parameter_exception("No module context with given cmid found");
+        }
         require_capability('mod/quiz_archiver:use_webservice', $context);
 
         // Acquire required data objects.
         if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
             throw new \invalid_parameter_exception("No course with given courseid found");
         }
-        if (!$cm = get_coursemodule_from_instance("quiz", $params['quizid'], $params['courseid'])) {
+        if (!$cm = get_coursemodule_from_id("quiz", $params['cmid'])) {
+            // @codeCoverageIgnoreStart
+            // This should be covered by the context query above but stays as a safeguard nonetheless.
             throw new \invalid_parameter_exception("No course module with given cmid found");
+            // @codeCoverageIgnoreEnd
         }
         if (!$quiz = $DB->get_record('quiz', ['id' => $params['quizid']])) {
             throw new \invalid_parameter_exception("No quiz with given quizid found");

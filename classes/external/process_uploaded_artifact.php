@@ -200,6 +200,10 @@ class process_uploaded_artifact extends external_api {
             ];
         }
 
+        // The following code is tested covered by more specific tests.
+        // @codingStandardsIgnoreLine
+        // @codeCoverageIgnoreStart
+
         // Store uploaded file.
         $fm = new FileManager($job->get_courseid(), $job->get_cmid(), $job->get_quizid());
         try {
@@ -234,6 +238,9 @@ class process_uploaded_artifact extends external_api {
         return [
             'status' => 'OK',
         ];
+
+        // @codingStandardsIgnoreLine
+        // @codeCoverageIgnoreEnd
     }
 
 }
