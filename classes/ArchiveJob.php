@@ -780,37 +780,77 @@ class ArchiveJob {
         // Translate status to display text and color.
         switch ($status) {
             case self::STATUS_UNKNOWN:
-                $res = ['color' => 'warning', 'text' => get_string('job_status_UNKNOWN', 'quiz_archiver')];
+                $res = [
+                    'color' => 'warning',
+                    'text' => get_string('job_status_UNKNOWN', 'quiz_archiver'),
+                    'help' => get_string('job_status_UNKNOWN_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_UNINITIALIZED:
-                $res = ['color' => 'secondary', 'text' => get_string('job_status_UNINITIALIZED', 'quiz_archiver')];
+                $res = [
+                    'color' => 'secondary',
+                    'text' => get_string('job_status_UNINITIALIZED', 'quiz_archiver'),
+                    'help' => get_string('job_status_UNINITIALIZED_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_AWAITING_PROCESSING:
-                $res = ['color' => 'secondary', 'text' => get_string('job_status_AWAITING_PROCESSING', 'quiz_archiver')];
+                $res = [
+                    'color' => 'secondary',
+                    'text' => get_string('job_status_AWAITING_PROCESSING', 'quiz_archiver'),
+                    'help' => get_string('job_status_AWAITING_PROCESSING_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_RUNNING:
-                $res = ['color' => 'primary', 'text' => get_string('job_status_RUNNING', 'quiz_archiver')];
+                $res = [
+                    'color' => 'primary',
+                    'text' => get_string('job_status_RUNNING', 'quiz_archiver'),
+                    'help' => get_string('job_status_RUNNING_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_WAITING_FOR_BACKUP:
-                $res = ['color' => 'info', 'text' => get_string('job_status_WAITING_FOR_BACKUP', 'quiz_archiver')];
+                $res = [
+                    'color' => 'info',
+                    'text' => get_string('job_status_WAITING_FOR_BACKUP', 'quiz_archiver'),
+                    'help' => get_string('job_status_WAITING_FOR_BACKUP_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_FINALIZING:
-                $res = ['color' => 'info', 'text' => get_string('job_status_FINALIZING', 'quiz_archiver')];
+                $res = [
+                    'color' => 'info',
+                    'text' => get_string('job_status_FINALIZING', 'quiz_archiver'),
+                    'help' => get_string('job_status_FINALIZING_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_FINISHED:
-                $res = ['color' => 'success', 'text' => get_string('job_status_FINISHED', 'quiz_archiver')];
+                $res = [
+                    'color' => 'success',
+                    'text' => get_string('job_status_FINISHED', 'quiz_archiver'),
+                    'help' => get_string('job_status_FINISHED_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_FAILED:
-                $res = ['color' => 'danger', 'text' => get_string('job_status_FAILED', 'quiz_archiver')];
+                $res = [
+                    'color' => 'danger',
+                    'text' => get_string('job_status_FAILED', 'quiz_archiver'),
+                    'help' => get_string('job_status_FAILED_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_TIMEOUT:
-                $res = ['color' => 'danger', 'text' => get_string('job_status_TIMEOUT', 'quiz_archiver')];
+                $res = [
+                    'color' => 'danger',
+                    'text' => get_string('job_status_TIMEOUT', 'quiz_archiver'),
+                    'help' => get_string('job_status_TIMEOUT_help', 'quiz_archiver'),
+                ];
                 break;
             case self::STATUS_DELETED:
-                $res = ['color' => 'secondary', 'text' => get_string('job_status_DELETED', 'quiz_archiver')];
+                $res = [
+                    'color' => 'secondary',
+                    'text' => get_string('job_status_DELETED', 'quiz_archiver'),
+                    'help' => get_string('job_status_DELETED_help', 'quiz_archiver'),
+                ];
                 break;
             default:
-                $res = ['color' => 'light', 'text' => $status];
+                $res = ['color' => 'light', 'text' => $status, 'help' => $status];
                 break;
         }
 

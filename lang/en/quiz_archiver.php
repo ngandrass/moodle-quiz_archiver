@@ -147,15 +147,25 @@ $string['delete_job_warning_retention'] = '<b>Attention:</b> This archive job is
 $string['jobid'] = 'Job ID';
 $string['job_created_successfully'] = 'New archive job created successfully: {$a}';
 $string['job_status_UNKNOWN'] = 'Unknown';
+$string['job_status_UNKNOWN_help'] = 'The status of this job is unknown. Please open a bug report if this problem persists.';
 $string['job_status_UNINITIALIZED'] = 'Uninitialized';
+$string['job_status_UNINITIALIZED_help'] = 'The job has not been initialized yet.';
 $string['job_status_AWAITING_PROCESSING'] = 'Queued';
+$string['job_status_AWAITING_PROCESSING_help'] = 'The job registered by the archive worker service and is waiting to be processed.';
 $string['job_status_RUNNING'] = 'Running';
+$string['job_status_RUNNING_help'] = 'The job is currently being processed by the archive worker service. The job progress is updated periodically (default: every 15 seconds).';
 $string['job_status_WAITING_FOR_BACKUP'] = 'Backup wait';
+$string['job_status_WAITING_FOR_BACKUP_help'] = 'The job is waiting for a Moodle backup to be created. This can take some time depending on the size of the course.';
 $string['job_status_FINALIZING'] = 'Finalizing';
+$string['job_status_FINALIZING_help'] = 'The archive worker is finalizing the archive and transfers it to Moodle. This can take some time depending on the size of the archive.';
 $string['job_status_FINISHED'] = 'Finished';
+$string['job_status_FINISHED_help'] = 'The job has been successfully completed. The archive is ready for download.';
 $string['job_status_FAILED'] = 'Failed';
+$string['job_status_FAILED_help'] = 'The job has failed. Please try again and contact your system administrator if this problem persists.';
 $string['job_status_TIMEOUT'] = 'Timeout';
+$string['job_status_TIMEOUT_help'] = 'The job has been aborted due to a timeout. This can happen for very large quizzes. Please contact your system administrator if this problem persists.';
 $string['job_status_DELETED'] = 'Deleted';
+$string['job_status_DELETED_help'] = 'The quiz archive and all associated data has been removed. The job metadata still exists and can be fully deleted using the "Delete job" button.';
 
 // Job details.
 $string['archive_already_signed'] = 'Archive is already signed';

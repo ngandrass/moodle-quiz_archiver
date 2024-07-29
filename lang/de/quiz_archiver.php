@@ -147,15 +147,25 @@ $string['delete_job_warning_retention'] = '<b>Achtung:</b> Dieser Archivierungsa
 $string['jobid'] = 'Auftrags-ID';
 $string['job_created_successfully'] = 'Neuer Archivierungsauftrag erfolgreich erstellt: {$a}';
 $string['job_status_UNKNOWN'] = 'Unbekannt';
+$string['job_status_UNKNOWN_help'] = 'Der Status dieses Auftrags ist unbekannt. Bitte melden Sie dieses Problem, wenn es weiterhin besteht.';
 $string['job_status_UNINITIALIZED'] = 'Neu';
+$string['job_status_UNINITIALIZED_help'] = 'Der Auftrag wurde noch nicht initialisiert.';
 $string['job_status_AWAITING_PROCESSING'] = 'Wartend';
+$string['job_status_AWAITING_PROCESSING_help'] = 'Der Auftrag wurde erfasst und wartet auf die Verarbeitung durch den Archive Worker Service.';
 $string['job_status_RUNNING'] = 'Läuft';
+$string['job_status_RUNNING_help'] = 'Der Auftrag wird derzeit vom Archive Worker Service verarbeitet. Der Fortschritt des Auftrags wird periodisch aktualisiert (Standard: alle 15 Sekunden).';
 $string['job_status_WAITING_FOR_BACKUP'] = 'Backup ausstehend';
+$string['job_status_WAITING_FOR_BACKUP_help'] = 'Der Auftrag wartet auf die Erstellung eines Moodle-Backups. Dies kann je nach Kursgröße einige Zeit in Anspruch nehmen.';
 $string['job_status_FINALIZING'] = 'Finalisieren';
+$string['job_status_FINALIZING_help'] = 'Der Archive Worker Service finalisiert das Archiv und überträgt es an Moodle. Dies kann je nach Größe des Archivs einige Zeit in Anspruch nehmen.';
 $string['job_status_FINISHED'] = 'Fertig';
+$string['job_status_FINISHED_help'] = 'Der Auftrag wurde erfolgreich abgeschlossen. Das Archiv ist bereit zum Download.';
 $string['job_status_FAILED'] = 'Fehler';
+$string['job_status_FAILED_help'] = 'Der Auftrag ist fehlgeschlagen. Bitte versuchen Sie es erneut und kontaktieren Sie Ihren Systemadministrator, wenn das Problem weiterhin besteht.';
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
+$string['job_status_TIMEOUT_help'] = 'Der Auftrag wurde aufgrund einer Zeitüberschreitung abgebrochen. Dies kann bei sehr großen Tests passieren. Bitte kontaktieren Sie Ihren Systemadministrator, wenn das Problem weiterhin besteht.';
 $string['job_status_DELETED'] = 'Gelöscht';
+$string['job_status_DELETED_help'] = 'Das Testarchiv und alle zugehörigen Daten wurden entfernt. Die Auftragsmetadaten existieren weiterhin und können mit der Schaltfläche "Auftrag löschen" endgültig gelöscht werden.';
 
 // Job details.
 $string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
