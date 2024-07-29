@@ -1225,6 +1225,10 @@ final class archivejob_test extends \advanced_testcase {
             $res['color'],
             'Status display args did not contain a color for status: '.$status
         );
+        $this->assertNotEmpty(
+            $res['help'],
+            'Status display args did not contain help text for status: '.$status
+        );
     }
 
     /**
@@ -1268,6 +1272,10 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertNotEmpty(
             $res['color'],
             'Status display args did not contain a color for status: '.$status
+        );
+        $this->assertNotEmpty(
+            $res['help'],
+            'Status display args did not contain help text for status: '.$status
         );
         $this->assertSame(
             $statusextras ?? [],
