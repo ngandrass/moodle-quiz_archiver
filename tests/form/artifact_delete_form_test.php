@@ -89,4 +89,41 @@ final class artifact_delete_form_test extends \advanced_testcase {
         $this->assertInstanceOf(\moodleform::class, $form);
     }
 
+    /**
+     * Basic code coverage to verify validity of form definition and detect
+     * possible errors during form element definition for jobs without
+     * quiz archives.
+     *
+     * @covers \quiz_archiver\form\artifact_delete_form::__construct
+     * @covers \quiz_archiver\form\artifact_delete_form::definition
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \moodle_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_form_definition_no_archive(): void {
+        // Create a mock archive job.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $jobid = '20000000-0000-0000-0000-0123456789ab';
+        ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            3600,
+            'TEST-WS-TOKEN-1',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Create the form and define it.
+        $_POST['jobid'] = $jobid;
+        $form = new artifact_delete_form();
+        $this->assertInstanceOf(\moodleform::class, $form);
+    }
+
 }

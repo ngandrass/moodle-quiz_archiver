@@ -70,6 +70,28 @@ final class job_overview_table_test extends \advanced_testcase {
         );
         $job->set_status(ArchiveJob::STATUS_RUNNING, ['progress' => 42]);
 
+        // Create a second job that is finished and has an artifact.
+        $mocks2 = $this->getDataGenerator()->create_mock_quiz();
+        $job2 = ArchiveJob::create(
+            '00000000000000000000000002',
+            $mocks2->course->id,
+            $mocks2->quiz->cmid,
+            $mocks2->quiz->id,
+            2,
+            0,
+            'wstoken',
+            [],
+            [],
+            ArchiveJob::STATUS_FINISHED
+        );
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks2->course->id,
+            $mocks2->quiz->cmid,
+            $mocks2->quiz->id,
+            'testartifact.tar.gz'
+        );
+        $job2->link_artifact($artifact->get_id(), 'sha256dummy');
+
         // Create the table and render it.
         $table = new job_overview_table(100000, $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $table->out(50, true);

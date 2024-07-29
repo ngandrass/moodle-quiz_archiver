@@ -30,6 +30,20 @@ namespace quiz_archiver\local;
 final class autoinstall_test extends \advanced_testcase {
 
     /**
+     * Tests that the autoinstall process checks user privileges
+     *
+     * @covers \quiz_archiver\local\autoinstall::execute
+     *
+     * @return void
+     */
+    public function test_autoinstall_requires_admin(): void {
+        $this->resetAfterTest();
+        list($success, $log) = autoinstall::execute('http://foo.bar:1337');
+        $this->assertFalse($success, 'Autoinstall was successful without admin privileges');
+        $this->assertStringContainsString('Error: You need to be a site administrator', $log, 'Error message was not displayed');
+    }
+
+    /**
      * Test one full autoinstall process
      *
      * @covers \quiz_archiver\local\autoinstall::execute
@@ -138,6 +152,17 @@ final class autoinstall_test extends \advanced_testcase {
         list($success, $log) = autoinstall::execute('http://foo.bar:1337');
         $this->assertFalse($success, 'Second autoinstall was successful');
         $this->assertNotEmpty($log, 'Second autoinstall returned empty log');
+
+        // Try with force.
+        list($success, $log) = autoinstall::execute(
+            'http://foo.bar:1337',
+            'anotherwsname',
+            'anotherroleshortname',
+            'anotherusername',
+            true
+        );
+        $this->assertTrue($success, 'Forced autoinstall failed');
+        $this->assertNotEmpty($log, 'Forced autoinstall returned empty log');
     }
 
 }
