@@ -7,6 +7,7 @@
   - `WAITING_FOR_BACKUP`: All attempt reports are generated and the archive worker service
     is waiting for the Moodle backup to be ready.
   - `FINALIZING`: The archive worker service is finalizing the archive creation process (checksums, compression, ...).
+- Create hover tooltip with help text for all job status values
 - Add additional soft error handling to some web service functions
 - Expanding unit test coverage to include the whole plugin logic
 - Optimizing unit test code to improve readability and maintainability
