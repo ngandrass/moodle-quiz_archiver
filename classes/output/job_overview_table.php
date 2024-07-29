@@ -115,7 +115,8 @@ class job_overview_table extends \table_sql {
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $html .= '<span class="badge badge-'.$s['color'].'">'.$s['text'].'</span><br/>';
+        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" title="'.$s['help'].'"';
+        $html .= '<span class="badge badge-'.$s['color'].'" '.$statustooltiphtml.'>'.$s['text'].'</span><br/>';
 
         if (isset($s['statusextras']['progress'])) {
             $html .= '<span title="'.get_string('progress', 'quiz_archiver').'">';
