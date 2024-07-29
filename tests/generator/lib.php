@@ -19,6 +19,9 @@ use quiz_archiver\FileManager;
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+global $CFG; // @codeCoverageIgnore
+require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php'); // @codeCoverageIgnore
+
 /**
  * Tests generator for the quiz_archiver plugin
  *
@@ -186,11 +189,11 @@ class quiz_archiver_generator extends \testing_data_generator {
         );
 
         if (!$rc->execute_precheck()) {
-            throw new \restore_controller_exception('Backup restore precheck failed.');
+            throw new \restore_controller_exception('Backup restore precheck failed.'); // @codeCoverageIgnore
         }
         $rc->execute_plan();
         if ($rc->get_status() != backup::STATUS_FINISHED_OK) {
-            throw new \restore_controller_exception('Restore of reference course failed.');
+            throw new \restore_controller_exception('Restore of reference course failed.'); // @codeCoverageIgnore
         }
 
         // 2024-05-14: Do not destroy restore_controller. This will drop temptables without removing them from
