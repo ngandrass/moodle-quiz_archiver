@@ -97,7 +97,7 @@ final class archive_quiz_form_test extends \advanced_testcase {
             $mocks->quiz->cmid,
             $mocks->quiz->id,
             $mocks->user->id,
-            null,
+            3600,
             'TEST-WS-TOKEN-1',
             $mocks->attempts,
             $mocks->settings
