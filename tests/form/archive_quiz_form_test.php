@@ -76,6 +76,46 @@ final class archive_quiz_form_test extends \advanced_testcase {
     }
 
     /**
+     * Basic code coverage to verify validity of form definition and detect
+     * possible errors during form element definition with locked job presets.
+     *
+     * @covers \quiz_archiver\form\archive_quiz_form::__construct
+     * @covers \quiz_archiver\form\archive_quiz_form::definition
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_form_definition_all_locked(): void {
+        // Create a mock archive job.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $jobid = '10000001-0000-0000-0000-0123456789ab';
+        ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-1',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Lock all lockable settings.
+        foreach (get_config('quiz_archiver') as $key => $value) {
+            if (strpos($key, '_locked') !== false) {
+                set_config($key, 1, 'quiz_archiver');
+            }
+        }
+
+        // Create the form and define it.
+        $form = new archive_quiz_form($mocks->quiz->name, count($mocks->attempts));
+        $this->assertInstanceOf(\moodleform::class, $form);
+    }
+
+    /**
      * Test the custom form validation
      *
      * @dataProvider form_validation_data_provider
