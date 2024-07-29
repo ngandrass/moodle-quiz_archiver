@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.X.X (XXXXXXXXXX)
+## Version 1.4.0 (2024072900)
 
 - Show periodically updated progress of running archive jobs in job overview table and job details modal
 - Creation of new job status values:
@@ -9,9 +9,13 @@
   - `FINALIZING`: The archive worker service is finalizing the archive creation process (checksums, compression, ...).
 - Create hover tooltip with help text for all job status values
 - Add additional soft error handling to some web service functions
+- Minor compatibility fixes for PHP 7.4 and Moodle 4.1 (LTS)
 - Expanding unit test coverage to include the whole plugin logic
 - Optimizing unit test code to improve readability and maintainability
-- Minor compatibility fixes for PHP 7.4 and Moodle 4.1 (LTS)
+- Create generic testing data generator
+- Code quality improvements
+
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.6.0` is required.
 
 
 ## Version 1.3.0 (2024071800)
@@ -22,8 +26,7 @@
 - Fix conditional hide/show of retention time in quiz archive form when locked
 - Optimize order of settings in quiz archive form and plugin admin settings
 
-**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.5.0`
-is required.
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v1.5.0` is required.
 
 
 ## Version 1.2.10 (2024070900)
