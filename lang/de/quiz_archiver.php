@@ -57,6 +57,8 @@ $string['archive_retention_time_help'] = 'Die Speicherdauer dieses Testarchivs, 
 $string['create_quiz_archive'] = 'Neues Testarchiv erstellen';
 $string['archive_quiz_form_desc'] = 'Verwenden Sie dieses Formular um den ausgewählten Test zu archivieren. Die Archivierung findet asynchron statt und kann einige Zeit in Anspruch nehmen. Sie können den aktuellen Status jederzeit auf dieser Seite überprüfen sowie fertige Archive herunterladen.';
 $string['error_archive_quiz_form_validation_failed'] = 'Validierung der gesendeten Formulardaten fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.';
+$string['error_plugin_is_not_configured'] = 'Fehler: Das Quiz Archiver Plugin ist noch nicht konfiguriert. Bitte kontaktieren Sie Ihren Website-Administrator.';
+$string['error_quiz_cannot_be_archived_unknown'] = 'Dieser Test kann aufgrund eines unbekannten Fehlers nicht archiviert werden. Bitte melden Sie dieses Problem an die Plugin-Entwickler.';
 $string['export_attempts'] = 'Testversuche exportieren';
 $string['export_attempts_help'] = 'Es werden stets alle Testversuche exportiert';
 $string['export_attempts_num'] = 'Testversuche ({$a}) exportieren';
@@ -98,7 +100,6 @@ $string['export_report_section_attachments'] = 'Dateiabgaben einschließen';
 $string['export_report_section_attachments_help'] = 'Alle Dateiabgaben (z.B. von Freitextaufgaben) im Archiv einschließen. Warnung: Dies kann die Archivgröße erheblich erhöhen.';
 $string['job_overview'] = 'Testarchive';
 $string['num_attempts'] = 'Anzahl der Testversuche';
-$string['error_plugin_is_not_configured'] = 'Fehler: Das Quiz Archiver Plugin ist noch nicht konfiguriert. Bitte kontaktieren Sie Ihren Website-Administrator.';
 
 // Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archivname';

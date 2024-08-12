@@ -57,6 +57,8 @@ $string['archive_retention_time_help'] = 'The amount of time this quiz archive s
 $string['create_quiz_archive'] = 'Create new quiz archive';
 $string['archive_quiz_form_desc'] = 'Trigger the creation of a new quiz archive by submitting this form. This will spawn an asynchronous job which will take some time to complete. You can always check the current status on this page and download finished archives.';
 $string['error_archive_quiz_form_validation_failed'] = 'Form data validation failed. Please correct your input and try again.';
+$string['error_plugin_is_not_configured'] = 'Error: The quiz archiver plugin is not configured yet. Please contact your site administrator.';
+$string['error_quiz_cannot_be_archived_unknown'] = 'This quiz can not be archived due to an unknown error. Please report this problem to the plugin developers.';
 $string['export_attempts'] = 'Export quiz attempts';
 $string['export_attempts_help'] = 'Quiz attempts will always be exported';
 $string['export_attempts_num'] = 'Export quiz attempts ({$a})';
@@ -98,7 +100,6 @@ $string['export_report_section_attachments'] = 'Include file attachments';
 $string['export_report_section_attachments_help'] = 'Include all file attachments (e.g., essay file submissions) inside the archive. Warning: This can significantly increase the archive size.';
 $string['job_overview'] = 'Archives';
 $string['num_attempts'] = 'Number of attempts';
-$string['error_plugin_is_not_configured'] = 'Error: The quiz archiver plugin is not configured yet. Please contact your site administrator.';
 
 // Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archive name';
