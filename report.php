@@ -156,9 +156,25 @@ class quiz_archiver_report extends report_base {
         $jobtblhtml = ob_get_contents();
         ob_end_clean();
         $tplctx['jobOverviewTable'] = $jobtblhtml;
+        $tplctx['jobs'] = $this->generate_job_metadata_tplctx();
 
-        // Prepare job metadata for job detail modals.
-        $tplctx['jobs'] = array_map(function($jm): array {
+        // Render output.
+        echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplctx);
+
+        return true;
+    }
+
+    /**
+     * Generates the template context data for all jobs associated with this quiz
+     * to be displayed inside the job details modal dialogs.
+     *
+     * @return array Array of job metadata arrays to be passed to the Mustache template
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    protected function generate_job_metadata_tplctx(): array {
+        return array_map(function($jm): array {
             // Generate action URLs.
             $jm['action_urls'] = [
                 'delete_job' => (new moodle_url($this->base_url(), [
@@ -199,11 +215,6 @@ class quiz_archiver_report extends report_base {
                 'json' => json_encode($jm),
             ];
         }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
-
-        // Render output.
-        echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplctx);
-
-        return true;
     }
 
     /**
