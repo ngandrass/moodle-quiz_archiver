@@ -57,8 +57,8 @@ class job_overview_table extends \table_sql {
             'timecreated',
             'user',
             'jobid',
-            'status',
             'filesize',
+            'status',
             'actions',
         ]);
 
@@ -66,8 +66,8 @@ class job_overview_table extends \table_sql {
             get_string('task_starttime', 'admin'),
             get_string('user'),
             get_string('jobid', 'quiz_archiver'),
-            get_string('status'),
             get_string('size'),
+            get_string('status'),
             '',
         ]);
 
