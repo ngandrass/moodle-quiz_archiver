@@ -23,16 +23,16 @@
 
 /* Archive creation form */
 .quiz_archiver-archive-quiz-form > form > fieldset:last-of-type {
-    border-bottom: 0 !important;
+    border-bottom: 0;
 }
 
 /* Job overview table */
 .quiz_archiver-job-overview-table > .pagination:nth-of-type(1) {
-    display: none !important;
+    display: none;
 }
 
-.quiz_archiver-job-overview-table th {
-    border-top: 0 !important;
+.quiz_archiver-job-overview-table th.header {
+    border-top: 0;
 }
 
 .quiz_archiver-job-overview-table th > a {
