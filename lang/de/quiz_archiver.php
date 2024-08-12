@@ -39,6 +39,7 @@ $string['quiz_archiver:archive'] = 'Erstellen und Löschen von Testarchiven';
 $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen (lesend und schreibend)';
 
 // General.
+$string['a'] = '{$a}';
 $string['progress'] = 'Fortschritt';
 $string['quiz_archive'] = 'Testarchiv';
 $string['quiz_archive_details'] = 'Details des Testarchivs';
@@ -141,12 +142,14 @@ $string['error_invalid_attempt_filename_pattern'] = 'Ungültiger Versuchsname. B
 
 // Job.
 $string['delete_artifact'] = 'Testarchiv löschen';
+$string['delete_artifact_success'] = 'Testarchiv des Archivierungsauftrags mit der ID <code>{$a}</code> wurde erfolgreich gelöscht. Die Auftragsmetadaten existieren weiterhin und können mit der Schaltfläche "Archivierungsauftrag löschen" endgültig gelöscht werden.';
 $string['delete_artifact_warning'] = 'Sind Sie sicher, dass Sie dieses Testarchiv inklusive <b>aller archivierten Daten</b> löschen möchten?. Die Metadaten des Archivierungsauftrags werden hierbei nicht gelöscht.';
 $string['delete_job'] = 'Archivierungsauftrag löschen';
+$string['delete_job_success'] = 'Archivierungsauftrag mit der ID <code>{$a}</code> wurde erfolgreich gelöscht.';
 $string['delete_job_warning'] = 'Sind Sie sicher, dass Sie diesen Archivierungsauftrag <b>inklusive aller archivierten Daten</b> löschen möchten?';
 $string['delete_job_warning_retention'] = '<b>Achtung:</b> Dieser Archivierungsauftrag ist für die automatische Löschung am <code>{$a}</code> vorgesehen. Sind Sie absolut sicher, dass Sie ihn <b>vor Ablauf seiner geplanten Lebensdauer</b> löschen möchten?';
 $string['jobid'] = 'Auftrags-ID';
-$string['job_created_successfully'] = 'Neuer Archivierungsauftrag erfolgreich erstellt: {$a}';
+$string['job_created_successfully'] = 'Neuer Archivierungsauftrag erfolgreich erstellt. Auftrags-ID: {$a}';
 $string['job_status_UNKNOWN'] = 'Unbekannt';
 $string['job_status_UNKNOWN_help'] = 'Der Status dieses Auftrags ist unbekannt. Bitte melden Sie dieses Problem, wenn es weiterhin besteht.';
 $string['job_status_UNINITIALIZED'] = 'Neu';
@@ -170,6 +173,7 @@ $string['job_status_DELETED_help'] = 'Das Testarchiv und alle zugehörigen Daten
 
 // Job details.
 $string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
+$string['archive_already_signed_with_jobid'] = 'Testarchiv des Archivierungsauftrag mit der ID <code>{$a}</code> ist bereits signiert.';
 $string['archive_autodelete_deleted'] = 'Testarchive wurde automatisch gelöscht';
 $string['archive_autodelete_in'] = 'Testarchiv wird gelöscht in {$a}';
 $string['archive_autodelete_disabled'] = 'Deaktiviert';
@@ -178,9 +182,12 @@ $string['archive_deleted'] = 'Testarchiv wurde gelöscht';
 $string['archive_not_signed'] = 'Testarchiv ist nicht signiert';
 $string['archive_signature'] = 'Signatur';
 $string['archive_signed_successfully'] = 'Testarchiv erfolgreich signiert';
+$string['archive_signed_successfully_with_jobid'] = 'Testarchiv des Archivierungsauftrag mit der ID <code>{$a}</code> wurde erfolgreich signiert.';
 $string['archive_signing_failed'] = 'Signierung des Testarchivs fehlgeschlagen';
+$string['archive_signing_failed_with_jobid'] = 'Signierung des Testarchivs des Archivierungsauftrags mit der ID <code>{$a}</code> ist aufgrund eines generischen Fehlers fehlgeschlagen. Bitte überprüfen Sie die Plugin-Einstellungen und versuchen Sie es erneut.';
 $string['archive_signing_failed_no_artifact'] = 'Keine gültige Archivdatei gefunden';
-$string['archive_signing_failed_tsp_disabled'] = 'Signierung global ist deaktiviert';
+$string['archive_signing_failed_no_artifact_with_jobid'] = 'Signierung des Testarchivs des Archivierungsauftrags mit der ID <code>{$a}</code> ist fehlgeschlagen. Keine gültige Archivdatei gefunden.';
+$string['archive_signing_failed_tsp_disabled'] = 'Signierung ist global deaktiviert';
 $string['sign_archive'] = 'Testarchiv jetzt signieren';
 $string['sign_archive_warning'] = 'Sind Sie sicher, dass Sie dieses Testarchiv jetzt signieren möchten?';
 $string['signed_on'] = 'Signiert am';

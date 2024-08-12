@@ -39,6 +39,7 @@ $string['quiz_archiver:archive'] = 'Create and delete quiz archives';
 $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
 
 // General.
+$string['a'] = '{$a}';
 $string['progress'] = 'Progress';
 $string['quiz_archive'] = 'Quiz archive';
 $string['quiz_archive_details'] = 'Quiz archive details';
@@ -141,12 +142,14 @@ $string['error_invalid_attempt_filename_pattern'] = 'Invalid attempt report file
 
 // Job.
 $string['delete_artifact'] = 'Delete quiz archive';
+$string['delete_artifact_success'] = 'Quiz archive for Job with ID <code>{$a}</code> was deleted successfully. The job metadata still exists and can be fully deleted using the "Delete job" button.';
 $string['delete_artifact_warning'] = 'Are you sure that you want to delete this quiz archive including <b>all archived data?</b>. The job metadate will be kept.';
 $string['delete_job'] = 'Delete archive job';
+$string['delete_job_success'] = 'Archive job with ID <code>{$a}</code> was deleted successfully.';
 $string['delete_job_warning'] = 'Are you sure that you want to delete this archive job <b>including all archived data?</b>';
 $string['delete_job_warning_retention'] = '<b>Attention:</b> This archive job is scheduled for automatic deletion on <code>{$a}</code>. Are you absolutely sure that you want to delete it <b>before its scheduled lifetime expired</b>?';
 $string['jobid'] = 'Job ID';
-$string['job_created_successfully'] = 'New archive job created successfully: {$a}';
+$string['job_created_successfully'] = 'New archive job created successfully. Job ID: <code>{$a}</code>';
 $string['job_status_UNKNOWN'] = 'Unknown';
 $string['job_status_UNKNOWN_help'] = 'The status of this job is unknown. Please open a bug report if this problem persists.';
 $string['job_status_UNINITIALIZED'] = 'Uninitialized';
@@ -170,6 +173,7 @@ $string['job_status_DELETED_help'] = 'The quiz archive and all associated data h
 
 // Job details.
 $string['archive_already_signed'] = 'Archive is already signed';
+$string['archive_already_signed_with_jobid'] = 'Quiz archive for job with ID <code>{$a}</code> is already signed.';
 $string['archive_autodelete_deleted'] = 'Archive was automatically deleted';
 $string['archive_autodelete_in'] = 'Archive will be deleted in {$a}';
 $string['archive_autodelete_disabled'] = 'Disabled';
@@ -178,8 +182,11 @@ $string['archive_deleted'] = 'Archive was deleted';
 $string['archive_not_signed'] = 'Archive is unsigned';
 $string['archive_signature'] = 'Signature';
 $string['archive_signed_successfully'] = 'Archive signed successfully';
+$string['archive_signed_successfully_with_jobid'] = 'Quiz archive for job with ID <code>{$a}</code> was signed successfully.';
 $string['archive_signing_failed'] = 'Archive signing failed';
+$string['archive_signing_failed_with_jobid'] = 'Signing the quiz archive for job with ID <code>{$a}</code> failed due to a generic error. Please make sure that TSP archive signing is enabled within the plugin settings.';
 $string['archive_signing_failed_no_artifact'] = 'No valid artifact file found';
+$string['archive_signing_failed_no_artifact_with_jobid'] = 'Signing the quiz archive for job with ID <code>{$a}</code> failed. No valid artifact file found.';
 $string['archive_signing_failed_tsp_disabled'] = 'TSP signing is disabled globally';
 $string['sign_archive'] = 'Sign archive now';
 $string['sign_archive_warning'] = 'Are you sure that you want to sign this archive now?';

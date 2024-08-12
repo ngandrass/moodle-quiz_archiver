@@ -110,9 +110,6 @@ class quiz_archiver_report extends report_base {
 
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
-        $tplctx = [
-            'baseurl' => $this->base_url(),
-        ];
 
         // Check if we need to display a form output and abort the rest of the page rendering.
         // If rendering should continue the form must redirect to a new page without POST data
@@ -122,18 +119,31 @@ class quiz_archiver_report extends report_base {
             return true;
         }
 
+        // Handle GET-based alerts
+        if (optional_param('al', null, PARAM_TEXT) !== null) {
+            echo $OUTPUT->notification(
+                get_string(
+                    urldecode(required_param('asid', PARAM_TEXT)),
+                    'quiz_archiver',
+                    urldecode(optional_param('aa', null, PARAM_TEXT))
+                ),
+                urldecode(required_param('al', PARAM_TEXT)),
+                optional_param('ac', 0, PARAM_INT) === 1
+            );
+        }
+
         // Check if this quiz can be archived.
         if (!self::quiz_can_be_archived($quiz->id)) {
             if (!quiz_has_questions($quiz->id)) {
-                $tplctx['quizMissingSomethingWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
+                echo quiz_no_questions_message($quiz, $cm, $this->context);
             } else if (!quiz_has_attempts($quiz->id)) {
-                $tplctx['quizMissingSomethingWarning'] = $OUTPUT->notification(
+                echo $OUTPUT->notification(
                     get_string('noattempts', 'quiz'),
                     \core\output\notification::NOTIFY_ERROR,
                     false
                 );
             } else {
-                $tplctx['quizMissingSomethingWarning'] = $OUTPUT->notification(
+                echo $OUTPUT->notification(
                     get_string('error_quiz_cannot_be_archived_unknown', 'quiz_archiver'),
                     \core\output\notification::NOTIFY_ERROR,
                     false
@@ -155,11 +165,13 @@ class quiz_archiver_report extends report_base {
         $jobtbl->out(10, true);
         $jobtblhtml = ob_get_contents();
         ob_end_clean();
-        $tplctx['jobOverviewTable'] = $jobtblhtml;
-        $tplctx['jobs'] = $this->generate_job_metadata_tplctx();
 
         // Render output.
-        echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplctx);
+        echo $OUTPUT->render_from_template('quiz_archiver/overview', [
+            'baseurl' => $this->base_url(),
+            'jobOverviewTable' => $jobtblhtml,
+            'jobs' => $this->generate_job_metadata_tplctx(),
+        ]);
 
         return true;
     }
@@ -223,15 +235,16 @@ class quiz_archiver_report extends report_base {
      * @param bool $exportattempts Quiz attempts will be archives if true
      * @param array $reportsections Sections to export during attempt report generation
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
-     *                                     within the created archive
+     * within the created archive
      * @param string $paperformat Paper format to use for attempt report generation
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
      * @param string $archivefilenamepattern Filename pattern to use for archive generation
      * @param string $attemptsfilenamepattern Filename pattern to use for attempt report generation
-     * @param array|null $imageoptimize If set, images in the attempt report will be optimized according to the passed array
-     * containing 'width', 'height', and 'quality'
-     * @param int|null $retentionseconds If set, the archive will be deleted automatically this many seconds after creation
+     * @param array|null $imageoptimize If set, images in the attempt report will be optimized
+     * according to the passed array containing 'width', 'height', and 'quality'
+     * @param int|null $retentionseconds If set, the archive will be deleted automatically this
+     * many seconds after creation
      * @return ArchiveJob|null Created ArchiveJob on success
      * @throws coding_exception Handled by Moodle
      * @throws dml_exception Handled by Moodle
@@ -411,8 +424,12 @@ class quiz_archiver_report extends report_base {
                 $formdata = $jobdeleteform->get_data();
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete();
 
-                // TODO: Add status reporting
-                redirect($this->base_url());
+                redirect($this->base_url_with_alert(
+                    \core\output\notification::NOTIFY_SUCCESS,
+                    true,
+                    'delete_job_success',
+                    $formdata->jobid
+                ));
             } else {
                 return $jobdeleteform->render();
             }
@@ -434,8 +451,12 @@ class quiz_archiver_report extends report_base {
                 $formdata = $artifactdeleteform->get_data();
                 ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
 
-                // TODO: Add status reporting
-                redirect($this->base_url());
+                redirect($this->base_url_with_alert(
+                    \core\output\notification::NOTIFY_SUCCESS,
+                    true,
+                    'delete_artifact_success',
+                    $formdata->jobid
+                ));
             } else {
                 return $artifactdeleteform->render();
             }
@@ -458,39 +479,35 @@ class quiz_archiver_report extends report_base {
                 $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
                 $jobidlogstr = ' ('.get_string('jobid', 'quiz_archiver').': '.$formdata->jobid.')';
                 if ($tspmanager->has_tsp_timestamp()) {
-                    // TODO: Move to GET parameter
-                    $tplctx['jobInitiationStatusAlert'] = [
-                        "color" => "danger",
-                        "dismissible" => true,
-                        "message" => get_string('archive_already_signed', 'quiz_archiver').$jobidlogstr,
-                    ];
-                    echo "TODO: FAILED!";
+                    redirect($this->base_url_with_alert(
+                        \core\output\notification::NOTIFY_ERROR,
+                        true,
+                        'archive_already_signed_with_jobid',
+                        $formdata->jobid
+                    ));
                 } else {
                     try {
                         $tspmanager->timestamp();
-                        // TODO: Move to GET parameter
-                        $tplctx['jobInitiationStatusAlert'] = [
-                            "color" => "success",
-                            "dismissible" => true,
-                            "message" => get_string('archive_signed_successfully', 'quiz_archiver').$jobidlogstr,
-                        ];
-                        redirect($this->base_url());
+                        redirect($this->base_url_with_alert(
+                            \core\output\notification::NOTIFY_SUCCESS,
+                            true,
+                            'archive_signed_successfully_with_jobid',
+                            $formdata->jobid
+                        ));
                     } catch (RuntimeException $e) {
-                        // TODO: Move to GET parameter
-                        $tplctx['jobInitiationStatusAlert'] = [
-                            "color" => "danger",
-                            "dismissible" => true,
-                            "message" => get_string('archive_signing_failed_no_artifact', 'quiz_archiver').$jobidlogstr,
-                        ];
-                        echo "TODO: FAILED!";
+                        redirect($this->base_url_with_alert(
+                            \core\output\notification::NOTIFY_ERROR,
+                            true,
+                            'archive_signing_failed_no_artifact_with_jobid',
+                            $formdata->jobid
+                        ));
                     } catch (Exception $e) {
-                        // TODO: Move to GET parameter
-                        $tplctx['jobInitiationStatusAlert'] = [
-                            "color" => "danger",
-                            "dismissible" => true,
-                            "message" => get_string('archive_signing_failed', 'quiz_archiver').': '.$e->getMessage().$jobidlogstr,
-                        ];
-                        echo "TODO: FAILED!";
+                        redirect($this->base_url_with_alert(
+                            \core\output\notification::NOTIFY_ERROR,
+                            true,
+                            'archive_signing_failed_with_jobid',
+                            $formdata->jobid
+                        ));
                     }
                 }
             } else {
@@ -529,25 +546,19 @@ class quiz_archiver_report extends report_base {
                         ] : null,
                         $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
                     );
-                    // TODO: Move to GET parameter
-                    $tplctx['jobInitiationStatusAlert'] = [
-                        "color" => "success",
-                        "message" => get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid()),
-                        "returnMessage" => get_string('continue'),
-                    ];
-                    redirect($this->base_url());
+                    redirect($this->base_url_with_alert(
+                        \core\output\notification::NOTIFY_SUCCESS,
+                        true,
+                        'job_created_successfully',
+                        $job->get_jobid()
+                    ));
                 } catch (RuntimeException $e) {
-                    // TODO: Move to GET parameter
-                    $tplctx['jobInitiationStatusAlert'] = [
-                        "color" => "danger",
-                        "message" => $e->getMessage(),
-                        "returnMessage" => get_string('retry'),
-                    ];
-                }
-
-                // Do not print job overview table if job creation failed.
-                if ($job == null) {
-                    unset($tplctx['jobOverviewTable']);
+                    redirect($this->base_url_with_alert(
+                        \core\output\notification::NOTIFY_ERROR,
+                        true,
+                        'a',
+                        $e->getMessage()
+                    ));
                 }
             } else {
                 // This form is rendered on the main report page if no other form requires rendering.
@@ -561,11 +572,39 @@ class quiz_archiver_report extends report_base {
     /**
      * Get the URL of the front page of the report that lists all the questions.
      *
-     * @return moodle_url the URL
+     * @return moodle_url The URL
      * @throws moodle_exception
      */
     protected function base_url(): moodle_url {
         return new moodle_url('/mod/quiz/report.php', ['id' => $this->cm->id, 'mode' => 'archiver']);
+    }
+
+    /**
+     * Get the URL of the front page of the report with GET params to display an alert message.
+     *
+     * @param string $level Alert level \core\output\notification::NOTIFY_*
+     * @param bool $closebutton If true, a close button is displayed in the alert message
+     * @param string $stridentifier Identifier of the alert message string from language file
+     * @param string|null $additional Additional context ($a) that is passed to get_string()
+     *
+     * @return moodle_url The URL including the alert message params
+     * @throws moodle_exception
+     */
+    protected function base_url_with_alert(
+        string $level,
+        bool $closebutton,
+        string $stridentifier,
+        ?string $additional = null
+    ): moodle_url {
+        $url = $this->base_url();
+        $url->param('al', urlencode($level));
+        $url->param('ac', $closebutton ? '1' : '0');
+        $url->param('asid', urlencode($stridentifier));
+        if ($additional !== null) {
+            $url->param('aa', urlencode($additional));
+        }
+
+        return $url;
     }
 
 }

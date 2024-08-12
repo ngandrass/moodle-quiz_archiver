@@ -1,5 +1,11 @@
 # Changelog
 
+## Version X.X.X (XXXXXXXXXX)
+
+- Improve status and error notifications for all actions (job creation, deletion, ...)
+- Prevent form data resubmission on page reload
+
+
 ## Version 1.4.0 (2024072900)
 
 - Show periodically updated progress of running archive jobs in job overview table and job details modal
