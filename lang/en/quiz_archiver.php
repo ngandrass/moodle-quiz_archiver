@@ -100,6 +100,7 @@ $string['export_report_section_history_help'] = 'Display the answer history for 
 $string['export_report_section_attachments'] = 'Include file attachments';
 $string['export_report_section_attachments_help'] = 'Include all file attachments (e.g., essay file submissions) inside the archive. Warning: This can significantly increase the archive size.';
 $string['job_overview'] = 'Archives';
+$string['last_updated'] = 'Last updated';
 $string['num_attempts'] = 'Number of attempts';
 
 // Job creation form: Filename pattern.

@@ -4,6 +4,9 @@
 
 - Improve status and error notifications for all actions (job creation, deletion, ...)
 - Prevent form data resubmission on page reload
+- Add tooltip to archive overview refresh button and list time of last page refresh
+- Improve visual presentation of the quiz archive overview table
+- Improve visual presentation of the quiz archive creation form
 
 
 ## Version 1.4.0 (2024072900)

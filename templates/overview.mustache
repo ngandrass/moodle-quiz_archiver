@@ -21,6 +21,7 @@
 
     Example context (json):
     {
+        "archiveQuizForm": "<!-- Generated Moodle form HTML -->",
         "baseurl": "https://example.com/mod/quiz/archiver/",
         "jobOverviewTable": "<!-- Generated Moodle table HTML -->",
         "jobs": [
@@ -32,19 +33,35 @@
                 "jobid": "45edd9f6-3784-11ee-be56-0242ac120002",
                 "json": "{...}"
             }
-        ]
+        ],
+        "time": 0
     }
 }}
+
+{{! Quiz archive form }}
+<div class="quiz_archiver-archive-quiz-form mb-4">
+    {{{archiveQuizForm}}}
+</div>
 
 {{! List of existing archives }}
 {{#jobOverviewTable}}
 <h1>
     {{#str}} job_overview, quiz_archiver {{/str}}
-    <a href="{{{baseurl}}}" class="small mx-2" title="{{#str}} refresh, moodle {{/str}}">
+    <a
+        href="{{{baseurl}}}"
+        class="small mx-2"
+        title="{{#str}} refresh, moodle {{/str}}"
+        data-toggle="tooltip"
+        data-placement="right"
+    >
         <i class="fa fa-rotate-right"></i>
     </a>
 </h1>
 <div>
+    {{#str}} last_updated, quiz_archiver {{/str}}:
+    {{#userdate}} {{time}}, %T {{/userdate}}
+</div>
+<div class="quiz_archiver-job-overview-table">
     {{{jobOverviewTable}}}
 </div>
 

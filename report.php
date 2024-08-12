@@ -152,12 +152,11 @@ class quiz_archiver_report extends report_base {
             return true;
         }
 
-        // Render quiz archive form. Logic is handled in handle_posted_forms() above.
+        // Quiz archive form. Logic is handled in handle_posted_forms() above.
         $archivequizform = new archive_quiz_form(
             $this->quiz->name,
             count($this->report->get_attempts())
         );
-        $archivequizform->display();
 
         // Job overview table.
         $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
@@ -169,9 +168,11 @@ class quiz_archiver_report extends report_base {
 
         // Render output.
         echo $OUTPUT->render_from_template('quiz_archiver/overview', [
+            'archiveQuizForm' => $archivequizform->render(),
             'baseurl' => $this->base_url(),
             'jobOverviewTable' => $jobtblhtml,
             'jobs' => $this->generate_job_metadata_tplctx(),
+            'time' => time(),
         ]);
 
         return true;
