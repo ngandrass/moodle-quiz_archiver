@@ -55,18 +55,18 @@ class job_overview_table extends \table_sql {
         parent::__construct($uniqueid);
         $this->define_columns([
             'timecreated',
-            'status',
             'user',
             'jobid',
+            'status',
             'filesize',
             'actions',
         ]);
 
         $this->define_headers([
             get_string('task_starttime', 'admin'),
-            get_string('status'),
             get_string('user'),
             get_string('jobid', 'quiz_archiver'),
+            get_string('status'),
             get_string('size'),
             '',
         ]);
