@@ -70,6 +70,16 @@ class quiz_archiver_report extends report_base {
     }
 
     /**
+     * Determines if the quiz with the given ID can be archived.
+     *
+     * @param int $quizid The quiz ID to check.
+     * @return bool True if the quiz can be archived, false otherwise.
+     */
+    public static function quiz_can_be_archived(int $quizid): bool {
+        return quiz_has_questions($quizid) && quiz_has_attempts($quizid);
+    }
+
+    /**
      * Display the report.
      *
      * @param object $quiz this quiz.
@@ -90,234 +100,134 @@ class quiz_archiver_report extends report_base {
         $this->context = context_module::instance($cm->id);
         require_capability('mod/quiz_archiver:view', $this->context);
 
-        // Start output.
-        $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
-        $tplctx = [
-            'baseurl' => $this->base_url(),
-            'jobOverviewTable' => "",
-        ];
-
-        // Handle job delete form.
-        if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
-            $jobdeleteform = new job_delete_form();
-
-            if ($jobdeleteform->is_cancelled()) {
-                redirect($this->base_url());
-            }
-
-            if ($jobdeleteform->is_submitted()) {
-                // Check permissions.
-                require_capability('mod/quiz_archiver:delete', $this->context);
-
-                // Execute deletion.
-                $formdata = $jobdeleteform->get_data();
-                ArchiveJob::get_by_jobid($formdata->jobid)->delete();
-            } else {
-                $jobdeleteform->display();
-                return true;
-            }
-        }
-
-        // Handle artifact delete form.
-        if (optional_param('action', null, PARAM_TEXT) === 'delete_artifact') {
-            $arfifactdeleteform = new artifact_delete_form();
-
-            if ($arfifactdeleteform->is_cancelled()) {
-                redirect($this->base_url());
-            }
-
-            if ($arfifactdeleteform->is_submitted()) {
-                // Check permissions.
-                require_capability('mod/quiz_archiver:delete', $this->context);
-
-                // Execute deletion.
-                $formdata = $arfifactdeleteform->get_data();
-                ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
-            } else {
-                $arfifactdeleteform->display();
-                return true;
-            }
-        }
-
-        // Handle job sign form.
-        if (optional_param('action', null, PARAM_TEXT) === 'sign_job') {
-            $jobsignform = new job_sign_form();
-
-            if ($jobsignform->is_cancelled()) {
-                redirect($this->base_url());
-            }
-
-            if ($jobsignform->is_submitted()) {
-                // Check permissions.
-                require_capability('mod/quiz_archiver:create', $this->context);
-
-                // Execute signing.
-                $formdata = $jobsignform->get_data();
-                $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
-                $jobidlogstr = ' ('.get_string('jobid', 'quiz_archiver').': '.$formdata->jobid.')';
-                if ($tspmanager->has_tsp_timestamp()) {
-                    $tplctx['jobInitiationStatusAlert'] = [
-                        "color" => "danger",
-                        "dismissible" => true,
-                        "message" => get_string('archive_already_signed', 'quiz_archiver').$jobidlogstr,
-                    ];
-                } else {
-                    try {
-                        $tspmanager->timestamp();
-                        $tplctx['jobInitiationStatusAlert'] = [
-                            "color" => "success",
-                            "dismissible" => true,
-                            "message" => get_string('archive_signed_successfully', 'quiz_archiver').$jobidlogstr,
-                        ];
-                    } catch (RuntimeException $e) {
-                        $tplctx['jobInitiationStatusAlert'] = [
-                            "color" => "danger",
-                            "dismissible" => true,
-                            "message" => get_string('archive_signing_failed_no_artifact', 'quiz_archiver').$jobidlogstr,
-                        ];
-                    } catch (Exception $e) {
-                        $tplctx['jobInitiationStatusAlert'] = [
-                            "color" => "danger",
-                            "dismissible" => true,
-                            "message" => get_string('archive_signing_failed', 'quiz_archiver').': '.$e->getMessage().$jobidlogstr,
-                        ];
-                    }
-                }
-            } else {
-                $jobsignform->display();
-                return true;
-            }
-        }
-
-        // Determine page to display.
-        if (!quiz_has_questions($quiz->id)) {
-            $tplctx['quizMissingSomethingWarning'] = quiz_no_questions_message($quiz, $cm, $this->context);
-        } else {
-            if (!quiz_has_attempts($quiz->id)) {
-                $tplctx['quizMissingSomethingWarning'] = $OUTPUT->notification(
-                    get_string('noattempts', 'quiz'),
-                    \core\output\notification::NOTIFY_ERROR,
-                    false
-                );
-            }
-        }
-
-        // Archive quiz form.
-        if (!array_key_exists('quizMissingSomethingWarning', $tplctx)) {
-            $archivequizform = new archive_quiz_form(
-                $this->quiz->name,
-                count($this->report->get_attempts())
-            );
-            if ($archivequizform->is_submitted()) {
-                $job = null;
-                try {
-                    if (!$archivequizform->is_validated()) {
-                        throw new RuntimeException(get_string('error_archive_quiz_form_validation_failed', 'quiz_archiver'));
-                    }
-
-                    $formdata = $archivequizform->get_data();
-                    $job = $this->initiate_archive_job(
-                        $formdata->export_attempts,
-                        Report::build_report_sections_from_formdata($formdata),
-                        $formdata->export_attempts_keep_html_files,
-                        $formdata->export_attempts_paper_format,
-                        $formdata->export_quiz_backup,
-                        $formdata->export_course_backup,
-                        $formdata->archive_filename_pattern,
-                        $formdata->export_attempts_filename_pattern,
-                        $formdata->export_attempts_image_optimize ? [
-                            'width' => (int) $formdata->export_attempts_image_optimize_width,
-                            'height' => (int) $formdata->export_attempts_image_optimize_height,
-                            'quality' => (int) $formdata->export_attempts_image_optimize_quality,
-                        ] : null,
-                        $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
-                    );
-                    $tplctx['jobInitiationStatusAlert'] = [
-                        "color" => "success",
-                        "message" => get_string('job_created_successfully', 'quiz_archiver', $job->get_jobid()),
-                        "returnMessage" => get_string('continue'),
-                    ];
-                } catch (RuntimeException $e) {
-                    $tplctx['jobInitiationStatusAlert'] = [
-                        "color" => "danger",
-                        "message" => $e->getMessage(),
-                        "returnMessage" => get_string('retry'),
-                    ];
-                }
-
-                // Do not print job overview table if job creation failed.
-                if ($job == null) {
-                    unset($tplctx['jobOverviewTable']);
-                }
-            } else {
-                $tplctx['jobInitiationForm'] = $archivequizform->render();
-            }
-        }
-
-        // Job overview table.
-        if (array_key_exists('jobOverviewTable', $tplctx)) {
-            // Generate table.
-            $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
-            $jobtbl->define_baseurl($this->base_url());
-            ob_start();
-            $jobtbl->out(10, true);
-            $jobtblhtml = ob_get_contents();
-            ob_end_clean();
-            $tplctx['jobOverviewTable'] = $jobtblhtml;
-
-            // Prepare job metadata for job detail modals.
-            $tplctx['jobs'] = array_map(function($jm): array {
-                // Generate action URLs.
-                $jm['action_urls'] = [
-                    'delete_job' => (new moodle_url($this->base_url(), [
-                        'id' => optional_param('id', null, PARAM_INT),
-                        'mode' => 'archiver',
-                        'action' => 'delete_job',
-                        'jobid' => $jm['jobid'],
-                    ]))->out(),
-                    'delete_artifact' => (new moodle_url($this->base_url(), [
-                        'id' => optional_param('id', null, PARAM_INT),
-                        'mode' => 'archiver',
-                        'action' => 'delete_artifact',
-                        'jobid' => $jm['jobid'],
-                    ]))->out(),
-                    'sign_artifact' => (new moodle_url('', [
-                        'id' => optional_param('id', null, PARAM_INT),
-                        'mode' => 'archiver',
-                        'action' => 'sign_job',
-                        'jobid' => $jm['jobid'],
-                    ]))->out(),
-                    'course' => (new moodle_url('/course/view.php', [
-                        'id' => $this->course->id,
-                    ]))->out(),
-                    'quiz' => (new moodle_url('/mod/quiz/view.php', [
-                        'id' => $this->cm->id,
-                    ]))->out(),
-                    'user' => (new moodle_url('/user/profile.php', [
-                        'id' => $jm['user']['id'],
-                    ]))->out(),
-                ];
-
-                // Inject global TSP settings.
-                // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
-                $jm['tsp_enabled'] = ($this->config->tsp_enable == true);
-
-                return [
-                    'jobid' => $jm['jobid'],
-                    'json' => json_encode($jm),
-                ];
-            }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
-        }
+        // Handle forms before output starts.
+        $formhtml = $this->handle_posted_forms();
 
         // Housekeeping for jobs associated with this quiz.
         foreach (ArchiveJob::get_jobs($this->course->id, $this->cm->id, $this->quiz->id) as $job) {
             $job->timeout_if_overdue($this->config->job_timeout_min);
         }
 
+        // Start output.
+        $this->print_header_and_tabs($cm, $course, $quiz, 'archiver');
+
+        // Check if we need to display a form output and abort the rest of the page rendering.
+        // If rendering should continue the form must redirect to a new page without POST data
+        // to avoid re-execution of the form handling logic.
+        if ($formhtml) {
+            echo $formhtml;
+            return true;
+        }
+
+        // Handle GET-based alerts.
+        if (optional_param('al', null, PARAM_TEXT) !== null) {
+            echo $OUTPUT->notification(
+                get_string(
+                    urldecode(required_param('asid', PARAM_TEXT)),
+                    'quiz_archiver',
+                    urldecode(optional_param('aa', null, PARAM_TEXT))
+                ),
+                urldecode(required_param('al', PARAM_TEXT)),
+                optional_param('ac', 0, PARAM_INT) === 1
+            );
+        }
+
+        // Check if this quiz can be archived.
+        if (!self::quiz_can_be_archived($quiz->id)) {
+            if (!quiz_has_questions($quiz->id)) {
+                echo quiz_no_questions_message($quiz, $cm, $this->context);
+            } else if (!quiz_has_attempts($quiz->id)) {
+                echo $OUTPUT->notification(
+                    get_string('noattempts', 'quiz'),
+                    \core\output\notification::NOTIFY_ERROR,
+                    false
+                );
+            } else {
+                echo $OUTPUT->notification(
+                    get_string('error_quiz_cannot_be_archived_unknown', 'quiz_archiver'),
+                    \core\output\notification::NOTIFY_ERROR,
+                    false
+                );
+            }
+            return true;
+        }
+
+        // Render quiz archive form. Logic is handled in handle_posted_forms() above.
+        $archivequizform = new archive_quiz_form(
+            $this->quiz->name,
+            count($this->report->get_attempts())
+        );
+        $archivequizform->display();
+
+        // Job overview table.
+        $jobtbl = new job_overview_table('job_overview_table', $this->course->id, $this->cm->id, $this->quiz->id);
+        $jobtbl->define_baseurl($this->base_url());
+        ob_start();
+        $jobtbl->out(10, true);
+        $jobtblhtml = ob_get_contents();
+        ob_end_clean();
+
         // Render output.
-        echo $OUTPUT->render_from_template('quiz_archiver/overview', $tplctx);
+        echo $OUTPUT->render_from_template('quiz_archiver/overview', [
+            'baseurl' => $this->base_url(),
+            'jobOverviewTable' => $jobtblhtml,
+            'jobs' => $this->generate_job_metadata_tplctx(),
+        ]);
 
         return true;
+    }
+
+    /**
+     * Generates the template context data for all jobs associated with this quiz
+     * to be displayed inside the job details modal dialogs.
+     *
+     * @return array Array of job metadata arrays to be passed to the Mustache template
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    protected function generate_job_metadata_tplctx(): array {
+        return array_map(function($jm): array {
+            // Generate action URLs.
+            $jm['action_urls'] = [
+                'delete_job' => (new moodle_url($this->base_url(), [
+                    'id' => optional_param('id', null, PARAM_INT),
+                    'mode' => 'archiver',
+                    'action' => 'delete_job',
+                    'jobid' => $jm['jobid'],
+                ]))->out(),
+                'delete_artifact' => (new moodle_url($this->base_url(), [
+                    'id' => optional_param('id', null, PARAM_INT),
+                    'mode' => 'archiver',
+                    'action' => 'delete_artifact',
+                    'jobid' => $jm['jobid'],
+                ]))->out(),
+                'sign_artifact' => (new moodle_url('', [
+                    'id' => optional_param('id', null, PARAM_INT),
+                    'mode' => 'archiver',
+                    'action' => 'sign_job',
+                    'jobid' => $jm['jobid'],
+                ]))->out(),
+                'course' => (new moodle_url('/course/view.php', [
+                    'id' => $this->course->id,
+                ]))->out(),
+                'quiz' => (new moodle_url('/mod/quiz/view.php', [
+                    'id' => $this->cm->id,
+                ]))->out(),
+                'user' => (new moodle_url('/user/profile.php', [
+                    'id' => $jm['user']['id'],
+                ]))->out(),
+            ];
+
+            // Inject global TSP settings.
+            // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
+            $jm['tsp_enabled'] = ($this->config->tsp_enable == true);
+
+            return [
+                'jobid' => $jm['jobid'],
+                'json' => json_encode($jm),
+            ];
+        }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
     }
 
     /**
@@ -326,15 +236,16 @@ class quiz_archiver_report extends report_base {
      * @param bool $exportattempts Quiz attempts will be archives if true
      * @param array $reportsections Sections to export during attempt report generation
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
-     *                                     within the created archive
+     * within the created archive
      * @param string $paperformat Paper format to use for attempt report generation
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
      * @param string $archivefilenamepattern Filename pattern to use for archive generation
      * @param string $attemptsfilenamepattern Filename pattern to use for attempt report generation
-     * @param array|null $imageoptimize If set, images in the attempt report will be optimized according to the passed array
-     * containing 'width', 'height', and 'quality'
-     * @param int|null $retentionseconds If set, the archive will be deleted automatically this many seconds after creation
+     * @param array|null $imageoptimize If set, images in the attempt report will be optimized
+     * according to the passed array containing 'width', 'height', and 'quality'
+     * @param int|null $retentionseconds If set, the archive will be deleted automatically this
+     * many seconds after creation
      * @return ArchiveJob|null Created ArchiveJob on success
      * @throws coding_exception Handled by Moodle
      * @throws dml_exception Handled by Moodle
@@ -488,13 +399,213 @@ class quiz_archiver_report extends report_base {
     }
 
     /**
+     * Handles submitted forms.
+     *
+     * @return string|null HTML form rendering to display, if required.
+     *
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     * @throws required_capability_exception
+     */
+    protected function handle_posted_forms(): ?string {
+        // Job delete form.
+        if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
+            $jobdeleteform = new job_delete_form();
+
+            if ($jobdeleteform->is_cancelled()) {
+                redirect($this->base_url());
+            }
+
+            if ($jobdeleteform->is_submitted()) {
+                // Check permissions.
+                require_capability('mod/quiz_archiver:delete', $this->context);
+
+                // Execute deletion.
+                $formdata = $jobdeleteform->get_data();
+                ArchiveJob::get_by_jobid($formdata->jobid)->delete();
+
+                redirect($this->base_url_with_alert(
+                    \core\output\notification::NOTIFY_SUCCESS,
+                    true,
+                    'delete_job_success',
+                    $formdata->jobid
+                ));
+            } else {
+                return $jobdeleteform->render();
+            }
+        }
+
+        // Artifact delete form.
+        if (optional_param('action', null, PARAM_TEXT) === 'delete_artifact') {
+            $artifactdeleteform = new artifact_delete_form();
+
+            if ($artifactdeleteform->is_cancelled()) {
+                redirect($this->base_url());
+            }
+
+            if ($artifactdeleteform->is_submitted()) {
+                // Check permissions.
+                require_capability('mod/quiz_archiver:delete', $this->context);
+
+                // Execute deletion.
+                $formdata = $artifactdeleteform->get_data();
+                ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
+
+                redirect($this->base_url_with_alert(
+                    \core\output\notification::NOTIFY_SUCCESS,
+                    true,
+                    'delete_artifact_success',
+                    $formdata->jobid
+                ));
+            } else {
+                return $artifactdeleteform->render();
+            }
+        }
+
+        // Job sign form.
+        if (optional_param('action', null, PARAM_TEXT) === 'sign_job') {
+            $jobsignform = new job_sign_form();
+
+            if ($jobsignform->is_cancelled()) {
+                redirect($this->base_url());
+            }
+
+            if ($jobsignform->is_submitted()) {
+                // Check permissions.
+                require_capability('mod/quiz_archiver:create', $this->context);
+
+                // Execute signing.
+                $formdata = $jobsignform->get_data();
+                $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
+                $jobidlogstr = ' ('.get_string('jobid', 'quiz_archiver').': '.$formdata->jobid.')';
+                if ($tspmanager->has_tsp_timestamp()) {
+                    redirect($this->base_url_with_alert(
+                        \core\output\notification::NOTIFY_ERROR,
+                        true,
+                        'archive_already_signed_with_jobid',
+                        $formdata->jobid
+                    ));
+                } else {
+                    try {
+                        $tspmanager->timestamp();
+                        redirect($this->base_url_with_alert(
+                            \core\output\notification::NOTIFY_SUCCESS,
+                            true,
+                            'archive_signed_successfully_with_jobid',
+                            $formdata->jobid
+                        ));
+                    } catch (RuntimeException $e) {
+                        redirect($this->base_url_with_alert(
+                            \core\output\notification::NOTIFY_ERROR,
+                            true,
+                            'archive_signing_failed_no_artifact_with_jobid',
+                            $formdata->jobid
+                        ));
+                    } catch (Exception $e) {
+                        redirect($this->base_url_with_alert(
+                            \core\output\notification::NOTIFY_ERROR,
+                            true,
+                            'archive_signing_failed_with_jobid',
+                            $formdata->jobid
+                        ));
+                    }
+                }
+            } else {
+                return $jobsignform->render();
+            }
+        }
+
+        // Archive quiz form.
+        if (self::quiz_can_be_archived($this->quiz->id)) {
+            $archivequizform = new archive_quiz_form(
+                $this->quiz->name,
+                count($this->report->get_attempts())
+            );
+
+            if ($archivequizform->is_submitted()) {
+                $job = null;
+                try {
+                    if (!$archivequizform->is_validated()) {
+                        throw new RuntimeException(get_string('error_archive_quiz_form_validation_failed', 'quiz_archiver'));
+                    }
+
+                    $formdata = $archivequizform->get_data();
+                    $job = $this->initiate_archive_job(
+                        $formdata->export_attempts,
+                        Report::build_report_sections_from_formdata($formdata),
+                        $formdata->export_attempts_keep_html_files,
+                        $formdata->export_attempts_paper_format,
+                        $formdata->export_quiz_backup,
+                        $formdata->export_course_backup,
+                        $formdata->archive_filename_pattern,
+                        $formdata->export_attempts_filename_pattern,
+                        $formdata->export_attempts_image_optimize ? [
+                            'width' => (int) $formdata->export_attempts_image_optimize_width,
+                            'height' => (int) $formdata->export_attempts_image_optimize_height,
+                            'quality' => (int) $formdata->export_attempts_image_optimize_quality,
+                        ] : null,
+                        $formdata->archive_autodelete ? $formdata->archive_retention_time : null,
+                    );
+                    redirect($this->base_url_with_alert(
+                        \core\output\notification::NOTIFY_SUCCESS,
+                        true,
+                        'job_created_successfully',
+                        $job->get_jobid()
+                    ));
+                } catch (RuntimeException $e) {
+                    redirect($this->base_url_with_alert(
+                        \core\output\notification::NOTIFY_ERROR,
+                        true,
+                        'a',
+                        $e->getMessage()
+                    ));
+                }
+            } else {
+                // This form is rendered on the main report page if no other form requires rendering.
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get the URL of the front page of the report that lists all the questions.
      *
-     * @return moodle_url the URL
+     * @return moodle_url The URL
      * @throws moodle_exception
      */
     protected function base_url(): moodle_url {
         return new moodle_url('/mod/quiz/report.php', ['id' => $this->cm->id, 'mode' => 'archiver']);
+    }
+
+    /**
+     * Get the URL of the front page of the report with GET params to display an alert message.
+     *
+     * @param string $level Alert level \core\output\notification::NOTIFY_*
+     * @param bool $closebutton If true, a close button is displayed in the alert message
+     * @param string $stridentifier Identifier of the alert message string from language file
+     * @param string|null $additional Additional context ($a) that is passed to get_string()
+     *
+     * @return moodle_url The URL including the alert message params
+     * @throws moodle_exception
+     */
+    protected function base_url_with_alert(
+        string $level,
+        bool $closebutton,
+        string $stridentifier,
+        ?string $additional = null
+    ): moodle_url {
+        $url = $this->base_url();
+        $url->param('al', urlencode($level));
+        $url->param('ac', $closebutton ? '1' : '0');
+        $url->param('asid', urlencode($stridentifier));
+        if ($additional !== null) {
+            $url->param('aa', urlencode($additional));
+        }
+
+        return $url;
     }
 
 }

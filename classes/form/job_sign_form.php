@@ -41,20 +41,18 @@ class job_sign_form extends \moodleform {
      * @throws \coding_exception
      */
     public function definition() {
+        global $OUTPUT;
         $mform = $this->_form;
 
         // Warning message.
         $warnhead = get_string('areyousure', 'moodle');
         $warnmsg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
         $warndetails = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
-        $mform->addElement('html', <<<EOD
-            <div class="alert alert-info" role="alert">
-                <h4>$warnhead</h4>
-                $warnmsg
-                <hr/>
-                $warndetails
-            </div>
-        EOD);
+        $mform->addElement('html', $OUTPUT->notification(
+            "<h4>$warnhead</h4> $warnmsg <hr/> $warndetails",
+            \core\output\notification::NOTIFY_INFO,
+            false,
+        ));
 
         // Preserve internal information of mod_quiz.
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
