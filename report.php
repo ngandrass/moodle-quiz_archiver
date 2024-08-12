@@ -72,7 +72,7 @@ class quiz_archiver_report extends report_base {
     /**
      * Determines if the quiz with the given ID can be archived.
      *
-     * @param $quizid int The quiz ID to check.
+     * @param int $quizid The quiz ID to check.
      * @return bool True if the quiz can be archived, false otherwise.
      */
     public static function quiz_can_be_archived(int $quizid): bool {
