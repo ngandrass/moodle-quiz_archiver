@@ -172,6 +172,7 @@ class quiz_archiver_report extends report_base {
             'baseurl' => $this->base_url(),
             'jobOverviewTable' => $jobtblhtml,
             'jobs' => $this->generate_job_metadata_tplctx(),
+            'time' => time(),
         ]);
 
         return true;

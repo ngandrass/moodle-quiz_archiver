@@ -4,6 +4,7 @@
 
 - Improve status and error notifications for all actions (job creation, deletion, ...)
 - Prevent form data resubmission on page reload
+- Add tooltip to archive overview refresh button and list time of last page refresh
 
 
 ## Version 1.4.0 (2024072900)

@@ -100,6 +100,7 @@ $string['export_report_section_history_help'] = 'Antworthistorie für alle Testf
 $string['export_report_section_attachments'] = 'Dateiabgaben einschließen';
 $string['export_report_section_attachments_help'] = 'Alle Dateiabgaben (z.B. von Freitextaufgaben) im Archiv einschließen. Warnung: Dies kann die Archivgröße erheblich erhöhen.';
 $string['job_overview'] = 'Testarchive';
+$string['last_updated'] = 'Zuletzt aktualisiert';
 $string['num_attempts'] = 'Anzahl der Testversuche';
 
 // Job creation form: Filename pattern.

@@ -32,7 +32,8 @@
                 "jobid": "45edd9f6-3784-11ee-be56-0242ac120002",
                 "json": "{...}"
             }
-        ]
+        ],
+        "time": 0
     }
 }}
 
@@ -40,10 +41,20 @@
 {{#jobOverviewTable}}
 <h1>
     {{#str}} job_overview, quiz_archiver {{/str}}
-    <a href="{{{baseurl}}}" class="small mx-2" title="{{#str}} refresh, moodle {{/str}}">
+    <a
+        href="{{{baseurl}}}"
+        class="small mx-2"
+        title="{{#str}} refresh, moodle {{/str}}"
+        data-toggle="tooltip"
+        data-placement="right"
+    >
         <i class="fa fa-rotate-right"></i>
     </a>
 </h1>
+<div>
+    {{#str}} last_updated, quiz_archiver {{/str}}:
+    {{#userdate}} {{time}}, %T {{/userdate}}
+</div>
 <div>
     {{{jobOverviewTable}}}
 </div>
