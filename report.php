@@ -149,6 +149,7 @@ class quiz_archiver_report extends report_base {
                     false
                 );
             }
+            return true;
         }
 
         // Render quiz archive form. Logic is handled in handle_posted_forms() above.
