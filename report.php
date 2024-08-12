@@ -119,7 +119,7 @@ class quiz_archiver_report extends report_base {
             return true;
         }
 
-        // Handle GET-based alerts
+        // Handle GET-based alerts.
         if (optional_param('al', null, PARAM_TEXT) !== null) {
             echo $OUTPUT->notification(
                 get_string(

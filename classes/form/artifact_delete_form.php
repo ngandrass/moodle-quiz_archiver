@@ -44,7 +44,8 @@ class artifact_delete_form extends \moodleform {
      * @throws \coding_exception
      */
     public function definition() {
-         $mform = $this->_form;
+        global $OUTPUT;
+        $mform = $this->_form;
 
         // Find job.
         $job = ArchiveJob::get_by_jobid($this->optional_param('jobid', null, PARAM_TEXT));
@@ -77,14 +78,11 @@ class artifact_delete_form extends \moodleform {
         }
 
         // Print warning element.
-        $mform->addElement('html', <<<EOD
-            <div class="alert alert-warning" role="alert">
-                <h4>$warnhead</h4>
-                $warnmsg
-                <hr/>
-                $warndetails
-            </div>
-        EOD);
+        $mform->addElement('html', $OUTPUT->notification(
+            "<h4>$warnhead</h4> $warnmsg <hr/> $warndetails",
+            \core\output\notification::NOTIFY_WARNING,
+            false,
+        ));
 
         // Preserve internal information of mod_quiz.
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
