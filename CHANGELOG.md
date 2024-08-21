@@ -2,13 +2,13 @@
 
 ## Version X.X.X (XXXXXXXXXX)
 
+- Switch to semantic versioning (see README.md, Section: "Versioning and Compatibility")
 - Improve status and error notifications for all actions (job creation, deletion, ...)
 - Prevent form data resubmission on page reload
 - Add tooltip to archive overview refresh button and list time of last page refresh
 - Improve visual presentation of the quiz archive overview table
 - Improve visual presentation of the quiz archive creation form
 - Add complex examples (large image compression, GeoGebra applets) to reference course
-
 
 
 ## Version 1.4.0 (2024072900)
