@@ -168,17 +168,17 @@ final class get_backup_status_test extends \advanced_testcase {
             'Valid' => array_merge([
                 'jobid' => null,
                 'backupid' => null,
-                'shouldfail' => false
+                'shouldfail' => false,
             ]),
             'Invalid jobid' => array_merge([
                 'jobid' => '<a href="localhost">Foo</a>',
                 'backupid' => null,
-                'shouldfail' => true
+                'shouldfail' => true,
             ]),
             'Invalid backupid' => array_merge([
                 'jobid' => null,
                 'backupid' => '<a href="localhost">Bar</a>',
-                'shouldfail' => true
+                'shouldfail' => true,
             ]),
         ];
     }
