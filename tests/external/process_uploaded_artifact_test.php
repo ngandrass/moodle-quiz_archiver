@@ -196,15 +196,15 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * @covers \quiz_archiver\external\process_uploaded_artifact::execute
      * @covers \quiz_archiver\external\process_uploaded_artifact::validate_parameters
      *
-     * @param string $jobid Job ID
-     * @param string $artifactcomponent Component name
-     * @param int $artifactcontextid Context ID
-     * @param int $artifactuserid User ID
-     * @param string $artifactfilearea File area name
-     * @param string $artifactfilename File name
-     * @param string $artifactfilepath File path
-     * @param int $artifactitemid Item ID
-     * @param string $artifactsha256sum SHA256 checksum
+     * @param string|null $jobid Job ID
+     * @param string|null $artifactcomponent Component name
+     * @param int|null $artifactcontextid Context ID
+     * @param int|null $artifactuserid User ID
+     * @param string|null $artifactfilearea File area name
+     * @param string|null $artifactfilename File name
+     * @param string|null $artifactfilepath File path
+     * @param int|null $artifactitemid Item ID
+     * @param string|null $artifactsha256sum SHA256 checksum
      * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \coding_exception
@@ -213,33 +213,36 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_parameter_validation(
-        string $jobid,
-        string $artifactcomponent,
-        int    $artifactcontextid,
-        int    $artifactuserid,
-        string $artifactfilearea,
-        string $artifactfilename,
-        string $artifactfilepath,
-        int    $artifactitemid,
-        string $artifactsha256sum,
-        bool   $shouldfail
+        ?string $jobid,
+        ?string $artifactcomponent,
+        ?int    $artifactcontextid,
+        ?int    $artifactuserid,
+        ?string $artifactfilearea,
+        ?string $artifactfilename,
+        ?string $artifactfilepath,
+        ?int    $artifactitemid,
+        ?string $artifactsha256sum,
+        bool    $shouldfail
     ): void {
+        // Create mock quiz.
         $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $base = $this->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
 
         if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
         }
 
         process_uploaded_artifact::execute(
-            $jobid,
-            $artifactcomponent,
-            $artifactcontextid,
-            $artifactuserid,
-            $artifactfilearea,
-            $artifactfilename,
-            $artifactfilepath,
-            $artifactitemid,
-            $artifactsha256sum
+            $jobid === null ? $base['jobid'] : $jobid,
+            $artifactcomponent === null ? $base['artifact_component'] : $artifactcomponent,
+            $artifactcontextid === null ? $base['artifact_contextid'] : $artifactcontextid,
+            $artifactuserid === null ? $base['artifact_userid'] : $artifactuserid,
+            $artifactfilearea === null ? $base['artifact_filearea'] : $artifactfilearea,
+            $artifactfilename === null ? $base['artifact_filename'] : $artifactfilename,
+            $artifactfilepath === null ? $base['artifact_filepath'] : $artifactfilepath,
+            $artifactitemid === null ? $base['artifact_itemid'] : $artifactitemid,
+            $artifactsha256sum === null ? $base['artifact_sha256sum'] : $artifactsha256sum
         );
     }
 
@@ -249,9 +252,20 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * @return array[] Test data
      */
     public static function parameter_data_provider(): array {
-        $self = new self();
-        $mocks = $self->getDataGenerator()->create_mock_quiz();
-        $base = $self->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
+        // Create base data (no modification).
+        $base = [
+            "jobid" => null,
+            "artifact_component" => null,
+            "artifact_contextid" => null,
+            "artifact_userid" => null,
+            "artifact_filearea" => null,
+            "artifact_filename" => null,
+            "artifact_filepath" => null,
+            "artifact_itemid" => null,
+            "artifact_sha256sum" => null,
+        ];
+
+        // Define test datasets.
         return [
             'Valid' => array_merge($base, [
                 'shouldfail' => false,
