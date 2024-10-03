@@ -50,6 +50,7 @@ theme:
     repo: fontawesome/brands/github
   features:
     - content.action.edit
+    - content.code.copy
     - navigation.expand
     - navigation.indexes
     - navigation.sections
