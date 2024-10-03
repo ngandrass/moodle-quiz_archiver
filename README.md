@@ -35,7 +35,7 @@ number of software dependencies on the webserver. It can easily be [deployed
 using Docker](https://github.com/ngandrass/moodle-quiz-archive-worker#installation).
 
 Available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_archiver):\
-[![Moodle Plugin Directory](doc/moodle-plugin-directory-button.png)](https://moodle.org/plugins/quiz_archiver)
+[![Moodle Plugin Directory](docs/assets/moodle-plugin-directory-button.png)](https://moodle.org/plugins/quiz_archiver)
 
 
 -----
@@ -192,10 +192,10 @@ Moodle admin interface.
 6. Close the window (7)
 7. (Optional) Adjust the default plugin setting on the plugin settings page
 
-[![Screenshot: Configuration - Automatic Configuration 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
-[![Screenshot: Configuration - Automatic Configuration 2](doc/configuration/configuration_plugin_autoinstall_2_thumb.png)](doc/configuration/configuration_plugin_autoinstall_2.png)
-[![Screenshot: Configuration - Automatic Configuration 3](doc/configuration/configuration_plugin_autoinstall_3_thumb.png)](doc/configuration/configuration_plugin_autoinstall_3.png)
-[![Screenshot: Configuration - Automatic Configuration 4](doc/configuration/configuration_plugin_autoinstall_4_thumb.png)](doc/configuration/configuration_plugin_autoinstall_4.png)
+[![Screenshot: Configuration - Automatic Configuration 1](docs/assets/configuration/configuration_plugin_settings_1_thumb.png)](docs/assets/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - Automatic Configuration 2](docs/assets/configuration/configuration_plugin_autoinstall_2_thumb.png)](docs/assets/configuration/configuration_plugin_autoinstall_2.png)
+[![Screenshot: Configuration - Automatic Configuration 3](docs/assets/configuration/configuration_plugin_autoinstall_3_thumb.png)](docs/assets/configuration/configuration_plugin_autoinstall_3.png)
+[![Screenshot: Configuration - Automatic Configuration 4](docs/assets/configuration/configuration_plugin_autoinstall_4_thumb.png)](docs/assets/configuration/configuration_plugin_autoinstall_4.png)
 
 
 #### Using the Command Line Interface (CLI)
@@ -257,8 +257,8 @@ Options:
       lastname (5), and a hidden email address (6)
    3. Create the user (7)
    
-   [![Screenshot: Configuration - Create Moodle User 1](doc/configuration/configuration_create_moodle_user_1_thumb.png)](doc/configuration/configuration_create_moodle_user_1.png)
-   [![Screenshot: Configuration - Create Moodle User 2](doc/configuration/configuration_create_moodle_user_2_thumb.png)](doc/configuration/configuration_create_moodle_user_2.png)
+   [![Screenshot: Configuration - Create Moodle User 1](docs/assets/configuration/configuration_create_moodle_user_1_thumb.png)](docs/assets/configuration/configuration_create_moodle_user_1.png)
+   [![Screenshot: Configuration - Create Moodle User 2](docs/assets/configuration/configuration_create_moodle_user_2_thumb.png)](docs/assets/configuration/configuration_create_moodle_user_2.png)
 
 2. Create a global role to handle permissions for the `quiz_archiver` Moodle user
    1. Navigate to _Site Administration_ > _Users_ (1) > _Permissions_ > _Define roles_ (2)
@@ -271,10 +271,10 @@ Options:
    5. Click on _Continue_ (6) to import the role definitions for review
    6. Optionally change the role name or description and create the role (7)
    
-   [![Screenshot: Configuration - Create Role 1](doc/configuration/configuration_create_role_1_thumb.png)](doc/configuration/configuration_create_role_1.png)
-   [![Screenshot: Configuration - Create Role 2](doc/configuration/configuration_create_role_2_thumb.png)](doc/configuration/configuration_create_role_2.png)
-   [![Screenshot: Configuration - Create Role 3](doc/configuration/configuration_create_role_3_thumb.png)](doc/configuration/configuration_create_role_3.png)
-   [![Screenshot: Configuration - Create Role 4](doc/configuration/configuration_create_role_4_thumb.png)](doc/configuration/configuration_create_role_4.png)
+   [![Screenshot: Configuration - Create Role 1](docs/assets/configuration/configuration_create_role_1_thumb.png)](docs/assets/configuration/configuration_create_role_1.png)
+   [![Screenshot: Configuration - Create Role 2](docs/assets/configuration/configuration_create_role_2_thumb.png)](docs/assets/configuration/configuration_create_role_2.png)
+   [![Screenshot: Configuration - Create Role 3](docs/assets/configuration/configuration_create_role_3_thumb.png)](docs/assets/configuration/configuration_create_role_3.png)
+   [![Screenshot: Configuration - Create Role 4](docs/assets/configuration/configuration_create_role_4_thumb.png)](docs/assets/configuration/configuration_create_role_4.png)
 
 3. Assign the `quiz_archiver` Moodle user to the created role
    1. Navigate to _Site Administration_ > _Users_ (1) > _Permissions_ > _Assign system roles_ (2)
@@ -282,9 +282,9 @@ Options:
    3. Search the created `quiz_archiver` Moodle user (4), select it in the list
       of potential users (5), and add it to the role (6)
    
-   [![Screenshot: Configuration - Assign Role 1](doc/configuration/configuration_assign_role_1_thumb.png)](doc/configuration/configuration_assign_role_1.png)
-   [![Screenshot: Configuration - Assign Role 2](doc/configuration/configuration_assign_role_2_thumb.png)](doc/configuration/configuration_assign_role_2.png)
-   [![Screenshot: Configuration - Assign Role 3](doc/configuration/configuration_assign_role_3_thumb.png)](doc/configuration/configuration_assign_role_3.png)
+   [![Screenshot: Configuration - Assign Role 1](docs/assets/configuration/configuration_assign_role_1_thumb.png)](docs/assets/configuration/configuration_assign_role_1.png)
+   [![Screenshot: Configuration - Assign Role 2](docs/assets/configuration/configuration_assign_role_2_thumb.png)](docs/assets/configuration/configuration_assign_role_2.png)
+   [![Screenshot: Configuration - Assign Role 3](docs/assets/configuration/configuration_assign_role_3_thumb.png)](docs/assets/configuration/configuration_assign_role_3.png)
 
 ### 2. Setup Webservice
 
@@ -296,10 +296,10 @@ Options:
    4. Click on _Enable protocols_ (6), enable the _REST protocol_ (7), and save the
       changes (8)
    
-   [![Screenshot: Configuration - Enable Webservices 1](doc/configuration/configuration_enable_webservices_1_thumb.png)](doc/configuration/configuration_enable_webservices_1.png)
-   [![Screenshot: Configuration - Enable Webservices 2](doc/configuration/configuration_enable_webservices_2_thumb.png)](doc/configuration/configuration_enable_webservices_2.png)
-   [![Screenshot: Configuration - Enable Webservices 3](doc/configuration/configuration_enable_webservices_3_thumb.png)](doc/configuration/configuration_enable_webservices_3.png)
-   [![Screenshot: Configuration - Enable Webservices 4](doc/configuration/configuration_enable_webservices_4_thumb.png)](doc/configuration/configuration_enable_webservices_4.png)
+   [![Screenshot: Configuration - Enable Webservices 1](docs/assets/configuration/configuration_enable_webservices_1_thumb.png)](docs/assets/configuration/configuration_enable_webservices_1.png)
+   [![Screenshot: Configuration - Enable Webservices 2](docs/assets/configuration/configuration_enable_webservices_2_thumb.png)](docs/assets/configuration/configuration_enable_webservices_2.png)
+   [![Screenshot: Configuration - Enable Webservices 3](docs/assets/configuration/configuration_enable_webservices_3_thumb.png)](docs/assets/configuration/configuration_enable_webservices_3.png)
+   [![Screenshot: Configuration - Enable Webservices 4](docs/assets/configuration/configuration_enable_webservices_4_thumb.png)](docs/assets/configuration/configuration_enable_webservices_4.png)
 
 2. Create an external webservice for the quiz archive worker to use
    1. Navigate to _Site Administration_ > _Server_ (1) > _Web services_ > _External services_ (2)
@@ -308,9 +308,9 @@ Options:
    4. Expand the additional settings (6), enable file up- and download (7)
    5. Create the new webservice by clicking _Add service_ (8)
 
-   [![Screenshot: Configuration - Create Webservice 1](doc/configuration/configuration_create_webservice_1_thumb.png)](doc/configuration/configuration_create_webservice_1.png)
-   [![Screenshot: Configuration - Create Webservice 2](doc/configuration/configuration_create_webservice_2_thumb.png)](doc/configuration/configuration_create_webservice_2.png)
-   [![Screenshot: Configuration - Create Webservice 3](doc/configuration/configuration_create_webservice_3_thumb.png)](doc/configuration/configuration_create_webservice_3.png)
+   [![Screenshot: Configuration - Create Webservice 1](docs/assets/configuration/configuration_create_webservice_1_thumb.png)](docs/assets/configuration/configuration_create_webservice_1.png)
+   [![Screenshot: Configuration - Create Webservice 2](docs/assets/configuration/configuration_create_webservice_2_thumb.png)](docs/assets/configuration/configuration_create_webservice_2.png)
+   [![Screenshot: Configuration - Create Webservice 3](docs/assets/configuration/configuration_create_webservice_3_thumb.png)](docs/assets/configuration/configuration_create_webservice_3.png)
 
 3. Add all `quiz_archiver_*` webservice functions to the `quiz_archiver` external
    service
@@ -320,10 +320,10 @@ Options:
    4. Search for `quiz_archiver` (5) and add all `quiz_archiver_*` functions
    5. Save the changes by clicking _Add functions_ (6)
 
-   [![Screenshot: Configuration - Assign Webservice Functions 1](doc/configuration/configuration_assign_webservice_functions_1_thumb.png)](doc/configuration/configuration_assign_webservice_functions_1.png)
-   [![Screenshot: Configuration - Assign Webservice Functions 2](doc/configuration/configuration_assign_webservice_functions_2_thumb.png)](doc/configuration/configuration_assign_webservice_functions_2.png)
-   [![Screenshot: Configuration - Assign Webservice Functions 3](doc/configuration/configuration_assign_webservice_functions_3_thumb.png)](doc/configuration/configuration_assign_webservice_functions_3.png)
-   [![Screenshot: Configuration - Assign Webservice Functions 4](doc/configuration/configuration_assign_webservice_functions_4_thumb.png)](doc/configuration/configuration_assign_webservice_functions_4.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 1](docs/assets/configuration/configuration_assign_webservice_functions_1_thumb.png)](docs/assets/configuration/configuration_assign_webservice_functions_1.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 2](docs/assets/configuration/configuration_assign_webservice_functions_2_thumb.png)](docs/assets/configuration/configuration_assign_webservice_functions_2.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 3](docs/assets/configuration/configuration_assign_webservice_functions_3_thumb.png)](docs/assets/configuration/configuration_assign_webservice_functions_3.png)
+   [![Screenshot: Configuration - Assign Webservice Functions 4](docs/assets/configuration/configuration_assign_webservice_functions_4_thumb.png)](docs/assets/configuration/configuration_assign_webservice_functions_4.png)
 
 
 ### 3. Configure Plugin Settings
@@ -346,8 +346,8 @@ Options:
 7. Save all settings and create your first quiz archive (see [Usage](#usage)).
 8. (Optional) Adjust the default [capability](#capabilities) assignments.
 
-[![Screenshot: Configuration - Plugin Settings 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
-[![Screenshot: Configuration - Plugin Settings 2](doc/configuration/configuration_plugin_settings_2_thumb.png)](doc/configuration/configuration_plugin_settings_2.png)
+[![Screenshot: Configuration - Plugin Settings 1](docs/assets/configuration/configuration_plugin_settings_1_thumb.png)](docs/assets/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - Plugin Settings 2](docs/assets/configuration/configuration_plugin_settings_2_thumb.png)](docs/assets/configuration/configuration_plugin_settings_2.png)
 
 </details>
 
@@ -455,9 +455,9 @@ To customize these options:
 
 Locked options will be grayed out during archive creation (8).
 
-[![Screenshot: Configuration - Archive job presets 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
-[![Screenshot: Configuration - Archive job presets 2](doc/configuration/configuration_archive_job_presets_2_thumb.png)](doc/configuration/configuration_archive_job_presets_2.png)
-[![Screenshot: Configuration - Archive job presets 3](doc/configuration/configuration_archive_job_presets_3_thumb.png)](doc/configuration/configuration_archive_job_presets_3.png)
+[![Screenshot: Configuration - Archive job presets 1](docs/assets/configuration/configuration_plugin_settings_1_thumb.png)](docs/assets/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - Archive job presets 2](docs/assets/configuration/configuration_archive_job_presets_2_thumb.png)](docs/assets/configuration/configuration_archive_job_presets_2.png)
+[![Screenshot: Configuration - Archive job presets 3](docs/assets/configuration/configuration_archive_job_presets_3_thumb.png)](docs/assets/configuration/configuration_archive_job_presets_3.png)
 
 
 ### Image optimization / compression
@@ -485,7 +485,7 @@ To enable image optimization for a quiz archive job:
 _Note: It is strongly advised to lock quality settings to global defaults using
 the [archive job presets](#archive-job-presets-global-defaults--policies)._
 
-[![Screenshot: Configuration - Image optimization](doc/configuration/configuration_job_image_optimization_thumb.png)](doc/configuration/configuration_job_image_optimization.png)
+[![Screenshot: Configuration - Image optimization](docs/assets/configuration/configuration_job_image_optimization_thumb.png)](docs/assets/configuration/configuration_job_image_optimization.png)
 
 
 ### Automatic deletion of quiz archives (retention policy)
@@ -499,7 +499,7 @@ attachments, ...) is deleted, while the job metadata is kept until manually
 deleted. This procedure allows to document the deletion of archive data in a
 traceable manner, while the privacy relevant user data is deleted.
 
-![Screenshot: Job details modal - Automatic deletion](doc/screenshots/quiz_archiver_job_details_modal_autodelete.png)
+![Screenshot: Job details modal - Automatic deletion](docs/assets/screenshots/quiz_archiver_job_details_modal_autodelete.png)
 
 If an archive is scheduled for automatic deletion, its remaining lifetime is
 shown in the job details modal, as depict above. You can access it via the
@@ -518,7 +518,7 @@ To enable the scheduled deletion for a single quiz archive:
 4. Set the desired retention period (2)
 5. Create the archive job (3)
 
-[![Screenshot: Configuration - Automatic archive deletion](doc/configuration/configuration_job_autodelete_thumb.png)](doc/configuration/configuration_job_autodelete.png)
+[![Screenshot: Configuration - Automatic archive deletion](docs/assets/configuration/configuration_job_autodelete_thumb.png)](docs/assets/configuration/configuration_job_autodelete.png)
 
 
 #### Enable automatic deletion globally
@@ -546,8 +546,8 @@ manually later on.
 4. (Optional) Enable automatic archive signing by checking `tsp_automatic_signing` (5)
 5. Save all settings (6)
 
-[![Screenshot: Configuration - TSP Settings 1](doc/configuration/configuration_plugin_settings_1_thumb.png)](doc/configuration/configuration_plugin_settings_1.png)
-[![Screenshot: Configuration - TSP Settings 2](doc/configuration/configuration_tsp_settings_2_thumb.png)](doc/configuration/configuration_tsp_settings_2.png)
+[![Screenshot: Configuration - TSP Settings 1](docs/assets/configuration/configuration_plugin_settings_1_thumb.png)](docs/assets/configuration/configuration_plugin_settings_1.png)
+[![Screenshot: Configuration - TSP Settings 2](docs/assets/configuration/configuration_tsp_settings_2_thumb.png)](docs/assets/configuration/configuration_tsp_settings_2.png)
 
 
 #### Accessing TSP data
@@ -556,7 +556,7 @@ Both the TSP query and the TSP response can be accessed via the job details
 dialog. To do so, navigate to the quiz archiver overview page and click the
 _Show details_ button for the desired archive job.
 
-![Image of archive job details: TSP data](doc/screenshots/quiz_archiver_job_details_modal_tsp_data.png)
+![Image of archive job details: TSP data](docs/assets/screenshots/quiz_archiver_job_details_modal_tsp_data.png)
 
 
 #### Automatic archive signing
@@ -611,19 +611,19 @@ located at [res/backup-moodle2-course-qa-ref.mbz](res/backup-moodle2-course-qa-r
 ## Screenshots
 
 ### Quiz Archiver overview page
-![Image of quiz archiver overview page](doc/screenshots/quiz_archiver_overview_page.png)
+![Image of quiz archiver overview page](docs/assets/screenshots/quiz_archiver_overview_page.png)
 
 ### New job queued while another job is running
-![Image of new job queued while another job is running](doc/screenshots/quiz_archiver_new_job_queued.png)
+![Image of new job queued while another job is running](docs/assets/screenshots/quiz_archiver_new_job_queued.png)
 
 ### Quiz archive job details
-![Image of quiz archive job details](doc/screenshots/quiz_archiver_job_details_modal.png)
+![Image of quiz archive job details](docs/assets/screenshots/quiz_archiver_job_details_modal.png)
 
 ### Example of PDF report (excerpts)
-![Image of example of PDF report (extract): Header](doc/screenshots/quiz_archiver_report_example_pdf_header.png)
-![Image of example of PDF report (extract): Question 1](doc/screenshots/quiz_archiver_report_example_pdf_question_1.png)
-![Image of example of PDF report (extract): Question 2](doc/screenshots/quiz_archiver_report_example_pdf_question_2.png)
-![Image of example of PDF report (extract): Question 3](doc/screenshots/quiz_archiver_report_example_pdf_question_3.png)
+![Image of example of PDF report (extract): Header](docs/assets/screenshots/quiz_archiver_report_example_pdf_header.png)
+![Image of example of PDF report (extract): Question 1](docs/assets/screenshots/quiz_archiver_report_example_pdf_question_1.png)
+![Image of example of PDF report (extract): Question 2](docs/assets/screenshots/quiz_archiver_report_example_pdf_question_2.png)
+![Image of example of PDF report (extract): Question 3](docs/assets/screenshots/quiz_archiver_report_example_pdf_question_3.png)
 
 -----
 

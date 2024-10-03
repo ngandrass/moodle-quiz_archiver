@@ -55,6 +55,7 @@ theme:
 nav:
   - "Introduction": index.md
   - "Screenshots": screenshots.md
+  - "Issues": bugreport.md
   - "Changelog": changelog.md
 
   - "Installation":
