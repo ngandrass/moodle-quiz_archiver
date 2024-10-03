@@ -1,6 +1,12 @@
 # Installation
 
-TODO
+This section provides instructions on how to install the quiz archiver Moodle
+plugin.
+
+If you encounter any issues during the installation process, please open a bug
+report or ask a question in the issue tracker over on GitHub.
+
+[:simple-github: Issue Tracker](https://github.com/ngandrass/moodle-quiz_archiver/issues){ .md-button }
 
 
 ## Overview
@@ -21,7 +27,21 @@ the job to restrict queryable data to the required minimum.
 
 ## Requirements
 
-TODO
+In order to use the quiz archiver plugin, you need to have the following
+prerequisites met:
+
+- Moodle 4.1 (LTS) or newer
+- PHP 7.4 or newer
+- PostgreSQL or MariaDB / MySQL
+- Admin access to the Moodle instance and shell access to the server (e.g., SSH)
+
+!!! danger "A note on PHP versions"
+    Please always use the **most recent version of PHP** supported by your
+    Moodle version. Older PHP versions contain security vulnerabilities and bugs.
+
+    You can check the specific requirements and supported software versions for
+    your specific Moodle version over at [the Moodle Docs](https://moodledev.io/general/releases).
+
 
 
 ## Versioning and Compatibility
@@ -60,3 +80,13 @@ Special development versions, used for testing, can be created but will never be
 published to the Moodle plugin directory. Such development versions are marked
 by a `+dev-[TIMESTAMP]` suffix, e.g., `2.4.2+dev-2022010100`.
 
+
+## Next steps
+
+This plugin requires the installation of the
+[quiz_archiver Moodle plugin](/installation/moodleplugin) Moodle plugin and an
+additional [quiz archive worker service](/installation/archiveworker) to work.
+
+[:simple-moodle: Installation: Moodle Plugin](/installation/archiveworker){ .md-button }
+&nbsp;&nbsp;&nbsp;
+[:simple-docker: Installation: Archive Worker Service](/installation/archiveworker){ .md-button }

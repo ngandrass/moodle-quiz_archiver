@@ -73,3 +73,10 @@ Use the following buttons to jump to the desired section:
 - Data compression and vector based MathJax formulas to preserve disk space
 - Technical separation of Moodle and archive worker service
 - Data-minimising and security driven design
+
+<br>
+[:simple-moodle: Moodle Plugin Directory](https://moodle.org/plugins/quiz_archiver){ .md-button }
+&nbsp; &nbsp; &nbsp;
+[:simple-github: GitHub](https://github.com/ngandrass/moodle-quiz_archiver){ .md-button }
+&nbsp; &nbsp; &nbsp;
+[:fontawesome-solid-bug: Bug Tracker](https://github.com/ngandrass/moodle-quiz_archiver/issues){ .md-button }

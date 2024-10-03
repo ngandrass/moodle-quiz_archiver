@@ -30,7 +30,9 @@ Alternatively, you can run
 to complete the installation from the command line.
 
 
-## Next step
+## Next Steps
 
 After installing the Moodle plugin, you need to install the additional [quiz
 archive worker service](/installation/archiveworker) to make the plugin work.
+
+[:simple-docker: Installation: Archive Worker Service](/installation/archiveworker){ .md-button }

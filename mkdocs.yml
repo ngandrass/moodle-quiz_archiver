@@ -21,17 +21,29 @@ extra:
     - icon: fontawesome/solid/bug
       link: https://github.com/ngandrass/moodle-quiz-archive-worker/issues
       name: "Report a Bug"
+
 #   version:
 #     provider: mike
+
 plugins:
   # - mike
+  - glightbox:
+      shadow: true
   - search
   - social
+
 markdown_extensions:
+  - admonition
   - attr_list
+  - footnotes
+  - md_in_html
+  - tables
+  - pymdownx.details
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+
 theme:
   name: material
   icon:
@@ -56,6 +68,9 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+
+extra_css:
+  - css/extra.css
 
 nav:
   - "Introduction": index.md

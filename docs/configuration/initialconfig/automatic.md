@@ -10,6 +10,10 @@ supported.
 
 ## Using the Moodle Admin Interface
 
+!!! info
+    This is the recommended way to configure the Quiz Archiver Moodle plugin for
+    most users.
+
 1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
    _Quiz_ > _Quiz Archiver_ (2)
 2. Click the _Automatic configuration_ button (3)
@@ -19,13 +23,17 @@ supported.
 6. Close the window (7)
 7. (Optional) Adjust the default plugin setting on the plugin settings page
 
-[![Screenshot: Configuration - Automatic Configuration 1](/assets/configuration/configuration_plugin_settings_1_thumb.png)](/assets/configuration/configuration_plugin_settings_1.png)
-[![Screenshot: Configuration - Automatic Configuration 2](/assets/configuration/configuration_plugin_autoinstall_2_thumb.png)](/assets/configuration/configuration_plugin_autoinstall_2.png)
-[![Screenshot: Configuration - Automatic Configuration 3](/assets/configuration/configuration_plugin_autoinstall_3_thumb.png)](/assets/configuration/configuration_plugin_autoinstall_3.png)
-[![Screenshot: Configuration - Automatic Configuration 4](/assets/configuration/configuration_plugin_autoinstall_4_thumb.png)](/assets/configuration/configuration_plugin_autoinstall_4.png)
+![Screenshot: Configuration - Automatic Configuration 1](/assets/configuration/configuration_plugin_settings_1.png){ .img-thumbnail }
+![Screenshot: Configuration - Automatic Configuration 1](/assets/configuration/configuration_plugin_autoinstall_2.png){ .img-thumbnail }
+![Screenshot: Configuration - Automatic Configuration 1](/assets/configuration/configuration_plugin_autoinstall_3.png){ .img-thumbnail }
+![Screenshot: Configuration - Automatic Configuration 1](/assets/configuration/configuration_plugin_autoinstall_4.png){ .img-thumbnail }
 
 
 ## Using the Command Line Interface (CLI)
+
+!!! warning
+    This method is recommended for advanced users only. If you have used the
+    Moodle admin interface to configure the plugin, you can skip this step.
 
 If you want to configure this plugin in an automated fashion, you can use the
 provided CLI script. The script is located at
@@ -65,3 +73,13 @@ Options:
     --rolename=<value>  Sets a custom name for the web service role (default: quiz_archiver)
     --username=<value>  Sets a custom username for the web service user (default: quiz_archiver_serviceaccount)
 ```
+
+## Next Steps
+
+You finished the initial configuration of the quiz archiver plugin. You now can
+either directly start archiving quizzes (see [Usage](/usage)) or adjust the
+default plugin settings (see [Job Presets / Policies](/configuration/presets)).
+
+[:material-account: Usage](/usage){ .md-button }
+&nbsp; &nbsp; &nbsp;
+[:material-file-cog: Job Presets](/configuration/presets){ .md-button }
