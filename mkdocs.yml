@@ -19,7 +19,7 @@ extra:
     - icon: fontawesome/brands/docker
       link: https://hub.docker.com/r/ngandrass/moodle-quiz-archive-worker
     - icon: fontawesome/solid/bug
-      link: https://github.com/ngandrass/moodle-quiz-archive-worker/issues
+      link: https://github.com/ngandrass/moodle-quiz_archiver/issues
       name: "Report a Bug"
 
 #   version:
