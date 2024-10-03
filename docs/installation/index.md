@@ -63,15 +63,15 @@ bug fixes, features, and optimizations.
 ### Compatibility Examples
 
 | Moodle Plugin | Archive Worker | Compatible |
-|------------|----------------|------------|
-| 1.0.0      | 1.0.0          | Yes        |
-| 1.2.3      | 1.0.0          | Yes        |
-| 1.0.0      | 1.1.2          | Yes        |
-| 2.1.4      | 2.0.1          | Yes        |
-|            |                |            |
-| 2.0.0      | 1.0.0          | No         |
-| 1.0.0      | 2.0.0          | No         |
-| 2.4.2      | 1.4.2          | No         |
+|---------------|----------------|------------|
+| 1.0.0         | 1.0.0          | Yes        |
+| 1.2.3         | 1.0.0          | Yes        |
+| 1.0.0         | 1.1.2          | Yes        |
+| 2.1.4         | 2.0.1          | Yes        |
+|               |                |            |
+| 2.0.0         | 1.0.0          | No         |
+| 1.0.0         | 2.0.0          | No         |
+| 2.4.2         | 1.4.2          | No         |
 
 
 ### Development / Testing Versions
