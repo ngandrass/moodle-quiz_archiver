@@ -1,5 +1,16 @@
 # Moodle Quiz Archiver
 
+[![Latest Version](https://img.shields.io/github/v/release/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/releases)
+[![Maintenance Status](https://img.shields.io/maintenance/yes/9999)](https://github.com/ngandrass/moodle-quiz_archiver/)
+[![License](https://img.shields.io/github/license/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/blob/master/LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/pulls)
+[![Donate with PayPal](https://img.shields.io/badge/PayPal-donate-orange)](https://www.paypal.me/ngandrass)
+[![Sponsor with GitHub](https://img.shields.io/badge/GitHub-sponsor-orange)](https://github.com/sponsors/ngandrass)
+[![GitHub Stars](https://img.shields.io/github/stars/ngandrass/moodle-quiz_archiver?style=social)](https://github.com/ngandrass/moodle-quiz_archiver/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/ngandrass/moodle-quiz_archiver?style=social)](https://github.com/ngandrass/moodle-quiz_archiver/network/members)
+[![GitHub Contributors](https://img.shields.io/github/contributors/ngandrass/moodle-quiz_archiver?style=social)](https://github.com/ngandrass/moodle-quiz_archiver/graphs/contributors)
+
 Archives quiz attempts as PDF and HTML files for long-term storage independent
 of Moodle. If desired, Moodle backups (`.mbz`) of both the quiz and the whole
 course can be included. A checksum is calculated for every file within the
@@ -22,6 +33,17 @@ Quiz archives are created by an external [quiz archive worker](https://github.co
 service to remove load from Moodle and to eliminate the need to install a large
 number of software dependencies on the webserver. It can easily be deployed
 using Docker.
+
+
+## Getting Started
+
+Use the following buttons to jump to the desired section:
+
+[:material-download: Installation](/installation){ .md-button }
+&nbsp; &nbsp; &nbsp;
+[:material-cog: Configuration](/configuration){ .md-button }
+&nbsp; &nbsp; &nbsp;
+[:material-account: Usage](/usage){ .md-button }
 
 
 ## Features
