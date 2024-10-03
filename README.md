@@ -462,7 +462,7 @@ Locked options will be grayed out during archive creation (8).
 
 ### Image optimization / compression
 
-If quizzes contain a large number of images or images with a excessively high
+If quizzes contain a large number of images or images with an excessively high
 resolutions (e.g., 4000x3000 px), the quiz archiver can compress such images
 during archiving. This can significantly reduce the size of the generated
 PDF files. HTML source files, if generated, are never modified and remain
