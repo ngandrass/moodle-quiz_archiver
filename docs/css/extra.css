@@ -1,8 +1,12 @@
+.md-main {
+    margin-bottom: 32px;
+}
+
 .img-thumbnail {
     margin-right: 6px;
     border: 2px solid #dddddd;
-    max-width: 128px;
-    max-height: 128px;
+    max-width: 320px !important;
+    max-height: 128px !important;
 
     box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.06);
     -webkit-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.06);
