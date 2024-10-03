@@ -31,7 +31,7 @@ the Moodle instance.
    ```
 3. From inside the `moodle-quiz-archive-worker` folder, run the application:
    ```text
-   $ docker compose up
+   docker compose up
    ```
 
 !!! info "Changing the service port"
@@ -60,7 +60,7 @@ To run the application in the background, append the `-d` argument to your
 command:
 
 ```text
-$ docker compose up -d
+docker compose up -d
 ```
 
 ### Removing the application
@@ -69,7 +69,7 @@ To remove all created containers, networks and volumes, run the following
 command from inside the `moodle-quiz-archive-worker` folder:
 
 ```text
-$ docker compose down
+docker compose down
 ```
 
 ## Installation using Docker
@@ -81,7 +81,7 @@ $ docker compose down
 1. Install [Docker](https://www.docker.com/)
 2. Run a new container:
   ```text
-  $ docker run -p 8080:8080 ngandrass/moodle-quiz-archive-worker:latest
+  docker run -p 8080:8080 ngandrass/moodle-quiz-archive-worker:latest
   ```
 
 !!! info "Changing the service port"
@@ -89,7 +89,7 @@ $ docker compose down
     first port number in the `-p` argument of the `docker run` command.
 
     ```text title="Example: Expose the service on port 4242"
-    $ docker run -p 4242:8080 moodle-quiz-archive-worker:latest
+    docker run -p 4242:8080 moodle-quiz-archive-worker:latest
     ```
 
 !!! info "Changing configuration values"
@@ -98,7 +98,7 @@ $ docker compose down
     configuration parameters see [Configuration](#configuration).
 
     ```text title="Example: Set the log level to DEBUG"
-    $ docker run -e QUIZ_ARCHIVER_LOG_LEVEL=DEBUG -p 8080:8080 moodle-quiz-archive-worker:latest
+    docker run -e QUIZ_ARCHIVER_LOG_LEVEL=DEBUG -p 8080:8080 moodle-quiz-archive-worker:latest
     ```
 
 
@@ -134,7 +134,7 @@ command. It specifies the current directory as the build context.
     variables. For more details and all available configuration parameters see
     [Configuration](#configuration).
 
-    ```shell title="Example: Set the service port to 4242"
+    ```text title="Example: Set the service port to 4242"
     QUIZ_ARCHIVER_SERVER_PORT=4242 poetry run python moodle-quiz-archive-worker.py
     ```
 

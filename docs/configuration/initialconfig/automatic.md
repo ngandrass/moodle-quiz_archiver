@@ -42,11 +42,11 @@ provided CLI script. The script is located at
 To execute the script:
 
 1. Open a terminal and navigate to the quiz archiver CLI directory:
-   ```bash
+   ```text
    cd /path/to/moodle/mod/quiz/report/archiver/cli
    ```
 2. Execute the CLI script using PHP:
-    ```bash
+    ```text
     php autoinstall.php --help
     ```
 

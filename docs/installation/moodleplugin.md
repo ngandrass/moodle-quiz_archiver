@@ -18,14 +18,18 @@ archive worker service](/installation/archiveworker) for this plugin to work.
 
 The plugin can be also installed by putting the contents of this directory to
 
-    {your/moodle/dirroot}/mod/quiz/report/archiver
+```text
+{your/moodle/dirroot}/mod/quiz/report/archiver
+```
 
 Afterward, log in to your Moodle site as an admin and go to _Site administration >
 Notifications_ to complete the installation.
 
 Alternatively, you can run
 
-    $ php admin/cli/upgrade.php
+```text
+php admin/cli/upgrade.php
+```
 
 to complete the installation from the command line.
 
