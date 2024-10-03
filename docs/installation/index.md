@@ -81,12 +81,12 @@ published to the Moodle plugin directory. Such development versions are marked
 by a `+dev-[TIMESTAMP]` suffix, e.g., `2.4.2+dev-2022010100`.
 
 
-## Next steps
+## Next Steps
 
 This plugin requires the installation of the
 [quiz_archiver Moodle plugin](/installation/moodleplugin) Moodle plugin and an
 additional [quiz archive worker service](/installation/archiveworker) to work.
 
-[:simple-moodle: Installation: Moodle Plugin](/installation/archiveworker){ .md-button }
+[:simple-moodle: Installation: Moodle Plugin](/installation/moodleplugin){ .md-button }
 &nbsp;&nbsp;&nbsp;
 [:simple-docker: Installation: Archive Worker Service](/installation/archiveworker){ .md-button }
