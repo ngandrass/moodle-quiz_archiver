@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (XXXXXXXXXX)
+
+- Create an official Quiz Archiver documentation website: [https://quizarchiver.gandrass.de/](https://quizarchiver.gandrass.de/)
+- Automate building and deployment of documentation website
+- Cleanup and restructure existing documentation within README
+
+
 ## Version 2.0.0 (2024082100)
 
 - Switch to semantic versioning (see README.md, Section: "Versioning and Compatibility")
