@@ -42,7 +42,6 @@ the [official documentation](https://quizarchiver.gandrass.de/):
 
 [![Quiz Archiver: Official Documentation](docs/assets/docs-button.png)](https://quizarchiver.gandrass.de/)
 
------
 
 ## Features
 
@@ -72,7 +71,6 @@ the [official documentation](https://quizarchiver.gandrass.de/):
 - Technical separation of Moodle and archive worker service
 - Data-minimising and security driven design
 
------
 
 ## Concept
 
@@ -89,7 +87,6 @@ webservice user to be created (see [Configuration](#configuration)). A single jo
 webservice token can only be used for the specific quiz that is associated with
 the job to restrict queryable data to the required minimum.
 
------
 
 ## Installation and Configuration
 
@@ -107,7 +104,6 @@ If you have problems installing the Quiz Archiver or have further questions,
 please feel free to open an issue within the
 [GitHub issue tracker](https://github.com/ngandrass/moodle-quiz_archiver/issues).
 
------
 
 ## Versioning and Compatibility
 
@@ -145,7 +141,6 @@ Special development versions, used for testing, can be created but will never be
 published to the Moodle plugin directory. Such development versions are marked
 by a `+dev-[TIMESTAMP]` suffix, e.g., `2.4.2+dev-2022010100`.
 
------
 
 ## Screenshots
 
@@ -164,7 +159,6 @@ by a `+dev-[TIMESTAMP]` suffix, e.g., `2.4.2+dev-2022010100`.
 ![Image of example of PDF report (extract): Question 2](docs/assets/screenshots/quiz_archiver_report_example_pdf_question_2.png)
 ![Image of example of PDF report (extract): Question 3](docs/assets/screenshots/quiz_archiver_report_example_pdf_question_3.png)
 
------
 
 ## License
 
