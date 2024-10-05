@@ -5,6 +5,7 @@
 - Create an official Quiz Archiver documentation website: [https://quizarchiver.gandrass.de/](https://quizarchiver.gandrass.de/)
 - Automate building and deployment of documentation website
 - Cleanup and restructure existing documentation within README
+- Fix PHP warning on autoinstall admin page
 
 
 ## Version 2.0.0 (2024082100)
