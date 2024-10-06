@@ -5,7 +5,7 @@ This sections describes the required steps to initially set up the plugin.
 In summary: A dedicated Moodle user, a global role to manage permissions, and a
 webservice for the archive worker must be created and the Moodle plugin must be
 configured accordingly. Luckily, this can be done automatically using a single
-button (see [Next Steps](#next-steps)).
+button (see [Automatic Configuration](/configuration/initialconfig/automatic)).
 
 If you encounter any issues during the configuration process, please open a bug
 report or ask a question in the issue tracker over on GitHub.
