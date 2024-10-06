@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (XXXXXXXXXX)
+
+- Add demo quiz archive worker information to admin settings page
+
+
 ## Version 2.0.0 (2024082100)
 
 - Switch to semantic versioning (see README.md, Section: "Versioning and Compatibility")

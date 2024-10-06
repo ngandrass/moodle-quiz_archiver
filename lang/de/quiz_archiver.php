@@ -224,7 +224,7 @@ $string['setting_webservice_desc'] = 'Der externe Service (Webservice), welcher 
 $string['setting_webservice_userid'] = 'Webservice Nutzer-ID';
 $string['setting_webservice_userid_desc'] = 'User-ID des Moodle Nutzers, der vom Archive Worker Service genutzt wird, um auf Testdaten zuzugreifen. Er muss alle Berechtigungen besitzen, die in der <a href="https://github.com/ngandrass/moodle-quiz_archiver#configuration" target="_blank">Dokumentation</a> aufgelistet sind, um korrekt zu funktionieren. Aus Sicherheitsgründen sollte dies ein dedizierter Nutzer ohne globale Administrationsrechte sein.';
 $string['setting_worker_url'] = 'Archive Worker URL';
-$string['setting_worker_url_desc'] = 'URL des Archive Worker Services, der für die Ausführung von Archivierungsaufträgen genutzt wird.<br/>Beispiel: <code>http://127.0.0.1:8080</code> oder <code>http://moodle-quiz-archive-worker:8080</code>';
+$string['setting_worker_url_desc'] = 'URL des Archive Worker Services, der für die Ausführung von Archivierungsaufträgen genutzt wird. Wenn Sie den Quiz Archiver lediglich ausprobieren wollen, können Sie vorerst auch den <a href="https://quizarchiver.gandrass.de/installation/archiveworker/#using-the-free-public-demo-service" target="_blank">kostenfreien öffentlichen Archive Worker Service</a> nutzen. <br/>Beispiel: <code>http://127.0.0.1:8080</code> oder <code>http://moodle-quiz-archive-worker:8080</code>';
 
 // Errors.
 $string['error_worker_connection_failed'] = 'Verbindung zum Archive Worker fehlgeschlagen.';
