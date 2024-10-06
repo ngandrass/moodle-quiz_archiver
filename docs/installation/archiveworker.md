@@ -24,6 +24,11 @@ service worker, you can use the free public demo worker.
     Setting up your own quiz archive worker service removes these limitations.
     See below for setup instructions.
 
+!!! warning
+    The public archive worker service must be able to access your Moodle
+    instance via the internet to work. Local and <b>private Moodle instances
+    will not work</b> with the demo worker.
+
 To use the free public demo worker, you can skip the installation for now and
 directly proceed to the [configuration section](/configuration). Make sure to
 specify the following _Archive worker URL_ (1) during configuration:
