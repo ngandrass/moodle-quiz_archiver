@@ -205,7 +205,7 @@ $string['tsp_client_error_http_code'] = 'TSP server returned HTTP status code {$
 $string['setting_autoconfigure'] = 'Automatic configuration';
 $string['setting_header_archive_worker'] = 'Archive Worker Service';
 $string['setting_header_archive_worker_desc'] = 'Configuration of the archive worker service and the Moodle web service it uses.';
-$string['setting_header_docs_desc'] = 'This plugin archives quiz attempts as PDF and HTML files for long-term storage, independent of Moodle. It <b>requires a separate <a href="https://github.com/ngandrass/moodle-quiz-archive-worker" target="_blank">worker service</a></b> to be installed for the actual archiving process to work. Please refer to the <a href="https://github.com/ngandrass/moodle-quiz_archiver#readme" target="_blank">documentation</a> for more details and setup instructions.';
+$string['setting_header_docs_desc'] = 'This plugin archives quiz attempts as PDF and HTML files for long-term storage, independent of Moodle. It <b>requires a separate <a href="https://quizarchiver.gandrass.de/installation/archiveworker/" target="_blank">worker service</a></b> to be installed for the actual archiving process to work. Please refer to the <a href="https://quizarchiver.gandrass.de/" target="_blank">documentation</a> for more details and setup instructions.';
 $string['setting_header_job_presets'] = 'Archive Presets';
 $string['setting_header_job_presets_desc'] = 'System wide default settings for quiz archive creation. These defaults can be overridden when creating a new quiz archive. However, each individual setting can also be locked to prevent managers / teachers from changing it. This can be useful when enforcing organization wide archive policies.';
 $string['setting_header_tsp'] = 'Archive Signing';
@@ -222,7 +222,7 @@ $string['setting_tsp_server_url'] = 'TSP server URL';
 $string['setting_tsp_server_url_desc'] = 'URL of the Time-Stamp Protocol (TSP) server to use.<br/>Examples: <code>https://freetsa.org/tsr</code>, <code>https://zeitstempel.dfn.de</code>, <code>http://timestamp.digicert.com</code>';
 $string['setting_webservice_desc'] = 'The external service (webservice) that is allowed to execute all <code>quiz_archiver_*</code> webservice functions. It must also have permission to up- and download files.';
 $string['setting_webservice_userid'] = 'Web service user-ID';
-$string['setting_webservice_userid_desc'] = 'User-ID of the Moodle user that is used by the archive worker service to access quiz data. It must have all capabilities that are listed in the <a href="https://github.com/ngandrass/moodle-quiz_archiver#configuration" target="_blank">documentation</a> to work properly. For security reasons, this should be a dedicated user account without full administrative privileges.';
+$string['setting_webservice_userid_desc'] = 'User-ID of the Moodle user that is used by the archive worker service to access quiz data. It must have all capabilities that are listed in the <a href="https://quizarchiver.gandrass.de/configuration/initialconfig/manual" target="_blank">documentation</a> to work properly. For security reasons, this should be a dedicated user account without full administrative privileges.';
 $string['setting_worker_url'] = 'Archive worker URL';
 $string['setting_worker_url_desc'] = 'URL of the archive worker service to call for quiz archive task execution.<br/>Example: <code>http://127.0.0.1:8080</code> or <code>http://moodle-quiz-archive-worker:8080</code>';
 
@@ -261,7 +261,7 @@ $string['task_autodelete_job_artifacts_report'] = 'Deleted {$a} quiz archives.';
 $string['autoinstall_already_configured'] = 'Plugin is already configured';
 $string['autoinstall_already_configured_long'] = 'The Quiz Archiver plugin is already configured. Automatic configuration is not possible twice.';
 $string['autoinstall_cancelled'] = 'The automatic configuration of the Quiz Archiver Plugin was cancelled. No changes were made.';
-$string['autoinstall_explanation'] = 'The Quiz Archiver plugin requires a few initial configuration steps to work (see <a href="https://github.com/ngandrass/moodle-quiz_archiver/blob/master/README.md" target="_blank">Installation</a>). You can either configure all of these settings manually or use the automatic configuration feature to take care of all Moodle related settings.';
+$string['autoinstall_explanation'] = 'The Quiz Archiver plugin requires a few initial configuration steps to work (see <a href="https://quizarchiver.gandrass.de/configuration/" target="_blank">Configuration</a>). You can either configure all of these settings manually or use the automatic configuration feature to take care of all Moodle related settings.';
 $string['autoinstall_explanation_details'] = 'The automatic configuration feature will take care of the following steps:<ul><li>Setting all plugin settings to their default values</li><li>Enabling web services and REST protocol</li><li>Creating a quiz archiver service role and a corresponding user</li><li>Creating a new web service with all required webservice functions</li><li>Authorising the user to use the webservice</li></ul>';
 $string['autoinstall_failure'] = 'The automatic configuration of the Quiz Archiver Plugin has <b>failed</b>.';
 $string['autoinstall_plugin'] = 'Quiz Archiver: Automatic configuration';
