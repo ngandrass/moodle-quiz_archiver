@@ -10,6 +10,34 @@ It renders Moodle quiz attempts into PDF files, collects Moodle backups,
 generates checksums, and packs the final quiz archives before it uploads it back
 the Moodle instance.
 
+## Using the Free Public Demo Service
+
+If you want to try the Quiz Archiver without setting up your own quiz archive
+service worker, you can use the free public demo worker.
+
+!!! notice
+    The public archive worker service is running in demo mode.
+    This means that a _DEMO MODE_ watermark will be added to all generated PDFs
+    (see screenshot below), only a limited number of attempts will be exported
+    per archive job, and only placeholder Moodle backups are included.
+
+    Setting up your own quiz archive worker service removes these limitations.
+    See below for setup instructions.
+
+To use the free public demo worker, you can skip the installation for now and
+directly proceed to the [configuration section](/configuration). Make sure to
+specify the following _Archive worker URL_ (1) during configuration:
+
+```text title="Archive worker URL"
+https://demoworker.quizarchiver.gandrass.de
+```
+
+![Screenshot: Automatic Configuration Archive Worker URL](/assets/configuration/configuration_plugin_autoinstall_workerurl.png){ .img-thumbnail }
+![Screenshot: Demo mode watermark in attempt PDF](/assets/screenshots/quiz_archiver_demomode_watermark.png){ .img-thumbnail }
+
+[:material-cog: Configuration](/configuration){ .md-button }
+
+
 ## Installation using Docker Compose
 
 !!! success "Info"
@@ -144,26 +172,27 @@ command. It specifies the current directory as the build context.
 Configuration parameters are located inside `config.py` and can be overwritten
 using the following environment variables:
 
-| Environment Variable                                            | Default Value   | Description                                                                                                              |
-|-----------------------------------------------------------------|-----------------|--------------------------------------------------------------------------------------------------------------------------|
-| `QUIZ_ARCHIVER_SERVER_HOST`                                     | `0.0.0.0`       | Host to bind to                                                                                                          |
-| `QUIZ_ARCHIVER_SERVER_PORT`                                     | `8080`          | Port to bind to                                                                                                          |
-| `QUIZ_ARCHIVER_LOG_LEVEL`                                       | `INFO`          | Logging level. One of the following: <br> `'CRITICAL'`, `'FATAL'`, `'ERROR'`, `'WARN'`, `'WARNING'`, `'INFO'`, `'DEBUG'` |
-| `QUIZ_ARCHIVER_QUEUE_SIZE`                                      | `8`             | Maximum number of jobs to enqueue                                                                                        |
-| `QUIZ_ARCHIVER_HISTORY_SIZE`                                    | `128`           | Maximum number of jobs to remember in job history                                                                        |
-| `QUIZ_ARCHIVER_STATUS_REPORTING_INTERVAL_SEC`                   | `15`            | Number of seconds to wait between job progress updates                                                                   |
-| `QUIZ_ARCHIVER_REQUEST_TIMEOUT_SEC`                             | `3600`          | Maximum number of seconds a single job is allowed to run before it is terminated                                         |
-| `QUIZ_ARCHIVER_BACKUP_STATUS_RETRY_SEC`                         | `30`            | Number of seconds to wait between backup status queries                                                                  |
-| `QUIZ_ARCHIVER_DOWNLOAD_MAX_FILESIZE_BYTES`                     | `(1024 * 10e6)` | Maximum number of bytes a generic Moodle file is allowed to have for downloading                                         |
-| `QUIZ_ARCHIVER_BACKUP_DOWNLOAD_MAX_FILESIZE_BYTES`              | `(512 * 10e6)`  | Maximum number of bytes Moodle backups are allowed to have                                                               |
-| `QUIZ_ARCHIVER_QUESTION_ATTACHMENT_DOWNLOAD_MAX_FILESIZE_BYTES` | `(128 * 10e6)`  | Maximum number of bytes a question attachment is allowed to have for downloading                                         |
-| `QUIZ_ARCHIVER_REPORT_BASE_VIEWPORT_WIDTH`                      | `1240`          | Width of the viewport on attempt rendering in px                                                                         |
-| `QUIZ_ARCHIVER_REPORT_PAGE_MARGIN`                              | `'5mm'`         | Margin (top, bottom, left, right) of the report PDF pages including unit (mm, cm, in, px)                                |
-| `QUIZ_ARCHIVER_WAIT_FOR_READY_SIGNAL`                           | `True`          | Whether to wait for the ready signal from the report page JS before generating the export                                |
-| `QUIZ_ARCHIVER_WAIT_FOR_READY_SIGNAL_TIMEOUT_SEC`               | `30`            | Number of seconds to wait for the ready signal from the report page JS before generating the export                      |
-| `QUIZ_ARCHIVER_CONTINUE_AFTER_READY_SIGNAL_TIMEOUT`             | `False`         | Whether to continue with the export if the ready signal was not received in time                                         |
-| `QUIZ_ARCHIVER_WAIT_FOR_NAVIGATION_TIMEOUT_SEC`                 | `30`            | Number of seconds to wait for the report page to load before aborting the job                                            |
-| `QUIZ_ARCHIVER_REPORT_PREVENT_REDIRECT_TO_LOGIN`                | `True`          | Whether to supress all redirects to Moodle login pages (`/login/*.php`) after page load                                  |
+| Environment Variable                                            | Default Value   | Description                                                                                                                                                                                                                  |
+|-----------------------------------------------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `QUIZ_ARCHIVER_SERVER_HOST`                                     | `0.0.0.0`       | Host to bind to                                                                                                                                                                                                              |
+| `QUIZ_ARCHIVER_SERVER_PORT`                                     | `8080`          | Port to bind to                                                                                                                                                                                                              |
+| `QUIZ_ARCHIVER_LOG_LEVEL`                                       | `INFO`          | Logging level. One of the following: <br> `'CRITICAL'`, `'FATAL'`, `'ERROR'`, `'WARN'`, `'WARNING'`, `'INFO'`, `'DEBUG'`                                                                                                     |
+| `QUIZ_ARCHIVER_QUEUE_SIZE`                                      | `8`             | Maximum number of jobs to enqueue                                                                                                                                                                                            |
+| `QUIZ_ARCHIVER_HISTORY_SIZE`                                    | `128`           | Maximum number of jobs to remember in job history                                                                                                                                                                            |
+| `QUIZ_ARCHIVER_STATUS_REPORTING_INTERVAL_SEC`                   | `15`            | Number of seconds to wait between job progress updates                                                                                                                                                                       |
+| `QUIZ_ARCHIVER_REQUEST_TIMEOUT_SEC`                             | `3600`          | Maximum number of seconds a single job is allowed to run before it is terminated                                                                                                                                             |
+| `QUIZ_ARCHIVER_BACKUP_STATUS_RETRY_SEC`                         | `30`            | Number of seconds to wait between backup status queries                                                                                                                                                                      |
+| `QUIZ_ARCHIVER_DOWNLOAD_MAX_FILESIZE_BYTES`                     | `(1024 * 10e6)` | Maximum number of bytes a generic Moodle file is allowed to have for downloading                                                                                                                                             |
+| `QUIZ_ARCHIVER_BACKUP_DOWNLOAD_MAX_FILESIZE_BYTES`              | `(512 * 10e6)`  | Maximum number of bytes Moodle backups are allowed to have                                                                                                                                                                   |
+| `QUIZ_ARCHIVER_QUESTION_ATTACHMENT_DOWNLOAD_MAX_FILESIZE_BYTES` | `(128 * 10e6)`  | Maximum number of bytes a question attachment is allowed to have for downloading                                                                                                                                             |
+| `QUIZ_ARCHIVER_REPORT_BASE_VIEWPORT_WIDTH`                      | `1240`          | Width of the viewport on attempt rendering in px                                                                                                                                                                             |
+| `QUIZ_ARCHIVER_REPORT_PAGE_MARGIN`                              | `'5mm'`         | Margin (top, bottom, left, right) of the report PDF pages including unit (mm, cm, in, px)                                                                                                                                    |
+| `QUIZ_ARCHIVER_WAIT_FOR_READY_SIGNAL`                           | `True`          | Whether to wait for the ready signal from the report page JS before generating the export                                                                                                                                    |
+| `QUIZ_ARCHIVER_WAIT_FOR_READY_SIGNAL_TIMEOUT_SEC`               | `30`            | Number of seconds to wait for the ready signal from the report page JS before generating the export                                                                                                                          |
+| `QUIZ_ARCHIVER_CONTINUE_AFTER_READY_SIGNAL_TIMEOUT`             | `False`         | Whether to continue with the export if the ready signal was not received in time                                                                                                                                             |
+| `QUIZ_ARCHIVER_WAIT_FOR_NAVIGATION_TIMEOUT_SEC`                 | `30`            | Number of seconds to wait for the report page to load before aborting the job                                                                                                                                                |
+| `QUIZ_ARCHIVER_REPORT_PREVENT_REDIRECT_TO_LOGIN`                | `True`          | Whether to supress all redirects to Moodle login pages (`/login/*.php`) after page load                                                                                                                                      |
+| `QUIZ_ARCHIVER_DEMO_MODE`                                       | `False`         | Whether the app is running in demo mode. In demo mode, a watermark will be added to all generated PDFs, only a limited number of attempts will be exported per archive job, and only placeholder Moodle backups are included |
 
 
 

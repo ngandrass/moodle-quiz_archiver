@@ -20,7 +20,8 @@ report or ask a question in the issue tracker over on GitHub.
     components successfully installed:
 
     - [Moodle Plugin](/installation/moodleplugin)
-    - [Archive Worker Service](/installation/archiveworker)
+    - [Archive Worker Service](/installation/archiveworker) (or using the
+      [free public demo service](/installation/archiveworker#using-the-free-public-demo-service))
 
 After installation, you need to perform an [initial configuration step](/configuration/initialconfig/automatic) once.
 
