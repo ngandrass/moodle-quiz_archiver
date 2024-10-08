@@ -3,6 +3,7 @@
 ## Version X.Y.Z (XXXXXXXXXX)
 
 - Add demo quiz archive worker information to admin settings page
+- Add Moodle 4.5 to automated (CI) test matrix
 
 
 ## Version 2.0.0 (2024082100)
