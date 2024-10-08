@@ -17,7 +17,7 @@ supported.
 1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
    _Quiz_ > _Quiz Archiver_ (2)
 2. Click the _Automatic configuration_ button (3)
-3. Enter the URL under which the quit archive worker can be reached (4)
+3. Enter the URL under which the quiz archive worker can be reached (4)
 4. (Optional) Change the configuration defaults (5)
 5. Execute the automatic configuration (6)
 6. Close the window (7)
