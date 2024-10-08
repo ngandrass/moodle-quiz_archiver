@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (XXXXXXXXXX)
 
+- Fix job details dialog not showing up if artifact file was deleted but metadata still remains
 - Add demo quiz archive worker information to admin settings page
 - Add Moodle 4.5 to automated (CI) test matrix
 
