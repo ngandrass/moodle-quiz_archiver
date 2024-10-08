@@ -24,7 +24,7 @@ check the following:
    Moodle instance.
     - You can test this by running `nslookup yourmoodle.tld` on the machine that
     runs the archive worker service.
-    - If the lookup fails, check the DNS settings on the machine thar runs the
+    - If the lookup fails, check the DNS settings on the machine that runs the
       archive worker service.
 2. Ensure that the archive worker service is able to reach the machine that runs
    your Moodle instance. 

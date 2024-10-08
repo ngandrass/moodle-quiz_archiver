@@ -62,8 +62,8 @@ by manually inspecting the role definition XML file
 ## Setup Webservice
 
 The quiz archive worker service interacts with the Moodle platform using the
-Moodle webservice API. Therefore, it must be enabled and a corespongind external
-service must be created.
+Moodle webservice API. Therefore, it must be enabled and a corresponding
+external service must be created.
 
 ### Enable webservices globally
 
