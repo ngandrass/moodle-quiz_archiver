@@ -3,8 +3,7 @@ name: Build and publish docs
 on:
   push:
     branches:
-      - main
-      - feature/mkdocs  # TODO: Remove this after testing!
+      - master
 
 permissions:
   contents: read
