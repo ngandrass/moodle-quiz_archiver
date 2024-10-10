@@ -2,8 +2,13 @@
 
 ## Version X.Y.Z (XXXXXXXXXX)
 
-- Fix job details dialog not showing up if artifact file was deleted but metadata still remains
+- Create an official Quiz Archiver documentation website: [https://quizarchiver.gandrass.de/](https://quizarchiver.gandrass.de/)
+    - Great thanks to @melanietreitinger for reviewing and providing valuable feedback!
+- Automate building and deployment of documentation website
+- Cleanup and restructure existing documentation within README
 - Add demo quiz archive worker information to admin settings page
+- Fix job details dialog not showing up if artifact file was deleted but metadata still remains
+- Fix PHP warning on autoinstall admin page
 - Add Moodle 4.5 to automated (CI) test matrix
 
 
@@ -26,9 +31,8 @@
 
 - Show periodically updated progress of running archive jobs in job overview table and job details modal
 - Creation of new job status values:
-  - `WAITING_FOR_BACKUP`: All attempt reports are generated and the archive worker service
-    is waiting for the Moodle backup to be ready.
-  - `FINALIZING`: The archive worker service is finalizing the archive creation process (checksums, compression, ...).
+    - `WAITING_FOR_BACKUP`: All attempt reports are generated and the archive worker service is waiting for the Moodle backup to be ready.
+    - `FINALIZING`: The archive worker service is finalizing the archive creation process (checksums, compression, ...).
 - Create hover tooltip with help text for all job status values
 - Add additional soft error handling to some web service functions
 - Minor compatibility fixes for PHP 7.4 and Moodle 4.1 (LTS)
@@ -77,9 +81,9 @@ _Note: Keep in mind to update your
 - Fix webservice token generation on Moodle 4.1 (LTS)
 - Largely extend the test coverage. Now almost everything is tested automatically
   for all combinations of:
-  - Moodle version: 4.1 - 4.4
-  - PHP versions: 7.4 - 8.3
-  - Database backends: mariadb, pgsql
+    - Moodle version: 4.1 - 4.4
+    - PHP versions: 7.4 - 8.3
+    - Database backends: mariadb, pgsql
 - Cleanup attempt report generation code
 - Provide documentation how to run tests locally
 - Fix typos
@@ -116,11 +120,11 @@ _Note: Keep in mind to update your
 ## Version 1.2.4 (2024021901)
 
 - Fix image inlining for Moodle instances that reside in subdirectories (e.g., `https://your.domain/moodle`)
-  - Thanks a lot to @500gLychee for extensive testing and reporting!
+    - Thanks a lot to @500gLychee for extensive testing and reporting!
 - Fix inlining of miscellaneous local images that do not fall into any specific link type category
 - Detect quizzes without attempts and prevent archive creation until at least one attempt was registered
 - Create GitHub issue template forms for bug reports and feature requests
-  - Found a bug? Please report it here: https://github.com/ngandrass/moodle-quiz_archiver/issues
+    - Found a bug? Please report it here: https://github.com/ngandrass/moodle-quiz_archiver/issues
 
 
 ## Version 1.2.3 (2024011200)

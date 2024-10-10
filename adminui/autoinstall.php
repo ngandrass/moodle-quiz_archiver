@@ -29,8 +29,14 @@ require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/form/autoinstall_
 use quiz_archiver\form\autoinstall_form;
 use quiz_archiver\local\autoinstall;
 
+// Disable error reporting to prevent warning of potential redefinition of constants.
+$olderrorreporting = error_reporting();
+error_reporting(0);
+
 /** @var bool Disables output buffering */
 const NO_OUTPUT_BUFFERING = true;
+
+error_reporting($olderrorreporting);
 
 // Ensure user has permissions.
 require_login();

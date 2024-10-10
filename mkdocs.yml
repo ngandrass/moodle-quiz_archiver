@@ -1,0 +1,107 @@
+site_name: Moodle Quiz Archiver Documentation
+site_url: https://quizarchiver.gandrass.de/
+repo_url: https://github.com/ngandrass/moodle-quiz_archiver
+edit_uri: edit/master/docs/
+
+copyright: "Copyright &copy; 2023 - 2024 Niels Gandraß<br>License: GNU General Public License v3.0"
+
+extra:
+  social:
+    - icon: simple/moodle
+      link: https://moodle.org/plugins/quiz_archiver
+      name: "Moodle Plugin Directory: quiz_archiver"
+    - icon: fontawesome/brands/github
+      link: https://github.com/ngandrass/moodle-quiz_archiver
+      name: "GitHub: moodle-quiz_archiver"
+    - icon: fontawesome/brands/github
+      link: https://github.com/ngandrass/moodle-quiz-archive-worker
+      name: "GitHub: moodle-quiz-archive-worker"
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/ngandrass/moodle-quiz-archive-worker
+    - icon: fontawesome/solid/bug
+      link: https://github.com/ngandrass/moodle-quiz_archiver/issues
+      name: "Report a Bug"
+
+#   version:
+#     provider: mike
+
+plugins:
+  # - mike
+  - glightbox:
+      shadow: true
+  - search
+  - social
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.expand
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra_css:
+  - css/extra.css
+
+nav:
+  - "Introduction": index.md
+  - "Screenshots": screenshots.md
+  - "Issues": bugreport.md
+  - "Changelog": changelog.md
+
+  - "Installation":
+    - installation/index.md
+    - "Moodle Plugin": installation/moodleplugin.md
+    - "Archive Worker Service": installation/archiveworker.md
+
+  - "Configuration":
+      - configuration/index.md
+      - "Initial Setup":
+        - "Automatic Configuration": configuration/initialconfig/automatic.md
+        - "Manual Configuration": configuration/initialconfig/manual.md
+        - "Pitfalls": configuration/initialconfig/pitfalls.md
+      - "Job Presets / Policies": configuration/presets.md
+      - "Capabilities": configuration/capabilities.md
+
+  - "Usage":
+      - usage/index.md
+      - "Creating Quiz Archives": usage/archivingbasic.md
+      - "Automatic Deletion (GDPR)": usage/automaticdeletion.md
+      - "Image Optimization": usage/imageoptimization.md
+      - "Quiz Archive Signing (TSP)": usage/tsp.md
+
+  - "Development":
+      - development/index.md
+      - "Reference Course / Test Data": development/testdata.md
+      - "Unit Tests": development/unittests.md
+      - "Code Coverage": development/codecoverage.md

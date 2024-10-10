@@ -1,0 +1,24 @@
+.md-main {
+    margin-bottom: 32px;
+}
+
+.img-thumbnail {
+    margin-right: 6px;
+    border: 2px solid #dddddd;
+    max-width: 320px !important;
+    max-height: 128px !important;
+
+    box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.06);
+    -webkit-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.06);
+    -moz-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.06);
+
+    transition: all 0.15s ease-out;
+}
+
+.img-thumbnail:hover, .img-thumbnail:active, .img-thumbnail:focus {
+    border: 2px solid #999999;
+
+    box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.1);
+    -moz-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.1);
+}
