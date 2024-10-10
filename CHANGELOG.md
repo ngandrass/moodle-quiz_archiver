@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (XXXXXXXXXX)
+## Version 2.1.0 (2024101000)
 
 - Ensure compatibility with Moodle 4.5 (LTS)
 - Create an official Quiz Archiver documentation website: [https://quizarchiver.gandrass.de/](https://quizarchiver.gandrass.de/)
