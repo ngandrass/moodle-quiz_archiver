@@ -2,12 +2,15 @@
 
 ## Version X.Y.Z (XXXXXXXXXX)
 
+- Ensure compatibility with Moodle 4.5 (LTS)
 - Create an official Quiz Archiver documentation website: [https://quizarchiver.gandrass.de/](https://quizarchiver.gandrass.de/)
     - Great thanks to @melanietreitinger for reviewing and providing valuable feedback!
 - Automate building and deployment of documentation website
 - Cleanup and restructure existing documentation within README
 - Add demo quiz archive worker information to admin settings page
+- Fix job details dialog not showing up if artifact file was deleted but metadata still remains
 - Fix PHP warning on autoinstall admin page
+- Add Moodle 4.5 to automated (CI) test matrix
 
 
 ## Version 2.0.0 (2024082100)

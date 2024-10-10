@@ -170,7 +170,7 @@ $string['job_status_FAILED_help'] = 'The job has failed. Please try again and co
 $string['job_status_TIMEOUT'] = 'Timeout';
 $string['job_status_TIMEOUT_help'] = 'The job has been aborted due to a timeout. This can happen for very large quizzes. Please contact your system administrator if this problem persists.';
 $string['job_status_DELETED'] = 'Deleted';
-$string['job_status_DELETED_help'] = 'The quiz archive and all associated data has been removed. The job metadata still exists and can be fully deleted using the "Delete job" button.';
+$string['job_status_DELETED_help'] = 'The quiz archive and all associated data has been removed. The job metadata still exists and can be fully deleted, if required.';
 
 // Job details.
 $string['archive_already_signed'] = 'Archive is already signed';

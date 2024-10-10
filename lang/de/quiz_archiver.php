@@ -170,7 +170,7 @@ $string['job_status_FAILED_help'] = 'Der Auftrag ist fehlgeschlagen. Bitte versu
 $string['job_status_TIMEOUT'] = 'Zeitüberschreitung';
 $string['job_status_TIMEOUT_help'] = 'Der Auftrag wurde aufgrund einer Zeitüberschreitung abgebrochen. Dies kann bei sehr großen Tests passieren. Bitte kontaktieren Sie Ihren Systemadministrator, wenn das Problem weiterhin besteht.';
 $string['job_status_DELETED'] = 'Gelöscht';
-$string['job_status_DELETED_help'] = 'Das Testarchiv und alle zugehörigen Daten wurden entfernt. Die Auftragsmetadaten existieren weiterhin und können mit der Schaltfläche "Auftrag löschen" endgültig gelöscht werden.';
+$string['job_status_DELETED_help'] = 'Das Testarchiv und alle zugehörigen Daten wurden entfernt. Die Auftragsmetadaten existieren weiterhin und können bei Bedarf endgültig gelöscht werden.';
 
 // Job details.
 $string['archive_already_signed'] = 'Testarchiv ist bereits signiert';
