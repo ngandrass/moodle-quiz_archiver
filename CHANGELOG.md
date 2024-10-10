@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (XXXXXXXXXX)
 
+- Ensure compatibility with Moodle 4.5 (LTS)
 - Create an official Quiz Archiver documentation website: [https://quizarchiver.gandrass.de/](https://quizarchiver.gandrass.de/)
     - Great thanks to @melanietreitinger for reviewing and providing valuable feedback!
 - Automate building and deployment of documentation website
