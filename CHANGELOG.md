@@ -4,6 +4,7 @@
 
 - Add student ID number to quiz attempt header
 - Add student ID number to exported `attempts_metadata.csv` file inside quiz archives
+- Allow student ID number to be used in attempt filename pattern as `${idnumber}`
 - Improve display of user firstname, lastname, and avatar in quiz attempt header
 - Improve display of empty values in quiz attempt header (e.g., feedback, idnumber, ...)
 - Fix name of `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN` environment variable in archive worker documentation

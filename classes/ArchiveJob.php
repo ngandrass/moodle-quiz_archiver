@@ -114,6 +114,7 @@ class ArchiveJob {
         'username',
         'firstname',
         'lastname',
+        'idnumber',
         'timestart',
         'timefinish',
         'date',
@@ -1218,6 +1219,7 @@ class ArchiveJob {
             'username' => $userinfo->username,
             'firstname' => $userinfo->firstname,
             'lastname' => $userinfo->lastname,
+            'idnumber' => $userinfo->idnumber,
         ];
 
         // Substitute variables.

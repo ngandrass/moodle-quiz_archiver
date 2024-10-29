@@ -134,6 +134,7 @@ $string['export_attempts_filename_pattern_variable_attemptid'] = 'Versuchs-ID';
 $string['export_attempts_filename_pattern_variable_username'] = 'Nutzer Anmeldename';
 $string['export_attempts_filename_pattern_variable_firstname'] = 'Nutzer Vorname';
 $string['export_attempts_filename_pattern_variable_lastname'] = 'Nutzer Nachname';
+$string['export_attempts_filename_pattern_variable_idnumber'] = 'Nutzer ID-Nummer';
 $string['export_attempts_filename_pattern_variable_timestart'] = 'Versuchsstart (Unix-Zeitstempel)';
 $string['export_attempts_filename_pattern_variable_timefinish'] = 'Versuchsende (Unix-Zeitstempel)';
 $string['export_attempts_filename_pattern_variable_date'] = 'Aktuelles Datum <small>(YYYY-MM-DD)</small>';

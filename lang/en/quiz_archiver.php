@@ -134,6 +134,7 @@ $string['export_attempts_filename_pattern_variable_attemptid'] = 'Attempt ID';
 $string['export_attempts_filename_pattern_variable_username'] = 'Student username';
 $string['export_attempts_filename_pattern_variable_firstname'] = 'Student first name';
 $string['export_attempts_filename_pattern_variable_lastname'] = 'Student last name';
+$string['export_attempts_filename_pattern_variable_idnumber'] = 'Student ID number';
 $string['export_attempts_filename_pattern_variable_timestart'] = 'Attempt start unix timestamp';
 $string['export_attempts_filename_pattern_variable_timefinish'] = 'Attempt finish unix timestamp';
 $string['export_attempts_filename_pattern_variable_date'] = 'Current date <small>(YYYY-MM-DD)</small>';
