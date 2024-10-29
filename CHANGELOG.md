@@ -2,7 +2,8 @@
 
 ## Version x.x.x (yyyymmddnn)
 
-- Fix name of `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN` envirnoment variable in archive worker documentation
+- Fix name of `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN` environment variable in archive worker documentation
+- Improve content spacing in docs
 
 
 ## Version 2.1.0 (2024101000)
