@@ -135,7 +135,7 @@ final class filemanager_test extends \advanced_testcase {
         $draftfilehash = $draftfile->get_contenthash();
 
         // Store draftfile as artifact.
-        $storedfile = $fm->store_uploaded_artifact($draftfile);
+        $storedfile = $fm->store_uploaded_artifact($draftfile, 42);
         $this->assertInstanceOf(\stored_file::class, $storedfile, 'Invalid storage handle returned');
         $this->assertEquals($draftfilehash, $storedfile->get_contenthash(), 'Stored file hash does not match draft file hash');
         $this->assertEmpty(get_file_storage()->get_file_by_id($draftfile->get_id()), 'Draft file was deleted');
@@ -163,7 +163,7 @@ final class filemanager_test extends \advanced_testcase {
 
         $this->expectException(\file_exception::class);
         $this->expectExceptionMessageMatches('/draftfile/');
-        $fm->store_uploaded_artifact($invalidfile);
+        $fm->store_uploaded_artifact($invalidfile, 1337);
     }
 
     /**
@@ -562,7 +562,7 @@ final class filemanager_test extends \advanced_testcase {
         $attemptid = 13775;
 
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $fm->store_uploaded_artifact($draftartifact);
+        $fm->store_uploaded_artifact($draftartifact, $job->get_id());
         $storedartifacts = $fm->get_stored_artifacts();
         $storedartifact = array_shift($storedartifacts);
 
@@ -603,7 +603,7 @@ final class filemanager_test extends \advanced_testcase {
         );
         $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft();
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
-        $fm->store_uploaded_artifact($draftartifact);
+        $fm->store_uploaded_artifact($draftartifact, $job->get_id());
         $storedartifacts = $fm->get_stored_artifacts();
         $storedartifact = array_shift($storedartifacts);
 
