@@ -11,6 +11,7 @@
 - Fix name of `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN` environment variable in archive worker documentation
 - Fix single unit test suit execution command in developer documentation
 - Improve content spacing in docs
+- Only run Moodle CI for commits and PRs on master and develop branches to prevent duplicate runs
 
 
 ## Version 2.1.0 (2024101000)
