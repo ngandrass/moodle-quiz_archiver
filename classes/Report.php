@@ -503,7 +503,7 @@ class Report {
                 $feedback = $attemptobj->get_overall_feedback($grade);
                 $quizheaderdata['feedback'] = [
                     'title' => get_string('feedback', 'quiz'),
-                    'content' => $feedback,
+                    'content' => $feedback ?: '<i>'.get_string('none').'</i>',
                 ];
             }
 
