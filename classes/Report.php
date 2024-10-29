@@ -395,7 +395,7 @@ class Report {
         if ($sections['header']) {
             $quizheaderdata = [];
 
-            // User name and link
+            // User name and link.
             $attemptuser = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
             $userpicture = new \user_picture($attemptuser);
             $userpicture->courseid = $attemptobj->get_courseid();
