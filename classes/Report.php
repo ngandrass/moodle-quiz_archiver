@@ -393,17 +393,26 @@ class Report {
 
         // Section: Quiz header.
         if ($sections['header']) {
-
             $quizheaderdata = [];
+
+            // User name and link
             $attemptuser = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
             $userpicture = new \user_picture($attemptuser);
             $userpicture->courseid = $attemptobj->get_courseid();
+            $userlink = new \action_link(
+                new \moodle_url('/user/view.php', ['id' => $attemptuser->id, 'course' => $attemptobj->get_courseid()]),
+                fullname($attemptuser, true)
+            );
+            global $OUTPUT;
             $quizheaderdata['user'] = [
-                'title' => $userpicture,
-                'content' => new \action_link(
-                    new \moodle_url('/user/view.php', ['id' => $attemptuser->id, 'course' => $attemptobj->get_courseid()]),
-                    fullname($attemptuser, true)
-                ),
+                'title' => get_string('user'),
+                'content' => $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink),
+            ];
+
+            // User ID number.
+            $quizheaderdata['useridnumber'] = [
+                'title' => get_string('idnumber'),
+                'content' => $attemptuser->idnumber ?: '<i>'.get_string('none').'</i>',
             ];
 
             // Quiz metadata.
