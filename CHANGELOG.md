@@ -1,6 +1,6 @@
 # Changelog
 
-## Version x.x.x (yyyymmddnn)
+## Version 2.2.0 (2024102900)
 
 - Add student ID number to quiz attempt header
 - Add student ID number to exported `attempts_metadata.csv` file inside quiz archives
