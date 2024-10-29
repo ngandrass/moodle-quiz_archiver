@@ -122,13 +122,15 @@ class FileManager {
      *
      * @param stored_file $draftfile Archive artifact file, residing inside
      * 'draft' filearea of the webservice user
+     * @param int $jobid Internal ID of the job this artifact belongs to. Used
+     * as itemid for the new stored file
      *
      * @return stored_file|null Stored file on success, null on error
      *
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    public function store_uploaded_artifact(stored_file $draftfile): ?stored_file {
+    public function store_uploaded_artifact(stored_file $draftfile, int $jobid): ?stored_file {
         // Check draftfile.
         if ($draftfile->get_filearea() != "draft" || $draftfile->get_component() != "user") {
             throw new \file_exception('Passed draftfile does not reside inside the draft area of the webservice user. Aborting');
@@ -140,7 +142,7 @@ class FileManager {
             'contextid'    => $this->context->id,
             'component'    => self::COMPONENT_NAME,
             'filearea'     => self::ARTIFACTS_FILEAREA_NAME,
-            'itemid'       => 0,
+            'itemid'       => $jobid,
             'filepath'     => $this->get_own_file_path(),
             'filename'     => $draftfile->get_filename(),
             'timecreated'  => $draftfile->get_timecreated(),
