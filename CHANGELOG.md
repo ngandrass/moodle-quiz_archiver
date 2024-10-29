@@ -2,6 +2,9 @@
 
 ## Version x.x.x (yyyymmddnn)
 
+- Add student ID number to quiz attempt header
+- Improve display of user firstname, lastname, and avatar in quiz attempt header
+- Improve display of empty values in quiz attempt header (e.g., feedback, idnumber, ...)
 - Fix name of `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN` environment variable in archive worker documentation
 - Improve content spacing in docs
 
