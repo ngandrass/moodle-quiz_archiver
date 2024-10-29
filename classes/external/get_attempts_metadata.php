@@ -129,6 +129,11 @@ class get_attempts_metadata extends external_api {
                         'Last name for this quiz attempt',
                         VALUE_REQUIRED
                     ),
+                    'idnumber' => new external_value(
+                        PARAM_TEXT,
+                        'ID number of the user for this quiz attempt',
+                        VALUE_REQUIRED
+                    ),
                     'timestart' => new external_value(
                         PARAM_INT,
                         'Timestamp of when the quiz attempt started',

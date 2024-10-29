@@ -169,7 +169,7 @@ class Report {
         // Get all requested attempts.
         return $DB->get_records_sql(
             "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, ".
-            "       u.username, u.firstname, u.lastname ".
+            "       u.username, u.firstname, u.lastname, u.idnumber ".
             "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id ".
             "WHERE qa.preview = 0 AND qa.quiz = :quizid " . ($filterwhereclause ?? ''),
             [
@@ -393,17 +393,26 @@ class Report {
 
         // Section: Quiz header.
         if ($sections['header']) {
-
             $quizheaderdata = [];
+
+            // User name and link.
             $attemptuser = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
             $userpicture = new \user_picture($attemptuser);
             $userpicture->courseid = $attemptobj->get_courseid();
+            $userlink = new \action_link(
+                new \moodle_url('/user/view.php', ['id' => $attemptuser->id, 'course' => $attemptobj->get_courseid()]),
+                fullname($attemptuser, true)
+            );
+            global $OUTPUT;
             $quizheaderdata['user'] = [
-                'title' => $userpicture,
-                'content' => new \action_link(
-                    new \moodle_url('/user/view.php', ['id' => $attemptuser->id, 'course' => $attemptobj->get_courseid()]),
-                    fullname($attemptuser, true)
-                ),
+                'title' => get_string('user'),
+                'content' => $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink),
+            ];
+
+            // User ID number.
+            $quizheaderdata['useridnumber'] = [
+                'title' => get_string('idnumber'),
+                'content' => $attemptuser->idnumber ?: '<i>'.get_string('none').'</i>',
             ];
 
             // Quiz metadata.
@@ -494,7 +503,7 @@ class Report {
                 $feedback = $attemptobj->get_overall_feedback($grade);
                 $quizheaderdata['feedback'] = [
                     'title' => get_string('feedback', 'quiz'),
-                    'content' => $feedback,
+                    'content' => $feedback ?: '<i>'.get_string('none').'</i>',
                 ];
             }
 

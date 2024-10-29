@@ -48,7 +48,7 @@ you can run the tests using the following commands:
   ```
 - Running a single test suite:
   ```text
-  vendor/bin/phpunit --colors --testdox mod/quiz/report/archiver/tests/Report_test.php
+  vendor/bin/phpunit --colors --testdox mod/quiz/report/archiver/tests/report_test.php
   ```
   
 !!! warning
