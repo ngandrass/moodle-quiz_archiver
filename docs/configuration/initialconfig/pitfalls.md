@@ -77,6 +77,19 @@ back to your Moodle, you should check the following:
    `MaxScanSize`, and `StreamMaxLength` (when using a TCP socket) inside
    `clamd.conf`.
 
+
+## Text is not rendered correctly
+
+If the text in the generated PDF files is not rendered correctly, e.g., when
+only rectangles are displayed instead of characters, please make sure that an
+extended set of base fonts is available on your server.
+
+If you are running Ubuntu or Debian, you can ensure this by installing the
+`fonts-noto` package via your package manager.
+
+If you are using the official Docker image, please open a bug report instead.
+
+
 ## Checking the plugin config
 
 If you are unsure whether there is a problem with your plugin configuration, you

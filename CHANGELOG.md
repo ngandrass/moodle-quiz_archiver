@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.X.X (YYYYMMDDXX)
+
+- Add hint about font rendering problems to the documentation
+
+
 ## Version 2.2.0 (2024102900)
 
 - Add student ID number to quiz attempt header
