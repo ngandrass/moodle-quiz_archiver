@@ -27,11 +27,11 @@
         "jobs": [
             {
                 "jobid": "3e6273fe-3784-11ee-be56-0242ac120002",
-                "json": "{...}"
+                "base64Data": "{...}"
             },
             {
                 "jobid": "45edd9f6-3784-11ee-be56-0242ac120002",
-                "json": "{...}"
+                "base64Data": "{...}"
             }
         ],
         "time": 0
@@ -72,7 +72,7 @@
                 var modal = await ModalFactory.create({
                     type: ModalFactory.types.DEFAULT,
                     title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
-                    body: Templates.render('quiz_archiver/job_details', JSON.parse('{{{json}}}')),
+                    body: Templates.render('quiz_archiver/job_details', JSON.parse(atob('{{{base64Data}}}'))),
                     large: true,
                 });
                 modal.show();

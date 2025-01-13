@@ -226,7 +226,7 @@ class quiz_archiver_report extends report_base {
 
             return [
                 'jobid' => $jm['jobid'],
-                'json' => json_encode($jm),
+                'base64Data' => base64_encode(json_encode($jm)),
             ];
         }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
     }

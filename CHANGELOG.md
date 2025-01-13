@@ -2,6 +2,7 @@
 
 ## Version X.X.X (YYYYMMDDXX)
 
+- Fix opening job details modal for quizzes with single quotes in their names
 - Add hint about font rendering problems to the documentation
 
 
