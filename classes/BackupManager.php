@@ -58,7 +58,6 @@ class BackupManager {
         'userscompletion' => true,
         'logs' => true,
         'grade_histories' => true,
-        'questionbank' => true,
         'groups' => true,
         'contentbankcontent' => true,
         'legacyfiles' => true,
@@ -206,6 +205,11 @@ class BackupManager {
 
                 foreach (self::BACKUP_SETTINGS as $name => $value) {
                     $task->get_setting($name)->set_value($value);
+                }
+
+                // Questions are not automatically included in Moodle 4.5 and below.
+                if ($CFG->branch <= 405) {
+                    $task->get_setting('questionbank')->set_value(true);
                 }
             }
         }

@@ -3,6 +3,7 @@
 ## Version X.X.X (YYYYMMDDXX)
 
 - Fix opening job details modal for quizzes with single quotes in their names
+- Prepare backup creation routine for Moodle 4.6 and above
 - Add hint about font rendering problems to the documentation
 
 
