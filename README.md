@@ -162,7 +162,7 @@ by a `+dev-[TIMESTAMP]` suffix, e.g., `2.4.2+dev-2022010100`.
 
 ## License
 
-2024 Niels Gandraß <niels@gandrass.de>
+2025 Niels Gandraß <niels@gandrass.de>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

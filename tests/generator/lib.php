@@ -26,7 +26,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php'); // @
  * Tests generator for the quiz_archiver plugin
  *
  * @package   quiz_archiver
- * @copyright 2024 Niels Gandraß <niels@gandrass.de>
+ * @copyright 2025 Niels Gandraß <niels@gandrass.de>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class quiz_archiver_generator extends \testing_data_generator {

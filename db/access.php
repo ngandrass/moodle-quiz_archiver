@@ -18,7 +18,7 @@
  * Capability definitions for the quiz_archiver plugin.
  *
  * @package     quiz_archiver
- * @copyright   2024 Niels Gandraß <niels@gandrass.de>
+ * @copyright   2025 Niels Gandraß <niels@gandrass.de>
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

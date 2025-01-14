@@ -18,7 +18,7 @@
  * quiz_archiver - automatic install script
  *
  * @package    quiz_archiver
- * @copyright  2024 Niels Gandraß <niels@gandrass.de>
+ * @copyright  2025 Niels Gandraß <niels@gandrass.de>
  *             2024 Melanie Treitinger, Ruhr-Universität Bochum <melanie.treitinger@ruhr-uni-bochum.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
