@@ -1,10 +1,12 @@
 # Changelog
 
-## Version X.X.X (YYYYMMDDXX)
+## Version 2.3.0 (YYYYMMDDXX)
 
 - Fix opening job details modal for quizzes with single quotes in their names
 - Prepare backup creation routine for Moodle 4.6 and above
-- Add hint about font rendering problems to the documentation
+- Add support for HTTP and SOCKS proxy servers
+  - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.2.0`
+- Add troubleshooting tips for font rendering problems to the documentation
 
 
 ## Version 2.2.0 (2024102900)

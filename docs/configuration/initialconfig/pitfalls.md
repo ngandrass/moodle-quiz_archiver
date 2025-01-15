@@ -38,6 +38,11 @@ check the following:
       machine that runs the archive worker service.
     - If the curl command fails, check the firewall settings on both machines.
 
+!!! info "Proxy Servers"
+    If your archive worker requires a proxy server to access your Moodle
+    instance, you can find information on how to configure it here:
+    [Archive Worker Service > Proxy Servers](/installation/archiveworker#proxy-servers)
+
 
 ## Access to Moodle webservice functions fails
 

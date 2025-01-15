@@ -199,9 +199,74 @@ using the following environment variables:
 | `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN`                       | `True`          | Whether to supress all redirects to Moodle login pages (`/login/*.php`) after page load                                                                                                                                      |
 | `QUIZ_ARCHIVER_DEMO_MODE`                                       | `False`         | Whether the app is running in demo mode. In demo mode, a watermark will be added to all generated PDFs, only a limited number of attempts will be exported per archive job, and only placeholder Moodle backups are included |
 | `QUIZ_ARCHIVER_PROXY_SERVER_URL`                                | `None`          | URL of the proxy server to use for all playwright requests. HTTP and SOCKS proxies are supported. If not set, auto-detection will be performed. If set to false, no proxy will be used                                       |
-| `QUIZ_ARCHIVER_PROXY_USERNAME`                                  | `None`          | Optional username to authenticate at the proxy server                                                                                                                                                                        |
-| `QUIZ_ARCHIVER_PROXY_PASSWORD`                                  | `None`          | Optional password to authenticate at the proxy server                                                                                                                                                                        |
 | `QUIZ_ARCHIVER_PROXY_BYPASS_DOMAINS`                            | `None`          | Comma-separated list of domains that should always be accessed directly, bypassing the proxy                                                                                                                                 |
+
+
+### Proxy Servers
+
+Should your archive worker be required to access your Moodle instance and other
+resources through a proxy server, both [HTTP and SOCKS proxies](https://en.wikipedia.org/wiki/Proxy_server#Implementations_of_proxies)
+are supported. You have multiple options to configure the proxy settings as
+described below.
+
+#### Using proxy server auto-detection
+
+If no further configuration is performed, the archive worker will automatically
+try to detect and use your default system proxy.
+
+During auto-detection, the archive worker looks inside the following environment
+variables for proxy configuration data (first match takes precedence):
+
+- `http_proxy`, `HTTP_PROXY`, `https_proxy`, `HTTPS_PROXY`, `all_proxy`,
+`ALL_PROXY`
+
+In each case, a full proxy URL including procotol, port and eventually
+credentials for authenticating at the proxy server is expected. Examples:
+
+- `http://proxy.example.com:3128`
+- `http://10.0.0.2:3128`
+- `socks5://foo.bar:1080`
+- `http://user:password@myproxy:3128`
+
+
+!!! info "Setting the environment variables for proxy servers using Docker"
+    If you are deploying the archive worker service using Docker, you can set
+    the environment variables for the proxy server either for the archive worker
+    service specifically inside your `docker-compose.yml` file or [globally
+    inside your Docker client](https://docs.docker.com/engine/cli/proxy/)[^2].
+
+    ```yaml title="Example: Setting the proxy server URL for the archive worker service"
+    environment:
+      - HTTP_PROXY=http://proxy.example.com:3128
+    ```
+
+[^2]: You can find details on how to set a global proxy for your Docker client
+in the [official Docker documentation](https://docs.docker.com/engine/cli/proxy/).
+Be aware, that you the configuration **only applies to new containers** and
+builds, and doesn't affect existing containers. Therefore, you need to re-create
+all pre-existing containers in order to apply the new proxy settings.
+
+#### Using a different proxy server
+
+You can bypass automatic proxy detection, hereby not using your systems default
+proxy, by setting the `QUIZ_ARCHIVER_PROXY_SERVER_URL` environment variable to
+the URL of your desired proxy server.
+
+#### Disabling proxy server and auto-detection
+
+To disable automatic proxy detection and use no proxy at all, set the
+`QUIZ_ARCHIVER_PROXY_SERVER_URL` environment variable to `false`.
+
+#### Bypassing the proxy for certain domains
+
+The archive worker is also able to bypass the proxy server for a given list
+of comma-separated domains. During automatic proxy detection, the environment
+variables `no_proxy` and `NO_PROXY` are scanned and listed domains will bypass
+the proxy.
+
+If manual proxy configuration is used, you can instead set the
+`QUIZ_ARCHIVER_PROXY_BYPASS_DOMAINS` environment variable to a comma-separated
+list of domains that will always bypass the proxy server.
 
 
 ## Next Steps
