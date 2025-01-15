@@ -177,7 +177,7 @@ command. It specifies the current directory as the build context.
 Configuration parameters are located inside `config.py` and can be overwritten
 using the following environment variables:
 
-| Environment Variable                                            | Default Value   | Description                                                                                                                                                                                                                  |
+| Environment Variable                                            | Default         | Description                                                                                                                                                                                                                  |
 |-----------------------------------------------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `QUIZ_ARCHIVER_SERVER_HOST`                                     | `0.0.0.0`       | Host to bind to                                                                                                                                                                                                              |
 | `QUIZ_ARCHIVER_SERVER_PORT`                                     | `8080`          | Port to bind to                                                                                                                                                                                                              |
@@ -198,7 +198,10 @@ using the following environment variables:
 | `QUIZ_ARCHIVER_WAIT_FOR_NAVIGATION_TIMEOUT_SEC`                 | `30`            | Number of seconds to wait for the report page to load before aborting the job                                                                                                                                                |
 | `QUIZ_ARCHIVER_PREVENT_REDIRECT_TO_LOGIN`                       | `True`          | Whether to supress all redirects to Moodle login pages (`/login/*.php`) after page load                                                                                                                                      |
 | `QUIZ_ARCHIVER_DEMO_MODE`                                       | `False`         | Whether the app is running in demo mode. In demo mode, a watermark will be added to all generated PDFs, only a limited number of attempts will be exported per archive job, and only placeholder Moodle backups are included |
-
+| `QUIZ_ARCHIVER_PROXY_SERVER_URL`                                | `None`          | URL of the proxy server to use for all playwright requests. HTTP and SOCKS proxies are supported. If not set, auto-detection will be performed. If set to false, no proxy will be used                                       |
+| `QUIZ_ARCHIVER_PROXY_USERNAME`                                  | `None`          | Optional username to authenticate at the proxy server                                                                                                                                                                        |
+| `QUIZ_ARCHIVER_PROXY_PASSWORD`                                  | `None`          | Optional password to authenticate at the proxy server                                                                                                                                                                        |
+| `QUIZ_ARCHIVER_PROXY_BYPASS_DOMAINS`                            | `None`          | Comma-separated list of domains that should always be accessed directly, bypassing the proxy                                                                                                                                 |
 
 
 ## Next Steps
