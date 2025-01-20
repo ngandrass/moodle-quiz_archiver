@@ -104,11 +104,11 @@ body:
       label: What happened?
       description: Please tell us what you expected to happen and what happend instead.
       value: |
-        Expected behavior:
+        **Expected behavior:**
 
-        Actual behavior:
+        **Actual behavior:**
 
-        Additional information:
+        **Additional information:**
     validations:
       required: true
   
