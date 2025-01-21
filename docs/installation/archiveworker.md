@@ -255,7 +255,7 @@ the URL of your desired proxy server.
 #### Disabling proxy server and auto-detection
 
 To disable automatic proxy detection and use no proxy at all, set the
-`QUIZ_ARCHIVER_PROXY_SERVER_URL` environment variable to `false`.
+`QUIZ_ARCHIVER_PROXY_SERVER_URL` environment variable to `False`.
 
 #### Bypassing the proxy for certain domains
 
