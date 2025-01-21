@@ -89,7 +89,7 @@ class quiz_archiver_report extends report_base {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course): bool {
-        global $OUTPUT;
+        global $OUTPUT, $USER;
 
         $this->course = $course;
         $this->cm = $cm;
@@ -263,12 +263,20 @@ class quiz_archiver_report extends report_base {
         string $archivefilenamepattern,
         string $attemptsfilenamepattern,
         ?array $imageoptimize = null,
-        ?int   $retentionseconds = null
+        ?int   $retentionseconds = null,
+        int $userid = 0
     ): ?ArchiveJob {
         global $CFG, $USER;
 
         // Check permissions.
-        require_capability('mod/quiz_archiver:create', $this->context);
+        if (
+            !(
+                has_capability('mod/quiz_archiver:create', $this->context)
+                || has_capability('mod/quiz_archiver:getownarchive', $this->context)
+            )
+        ) {
+            throw new moodle_exception("You have not the capability to generate the archive file.");
+        }
 
         // Check if webservice is configured properly.
         if (autoinstall::plugin_is_unconfigured()) {
@@ -300,7 +308,7 @@ class quiz_archiver_report extends report_base {
         }
 
         // Get attempt metadata.
-        $attempts = $this->report->get_attempts();
+        $attempts = $this->report->get_attempts($userid);
 
         // Prepare task: Export quiz attempts.
         $taskarchivequizattempts = null;
@@ -607,6 +615,49 @@ class quiz_archiver_report extends report_base {
         }
 
         return $url;
+    }
+
+    /**
+     * Initialises an archive job for a specific user.
+     *
+     * @param int $userid
+     * @return ArchiveJob|null Created ArchiveJob on success
+     */
+    public function initiate_users_archive_job(
+        object $quiz,
+        object $cm,
+        object $course,
+        object $context,
+        bool $exportattempts,
+        array $reportsections,
+        bool $reportkeephtmlfiles,
+        string $paperformat,
+        bool $exportquizbackup,
+        bool $exportcoursebackup,
+        string $archivefilenamepattern,
+        string $attemptsfilenamepattern,
+        ?int $retentionseconds = null,
+        int $userid = 0
+    ) {
+        $this->context = $context;
+        require_capability('mod/quiz_archiver:getownarchive', $this->context);
+
+        $this->course = $course;
+        $this->cm = $cm;
+        $this->quiz = $quiz;
+        $this->report = new Report($this->course, $this->cm, $this->quiz);
+        return $this->initiate_archive_job(
+            $exportattempts,
+            $reportsections,
+            $reportkeephtmlfiles,
+            $paperformat,
+            $exportquizbackup,
+            $exportcoursebackup,
+            $archivefilenamepattern,
+            $attemptsfilenamepattern,
+            $retentionseconds,
+            $userid
+        );
     }
 
 }
