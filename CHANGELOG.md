@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 2.3.0 (YYYYMMDDXX)
+## Version 2.3.0 (2025012100)
 
 - Fix opening job details modal for quizzes with single quotes in their names
 - Prepare backup creation routine for Moodle 4.6 and above
