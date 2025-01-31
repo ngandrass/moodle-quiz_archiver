@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDD00)
+## Version 2.3.1 (2025013100)
 
 - Make grade display in quiz attempt header independent of quiz review options
 
