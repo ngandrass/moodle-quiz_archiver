@@ -457,11 +457,11 @@ class Report {
 
             // Grades.
             $grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
-            if ($options->marks >= \question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
+            if (quiz_has_grades($quiz)) {
                 if (is_null($grade)) {
                     $quizheaderdata['grade'] = [
                         'title' => get_string('gradenoun'),
-                        'content' => quiz_format_grade($quiz, $grade),
+                        'content' => get_string('notyetgraded', 'quiz'),
                     ];
                 }
 

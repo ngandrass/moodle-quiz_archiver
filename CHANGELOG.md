@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDD00)
+
+- Make grade display in quiz attempt header independent of quiz review options
+
+
 ## Version 2.3.0 (2025012100)
 
 - Fix opening job details modal for quizzes with single quotes in their names
