@@ -234,6 +234,9 @@ $string['error_worker_unknown'] = 'An unknown error occurred while enqueueing th
 
 // Privacy.
 $string['privacy:metadata:core_files'] = 'The quiz archiver plugin stores created quiz archives inside the Moodle file system.';
+$string['privacy:metadata:quiz_archiver_attempts'] = 'List of quiz attempts stored inside a quiz archive.';
+$string['privacy:metadata:quiz_archiver_attempts:attemptid'] = 'The ID of the users attempt in a quiz archive.';
+$string['privacy:metadata:quiz_archiver_attempts:userid'] = 'The ID of the user that made an attempt in a quiz archive.';
 $string['privacy:metadata:quiz_archiver_jobs'] = 'Metadata about created quiz archives.';
 $string['privacy:metadata:quiz_archiver_jobs:courseid'] = 'The course ID of the course the quiz archive belongs to.';
 $string['privacy:metadata:quiz_archiver_jobs:cmid'] = 'The course module ID of the quiz the quiz archive belongs to.';

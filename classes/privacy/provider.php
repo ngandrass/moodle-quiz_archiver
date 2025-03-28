@@ -80,6 +80,11 @@ class provider implements
             'timestampreply' => 'privacy:metadata:quiz_archiver_tsp:timestampreply',
         ], 'privacy:metadata:quiz_archiver_tsp');
 
+        $collection->add_database_table('quiz_archiver_attempts', [
+            'userid' => 'privacy:metadata:quiz_archiver_attempts:userid',
+            'attemptid' => 'privacy:metadata:quiz_archiver_attempts:attemptid',
+        ], 'privacy:metadata:quiz_archiver_attempts');
+
         return $collection;
     }
 

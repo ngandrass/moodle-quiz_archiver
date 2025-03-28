@@ -234,6 +234,9 @@ $string['error_worker_unknown'] = 'Beim Senden des Auftrags zum Archive Worker i
 
 // Privacy.
 $string['privacy:metadata:core_files'] = 'Das Quiz Archiver Plugin speichert erstellte Testarchive im Moodle Dateisystem.';
+$string['privacy:metadata:quiz_archiver_attempts'] = 'Versuche die in einem Testarchiv beinhaltet sind.';
+$string['privacy:metadata:quiz_archiver_attempts:attemptid'] = 'ID eines Versuchs im Testarchiv.';
+$string['privacy:metadata:quiz_archiver_attempts:userid'] = 'ID des Nutzers dessen Versuch im Testarchiv beinhaltet ist.';
 $string['privacy:metadata:quiz_archiver_jobs'] = 'Metadaten über erstellte Testarchive.';
 $string['privacy:metadata:quiz_archiver_jobs:courseid'] = 'ID des Kurses der zu einem Testarchiv gehört.';
 $string['privacy:metadata:quiz_archiver_jobs:cmid'] = 'ID des Kursmoduls das zu einem Testarchiv gehört.';

@@ -3,6 +3,7 @@
 ## Version 2.3.1 (2025013100)
 
 - Make grade display in quiz attempt header independent of quiz review options
+- Update Moodle privacy provider to include attempt metadata table
 
 
 ## Version 2.3.0 (2025012100)
