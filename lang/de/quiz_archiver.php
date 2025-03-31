@@ -140,7 +140,13 @@ $string['export_attempts_filename_pattern_variable_timefinish'] = 'Versuchsende 
 $string['export_attempts_filename_pattern_variable_date'] = 'Aktuelles Datum <small>(YYYY-MM-DD)</small>';
 $string['export_attempts_filename_pattern_variable_time'] = 'Aktuelle Uhrzeit <small>(HH-MM-SS)</small>';
 $string['export_attempts_filename_pattern_variable_timestamp'] = 'Aktueller Unix-Zeitstempel';
+$string['export_attempts_foldername_pattern'] = 'Versuchsordnername';
+$string['export_attempts_foldername_pattern_help'] = 'Name des Ordners in dem archivierte Versuche abgelegt werden. Unterordner können durch Schrägstriche erzeugt werden. Schrägstriche am Anfang und Ende sind nicht erlaubt. Variablen <b>müssen</b> dem <code>${variablename}</code> Muster folgen.<br><br><b>Verfügbare Variablen</b>: <ul>{$a->variables}</ul><b>Verbotene Zeichen</b>: <code>{$a->forbiddenchars}</code>';
+// TODO (MDL-0): Remove the following 2 lines after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+$string['export_attempts_foldername_pattern_moodle42'] = 'Versuchsordnername';
+$string['export_attempts_foldername_pattern_help'] = 'Name des Ordners in dem archivierte Versuche abgelegt werden. Unterordner können durch Schrägstriche erzeugt werden. Schrägstriche am Anfang und Ende sind nicht erlaubt. Variablen <b>müssen</b> dem <code>${variablename}</code> Muster folgen.<br><br><b>Verfügbare Variablen</b>: <ul><li><code>${courseid}</code>: Kurs-ID</li><li><code>${coursename}</code>: Kursname</li><li><code>${courseshortname}</code>: Kurzer Kursname</li><li><code>${cmid}</code>: Kursmodul-ID</li><li><code>${quizid}</code>: Test-ID</li><li><code>${quizname}</code>: Testname</li><li><code>${attemptid}</code>: Versuchs-ID</li><li><code>${username}</code>: Nutzer Anmeldename</li><li><code>${firstname}</code>: Nutzer Vorname</li><li><code>${lastname}</code>: Nutzer Nachname</li><li><code>${timestart}</code>: Versuchsstart (Unix-Zeitstempel)</li><li><code>${timefinish}</code>: Versuchsende (Unix-Zeitstempel)</li><li><code>${date}</code>: Aktuelles Datum <small>(YYYY-MM-DD)</small></li><li><code>${time}</code>: Aktuelle Uhrzeit <small>(HH-MM-SS)</small></li><li><code>${timestamp}</code>: Aktueller Unix-Zeitstempel</li></ul><b>Verbotene Zeichen</b>: <code>\/.:;*?!"&lt;&gt;|</code>';
 $string['error_invalid_attempt_filename_pattern'] = 'Ungültiger Versuchsname. Bitte korrigieren Sie Ihre Eingabe und versuchen Sie es erneut.';
+$string['error_invalid_attempt_foldername_pattern'] = 'Ungültiger Versuchsordnername. Bitte korrigieren Sie Ihre Eingabe und versuchen Sie es erneut.';
 
 // Job.
 $string['delete_artifact'] = 'Testarchiv löschen';

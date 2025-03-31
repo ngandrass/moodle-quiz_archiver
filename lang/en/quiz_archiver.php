@@ -140,7 +140,13 @@ $string['export_attempts_filename_pattern_variable_timefinish'] = 'Attempt finis
 $string['export_attempts_filename_pattern_variable_date'] = 'Current date <small>(YYYY-MM-DD)</small>';
 $string['export_attempts_filename_pattern_variable_time'] = 'Current time <small>(HH-MM-SS)</small>';
 $string['export_attempts_filename_pattern_variable_timestamp'] = 'Current unix timestamp';
+$string['export_attempts_foldername_pattern'] = 'Attempt folder name';
+$string['export_attempts_foldername_pattern_help'] = 'Name of the folder(s) the generated quiz attempt reports (PDF files) are stored in. Directories can be nested using slashes. Leading and trailing slashes are not allowed. Variables <b>must</b> follow the <code>${variablename}</code> pattern.<br><br><b>Available variables</b>: <ul>{$a->variables}</ul><b>Forbidden characters</b>: <code>{$a->forbiddenchars}</code>';
+// TODO (MDL-0): Remove the following 2 lines after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+$string['export_attempts_foldername_pattern_moodle42'] = 'Attempt folder name';
+$string['export_attempts_foldername_pattern_moodle42_help'] = 'Name of the folder(s) the generated quiz attempt reports (PDF files) are stored in. Directories can be nested using slashes. Leading and trailing slashes are not allowed. Variables <b>must</b> follow the <code>${variablename}</code> pattern.<br><br><b>Available variables</b>: <ul><li><code>${courseid}</code>: Course ID</li><li><code>${coursename}</code>: Course name</li><li><code>${courseshortname}</code>: Course short name</li><li><code>${cmid}</code>: Course module ID</li><li><code>${quizid}</code>: Quiz ID</li><li><code>${quizname}</code>: Quiz name</li><li><code>${attemptid}</code>: Attempt ID</li><li><code>${username}</code>: Student username</li><li><code>${firstname}</code>: Student first name</li><li><code>${lastname}</code>: Student last name</li><li><code>${timestart}</code>: Attempt start unix timestamp</li><li><code>${timefinish}</code>: Attempt finish unix timestamp</li><li><code>${date}</code>: Current date <small>(YYYY-MM-DD)</small></li><li><code>${time}</code>: Current time <small>(HH-MM-SS)</small></li><li><code>${timestamp}</code>: Current unix timestamp</li></ul><b>Forbidden characters</b>: <code>\/.:;*?!"&lt;&gt;|</code>';
 $string['error_invalid_attempt_filename_pattern'] = 'Invalid attempt report filename pattern. Please correct your input and try again.';
+$string['error_invalid_attempt_foldername_pattern'] = 'Invalid attempt folder name pattern. Please correct your input and try again.';
 
 // Job.
 $string['delete_artifact'] = 'Delete quiz archive';
