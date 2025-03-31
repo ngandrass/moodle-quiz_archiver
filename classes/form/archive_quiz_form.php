@@ -171,7 +171,7 @@ class archive_quiz_form extends \moodleform {
                             "</li>",
                         ""
                     ),
-                    'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+                    'forbiddenchars' => htmlspecialchars(implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS)),
                 ]
             );
         } else {
@@ -181,6 +181,44 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('archive_filename_pattern', PARAM_TEXT);
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
+
+        // Advanced options: Attempt folder name pattern.
+        $mform->addElement(
+            'text',
+            'export_attempts_foldername_pattern',
+            get_string('export_attempts_foldername_pattern', 'quiz_archiver'),
+            $config->job_preset_export_attempts_foldername_pattern_locked ? 'disabled' : null
+        );
+        if ($CFG->branch > 402) {
+            $mform->addHelpButton(
+                'export_attempts_foldername_pattern',
+                'export_attempts_foldername_pattern',
+                'quiz_archiver',
+                '',
+                false,
+                [
+                    'variables' => array_reduce(
+                        ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
+                        fn($res, $varname) => $res."<li>".
+                            "<code>\${".$varname."}</code>: ".
+                            get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                            "</li>",
+                        ""
+                    ),
+                    'forbiddenchars' => htmlspecialchars(implode('', ArchiveJob::FOLDERNAME_FORBIDDEN_CHARACTERS)),
+                ]
+            );
+        } else {
+            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
+            $mform->addHelpButton(
+                'export_attempts_foldername_pattern',
+                'export_attempts_foldername_pattern_moodle42',
+                'quiz_archiver'
+            );
+        }
+        $mform->setType('export_attempts_foldername_pattern', PARAM_TEXT);
+        $mform->setDefault('export_attempts_foldername_pattern', $config->job_preset_export_attempts_foldername_pattern);
+        $mform->addRule('export_attempts_foldername_pattern', null, 'maxlength', 255, 'client');
 
         // Advanced options: Attempts filename pattern.
         $mform->addElement(
@@ -205,7 +243,7 @@ class archive_quiz_form extends \moodleform {
                             "</li>",
                         ""
                     ),
-                    'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
+                    'forbiddenchars' => htmlspecialchars(implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS)),
                 ]
             );
         } else {
@@ -407,6 +445,11 @@ class archive_quiz_form extends \moodleform {
         if (!ArchiveJob::is_valid_archive_filename_pattern($data['archive_filename_pattern'])) {
             $errors['archive_filename_pattern'] = get_string('error_invalid_archive_filename_pattern', 'quiz_archiver');
         }
+
+        if (!ArchiveJob::is_valid_attempt_foldername_pattern($data['export_attempts_foldername_pattern'])) {
+            $errors['export_attempts_foldername_pattern'] = get_string('error_invalid_attempt_foldername_pattern', 'quiz_archiver');
+        }
+
         if (!ArchiveJob::is_valid_attempt_filename_pattern($data['export_attempts_filename_pattern'])) {
             $errors['export_attempts_filename_pattern'] = get_string('error_invalid_attempt_filename_pattern', 'quiz_archiver');
         }
