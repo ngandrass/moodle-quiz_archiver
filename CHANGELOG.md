@@ -1,5 +1,8 @@
 # Changelog
 
+- Add support for fully customizable attempt folder names
+
+
 ## Version X.Y.Z (YYYYDDMMNN)
 
 - Add new `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION` environment variable to docs
