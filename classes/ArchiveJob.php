@@ -1175,6 +1175,23 @@ class ArchiveJob {
     }
 
     /**
+     * Sanitizes the given foldername by removing all forbidden characters as
+     * well as leading- and trailing slashes
+     *
+     * @param string $foldername Foldername to sanitize
+     * @return string Sanitized foldername
+     */
+    protected static function sanitize_foldername(string $foldername): string {
+        // TODO: Create unit test
+        $res = $foldername;
+        foreach (self::FOLDERNAME_FORBIDDEN_CHARACTERS as $char) {
+            $res = str_replace($char, '', $res);
+        }
+
+        return trim($res, " \n\r\t\v\x00/\\");
+    }
+
+    /**
      * Generates an archive filename based on the given pattern and context information
      *
      * @param mixed $course Course object
@@ -1264,6 +1281,60 @@ class ArchiveJob {
         }
 
         return self::sanitize_filename($filename);
+    }
+
+    /**
+     * Generates an attempt folder name based on the given pattern and context information
+     *
+     * @param mixed $course Course object
+     * @param mixed $cm Course module object
+     * @param mixed $quiz Quiz object
+     * @param int $attemptid ID of the attempt
+     * @param string $pattern Filename pattern to use
+     * @return string Attempt folder name
+     * @throws \dml_exception If the attempt or user could not be found in the database
+     * @throws \invalid_parameter_exception If the pattern is invalid
+     * @throws \coding_exception
+     */
+    public static function generate_attempt_foldername($course, $cm, $quiz, int $attemptid, string $pattern): string {
+        // TODO: Create unit test
+        global $DB;
+
+        // Validate pattern.
+        if (!self::is_valid_attempt_foldername_pattern($pattern)) {
+            throw new \invalid_parameter_exception(get_string('error_invalid_attempt_foldername_pattern', 'quiz_archiver'));
+        }
+
+        // Prepare data.
+        // We query the DB directly to prevent a full question_attempt object from being created.
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $data = [
+            'courseid' => $course->id,
+            'cmid' => $cm->id,
+            'quizid' => $quiz->id,
+            'attemptid' => $attemptid,
+            'coursename' => $course->fullname,
+            'courseshortname' => $course->shortname,
+            'quizname' => $quiz->name,
+            'timestamp' => time(),
+            'date' => date('Y-m-d'),
+            'time' => date('H-i-s'),
+            'timestart' => $attemptinfo->timestart,
+            'timefinish' => $attemptinfo->timefinish,
+            'username' => $userinfo->username,
+            'firstname' => $userinfo->firstname,
+            'lastname' => $userinfo->lastname,
+            'idnumber' => $userinfo->idnumber,
+        ];
+
+        // Substitute variables.
+        $filename = $pattern;
+        foreach ($data as $key => $value) {
+            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+        }
+
+        return self::sanitize_foldername($filename);
     }
 
 }
