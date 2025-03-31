@@ -1,5 +1,11 @@
 # Changelog
 
+## Version X.Y.Z (YYYYDDMMNN)
+
+- Add new `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION` environment variable to docs
+  - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
+
+
 ## Version 2.3.1 (2025013100)
 
 - Make grade display in quiz attempt header independent of quiz review options
