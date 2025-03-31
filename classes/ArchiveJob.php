@@ -122,8 +122,14 @@ class ArchiveJob {
         'timestamp',
     ];
 
+    /** @var string[] Valid variables for attempt folder name patterns */
+    public const ATTEMPT_FOLDERNAME_PATTERN_VARIABLES = self::ATTEMPT_FILENAME_PATTERN_VARIABLES;
+
+    /** @var string[] Characters that are forbidden in a folder name pattern */
+    public const FOLDERNAME_FORBIDDEN_CHARACTERS = ["\\", ".", ":", ";", "*", "?", "!", "\"", "<", ">", "|", "\0"];
+
     /** @var string[] Characters that are forbidden in a filename pattern */
-    public const FILENAME_FORBIDDEN_CHARACTERS = ["\\", "/", ".", ":", ";", "*", "?", "!", "\"", "<", ">", "|", "\0"];
+    public const FILENAME_FORBIDDEN_CHARACTERS = self::FOLDERNAME_FORBIDDEN_CHARACTERS + ["/"];
 
     /**
      * Creates a new ArchiveJob. This does **NOT** enqueue the job anywhere.
@@ -1078,9 +1084,10 @@ class ArchiveJob {
      *
      * @param string $pattern Filename pattern to test
      * @param array $allowedvariables List of allowed variables
+     * @param array $forbiddenchars List of forbidden characters
      * @return bool True if the pattern is valid
      */
-    protected static function is_valid_filename_pattern(string $pattern, array $allowedvariables): bool {
+    protected static function is_valid_filename_pattern(string $pattern, array $allowedvariables, array $forbiddenchars): bool {
         // Check for minimal length.
         if (strlen($pattern) < 1) {
             return false;
@@ -1093,7 +1100,7 @@ class ArchiveJob {
         }
 
         // Check for forbidden characters.
-        foreach (self::FILENAME_FORBIDDEN_CHARACTERS as $char) {
+        foreach ($forbiddenchars as $char) {
             if (strpos($pattern, $char) !== false) {
                 return false;
             }
@@ -1110,7 +1117,11 @@ class ArchiveJob {
      * @return bool True if the pattern is valid for an archive filename
      */
     public static function is_valid_archive_filename_pattern(string $pattern): bool {
-        return self::is_valid_filename_pattern($pattern, self::ARCHIVE_FILENAME_PATTERN_VARIABLES);
+        return self::is_valid_filename_pattern(
+            $pattern,
+            self::ARCHIVE_FILENAME_PATTERN_VARIABLES,
+            self::FILENAME_FORBIDDEN_CHARACTERS
+        );
     }
 
     /**
@@ -1121,7 +1132,31 @@ class ArchiveJob {
      * @return bool True if the pattern is valid for an attempt report filename
      */
     public static function is_valid_attempt_filename_pattern(string $pattern): bool {
-        return self::is_valid_filename_pattern($pattern, self::ATTEMPT_FILENAME_PATTERN_VARIABLES);
+        return self::is_valid_filename_pattern(
+            $pattern,
+            self::ATTEMPT_FILENAME_PATTERN_VARIABLES,
+            self::FILENAME_FORBIDDEN_CHARACTERS
+        );
+    }
+
+    /**
+     * Determines if the given attempt folder name pattern is valid for creating
+     * an attempt folder and does not contain any invalid variables
+     *
+     * @param string $pattern Attempt folder name pattern to test
+     * @return bool True if the pattern is valid for an attempt folder name
+     */
+    public static function is_valid_attempt_foldername_pattern(string $pattern): bool {
+        // Deny leading and trailing slashes
+        if ($pattern[0] === '/' || $pattern[strlen($pattern) - 1] === '/') {
+            return false;
+        }
+
+        return self::is_valid_filename_pattern(
+            $pattern,
+            self::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
+            self::FOLDERNAME_FORBIDDEN_CHARACTERS
+        );
     }
 
     /**
