@@ -57,7 +57,8 @@ final class generate_attempt_report_test extends \advanced_testcase {
             'cmid' => $cmid,
             'quizid' => $quizid,
             'attemptid' => $attemptid,
-            'filenamepattern' => 'test',
+            'foldernamepattern' => '${username}/${attemptid}-${date}_${time}',
+            'filenamepattern' => 'attempt-${username}-${attemptid}-${date}_${time}',
             'sections' => array_fill_keys(Report::SECTIONS, true),
             'attachments' => true,
         ];
@@ -117,6 +118,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
             $r['cmid'],
             $r['quizid'],
             $r['attemptid'],
+            $r['foldernamepattern'],
             $r['filenamepattern'],
             $r['sections'],
             $r['attachments']
@@ -166,6 +168,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
             $r['cmid'],
             $r['quizid'],
             $r['attemptid'],
+            $r['foldernamepattern'],
             $r['filenamepattern'],
             $r['sections'],
             $r['attachments']
@@ -222,6 +225,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
             $invalidparameterkey == 'cmid' ? 0 : $r['cmid'],
             $invalidparameterkey == 'quizid' ? 0 : $r['quizid'],
             $invalidparameterkey == 'attemptid' ? 0 : $r['attemptid'],
+            $invalidparameterkey == 'foldername pattern' ? 'invalid-${pattern' : $r['foldernamepattern'],
             $invalidparameterkey == 'filename pattern' ? 'invalid-${pattern' : $r['filenamepattern'],
             $invalidparameterkey == 'sections' ? [] : $r['sections'],
             $r['attachments']
@@ -239,6 +243,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
             'Invalid cmid' => ['cmid'],
             'Invalid quizid' => ['quizid'],
             'Invalid attemptid' => ['attemptid'],
+            'Invalid foldernamepattern' => ['foldername pattern'],
             'Invalid filenamepattern' => ['filename pattern'],
             'Invalid sections' => ['sections'],
         ];
