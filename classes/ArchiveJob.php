@@ -1182,7 +1182,6 @@ class ArchiveJob {
      * @return string Sanitized foldername
      */
     protected static function sanitize_foldername(string $foldername): string {
-        // TODO: Create unit test
         $res = $foldername;
         foreach (self::FOLDERNAME_FORBIDDEN_CHARACTERS as $char) {
             $res = str_replace($char, '', $res);
@@ -1297,7 +1296,6 @@ class ArchiveJob {
      * @throws \coding_exception
      */
     public static function generate_attempt_foldername($course, $cm, $quiz, int $attemptid, string $pattern): string {
-        // TODO: Create unit test
         global $DB;
 
         // Validate pattern.
