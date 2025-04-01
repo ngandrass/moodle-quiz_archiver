@@ -1147,8 +1147,8 @@ class ArchiveJob {
      * @return bool True if the pattern is valid for an attempt folder name
      */
     public static function is_valid_attempt_foldername_pattern(string $pattern): bool {
-        // Deny leading and trailing slashes
-        if ($pattern[0] === '/' || $pattern[strlen($pattern) - 1] === '/') {
+        // Deny leading and trailing slashes.
+        if (empty($pattern) || $pattern[0] === '/' || $pattern[strlen($pattern) - 1] === '/') {
             return false;
         }
 
