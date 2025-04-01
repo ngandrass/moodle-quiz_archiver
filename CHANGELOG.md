@@ -1,9 +1,12 @@
 # Changelog
 
-## Version X.Y.Z (YYYYDDMMNN)
+## Version 2.3.2 (2025040100)
 
 - Add new `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION` environment variable to docs
   - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
+- Fix download of Moodle backups by the archive worker for specific webserver and proxy setups
+  - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
+- Fix privacy metadata provider to include attempts metadata table
 
 
 ## Version 2.3.1 (2025013100)
