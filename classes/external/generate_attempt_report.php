@@ -49,6 +49,11 @@ class generate_attempt_report extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
+            'jobid' => new external_value(
+                PARAM_TEXT,
+                'UUID of the job this artifact is associated with',
+                VALUE_REQUIRED
+            ),
             'courseid' => new external_value(
                 PARAM_INT,
                 'ID of course',
@@ -185,6 +190,7 @@ class generate_attempt_report extends external_api {
     /**
      * Generate an quiz attempt report as HTML DOM
      *
+     * @param string $jobidraw UUID of the job
      * @param int $courseidraw ID of the course
      * @param int $cmidraw ID of the course module
      * @param int $quizidraw ID of the quiz
@@ -202,6 +208,7 @@ class generate_attempt_report extends external_api {
      * @throws \DOMException
      */
     public static function execute(
+        string $jobidraw,
         int    $courseidraw,
         int    $cmidraw,
         int    $quizidraw,
@@ -215,6 +222,7 @@ class generate_attempt_report extends external_api {
 
         // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
+            'jobid' => $jobidraw,
             'courseid' => $courseidraw,
             'cmid' => $cmidraw,
             'quizid' => $quizidraw,
@@ -224,6 +232,18 @@ class generate_attempt_report extends external_api {
             'sections' => $sectionsraw,
             'attachments' => $attachmentsraw,
         ]);
+
+        // Validate that the jobid exists.
+        try {
+            $job = ArchiveJob::get_by_jobid($params['jobid']);
+        } catch (\dml_exception $e) {
+            return ['status' => 'E_JOB_NOT_FOUND'];
+        }
+
+        // Check access rights.
+        if (!$job->has_read_access(optional_param('wstoken', null, PARAM_TEXT))) {
+            return ['status' => 'E_ACCESS_DENIED'];
+        }
 
         // Check capabilities.
         try {

@@ -5,6 +5,7 @@
 - Add support for fully customizable attempt folder names
 - Add group names, group IDs, and group ID numbers as valid variables for attempt folder- and filenames
 - Automatically trim attempt and archive filenames
+- Improve webservice API implementation for attempt report and metadata retrieval
 
 
 ## Version 2.3.2 (2025040100)
