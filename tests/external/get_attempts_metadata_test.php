@@ -44,13 +44,15 @@ final class get_attempts_metadata_test extends \advanced_testcase {
     /**
      * Generates a set of valid parameters
      *
+     * @param string $jobid Job ID
      * @param int $courseid Course ID
      * @param int $cmid Course module ID
      * @param int $quizid Quiz ID
      * @return array Valid request parameters
      */
-    protected function generate_valid_request(int $courseid, int $cmid, int $quizid): array {
+    protected function generate_valid_request(string $jobid, int $courseid, int $cmid, int $quizid): array {
         return [
+            'jobid' => $jobid,
             'courseid' => $courseid,
             'cmid' => $cmid,
             'quizid' => $quizid,
@@ -105,8 +107,22 @@ final class get_attempts_metadata_test extends \advanced_testcase {
 
         $this->resetAfterTest();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
-        $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        $job = ArchiveJob::create(
+            '10000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            [],
+            []
+        );
+        $_GET['wstoken'] = 'TEST-WS-TOKEN';
+
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         get_attempts_metadata::execute(
+            $r['jobid'],
             $r['courseid'],
             $r['cmid'],
             $r['quizid'],
@@ -132,7 +148,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
-        ArchiveJob::create(
+        $job = ArchiveJob::create(
             '11000000-1234-5678-abcd-ef4242424242',
             $mocks->course->id,
             $mocks->quiz->cmid,
@@ -146,8 +162,9 @@ final class get_attempts_metadata_test extends \advanced_testcase {
 
         // Execute test call.
         $_GET['wstoken'] = 'INVALID-WS-TOKEN';
-        $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $res = get_attempts_metadata::execute(
+            $r['jobid'],
             $r['courseid'],
             $r['cmid'],
             $r['quizid'],
@@ -189,11 +206,12 @@ final class get_attempts_metadata_test extends \advanced_testcase {
         );
 
         // Create a valid request.
-        $r = $this->generate_valid_request($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        $r = $this->generate_valid_request($jobid, $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $_GET['wstoken'] = $wstoken;
 
         // Execute the request.
         $res = get_attempts_metadata::execute(
+            $r['jobid'],
             $r['courseid'],
             $r['cmid'],
             $r['quizid'],
@@ -237,6 +255,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
 
         // Create a request.
         $r = $this->generate_valid_request(
+            $jobid,
             $mocks->course->id,
             $mocks->quiz->cmid,
             $mocks->quiz->id
@@ -247,6 +266,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
         $this->expectException(\invalid_parameter_exception::class);
         $this->expectExceptionMessageMatches('/.*'.$invalidparameterkey.'.*/');
         get_attempts_metadata::execute(
+            $r['jobid'],
             $invalidparameterkey == 'courseid' ? 0 : $r['courseid'],
             $invalidparameterkey == 'cmid' ? 0 : $r['cmid'],
             $invalidparameterkey == 'quizid' ? 0 : $r['quizid'],
@@ -265,6 +285,97 @@ final class get_attempts_metadata_test extends \advanced_testcase {
             'Invalid cmid' => ['cmid'],
             'Invalid quizid' => ['quizid'],
         ];
+    }
+
+    /**
+     * Test wstoken validation
+     *
+     * @covers \quiz_archiver\external\get_attempts_metadata::execute
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     */
+    public function test_wstoken_access_check(): void {
+        // Gain webservice permission.
+        $this->setAdminUser();
+
+        // Create job.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '30000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN-VALID',
+            [],
+            []
+        );
+
+        // Generate a valid request.
+        $r = $this->generate_valid_request(
+            $job->get_jobid(),
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+        );
+
+        // Check that correct wstoken allows access.
+        $_GET['wstoken'] = 'TEST-WS-TOKEN-VALID';
+        get_attempts_metadata::execute(
+            $r['jobid'],
+            $r['courseid'],
+            $r['cmid'],
+            $r['quizid'],
+            $r['attemptids'],
+        );
+
+        // Check that incorrect wstoken is rejected.
+        $_GET['wstoken'] = 'TEST-WS-TOKEN-INVALID';
+        $this->assertSame(
+            ['status' => 'E_ACCESS_DENIED'],
+            get_attempts_metadata::execute(
+                $r['jobid'],
+                $r['courseid'],
+                $r['cmid'],
+                $r['quizid'],
+                $r['attemptids'],
+            ),
+            'Invalid wstoken was falsely accepted'
+        );
+    }
+
+    /**
+     * Test that invalid jobs return no status
+     *
+     * @covers \quiz_archiver\external\get_attempts_metadata::execute
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     */
+    public function test_invalid_job(): void {
+        $r = $this->generate_valid_request('00000000-0000-0000-0000-000000000000', 1, 1, 1);
+
+        $this->assertSame(
+            ['status' => 'E_JOB_NOT_FOUND'],
+            get_attempts_metadata::execute(
+                $r['jobid'],
+                $r['courseid'],
+                $r['cmid'],
+                $r['quizid'],
+                $r['attemptids'],
+            ),
+            'Invalid job ID should return E_JOB_NOT_FOUND'
+        );
     }
 
 }
