@@ -234,5 +234,19 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024072200, 'quiz', 'archiver');
     }
 
+    if ($oldversion < 2025040200) {
+        // Define field numattachments to be added to quiz_archiver_attempts.
+        $table = new xmldb_table('quiz_archiver_attempts');
+        $field = new xmldb_field('numattachments', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'attemptid');
+
+        // Conditionally launch add field numattachments.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2025040200, 'quiz', 'archiver');
+    }
+
     return true;
 }

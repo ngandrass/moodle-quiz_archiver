@@ -260,6 +260,7 @@ class ArchiveJob {
                 'jobid' => $id,
                 'userid' => $data->userid,
                 'attemptid' => $data->attemptid,
+                'numattachments' => 0,  // Set to 0 for now. Will be populated once attempt was actually processed.
             ];
         }, $attempts));
 
