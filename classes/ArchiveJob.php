@@ -125,6 +125,12 @@ class ArchiveJob {
         'timestamp',
     ];
 
+    /** @var int Number of characters a string variable will be cut off after expansion */
+    public const FILENAME_VARIABLE_MAX_LENGTH = 128;
+
+    /** @var int Number of characters after a single filename is trimmed */
+    public const FILENAME_MAX_LENGTH = 240;
+
     /** @var string[] Valid variables for attempt folder name patterns */
     public const ATTEMPT_FOLDERNAME_PATTERN_VARIABLES = self::ATTEMPT_FILENAME_PATTERN_VARIABLES;
 
@@ -1199,7 +1205,7 @@ class ArchiveJob {
             $res = str_replace($char, '', $res);
         }
 
-        return trim($res);
+        return substr(trim($res), 0, self::FILENAME_MAX_LENGTH);
     }
 
     /**
@@ -1215,7 +1221,12 @@ class ArchiveJob {
             $res = str_replace($char, '', $res);
         }
 
-        return trim($res, " \n\r\t\v\x00/\\");
+        // Trim whole path and each segment / "file"name.
+        $res = trim($res, " \n\r\t\v\x00/\\");
+        $parts = explode('/', $res);
+        $trimmedparts = array_map(fn($part) => substr($part, 0, self::FILENAME_MAX_LENGTH), $parts);
+
+        return join('/', $trimmedparts);
     }
 
     /**
@@ -1251,7 +1262,11 @@ class ArchiveJob {
         // Substitute variables.
         $filename = $pattern;
         foreach ($data as $key => $value) {
-            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+            $filename = preg_replace(
+                '/\$\{\s*'.$key.'\s*\}/m',
+                substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
+                $filename
+            );
         }
 
         return self::sanitize_filename($filename);
@@ -1308,7 +1323,11 @@ class ArchiveJob {
         // Substitute variables.
         $filename = $pattern;
         foreach ($data as $key => $value) {
-            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+            $filename = preg_replace(
+                '/\$\{\s*'.$key.'\s*\}/m',
+                substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
+                $filename
+            );
         }
 
         return self::sanitize_filename($filename);
@@ -1363,12 +1382,16 @@ class ArchiveJob {
         ];
 
         // Substitute variables.
-        $filename = $pattern;
+        $foldername = $pattern;
         foreach ($data as $key => $value) {
-            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+            $foldername = preg_replace(
+                '/\$\{\s*'.$key.'\s*\}/m',
+                substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
+                $foldername
+            );
         }
 
-        return self::sanitize_foldername($filename);
+        return self::sanitize_foldername($foldername);
     }
 
 }
