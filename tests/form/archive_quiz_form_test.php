@@ -165,6 +165,7 @@ final class archive_quiz_form_test extends \advanced_testcase {
             'Valid data' => [
                 [
                     'archive_filename_pattern' => 'archive-${courseshortname}',
+                    'export_attempts_foldername_pattern' => '${username}/${attemptid}',
                     'export_attempts_filename_pattern' => 'attempt-${attemptid}',
                 ],
                 true,
@@ -172,6 +173,7 @@ final class archive_quiz_form_test extends \advanced_testcase {
             'Invalid archive filename pattern' => [
                 [
                     'archive_filename_pattern' => 'archive-${courseshortname',
+                    'export_attempts_foldername_pattern' => '${username}/${attemptid}',
                     'export_attempts_filename_pattern' => 'attempt-${attemptid}',
                 ],
                 false,
@@ -179,7 +181,16 @@ final class archive_quiz_form_test extends \advanced_testcase {
             'Invalid attempt filename pattern' => [
                 [
                     'archive_filename_pattern' => 'archive-${courseshortname}',
+                    'export_attempts_foldername_pattern' => '${username}/${attemptid}',
                     'export_attempts_filename_pattern' => 'attempt-${attemptid',
+                ],
+                false,
+            ],
+            'Invalid attempt folder name pattern' => [
+                [
+                    'archive_filename_pattern' => 'archive-${courseshortname}',
+                    'export_attempts_foldername_pattern' => '/tmp/${username}/${attemptid}',
+                    'export_attempts_filename_pattern' => 'attempt-${attemptid}',
                 ],
                 false,
             ],

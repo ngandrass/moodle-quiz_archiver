@@ -69,9 +69,13 @@ class generate_attempt_report extends external_api {
                 'ID of the quiz attempt',
                 VALUE_REQUIRED
             ),
+            'foldernamepattern' => new external_value(
+                PARAM_TEXT,
+                'Folder name pattern to use for generating the attempt folder'
+            ),
             'filenamepattern' => new external_value(
                 PARAM_TEXT,
-                'Filename pattern to use for the generated archive',
+                'Filename pattern to use for the generated attempt files',
                 VALUE_REQUIRED
             ),
             'sections' => new external_single_structure(
@@ -117,6 +121,11 @@ class generate_attempt_report extends external_api {
             'attemptid' => new external_value(
                 PARAM_INT,
                 'ID of the quiz attempt',
+                VALUE_OPTIONAL
+            ),
+            'foldername' => new external_value(
+                PARAM_TEXT,
+                'Desired name of the folder to store this quiz attempt report in',
                 VALUE_OPTIONAL
             ),
             'filename' => new external_value(
@@ -180,6 +189,7 @@ class generate_attempt_report extends external_api {
      * @param int $cmidraw ID of the course module
      * @param int $quizidraw ID of the quiz
      * @param int $attemptidraw ID of the quiz attempt
+     * @param string $foldernamepatternraw Folder name pattern to use for report name generation
      * @param string $filenamepatternraw Filename pattern to use for report name generation
      * @param array $sectionsraw Sections to include in the report
      * @param bool $attachmentsraw Whether to check for attempts and include metadata if present
@@ -196,6 +206,7 @@ class generate_attempt_report extends external_api {
         int    $cmidraw,
         int    $quizidraw,
         int    $attemptidraw,
+        string $foldernamepatternraw,
         string $filenamepatternraw,
         array  $sectionsraw,
         bool   $attachmentsraw
@@ -208,6 +219,7 @@ class generate_attempt_report extends external_api {
             'cmid' => $cmidraw,
             'quizid' => $quizidraw,
             'attemptid' => $attemptidraw,
+            'foldernamepattern' => $foldernamepatternraw,
             'filenamepattern' => $filenamepatternraw,
             'sections' => $sectionsraw,
             'attachments' => $attachmentsraw,
@@ -235,7 +247,10 @@ class generate_attempt_report extends external_api {
             throw new \invalid_parameter_exception("No quiz with given quizid found");
         }
 
-        // Validate filename pattern.
+        // Validate folder and filename pattern.
+        if (!ArchiveJob::is_valid_attempt_foldername_pattern($params['foldernamepattern'])) {
+            throw new \invalid_parameter_exception("Invalid foldername pattern");
+        }
         if (!ArchiveJob::is_valid_attempt_filename_pattern($params['filenamepattern'])) {
             throw new \invalid_parameter_exception("Report filename pattern is invalid");
         }
@@ -275,7 +290,14 @@ class generate_attempt_report extends external_api {
             $res['attachments'] = [];
         }
 
-        // Generate filename.
+        // Generate folder- and filename.
+        $res['foldername'] = ArchiveJob::generate_attempt_foldername(
+            $course,
+            $cm,
+            $quiz,
+            $params['attemptid'],
+            $params['foldernamepattern']
+        );
         $res['filename'] = ArchiveJob::generate_attempt_filename(
             $course,
             $cm,

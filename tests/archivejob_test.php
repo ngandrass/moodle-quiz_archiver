@@ -1023,6 +1023,86 @@ final class archivejob_test extends \advanced_testcase {
     }
 
     /**
+     * Test attempt foldername pattern validation
+     *
+     * @covers \quiz_archiver\ArchiveJob::is_valid_attempt_foldername_pattern
+     * @covers \quiz_archiver\ArchiveJob::is_valid_filename_pattern
+     *
+     * @dataProvider attempt_foldername_pattern_data_provider
+     *
+     * @param string $pattern Pattern to test
+     * @param bool $isvalid Expected result
+     * @return void
+     */
+    public function test_attempt_foldername_pattern_validation(string $pattern, bool $isvalid): void {
+        $this->assertSame(
+            $isvalid,
+            ArchiveJob::is_valid_attempt_foldername_pattern($pattern),
+            'Attempt folder name pattern validation failed for pattern "'.$pattern.'"'
+        );
+    }
+
+    /**
+     * Data provider for test_attempt_foldername_pattern_validation()
+     *
+     * @return array[] Array of test cases
+     */
+    public static function attempt_foldername_pattern_data_provider(): array {
+        return [
+            'Default pattern' => [
+                'pattern' => '${username}/${attemptid}-${date}_${time}',
+                'isValid' => true,
+            ],
+            'All allowed variables' => [
+                'pattern' => array_reduce(
+                    ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
+                    function ($carry, $item) {
+                        return $carry.'${'.$item.'}';
+                    },
+                    ''
+                ),
+                'isValid' => true,
+            ],
+            'Allowed variables with additional brackets' => [
+                'pattern' => 'attempt-{quizname}_${quizname}-{quizid}_${quizid}',
+                'isValid' => true,
+            ],
+            'Invalid variable' => [
+                'pattern' => 'Foo ${foo} Bar ${bar} Baz ${baz}',
+                'isValid' => false,
+            ],
+            'Forbidden characters' => [
+                'pattern' => 'attempt: foo!bar',
+                'isValid' => false,
+            ],
+            'Only invalid characters' => [
+                'pattern' => '.!',
+                'isValid' => false,
+            ],
+            'Dot' => [
+                'pattern' => '.',
+                'isValid' => false,
+            ],
+            'Empty pattern' => [
+                'pattern' => '',
+                'isValid' => false,
+            ],
+            'Relative folder traversal' => [
+                'pattern' => '../../sys/dev/${username}/file',
+                'isValid' => false,
+            ],
+            'Absolut path' => [
+                'pattern' => '/tmp/foo/${username}',
+                'isValid' => false,
+            ],
+            'Trailing slash' => [
+                'pattern' => '${username}/foo/',
+                'isValid' => false,
+            ],
+        ];
+    }
+
+    /**
      * Test attempt filename pattern validation
      *
      * @covers \quiz_archiver\ArchiveJob::is_valid_attempt_filename_pattern
@@ -1195,11 +1275,251 @@ final class archivejob_test extends \advanced_testcase {
 
         // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
-        $filename = ArchiveJob::generate_archive_filename(
+        ArchiveJob::generate_archive_filename(
             $mocks->course,
             $cm,
             $mocks->quiz,
             'archive-${foo}${bar}${baz}${courseid}'
+        );
+    }
+
+    /**
+     * Test generation of valid attempt folder names
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_foldername(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        // Full pattern.
+        $fullpattern = 'attempt';
+        foreach (ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES as $var) {
+            $fullpattern .= '-${'.$var.'}';
+        }
+        $foldername = ArchiveJob::generate_attempt_foldername(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            $fullpattern
+        );
+        $this->assertStringContainsString($rc->course->id, $foldername, 'Course ID was not found in folder name');
+        $this->assertStringContainsString($rc->cm->id, $foldername, 'Course module ID was not found in folder name');
+        $this->assertStringContainsString($rc->quiz->id, $foldername, 'Quiz ID was not found in folder name');
+        $this->assertStringContainsString($rc->course->fullname, $foldername, 'Course name was not found in folder name');
+        $this->assertStringContainsString($rc->course->shortname, $foldername, 'Course shortname was not found in folder name');
+        $this->assertStringContainsString($rc->quiz->name, $foldername, 'Quiz name was not found in folder name');
+        // TODO: (MDL-0) Update reference course to cover groups and check for these.
+        $this->assertStringContainsString('nogroup', $foldername, 'Group name placeholder was not found in folder name');
+        $this->assertStringContainsString($rc->attemptids[0], $foldername, 'Attempt ID was not found in folder name');
+    }
+
+    /**
+     * Test generation of attempt folder names without variables
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::get_user_groups
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_foldername_without_variables(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        $foldername = ArchiveJob::generate_attempt_foldername(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            'attempt'
+        );
+        $this->assertSame('attempt', $foldername, 'Folder name was not generated correctly');
+    }
+
+    /**
+     * Test generation of attempt folder names with invalid patterns
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_foldername_invalid_pattern(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        // Test filename generation.
+        $this->expectException(\invalid_parameter_exception::class);
+        ArchiveJob::generate_attempt_foldername(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            '.'
+        );
+    }
+
+    /**
+     * Test generation of attempt folder names with invalid variables
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_foldername_invalid_variables(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        // Test filename generation.
+        $this->expectException(\invalid_parameter_exception::class);
+        ArchiveJob::generate_attempt_foldername(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            'attempt-${foo}${bar}${baz}${courseid}'
+        );
+    }
+
+    /**
+     * Test generation of valid attempt filenames
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::get_user_groups
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_filename(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        // Full pattern.
+        $fullpattern = 'attempt';
+        foreach (ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES as $var) {
+            $fullpattern .= '-${'.$var.'}';
+        }
+        $filename = ArchiveJob::generate_attempt_filename(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            $fullpattern
+        );
+        $this->assertStringContainsString($rc->course->id, $filename, 'Course ID was not found in filename');
+        $this->assertStringContainsString($rc->cm->id, $filename, 'Course module ID was not found in filename');
+        $this->assertStringContainsString($rc->quiz->id, $filename, 'Quiz ID was not found in filename');
+        $this->assertStringContainsString($rc->course->fullname, $filename, 'Course name was not found in filename');
+        $this->assertStringContainsString($rc->course->shortname, $filename, 'Course shortname was not found in filename');
+        $this->assertStringContainsString($rc->quiz->name, $filename, 'Quiz name was not found in filename');
+        // TODO: (MDL-0) Update reference course to cover groups and check for these.
+        $this->assertStringContainsString('nogroup', $filename, 'Group name placeholder was not found in filename');
+        $this->assertStringContainsString($rc->attemptids[0], $filename, 'Attempt ID was not found in filename');
+    }
+
+    /**
+     * Test generation of attempt filenames without variables
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_filename_without_variables(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        $filename = ArchiveJob::generate_attempt_filename(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            'attempt'
+        );
+        $this->assertSame('attempt', $filename, 'Filename was not generated correctly');
+    }
+
+    /**
+     * Test generation of attempt filenames with invalid patterns
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_filename_invalid_pattern(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        // Test filename generation.
+        $this->expectException(\invalid_parameter_exception::class);
+        ArchiveJob::generate_attempt_filename(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            '.'
+        );
+    }
+
+    /**
+     * Test generation of attempt filenames with invalid variables
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     * @throws \dml_exception
+     */
+    public function test_generate_attempt_filename_invalid_variables(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course();
+
+        // Test filename generation.
+        $this->expectException(\invalid_parameter_exception::class);
+        ArchiveJob::generate_attempt_filename(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            'attempt-${foo}${bar}${baz}${courseid}'
         );
     }
 

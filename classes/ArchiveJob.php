@@ -108,6 +108,9 @@ class ArchiveJob {
         'coursename',
         'courseshortname',
         'cmid',
+        'groupids',
+        'groupidnumbers',
+        'groupnames',
         'quizid',
         'quizname',
         'attemptid',
@@ -122,8 +125,20 @@ class ArchiveJob {
         'timestamp',
     ];
 
+    /** @var int Number of characters a string variable will be cut off after expansion */
+    public const FILENAME_VARIABLE_MAX_LENGTH = 128;
+
+    /** @var int Number of characters after a single filename is trimmed */
+    public const FILENAME_MAX_LENGTH = 240;
+
+    /** @var string[] Valid variables for attempt folder name patterns */
+    public const ATTEMPT_FOLDERNAME_PATTERN_VARIABLES = self::ATTEMPT_FILENAME_PATTERN_VARIABLES;
+
+    /** @var string[] Characters that are forbidden in a folder name pattern */
+    public const FOLDERNAME_FORBIDDEN_CHARACTERS = ["\\", ".", ":", ";", "*", "?", "!", "\"", "<", ">", "|", "\0"];
+
     /** @var string[] Characters that are forbidden in a filename pattern */
-    public const FILENAME_FORBIDDEN_CHARACTERS = ["\\", "/", ".", ":", ";", "*", "?", "!", "\"", "<", ">", "|", "\0"];
+    public const FILENAME_FORBIDDEN_CHARACTERS = self::FOLDERNAME_FORBIDDEN_CHARACTERS + ["/"];
 
     /**
      * Creates a new ArchiveJob. This does **NOT** enqueue the job anywhere.
@@ -506,6 +521,31 @@ class ArchiveJob {
                 return $res;
             },
             []
+        );
+    }
+
+    /**
+     * Retrieves the groups a user is member of in a given course
+     *
+     * @param int $courseid ID of the course to check
+     * @param int $userid ID of the user to retrieve groups for
+     * @return array List of all groups the user is member of in this course
+     * @throws \dml_exception
+     */
+    public static function get_user_groups(int $courseid, int $userid): array {
+        global $DB;
+
+        return $DB->get_records_sql("
+            SELECT g.id, g.idnumber, g.name
+            FROM {groups} g
+            JOIN {groups_members} gm ON g.id = gm.groupid
+            WHERE
+                g.courseid = :courseid AND
+                gm.userid = :userid;",
+            [
+                'courseid' => $courseid,
+                'userid' => $userid,
+            ]
         );
     }
 
@@ -1078,9 +1118,10 @@ class ArchiveJob {
      *
      * @param string $pattern Filename pattern to test
      * @param array $allowedvariables List of allowed variables
+     * @param array $forbiddenchars List of forbidden characters
      * @return bool True if the pattern is valid
      */
-    protected static function is_valid_filename_pattern(string $pattern, array $allowedvariables): bool {
+    protected static function is_valid_filename_pattern(string $pattern, array $allowedvariables, array $forbiddenchars): bool {
         // Check for minimal length.
         if (strlen($pattern) < 1) {
             return false;
@@ -1093,7 +1134,7 @@ class ArchiveJob {
         }
 
         // Check for forbidden characters.
-        foreach (self::FILENAME_FORBIDDEN_CHARACTERS as $char) {
+        foreach ($forbiddenchars as $char) {
             if (strpos($pattern, $char) !== false) {
                 return false;
             }
@@ -1110,7 +1151,11 @@ class ArchiveJob {
      * @return bool True if the pattern is valid for an archive filename
      */
     public static function is_valid_archive_filename_pattern(string $pattern): bool {
-        return self::is_valid_filename_pattern($pattern, self::ARCHIVE_FILENAME_PATTERN_VARIABLES);
+        return self::is_valid_filename_pattern(
+            $pattern,
+            self::ARCHIVE_FILENAME_PATTERN_VARIABLES,
+            self::FILENAME_FORBIDDEN_CHARACTERS
+        );
     }
 
     /**
@@ -1121,7 +1166,31 @@ class ArchiveJob {
      * @return bool True if the pattern is valid for an attempt report filename
      */
     public static function is_valid_attempt_filename_pattern(string $pattern): bool {
-        return self::is_valid_filename_pattern($pattern, self::ATTEMPT_FILENAME_PATTERN_VARIABLES);
+        return self::is_valid_filename_pattern(
+            $pattern,
+            self::ATTEMPT_FILENAME_PATTERN_VARIABLES,
+            self::FILENAME_FORBIDDEN_CHARACTERS
+        );
+    }
+
+    /**
+     * Determines if the given attempt folder name pattern is valid for creating
+     * an attempt folder and does not contain any invalid variables
+     *
+     * @param string $pattern Attempt folder name pattern to test
+     * @return bool True if the pattern is valid for an attempt folder name
+     */
+    public static function is_valid_attempt_foldername_pattern(string $pattern): bool {
+        // Deny leading and trailing slashes.
+        if (empty($pattern) || $pattern[0] === '/' || $pattern[strlen($pattern) - 1] === '/') {
+            return false;
+        }
+
+        return self::is_valid_filename_pattern(
+            $pattern,
+            self::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
+            self::FOLDERNAME_FORBIDDEN_CHARACTERS
+        );
     }
 
     /**
@@ -1136,7 +1205,28 @@ class ArchiveJob {
             $res = str_replace($char, '', $res);
         }
 
-        return trim($res);
+        return substr(trim($res), 0, self::FILENAME_MAX_LENGTH);
+    }
+
+    /**
+     * Sanitizes the given foldername by removing all forbidden characters as
+     * well as leading- and trailing slashes
+     *
+     * @param string $foldername Foldername to sanitize
+     * @return string Sanitized foldername
+     */
+    protected static function sanitize_foldername(string $foldername): string {
+        $res = $foldername;
+        foreach (self::FOLDERNAME_FORBIDDEN_CHARACTERS as $char) {
+            $res = str_replace($char, '', $res);
+        }
+
+        // Trim whole path and each segment / "file"name.
+        $res = trim($res, " \n\r\t\v\x00/\\");
+        $parts = explode('/', $res);
+        $trimmedparts = array_map(fn($part) => substr($part, 0, self::FILENAME_MAX_LENGTH), $parts);
+
+        return join('/', $trimmedparts);
     }
 
     /**
@@ -1172,7 +1262,11 @@ class ArchiveJob {
         // Substitute variables.
         $filename = $pattern;
         foreach ($data as $key => $value) {
-            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+            $filename = preg_replace(
+                '/\$\{\s*'.$key.'\s*\}/m',
+                substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
+                $filename
+            );
         }
 
         return self::sanitize_filename($filename);
@@ -1203,6 +1297,7 @@ class ArchiveJob {
         // We query the DB directly to prevent a full question_attempt object from being created.
         $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
         $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $usergroups = self::get_user_groups($course->id, $userinfo->id);
         $data = [
             'courseid' => $course->id,
             'cmid' => $cm->id,
@@ -1210,6 +1305,9 @@ class ArchiveJob {
             'attemptid' => $attemptid,
             'coursename' => $course->fullname,
             'courseshortname' => $course->shortname,
+            'groupids' => join('-', array_map(fn($group) => $group->id, $usergroups)) ?: 0,
+            'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
+            'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
             'quizname' => $quiz->name,
             'timestamp' => time(),
             'date' => date('Y-m-d'),
@@ -1225,10 +1323,75 @@ class ArchiveJob {
         // Substitute variables.
         $filename = $pattern;
         foreach ($data as $key => $value) {
-            $filename = preg_replace('/\$\{\s*'.$key.'\s*\}/m', $value, $filename);
+            $filename = preg_replace(
+                '/\$\{\s*'.$key.'\s*\}/m',
+                substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
+                $filename
+            );
         }
 
         return self::sanitize_filename($filename);
+    }
+
+    /**
+     * Generates an attempt folder name based on the given pattern and context information
+     *
+     * @param mixed $course Course object
+     * @param mixed $cm Course module object
+     * @param mixed $quiz Quiz object
+     * @param int $attemptid ID of the attempt
+     * @param string $pattern Filename pattern to use
+     * @return string Attempt folder name
+     * @throws \dml_exception If the attempt or user could not be found in the database
+     * @throws \invalid_parameter_exception If the pattern is invalid
+     * @throws \coding_exception
+     */
+    public static function generate_attempt_foldername($course, $cm, $quiz, int $attemptid, string $pattern): string {
+        global $DB;
+
+        // Validate pattern.
+        if (!self::is_valid_attempt_foldername_pattern($pattern)) {
+            throw new \invalid_parameter_exception(get_string('error_invalid_attempt_foldername_pattern', 'quiz_archiver'));
+        }
+
+        // Prepare data.
+        // We query the DB directly to prevent a full question_attempt object from being created.
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $usergroups = self::get_user_groups($course->id, $userinfo->id);
+        $data = [
+            'courseid' => $course->id,
+            'cmid' => $cm->id,
+            'quizid' => $quiz->id,
+            'attemptid' => $attemptid,
+            'coursename' => $course->fullname,
+            'courseshortname' => $course->shortname,
+            'groupids' => join('-', array_map(fn($group) => $group->id, $usergroups)) ?: 0,
+            'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
+            'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
+            'quizname' => $quiz->name,
+            'timestamp' => time(),
+            'date' => date('Y-m-d'),
+            'time' => date('H-i-s'),
+            'timestart' => $attemptinfo->timestart,
+            'timefinish' => $attemptinfo->timefinish,
+            'username' => $userinfo->username,
+            'firstname' => $userinfo->firstname,
+            'lastname' => $userinfo->lastname,
+            'idnumber' => $userinfo->idnumber,
+        ];
+
+        // Substitute variables.
+        $foldername = $pattern;
+        foreach ($data as $key => $value) {
+            $foldername = preg_replace(
+                '/\$\{\s*'.$key.'\s*\}/m',
+                substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
+                $foldername
+            );
+        }
+
+        return self::sanitize_foldername($foldername);
     }
 
 }

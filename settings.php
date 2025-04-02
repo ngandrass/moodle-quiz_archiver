@@ -31,6 +31,7 @@ require_once(__DIR__ . '/classes/local/autoinstall.php');
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
+use quiz_archiver\local\admin\setting\admin_setting_attempt_foldername_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_configcheckbox_alwaystrue;
 use quiz_archiver\local\autoinstall;
 use quiz_archiver\Report;
@@ -179,7 +180,26 @@ if ($hassiteconfig) {
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
             ]),
-            'quiz-archive-${courseshortname}-${courseid}-${quizname}-${quizid}_${date}-${time}',
+            'quiz-archive-${courseshortname}-${courseid}-${quizname}-${quizid}-${date}_${time}',
+            PARAM_TEXT,
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        // Attempt folder pattern.
+        $set = new admin_setting_attempt_foldername_pattern('quiz_archiver/job_preset_export_attempts_foldername_pattern',
+            get_string('export_attempts_foldername_pattern', 'quiz_archiver'),
+            get_string('export_attempts_foldername_pattern_help', 'quiz_archiver', [
+                'variables' => array_reduce(
+                    ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
+                    fn ($res, $varname) => $res."<li><code>\${".$varname."}</code>: ".
+                            get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                        "</li>"
+                    , ""
+                ),
+                'forbiddenchars' => implode('', ArchiveJob::FOLDERNAME_FORBIDDEN_CHARACTERS),
+            ]),
+            '${username}/${attemptid}-${date}_${time}',
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
@@ -198,7 +218,7 @@ if ($hassiteconfig) {
                 ),
                 'forbiddenchars' => implode('', ArchiveJob::FILENAME_FORBIDDEN_CHARACTERS),
             ]),
-            'attempt-${attemptid}-${username}_${date}-${time}',
+            'attempt-${attemptid}-${username}-${date}_${time}',
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);

@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYYDDMMNN)
+
+- Add support for fully customizable attempt folder names
+- Add group names, group IDs, and group ID numbers as valid variables for attempt folder- and filenames
+- Automatically trim attempt and archive filenames
+
+
 ## Version 2.3.2 (2025040100)
 
 - Add new `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION` environment variable to docs
