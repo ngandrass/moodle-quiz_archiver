@@ -108,6 +108,9 @@ class ArchiveJob {
         'coursename',
         'courseshortname',
         'cmid',
+        'groupids',
+        'groupidnumbers',
+        'groupnames',
         'quizid',
         'quizname',
         'attemptid',
@@ -512,6 +515,31 @@ class ArchiveJob {
                 return $res;
             },
             []
+        );
+    }
+
+    /**
+     * Retrieves the groups a user is member of in a given course
+     *
+     * @param int $courseid ID of the course to check
+     * @param int $userid ID of the user to retrieve groups for
+     * @return array List of all groups the user is member of in this course
+     * @throws \dml_exception
+     */
+    public static function get_user_groups(int $courseid, int $userid): array {
+        global $DB;
+
+        return $DB->get_records_sql("
+            SELECT g.id, g.idnumber, g.name
+            FROM {groups} g
+            JOIN {groups_members} gm ON g.id = gm.groupid
+            WHERE
+                g.courseid = :courseid AND
+                gm.userid = :userid;",
+            [
+                'courseid' => $courseid,
+                'userid' => $userid,
+            ]
         );
     }
 
@@ -1254,6 +1282,7 @@ class ArchiveJob {
         // We query the DB directly to prevent a full question_attempt object from being created.
         $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
         $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $usergroups = self::get_user_groups($course->id, $userinfo->id);
         $data = [
             'courseid' => $course->id,
             'cmid' => $cm->id,
@@ -1261,6 +1290,9 @@ class ArchiveJob {
             'attemptid' => $attemptid,
             'coursename' => $course->fullname,
             'courseshortname' => $course->shortname,
+            'groupids' => join('-', array_map(fn($group) => $group->id, $usergroups)) ?: 0,
+            'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
+            'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
             'quizname' => $quiz->name,
             'timestamp' => time(),
             'date' => date('Y-m-d'),
@@ -1307,6 +1339,7 @@ class ArchiveJob {
         // We query the DB directly to prevent a full question_attempt object from being created.
         $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $attemptid], '*', MUST_EXIST);
         $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $usergroups = self::get_user_groups($course->id, $userinfo->id);
         $data = [
             'courseid' => $course->id,
             'cmid' => $cm->id,
@@ -1314,6 +1347,9 @@ class ArchiveJob {
             'attemptid' => $attemptid,
             'coursename' => $course->fullname,
             'courseshortname' => $course->shortname,
+            'groupids' => join('-', array_map(fn($group) => $group->id, $usergroups)) ?: 0,
+            'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
+            'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
             'quizname' => $quiz->name,
             'timestamp' => time(),
             'date' => date('Y-m-d'),

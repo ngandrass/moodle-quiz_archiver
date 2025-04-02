@@ -1317,6 +1317,8 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertStringContainsString($rc->course->fullname, $foldername, 'Course name was not found in folder name');
         $this->assertStringContainsString($rc->course->shortname, $foldername, 'Course shortname was not found in folder name');
         $this->assertStringContainsString($rc->quiz->name, $foldername, 'Quiz name was not found in folder name');
+        // TODO: (MDL-0) Update reference course to cover groups and check for these.
+        $this->assertStringContainsString('nogroup', $foldername, 'Group name placeholder was not found in folder name');
         $this->assertStringContainsString($rc->attemptids[0], $foldername, 'Attempt ID was not found in folder name');
     }
 
@@ -1325,6 +1327,7 @@ final class archivejob_test extends \advanced_testcase {
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
      * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::get_user_groups
      *
      * @return void
      * @throws \coding_exception
@@ -1405,6 +1408,7 @@ final class archivejob_test extends \advanced_testcase {
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_filename
      * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::get_user_groups
      *
      * @return void
      * @throws \coding_exception
@@ -1434,6 +1438,8 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertStringContainsString($rc->course->fullname, $filename, 'Course name was not found in filename');
         $this->assertStringContainsString($rc->course->shortname, $filename, 'Course shortname was not found in filename');
         $this->assertStringContainsString($rc->quiz->name, $filename, 'Quiz name was not found in filename');
+        // TODO: (MDL-0) Update reference course to cover groups and check for these.
+        $this->assertStringContainsString('nogroup', $filename, 'Group name placeholder was not found in filename');
         $this->assertStringContainsString($rc->attemptids[0], $filename, 'Attempt ID was not found in filename');
     }
 
