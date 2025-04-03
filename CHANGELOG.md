@@ -4,6 +4,7 @@
 
 - Add support for fully customizable attempt folder names
 - Add group names, group IDs, and group ID numbers as valid variables for attempt folder- and filenames
+- Create sub-page allowing to view the attempts that are contained inside each archive, including the number of file submissions per attempt
 - Automatically trim attempt and archive filenames
 - Improve webservice API implementation for attempt report and metadata retrieval
 
