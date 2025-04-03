@@ -139,7 +139,11 @@ jobs:
 
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci phpunit --fail-on-warning --coverage-text --coverage-clover
+        run: |
+            moodle-plugin-ci phpunit --fail-on-warning --coverage-text --coverage-clover
+            moodle-plugin-ci coveralls-upload
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Behat features
         if: ${{ !cancelled() }}
