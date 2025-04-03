@@ -359,20 +359,21 @@ class ArchiveJob {
     }
 
     /**
-     * Generates an array containing all jobs that match the given selector
-     * containing: jobid, status, timecreated, timemodified.
+     * Generates an array containing all jobs that match the given selector with
+     * their respective metadata.
      *
      * This is the preferred way to access status of ALL jobs, instead of using
      * ArchiveJob::get_jobs() and call get_status() on each job individually!
      *
-     * @param int $courseid
-     * @param int $cmid
-     * @param int $quizid
+     * @param int $courseid ID of the course to filter for
+     * @param int $cmid ID of the course module to filter for
+     * @param int $quizid ID of the quiz to filter for
+     * @param int|null $jobid ID of the job to filter for (optional)
      * @return array
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public static function get_metadata_for_jobs(int $courseid, int $cmid, int $quizid): array {
+    public static function get_metadata_for_jobs(int $courseid, int $cmid, int $quizid, ?int $jobid = null): array {
         global $DB;
         $records = $DB->get_records_sql(
             'SELECT '.
@@ -389,12 +390,13 @@ class ArchiveJob {
             'WHERE '.
             '    j.courseid = :courseid AND '.
             '    j.cmid = :cmid AND '.
-            '    j.quizid = :quizid ',
+            '    j.quizid = :quizid '.
+            ($jobid > 0 ? 'AND j.id = :jobid ' : ''),
             [
                 'courseid' => $courseid,
                 'cmid' => $cmid,
                 'quizid' => $quizid,
-            ]
+            ] + ($jobid > 0 ? ['jobid' => $jobid] : [])
         );
 
         return array_values(array_map(function($j): array {
@@ -505,6 +507,23 @@ class ArchiveJob {
                 ),
             ];
         }, $records));
+    }
+
+    /**
+     * Retrieves an array of metadata for this job. This function does the same
+     * as get_metadata_for_jobs() but is limited to this job.
+     *
+     * @return array Metadata array for this job
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_metadata(): array {
+        return self::get_metadata_for_jobs(
+            $this->courseid,
+            $this->cmid,
+            $this->quizid,
+            $this->id
+        )[0];
     }
 
     /**
