@@ -585,7 +585,12 @@ class Report {
         bool  $minimal = true,
         bool  $inlineimages = true
     ): string {
-        global $CFG, $OUTPUT;
+        global $CFG, $OUTPUT, $PAGE;
+
+        // Add a quiz archiver specific CSS class to provide a unique CSS selector.
+        // This can be used to add additional styling to the quiz report page accessed by the worker,
+        // for example by specifying additional (s)css in the theme scss setting in the moodle administration.
+        $PAGE->add_body_class('quiz-archiver-report');
 
         // Build HTML tree.
         $html = "";
