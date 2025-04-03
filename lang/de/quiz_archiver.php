@@ -40,6 +40,13 @@ $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen 
 
 // General.
 $string['a'] = '{$a}';
+$string['attachments'] = 'Dateiabgaben';
+$string['attempt'] = 'Versuch';
+$string['archive_contents'] = 'Testarchiv Inhalt';
+$string['back_to_overview'] = 'Zurück zur Übersicht';
+$string['contents'] = 'Inhalt';
+$string['id'] = 'ID';
+$string['inspect_archive'] = 'Testarchiv Inspizieren';
 $string['progress'] = 'Fortschritt';
 $string['quiz_archive'] = 'Testarchiv';
 $string['quiz_archive_details'] = 'Details des Testarchivs';
@@ -102,6 +109,7 @@ $string['export_report_section_attachments_help'] = 'Alle Dateiabgaben (z.B. von
 $string['job_overview'] = 'Testarchive';
 $string['last_updated'] = 'Zuletzt aktualisiert';
 $string['num_attempts'] = 'Anzahl der Testversuche';
+$string['showcontents'] = 'Inhalt anzeigen';
 
 // Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archivname';

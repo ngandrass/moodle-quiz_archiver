@@ -39,6 +39,7 @@ use quiz_archiver\Report;
 use quiz_archiver\form\archive_quiz_form;
 use quiz_archiver\form\job_delete_form;
 use quiz_archiver\form\job_sign_form;
+use quiz_archiver\output\archive_contents_table;
 use quiz_archiver\output\job_overview_table;
 
 /**
@@ -413,6 +414,8 @@ class quiz_archiver_report extends report_base {
      * @throws required_capability_exception
      */
     protected function handle_posted_forms(): ?string {
+        global $OUTPUT;
+
         // Job delete form.
         if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
             $jobdeleteform = new job_delete_form();
@@ -518,6 +521,40 @@ class quiz_archiver_report extends report_base {
             } else {
                 return $jobsignform->render();
             }
+        }
+
+        // Archive contents table.
+        if (optional_param('action', null, PARAM_TEXT) === 'showcontents') {
+            // Fetch job.
+            $jobid = optional_param('jobid', null, PARAM_INT);
+            $job = ArchiveJob::get_by_id($jobid);
+
+            // Build archive contents table.
+            $baseurl = $this->base_url();
+            $baseurl->params([
+                'action' => 'showcontents',
+                'jobid' => $jobid,
+            ]);
+
+            $contentstbl = new archive_contents_table('archive_contents_table', $jobid);
+            $contentstbl->define_baseurl($baseurl);
+
+            ob_start();
+            $contentstbl->out(50, true);
+            $contentstblhtml = ob_get_contents();
+            ob_end_clean();
+
+            // Generate output HTML.
+            return $OUTPUT->render_from_template(
+                'quiz_archiver/archive_contents',
+                $job->get_metadata() + [
+                    'archiveContentsTable' => $contentstblhtml,
+                    'backurl' => $this->base_url(),
+                    'courseurl' => (new moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(),
+                    'quizurl' => (new moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(),
+                    'userurl' => (new moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(),
+                ]
+            );
         }
 
         // Archive quiz form.

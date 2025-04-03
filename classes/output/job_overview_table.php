@@ -72,8 +72,8 @@ class job_overview_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.statusextras, j.retentiontime, j.artifactfilechecksum, '.
-                'f.pathnamehash, f.filesize, u.username',
+            'j.id, j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.statusextras, j.retentiontime, '.
+                'j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
             '{'.ArchiveJob::JOB_TABLE_NAME.'} j '.
                 'JOIN {user} u ON j.userid = u.id '.
                 'LEFT JOIN {files} f ON j.artifactfileid = f.id',
@@ -165,6 +165,21 @@ class job_overview_table extends \table_sql {
         // Action: Show details.
         // @codingStandardsIgnoreLine
         $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
+
+        // Action: Show content.
+        if ($values->pathnamehash) {
+            $showcontentsurl = new \moodle_url('', [
+                'id' => optional_param('id', null, PARAM_INT),
+                'mode' => 'archiver',
+                'action' => 'showcontents',
+                'jobid' => $values->id,
+            ]);
+            // @codingStandardsIgnoreLine
+            $html .= '<a href="'.$showcontentsurl.'" class="btn btn-primary mx-1" role="button" title="'.get_string('showcontents', 'quiz_archiver').'" alt="'.get_string('showcontents', 'quiz_archiver').'"><i class="fa fa-magnifying-glass"></i></a>';
+        } else {
+            // @codingStandardsIgnoreLine
+            $html .= '<a href="#" class="btn btn-outline-primary disabled mx-1" role="button" alt="'.get_string('showcontents', 'quiz_archiver').'" disabled aria-disabled="true"><i class="fa fa-magnifying-glass"></i></a>';
+        }
 
         // Action: Download.
         if ($values->pathnamehash) {

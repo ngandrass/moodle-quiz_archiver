@@ -40,6 +40,13 @@ $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (rea
 
 // General.
 $string['a'] = '{$a}';
+$string['attempt'] = 'Attempt';
+$string['attachments'] = 'Attachments';
+$string['archive_contents'] = 'Quiz archive contents';
+$string['back_to_overview'] = 'Back to overview';
+$string['contents'] = 'Contents';
+$string['id'] = 'ID';
+$string['inspect_archive'] = 'Inspect quiz archive';
 $string['progress'] = 'Progress';
 $string['quiz_archive'] = 'Quiz archive';
 $string['quiz_archive_details'] = 'Quiz archive details';
@@ -102,6 +109,7 @@ $string['export_report_section_attachments_help'] = 'Include all file attachment
 $string['job_overview'] = 'Archives';
 $string['last_updated'] = 'Last updated';
 $string['num_attempts'] = 'Number of attempts';
+$string['showcontents'] = 'Show contents';
 
 // Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archive name';
