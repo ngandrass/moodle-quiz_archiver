@@ -140,10 +140,7 @@ jobs:
       - name: PHPUnit tests
         if: ${{ !cancelled() }}
         run: |
-            moodle-plugin-ci phpunit --fail-on-warning --coverage-text --coverage-clover
-            moodle-plugin-ci coveralls-upload
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          moodle-plugin-ci phpunit --fail-on-warning --coverage-text --coverage-clover
 
       - name: Behat features
         if: ${{ !cancelled() }}
@@ -157,6 +154,13 @@ jobs:
           path: ${{ github.workspace }}/moodledata/behat_dump
           retention-days: 7
           if-no-files-found: ignore
+
+      - name: Upload coverage data to Coveralls
+        if: ${{ !cancelled() && matrix.moodle-branch == 'MOODLE_405_STABLE' && matrix.php == '8.3' && matrix.database == 'pgsql' }}
+        run: |
+          moodle-plugin-ci coveralls-upload
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Mark cancelled jobs as failed.
         if: ${{ cancelled() }}
