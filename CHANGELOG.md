@@ -7,6 +7,7 @@
 - Create sub-page allowing to view the attempts that are contained inside each archive, including the number of file submissions per attempt
 - Automatically trim attempt and archive filenames
 - Improve webservice API implementation for attempt report and metadata retrieval
+- Automatically check code coverage during PHP unit test execution and evaluate results
 
 
 ## Version 2.3.2 (2025040100)
