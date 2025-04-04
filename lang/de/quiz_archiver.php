@@ -43,6 +43,7 @@ $string['a'] = '{$a}';
 $string['attachments'] = 'Dateiabgaben';
 $string['attempt'] = 'Versuch';
 $string['archive_contents'] = 'Testarchiv Inhalt';
+$string['archive_contents_table_description'] = 'Die folgende Tabelle beinhaltet alle Testversuche die in dem oben angegebenen Testarchiv enthalten sind.<br/>Einzelne Testversuche können über einen Klick auf die jeweilige Versuchs-ID aufgerufen werden';
 $string['back_to_overview'] = 'Zurück zur Übersicht';
 $string['contents'] = 'Inhalt';
 $string['id'] = 'ID';

@@ -43,6 +43,7 @@ $string['a'] = '{$a}';
 $string['attempt'] = 'Attempt';
 $string['attachments'] = 'Attachments';
 $string['archive_contents'] = 'Quiz archive contents';
+$string['archive_contents_table_description'] = 'The following table contains all quiz attempts that are contained in this quiz archive.<br/>Quiz attempts can be reviewed by clicking on the respective attempt ID.';
 $string['back_to_overview'] = 'Back to overview';
 $string['contents'] = 'Contents';
 $string['id'] = 'ID';

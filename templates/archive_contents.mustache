@@ -51,69 +51,73 @@
 
 <h1>{{#str}} inspect_archive, quiz_archiver {{/str}}</h1>
 
-
-<table class="table" style="max-width: 800px;">
-    <tr>
-        <td class="border-top-0">{{#str}} jobid, quiz_archiver {{/str}}</td>
-        <td class="border-top-0">{{jobid}}</td>
-    </tr>
-    <tr>
-        <td>{{#str}} status {{/str}}</td>
-        <td>
-            <span
-                    class="badge badge-{{status_display_args.color}}"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    title="{{status_display_args.help}}"
-            >
-                {{status_display_args.text}}
-            </span>
-        </td>
-    </tr>
-    <tr>
-        <td>{{#str}} course {{/str}}</td>
-        <td>
-            <a href="{{{courseurl}}}" target="_blank">
-                {{course.name}}
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td>{{#str}} modulename, mod_quiz {{/str}}</td>
-        <td>
-            <a href="{{{quizurl}}}" target="_blank">
-                {{quiz.name}}
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td>{{#str}} user {{/str}}</td>
-        <td>
-            <a href="{{{userurl}}}" target="_blank">
-                {{user.firstname}} {{user.lastname}} ({{user.username}})
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td>{{#str}} timecreated {{/str}}</td>
-        <td>{{#userdate}} {{timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
-    </tr>
-    <tr>
-        <td>{{#str}} timemodified, reportbuilder {{/str}} </td>
-        <td>{{#userdate}} {{timemodified}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
-    </tr>
-</table>
-
-<div class="text-center">
-    <a href="{{{backurl}}}">{{#str}} back_to_overview, quiz_archiver {{/str}}</a>
+<div style="max-width: 800px;">
+    <table class="table">
+        <tr>
+            <td class="border-top-0">{{#str}} jobid, quiz_archiver {{/str}}</td>
+            <td class="border-top-0">{{jobid}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}} status {{/str}}</td>
+            <td>
+                <span
+                        class="badge badge-{{status_display_args.color}}"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="{{status_display_args.help}}"
+                >
+                    {{status_display_args.text}}
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} course {{/str}}</td>
+            <td>
+                <a href="{{{courseurl}}}" target="_blank">
+                    {{course.name}}
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} modulename, mod_quiz {{/str}}</td>
+            <td>
+                <a href="{{{quizurl}}}" target="_blank">
+                    {{quiz.name}}
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} user {{/str}}</td>
+            <td>
+                <a href="{{{userurl}}}" target="_blank">
+                    {{user.firstname}} {{user.lastname}} ({{user.username}})
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>{{#str}} timecreated {{/str}}</td>
+            <td>{{#userdate}} {{timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}} timemodified, reportbuilder {{/str}} </td>
+            <td>{{#userdate}} {{timemodified}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
+        </tr>
+        <tr>
+            <td style="border: none;"></td>
+            <td style="border: none;">
+                <a href="{{{backurl}}}" class="btn btn-primary" role="button">{{#str}} back_to_overview, quiz_archiver {{/str}}</a>
+            </td>
+        </tr>
+    </table>
 </div>
 
 <h2>{{#str}} contents, quiz_archiver {{/str}}</h2>
+<p>{{#str}} archive_contents_table_description, quiz_archiver {{/str}}</p>
 
 <div class="quiz_archiver-archive-contents-table">
     {{{archiveContentsTable}}}
 </div>
 
 <div class="text-center">
-    <a href="{{{backurl}}}">{{#str}} back_to_overview, quiz_archiver {{/str}}</a>
+    <a href="{{{backurl}}}" class="btn btn-primary mt-2" role="button">{{#str}} back_to_overview, quiz_archiver {{/str}}</a>
 </div>
