@@ -47,6 +47,7 @@ $string['back_to_overview'] = 'Back to overview';
 $string['contents'] = 'Contents';
 $string['id'] = 'ID';
 $string['inspect_archive'] = 'Inspect quiz archive';
+$string['inspect_archive_contents'] = 'Inspect quiz archive contents';
 $string['job_not_found'] = 'The requested archive job could not be found.';
 $string['job_not_found_in_context'] = 'The requested archive job could not be found in the given context.';
 $string['progress'] = 'Progress';
@@ -111,7 +112,6 @@ $string['export_report_section_attachments_help'] = 'Include all file attachment
 $string['job_overview'] = 'Archives';
 $string['last_updated'] = 'Last updated';
 $string['num_attempts'] = 'Number of attempts';
-$string['showcontents'] = 'Show contents';
 
 // Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archive name';

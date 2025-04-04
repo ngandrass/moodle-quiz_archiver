@@ -41,3 +41,8 @@
 .quiz_archiver-archive-contents-table th > a {
     display: inline-block;
 }
+
+.quiz_archiver-job-overview-table table,
+.quiz_archiver-archive-contents-table table {
+    margin-bottom: 8px !important;
+}

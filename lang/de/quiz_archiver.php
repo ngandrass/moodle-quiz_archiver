@@ -46,7 +46,8 @@ $string['archive_contents'] = 'Testarchiv Inhalt';
 $string['back_to_overview'] = 'Zurück zur Übersicht';
 $string['contents'] = 'Inhalt';
 $string['id'] = 'ID';
-$string['inspect_archive'] = 'Testarchiv Inspizieren';
+$string['inspect_archive'] = 'Testarchiv inspizieren';
+$string['inspect_archive_contents'] = 'Testarchivinhalt anzeigen';
 $string['job_not_found'] = 'Der gewünschte Archivierungsauftrat konnte nicht gefunden werden.';
 $string['job_not_found_in_context'] = 'Der gewünschte Archivierungsauftrag konnte im aktuellen Context nicht gefunden werden.';
 $string['progress'] = 'Fortschritt';
@@ -111,7 +112,6 @@ $string['export_report_section_attachments_help'] = 'Alle Dateiabgaben (z.B. von
 $string['job_overview'] = 'Testarchive';
 $string['last_updated'] = 'Zuletzt aktualisiert';
 $string['num_attempts'] = 'Anzahl der Testversuche';
-$string['showcontents'] = 'Inhalt anzeigen';
 
 // Job creation form: Filename pattern.
 $string['archive_filename_pattern'] = 'Archivname';
