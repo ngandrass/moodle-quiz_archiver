@@ -54,8 +54,8 @@ class archive_contents_table extends \table_sql {
         parent::__construct($uniqueid);
         $this->define_columns([
             'id',
-            'user',
-            'attempt',
+            'username',
+            'attemptid',
             'numattachments',
         ]);
 
@@ -67,9 +67,12 @@ class archive_contents_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'am.id, am.userid, am.attemptid, am.numattachments, u.id AS userid, u.firstname, u.lastname, u.username',
+            'am.id, am.userid, am.attemptid, am.numattachments, '.
+                'u.id AS userid, u.firstname, u.lastname, u.username, '.
+                'a.timestart ',
             '{'.ArchiveJob::ATTEMPTS_TABLE_NAME.'} am '.
-                'JOIN {user} u ON am.userid = u.id ',
+                'JOIN {user} u ON am.userid = u.id '.
+                'JOIN {quiz_attempts} a ON am.attemptid = a.id ',
             'am.jobid = :jobid',
             [
                 'jobid' => $jobid,
@@ -88,7 +91,7 @@ class archive_contents_table extends \table_sql {
      * @return string Rendered value representation
      * @throws moodle_exception
      */
-    public function col_user($values) {
+    public function col_username($values) {
         $userurl = new \moodle_url('/user/profile.php', ['id' => $values->userid]);
         $usertitle = "{$values->firstname} {$values->lastname} ({$values->username})";
         return '<a href="'.$userurl.'" target="_blank">'.$usertitle.'</a>';
@@ -101,9 +104,10 @@ class archive_contents_table extends \table_sql {
      * @return string Rendered value representation
      * @throws moodle_exception
      */
-    public function col_attempt($values) {
+    public function col_attemptid($values) {
         $attempturl = new \moodle_url('/mod/quiz/review.php', ['attempt' => $values->attemptid]);
-        return '<a href="'.$attempturl.'" target="_blank">'.$values->attemptid.'</a>';
+        return '<a href="'.$attempturl.'" target="_blank">'.get_string('id', 'quiz_archiver').': '.$values->attemptid.'</a>'.
+               '<br/>'.userdate($values->timestart, get_string('strftimedatemonthtimeshort', 'langconfig'));
     }
 
     /**
