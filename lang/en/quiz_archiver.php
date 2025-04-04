@@ -47,10 +47,12 @@ $string['back_to_overview'] = 'Back to overview';
 $string['contents'] = 'Contents';
 $string['id'] = 'ID';
 $string['inspect_archive'] = 'Inspect quiz archive';
+$string['job_not_found'] = 'The requested archive job could not be found.';
+$string['job_not_found_in_context'] = 'The requested archive job could not be found in the given context.';
 $string['progress'] = 'Progress';
 $string['quiz_archive'] = 'Quiz archive';
 $string['quiz_archive_details'] = 'Quiz archive details';
-$string['quiz_archive_not_found'] = 'Quiz archive not found';
+$string['quiz_archive_'] = 'Quiz archive not found';
 $string['quiz_archive_not_ready'] = 'Quiz archive not ready yet';
 
 // Template: Overview.

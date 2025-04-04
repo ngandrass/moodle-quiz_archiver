@@ -526,8 +526,20 @@ class quiz_archiver_report extends report_base {
         // Archive contents table.
         if (optional_param('action', null, PARAM_TEXT) === 'showcontents') {
             // Fetch job.
-            $jobid = optional_param('jobid', null, PARAM_INT);
-            $job = ArchiveJob::get_by_id($jobid);
+            try {
+                $jobid = required_param('jobid', PARAM_INT);
+                $job = ArchiveJob::get_by_id($jobid);
+            } catch (\dml_exception $e) {
+                throw new \moodle_exception('job_not_found', 'quiz_archiver', $this->base_url());
+            }
+
+            // Check if job matches context.
+            if ($job->get_courseid() != $this->course->id ||
+                $job->get_cmid() != $this->cm->id ||
+                $job->get_quizid() != $this->quiz->id
+            ) {
+                throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver', $this->base_url());
+            }
 
             // Build archive contents table.
             $baseurl = $this->base_url();
