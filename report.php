@@ -414,8 +414,6 @@ class quiz_archiver_report extends report_base {
      * @throws required_capability_exception
      */
     protected function handle_posted_forms(): ?string {
-        global $OUTPUT;
-
         // Job delete form.
         if (optional_param('action', null, PARAM_TEXT) === 'delete_job') {
             $jobdeleteform = new job_delete_form();
@@ -525,48 +523,7 @@ class quiz_archiver_report extends report_base {
 
         // Archive contents table.
         if (optional_param('action', null, PARAM_TEXT) === 'showcontents') {
-            // Fetch job.
-            try {
-                $jobid = required_param('jobid', PARAM_INT);
-                $job = ArchiveJob::get_by_id($jobid);
-            } catch (\dml_exception $e) {
-                throw new \moodle_exception('job_not_found', 'quiz_archiver', $this->base_url());
-            }
-
-            // Check if job matches context.
-            if ($job->get_courseid() != $this->course->id ||
-                $job->get_cmid() != $this->cm->id ||
-                $job->get_quizid() != $this->quiz->id
-            ) {
-                throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver', $this->base_url());
-            }
-
-            // Build archive contents table.
-            $baseurl = $this->base_url();
-            $baseurl->params([
-                'action' => 'showcontents',
-                'jobid' => $jobid,
-            ]);
-
-            $contentstbl = new archive_contents_table('archive_contents_table', $jobid);
-            $contentstbl->define_baseurl($baseurl);
-
-            ob_start();
-            $contentstbl->out(50, true);
-            $contentstblhtml = ob_get_contents();
-            ob_end_clean();
-
-            // Generate output HTML.
-            return $OUTPUT->render_from_template(
-                'quiz_archiver/archive_contents',
-                $job->get_metadata() + [
-                    'archiveContentsTable' => $contentstblhtml,
-                    'backurl' => $this->base_url(),
-                    'courseurl' => (new moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(),
-                    'quizurl' => (new moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(),
-                    'userurl' => (new moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(),
-                ]
-            );
+            return $this->generate_archive_contents_page();
         }
 
         // Archive quiz form.
@@ -622,6 +579,63 @@ class quiz_archiver_report extends report_base {
         }
 
         return null;
+    }
+
+    /**
+     * Generates the HTML for the archive contents page
+     *
+     * @return string HTML of the archive contents page
+     * @throws \core\exception\coding_exception
+     * @throws \core\exception\moodle_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    protected function generate_archive_contents_page(): string {
+        global $OUTPUT;
+
+        // Fetch job.
+        try {
+            $jobid = required_param('jobid', PARAM_INT);
+            $job = ArchiveJob::get_by_id($jobid);
+        } catch (\dml_exception $e) {
+            throw new \moodle_exception('job_not_found', 'quiz_archiver', $this->base_url());
+        }
+
+        // Check if job matches context.
+        if ($job->get_courseid() != $this->course->id ||
+            $job->get_cmid() != $this->cm->id ||
+            $job->get_quizid() != $this->quiz->id
+        ) {
+            throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver', $this->base_url());
+        }
+
+        // Build archive contents table.
+        $baseurl = $this->base_url();
+        $baseurl->params([
+            'action' => 'showcontents',
+            'jobid' => $jobid,
+        ]);
+
+        $contentstbl = new archive_contents_table('archive_contents_table', $jobid);
+        $contentstbl->define_baseurl($baseurl);
+
+        ob_start();
+        $contentstbl->out(50, true);
+        $contentstblhtml = ob_get_contents();
+        ob_end_clean();
+
+        // Generate output HTML.
+        return $OUTPUT->render_from_template(
+            'quiz_archiver/archive_contents',
+            $job->get_metadata() + [
+                'archiveContentsTable' => $contentstblhtml,
+                'backurl' => $this->base_url(),
+                'courseurl' => (new moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(),
+                'quizurl' => (new moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(),
+                'userurl' => (new moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(),
+            ]
+        );
     }
 
     /**
