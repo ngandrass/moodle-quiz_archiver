@@ -161,6 +161,7 @@ jobs:
         with:
           format: clover
           file: coverage.xml
+          base-path: moodle/mod/quiz/report/archiver
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Mark cancelled jobs as failed.
