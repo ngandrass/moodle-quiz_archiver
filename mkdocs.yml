@@ -21,6 +21,15 @@ extra:
     - icon: fontawesome/solid/bug
       link: https://github.com/ngandrass/moodle-quiz_archiver/issues
       name: "Report a Bug"
+  n1: "<span class='img-numeration-pill' style='padding-right: 1px;'>1</span>"
+  n2: "<span class='img-numeration-pill'>2</span>"
+  n3: "<span class='img-numeration-pill'>3</span>"
+  n4: "<span class='img-numeration-pill'>4</span>"
+  n5: "<span class='img-numeration-pill'>5</span>"
+  n6: "<span class='img-numeration-pill'>6</span>"
+  n7: "<span class='img-numeration-pill'>7</span>"
+  n8: "<span class='img-numeration-pill'>8</span>"
+  n9: "<span class='img-numeration-pill'>9</span>"
 
 #   version:
 #     provider: mike
@@ -29,6 +38,7 @@ plugins:
   # - mike
   - glightbox:
       shadow: true
+  - macros
   - search
   - social
 

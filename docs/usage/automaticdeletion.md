@@ -29,9 +29,9 @@ To enable the scheduled deletion for a single quiz archive:
 
 1. Navigate to the quiz archiver overview page
 2. Expand the _Advanced settings_ section of the _Create new quiz archive_ form
-3. Check the _Automatic deletion_ checkbox (1)
-4. Set the desired retention period (2)
-5. Create the archive job (3)
+3. Check the _Automatic deletion_ checkbox {{n1}}
+4. Set the desired retention period {{n2}}
+5. Create the archive job {{n3}}
 
 ![Screenshot: Configuration - Automatic archive deletion](/assets/configuration/configuration_job_autodelete.png){ .img-thumbnail }
 

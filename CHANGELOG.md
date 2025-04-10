@@ -8,6 +8,8 @@
 - Automatically trim attempt and archive filenames
 - Improve webservice API implementation for attempt report and metadata retrieval
 - Automatically check code coverage during PHP unit test execution and evaluate results
+- Improve references to illustrations in the documentation
+- Update images in the documentation and add help for new features
 
 
 ## Version 2.3.2 (2025040100)

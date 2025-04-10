@@ -22,3 +22,24 @@
     -webkit-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.1);
     -moz-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.1);
 }
+
+.img-numeration-pill {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+
+    vertical-align: text-bottom;
+    margin-right: 2px;
+
+    border-radius: 50%;
+    box-shadow: 1px 1px 2px 0px rgba(105,105,105,0.5);
+    -webkit-box-shadow: 1px 1px 2px 0px rgba(105,105,105,0.5);
+    -moz-box-shadow: 1px 1px 2px 0px rgba(105,105,105,0.5);
+
+    background-color: #e54846;
+    color: #FFFFFF;
+    font-family: var(--md-code-font-family);
+    font-weight: bold;
+    text-align: center;
+    font-size: 0.74em;
+}

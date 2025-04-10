@@ -10,8 +10,8 @@ To enable image optimization for a quiz archive job:
 
 1. Navigate to the quiz archiver overview page
 2. Expand the _Advanced settings_ section of the _Create new quiz archive_ form
-3. Check the _Optimize images_ checkbox (1)
-4. Set the desired maximum dimensions and quality (2)
+3. Check the _Optimize images_ checkbox {{n1}}
+4. Set the desired maximum dimensions and quality {{n2}}
     - If an image exceeds any of the specified dimensions, it will be resized
       proportionally to fit within the specified bounds.
     - The quality setting controls the compression level of the images. A value

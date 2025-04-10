@@ -14,13 +14,13 @@ supported.
     This is the recommended way to configure the Quiz Archiver Moodle plugin for
     most users.
 
-1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
-   _Quiz_ > _Quiz Archiver_ (2)
-2. Click the _Automatic configuration_ button (3)
-3. Enter the URL under which the quiz archive worker can be reached (4)
-4. (Optional) Change the configuration defaults (5)
-5. Execute the automatic configuration (6)
-6. Close the window (7)
+1. Navigate to _Site Administration_ > _Plugins_ {{n1}} > _Activity modules_ >
+   _Quiz_ > _Quiz Archiver_ {{n2}}
+2. Click the _Automatic configuration_ button {{n3}}
+3. Enter the URL under which the quiz archive worker can be reached {{n4}}
+4. (Optional) Change the configuration defaults {{n5}}
+5. Execute the automatic configuration {{n6}}
+6. Close the window {{n7}}
 7. (Optional) Adjust the default plugin setting on the plugin settings page
 
 ![Screenshot: Configuration - Automatic Configuration 1](/assets/configuration/configuration_plugin_settings_1.png){ .img-thumbnail }

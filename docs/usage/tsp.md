@@ -13,12 +13,12 @@ manually later on.
 Prior to the first archive signing, the TSP service must be set up once within 
 the plugin settings. To do so, follow these steps:
 
-1. Navigate to _Site Administration_ > _Plugins_ (1) > _Activity modules_ >
-   _Quiz_ > _Quiz Archiver_ (2)
-2. Set `tsp_server_url` (3) to the URL of your desired TSP service
-3. Globally enable archive signing by checking `tsp_enable` (4)
-4. (Optional) Enable automatic archive signing by checking `tsp_automatic_signing` (5)
-5. Save all settings (6)
+1. Navigate to _Site Administration_ > _Plugins_ {{n1}} > _Activity modules_ >
+   _Quiz_ > _Quiz Archiver_ {{n2}}
+2. Set `tsp_server_url` {{n3}} to the URL of your desired TSP service
+3. Globally enable archive signing by checking `tsp_enable` {{n4}}
+4. (Optional) Enable automatic archive signing by checking `tsp_automatic_signing` {{n5}}
+5. Save all settings {{n6}}
 
 ![Screenshot: Configuration - TSP Settings 1](/assets/configuration/configuration_plugin_settings_1.png){ .img-thumbnail }
 ![Screenshot: Configuration - TSP Settings 2](/assets/configuration/configuration_tsp_settings_2.png){ .img-thumbnail }
