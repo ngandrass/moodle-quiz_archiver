@@ -54,7 +54,7 @@ $string['job_not_found_in_context'] = 'The requested archive job could not be fo
 $string['progress'] = 'Progress';
 $string['quiz_archive'] = 'Quiz archive';
 $string['quiz_archive_details'] = 'Quiz archive details';
-$string['quiz_archive_'] = 'Quiz archive not found';
+$string['quiz_archive_not_found'] = 'Quiz archive not found';
 $string['quiz_archive_not_ready'] = 'Quiz archive not ready yet';
 
 // Template: Overview.
