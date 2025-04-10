@@ -26,6 +26,7 @@ namespace quiz_archiver\output;
 
 use core\exception\moodle_exception;
 use quiz_archiver\ArchiveJob;
+use quiz_archiver\Report;
 
 // @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -68,9 +69,11 @@ class archive_contents_table extends \table_sql {
 
         $this->set_sql(
             'am.id, am.userid, am.attemptid, am.numattachments, '.
+                'j.courseid, j.cmid, j.quizid, '.
                 'u.id AS userid, u.firstname, u.lastname, u.username, '.
                 'a.timestart ',
             '{'.ArchiveJob::ATTEMPTS_TABLE_NAME.'} am '.
+                'JOIN {'.ArchiveJob::JOB_TABLE_NAME.'} j ON j.id = am.jobid '.
                 'JOIN {user} u ON am.userid = u.id '.
                 'JOIN {quiz_attempts} a ON am.attemptid = a.id ',
             'am.jobid = :jobid',
@@ -115,10 +118,50 @@ class archive_contents_table extends \table_sql {
      *
      * @param $values object Row data values
      * @return string Rendered value representation
+     *
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
      */
     public function col_numattachments($values) {
         $color = $values->numattachments > 0 ? 'success' : 'danger';
-        return '<span class="badge badge-'.$color.' py-1 px-3"><b>'.$values->numattachments.'</b></span>';
+        $html = '<span class="badge badge-'.$color.' py-1 px-3"><b>'.$values->numattachments.'</b></span>';
+
+        if ($values->numattachments > 0) {
+            // Prepare file data for display.
+            $attachments = Report::get_attempt_attachments($values->attemptid);
+            $filestodisplay = [];
+
+            foreach ($attachments as $attachment) {
+                /** @var \stored_file $file */
+                $file = $attachment['file'];
+                $filestodisplay[] = (object)[
+                    'title' => get_string('file') . ': ' . $file->get_filename() . ' (' . display_size($file->get_filesize()) . ')',
+                    'url' => \moodle_url::make_pluginfile_url(
+                        $file->get_contextid(),
+                        $file->get_component(),
+                        $file->get_filearea(),
+                        "{$attachment['usageid']}/{$attachment['slot']}/{$attachment['file']->get_itemid()}",
+                        /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
+                           creates while eating innocent programmers for breakfast ... */
+                        $file->get_filepath(),
+                        $file->get_filename(),
+                        true,
+                    ),
+                ];
+            }
+
+            // Generate HTML for files.
+            $html .= '<span class="ml-2">';
+            foreach ($filestodisplay as $f) {
+                $html .= '<a href="'.$f->url.'" target="_blank" class="btn btn-sm btn-outline-primary ml-1" role="button" '.
+                         'data-toggle="tooltip" data-placement="top" title="'.$f->title.'" alt="'.$f->title.'">'.
+                         '<i class="fa fa-file"></i></a>';
+            }
+            $html .= '</span>';
+        }
+
+        return $html;
     }
 
 }
