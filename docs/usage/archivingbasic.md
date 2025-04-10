@@ -27,6 +27,22 @@ This will open a modal dialog showing all relevant information.
 ![Screenshot: Inspecting a quiz archive 2](/assets/configuration/configuration_quiz_archive_inspection_2.png){ .img-thumbnail }
 
 
+## Inspecting Quiz Archive Contents
+
+To see the attempts that are contained inside a single quiz archive, click the
+_Inspect quiz archive contents_ button (1).
+
+This will bring you to a page listing certain archive metadata and all attempts
+that are contained inside the quiz archive. You can sort the attempts table by
+clicking the column headers (2). If a student attached one or more files the
+indicator inside the _Attachments_ column (3) will turn green and show the
+number of total attachments. For a quick check, uploaded files can conveniently
+be accessed by using the file buttons in the respective attempt column (4).
+
+![Screenshot: Listing contents of a quiz archive 1](/assets/configuration/configuration_quiz_archive_contents_1.png){ .img-thumbnail }<br>
+![Screenshot: Listing contents of a quiz archive 2](/assets/configuration/configuration_quiz_archive_contents_2.png){ .img-thumbnail }
+
+
 ## Downloading Quiz Archives
 
 Once a quiz archive job is finished, the archive can be downloaded by clicking
