@@ -74,8 +74,8 @@ class archive_contents_table extends \table_sql {
                 'a.timestart ',
             '{'.ArchiveJob::ATTEMPTS_TABLE_NAME.'} am '.
                 'JOIN {'.ArchiveJob::JOB_TABLE_NAME.'} j ON j.id = am.jobid '.
-                'JOIN {user} u ON am.userid = u.id '.
-                'JOIN {quiz_attempts} a ON am.attemptid = a.id ',
+                'LEFT JOIN {user} u ON am.userid = u.id '.
+                'LEFT JOIN {quiz_attempts} a ON am.attemptid = a.id ',
             'am.jobid = :jobid',
             [
                 'jobid' => $jobid,
@@ -83,7 +83,6 @@ class archive_contents_table extends \table_sql {
         );
 
         $this->sortable(true, 'id', SORT_ASC);
-        $this->no_sorting('flags');
         $this->collapsible(false);
     }
 
@@ -135,7 +134,7 @@ class archive_contents_table extends \table_sql {
             foreach ($attachments as $attachment) {
                 /** @var \stored_file $file */
                 $file = $attachment['file'];
-                $filestodisplay[] = (object)[
+                $filestodisplay[] = (object) [
                     'title' => get_string('file') . ': ' . $file->get_filename() . ' (' . display_size($file->get_filesize()) . ')',
                     'url' => \moodle_url::make_pluginfile_url(
                         $file->get_contextid(),
