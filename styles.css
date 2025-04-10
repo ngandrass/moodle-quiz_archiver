@@ -42,7 +42,7 @@
     display: inline-block;
 }
 
-.quiz_archiver-job-overview-table table,
-.quiz_archiver-archive-contents-table table {
-    margin-bottom: 8px !important;
+.quiz_archiver-job-overview-table,
+.quiz_archiver-archive-contents-table {
+    margin-bottom: 8px;
 }
