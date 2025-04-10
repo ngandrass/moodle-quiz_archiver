@@ -89,7 +89,7 @@ class archive_contents_table extends \table_sql {
     /**
      * User column rendered
      *
-     * @param $values object Row data values
+     * @param \stdClass $values Row data values
      * @return string Rendered value representation
      * @throws moodle_exception
      */
@@ -102,7 +102,7 @@ class archive_contents_table extends \table_sql {
     /**
      * Attempt column rendered
      *
-     * @param $values object Row data values
+     * @param \stdClass $values Row data values
      * @return string Rendered value representation
      * @throws moodle_exception
      */
@@ -115,7 +115,7 @@ class archive_contents_table extends \table_sql {
     /**
      * Attachments column rendered
      *
-     * @param $values object Row data values
+     * @param \stdClass $values Row data values
      * @return string Rendered value representation
      *
      * @throws \coding_exception
