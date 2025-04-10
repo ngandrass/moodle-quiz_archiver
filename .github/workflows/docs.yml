@@ -34,6 +34,7 @@ jobs:
                mkdocs-material \
                mkdocs-material-extensions \
                mkdocs-material[imaging] \
+               mkdocs-macros-plugin \
                mkdocs-minify-plugin \
                mkdocs-glightbox \
                mkdocs-get-deps
