@@ -1326,7 +1326,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of valid attempt folder names
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      *
      * @return void
      * @throws \coding_exception
@@ -1365,7 +1365,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of attempt folder names without variables
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      * @covers \quiz_archiver\ArchiveJob::get_user_groups
      *
      * @return void
@@ -1392,7 +1392,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of attempt folder names with invalid patterns
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      *
      * @return void
      * @throws \coding_exception
@@ -1419,7 +1419,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of attempt folder names with invalid variables
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      *
      * @return void
      * @throws \coding_exception
