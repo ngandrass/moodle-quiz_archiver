@@ -115,7 +115,8 @@ class job_overview_table extends \table_sql {
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" title="'.$s['help'].'"';
+        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top"'.
+                             'title="'.$s['help'].'"';
         $html .= '<span class="badge badge-'.$s['color'].'" '.$statustooltiphtml.'>'.$s['text'].'</span><br/>';
 
         if (isset($s['statusextras']['progress'])) {
@@ -164,7 +165,7 @@ class job_overview_table extends \table_sql {
 
         // Action: Show details.
         // @codingStandardsIgnoreLine
-        $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
+        $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
 
         // Action: Show content.
         if ($values->pathnamehash) {
@@ -175,7 +176,7 @@ class job_overview_table extends \table_sql {
                 'jobid' => $values->id,
             ]);
             // @codingStandardsIgnoreLine
-            $html .= '<a href="'.$showcontentsurl.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" title="'.get_string('inspect_archive_contents', 'quiz_archiver').'" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'"><i class="fa fa-magnifying-glass"></i></a>';
+            $html .= '<a href="'.$showcontentsurl.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('inspect_archive_contents', 'quiz_archiver').'" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'"><i class="fa fa-magnifying-glass"></i></a>';
         } else {
             // @codingStandardsIgnoreLine
             $html .= '<a href="#" class="btn btn-outline-primary disabled mx-1" role="button" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'" disabled aria-disabled="true"><i class="fa fa-magnifying-glass"></i></a>';
@@ -195,7 +196,7 @@ class job_overview_table extends \table_sql {
             );
 
             // @codingStandardsIgnoreLine
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" data-toggle="tooltip" data-placement="top" title="'.get_string('download').'" alt="'.get_string('download').'"><i class="fa fa-download"></i></a>';
+            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('download').'" alt="'.get_string('download').'"><i class="fa fa-download"></i></a>';
         } else {
             // @codingStandardsIgnoreLine
             $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
@@ -209,7 +210,7 @@ class job_overview_table extends \table_sql {
             'jobid' => $values->jobid,
         ]);
         // @codingStandardsIgnoreLine
-        $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" data-toggle="tooltip" data-placement="top" title="'.get_string('delete').'" alt="'.get_string('delete').'"><i class="fa fa-times"></i></a>';
+        $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('delete').'" alt="'.get_string('delete').'"><i class="fa fa-times"></i></a>';
 
         return $html;
     }
