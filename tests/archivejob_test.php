@@ -1022,7 +1022,7 @@ final class archivejob_test extends \advanced_testcase {
         return [
             'Default pattern' => [
                 'pattern' => 'quiz-archive-${courseshortname}-${courseid}-${quizname}-${quizid}_${date}-${time}',
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'All allowed variables' => [
                 'pattern' => array_reduce(
@@ -1032,31 +1032,31 @@ final class archivejob_test extends \advanced_testcase {
                     },
                     ''
                 ),
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'Allowed variables with additional brackets' => [
                 'pattern' => 'quiz-{quizname}_${quizname}-{quizid}_${quizid}',
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'Invalid variable' => [
                 'pattern' => 'Foo ${foo} Bar ${bar} Baz ${baz}',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Forbidden characters' => [
                 'pattern' => 'quiz-archive: foo!bar',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Only invalid characters' => [
                 'pattern' => '.!',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Dot' => [
                 'pattern' => '.',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Empty pattern' => [
                 'pattern' => '',
-                'isValid' => false,
+                'isvalid' => false,
             ],
         ];
     }
@@ -1090,7 +1090,7 @@ final class archivejob_test extends \advanced_testcase {
         return [
             'Default pattern' => [
                 'pattern' => '${username}/${attemptid}-${date}_${time}',
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'All allowed variables' => [
                 'pattern' => array_reduce(
@@ -1100,43 +1100,43 @@ final class archivejob_test extends \advanced_testcase {
                     },
                     ''
                 ),
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'Allowed variables with additional brackets' => [
                 'pattern' => 'attempt-{quizname}_${quizname}-{quizid}_${quizid}',
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'Invalid variable' => [
                 'pattern' => 'Foo ${foo} Bar ${bar} Baz ${baz}',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Forbidden characters' => [
                 'pattern' => 'attempt: foo!bar',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Only invalid characters' => [
                 'pattern' => '.!',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Dot' => [
                 'pattern' => '.',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Empty pattern' => [
                 'pattern' => '',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Relative folder traversal' => [
                 'pattern' => '../../sys/dev/${username}/file',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Absolut path' => [
                 'pattern' => '/tmp/foo/${username}',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Trailing slash' => [
                 'pattern' => '${username}/foo/',
-                'isValid' => false,
+                'isvalid' => false,
             ],
         ];
     }
@@ -1170,7 +1170,7 @@ final class archivejob_test extends \advanced_testcase {
         return [
             'Default pattern' => [
                 'pattern' => 'attempt-${attemptid}-${username}_${date}-${time}',
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'All allowed variables' => [
                 'pattern' => array_reduce(
@@ -1180,31 +1180,31 @@ final class archivejob_test extends \advanced_testcase {
                     },
                     ''
                 ),
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'Allowed variables with additional brackets' => [
                 'pattern' => 'attempt-{quizname}_${quizname}-{quizid}_${quizid}',
-                'isValid' => true,
+                'isvalid' => true,
             ],
             'Invalid variable' => [
                 'pattern' => 'Foo ${foo} Bar ${bar} Baz ${baz}',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Forbidden characters' => [
                 'pattern' => 'attempt: foo!bar',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Only invalid characters' => [
                 'pattern' => '.!',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Dot' => [
                 'pattern' => '.',
-                'isValid' => false,
+                'isvalid' => false,
             ],
             'Empty pattern' => [
                 'pattern' => '',
-                'isValid' => false,
+                'isvalid' => false,
             ],
         ];
     }

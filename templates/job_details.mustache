@@ -125,8 +125,11 @@
         <td>
             <span
                 class="badge badge-{{status_display_args.color}}"
+                {{! Remove data-toggle and data-placement after Moodle 4.5 (LTS) deprecation }}
                 data-toggle="tooltip"
                 data-placement="top"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
                 title="{{status_display_args.help}}"
             >
                 {{status_display_args.text}}
@@ -175,7 +178,7 @@
         <td class="align-middle">{{#str}} quiz_archive, quiz_archiver {{/str}}</td>
         <td>
             {{#artifactfile}}
-                <table>
+                <table class="table mb-0">
                     <tr>
                         <td class="border-top-0">{{#str}} filename, backup {{/str}}</td>
                         <td class="border-top-0">{{artifactfile.name}}</td>
@@ -189,8 +192,8 @@
                         <td class="word-break-all">sha256:{{artifactfile.checksum}}</td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td>
+                        <td class="border-bottom-0"></td>
+                        <td class="border-bottom-0">
                             <a href="{{{artifactfile.downloadurl}}}" target="_blank">
                                 {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} downloadfile {{/str}}
                             </a>
@@ -254,8 +257,8 @@
         <td>{{autodelete_str}}</td>
     </tr>
     <tr>
-        <td class="align-middle">{{#str}} settings {{/str}}</td>
-        <td>
+        <td class="border-bottom-0 align-middle">{{#str}} settings {{/str}}</td>
+        <td class="border-bottom-0">
             <ul class="list-group small">
                 {{#settings}}
                     <li class="list-group-item d-flex justify-content-between align-items-center p-2">
@@ -270,8 +273,8 @@
         </td>
     </tr>
     <tr>
-        <td class="border-top-0 py-0"></td>
-        <td class="border-top-0 py-0 text-right">
+        <td class="border-0 py-0"></td>
+        <td class="border-0 py-0 text-right">
             <a href="{{{action_urls.delete_job}}}" class="btn btn-danger mx-1" role="button" title="{{#str}} delete {{/str}}">
                 {{#str}} delete {{/str}}
             </a>

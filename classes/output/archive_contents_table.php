@@ -172,8 +172,8 @@ class archive_contents_table extends \table_sql {
                 // Render attachments as buttons.
                 foreach ($filestodisplay as $f) {
                     $html .= '<a href="'.$f->url.'" target="_blank" class="btn btn-sm btn-outline-primary ml-1" role="button" '.
-                        'data-toggle="tooltip" data-placement="top" title="'.$f->title.'" alt="'.$f->title.'">'.
-                        '<i class="fa fa-file"></i></a>';
+                        'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" '.
+                        'title="'.$f->title.'" alt="'.$f->title.'"><i class="fa fa-file"></i></a>';
                 }
             }
             $html .= '</div></div>';

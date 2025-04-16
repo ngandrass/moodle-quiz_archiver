@@ -353,7 +353,10 @@ class FileManager {
             $packer->extract_to_pathname($artifactfile, $workdir, [
                 self::ARTIFACT_METADATA_FILE,
             ]);
-            $metadata = array_map('str_getcsv', file($workdir."/".self::ARTIFACT_METADATA_FILE));
+            $metadata = array_map(
+                fn($csv) => str_getcsv($csv, ",", "\"", "\\"),
+                file($workdir."/".self::ARTIFACT_METADATA_FILE)
+            );
 
             if ($metadata[0][0] !== 'attemptid' || $metadata[0][9] !== 'path') {
                 // Fail silently for old archives for now.

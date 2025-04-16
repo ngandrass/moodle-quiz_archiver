@@ -2,7 +2,9 @@
 
 ## Version 3.Y.Z (YYYYDDMMNN)
 
-- Add support for fully customizable attempt folder names
+- Support for Moodle 5.0 and PHP 8.4
+- Allow attempt folder names to be fully customized using variables
+- Allow attempt folders to create variable sub-folders
 - Add group names, group IDs, and group ID numbers as valid variables for attempt folder- and filenames
 - Create sub-page allowing to view the attempts that are contained inside each archive, including the number of file submissions per attempt
 - Automatically trim attempt and archive filenames
@@ -11,6 +13,8 @@
 - Automatically check code coverage during PHP unit test execution and evaluate results
 - Improve references to illustrations in the documentation
 - Update images in the documentation and add help for new features
+
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v3.0.0` is required.
 
 
 ## Version 2.3.2 (2025040100)

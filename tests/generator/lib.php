@@ -157,13 +157,14 @@ class quiz_archiver_generator extends \testing_data_generator {
      * Imports the reference course into a new course and returns the reference
      * quiz, the respective cm, and the course itself.
      *
-     * @throws \restore_controller_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
      * @return \stdClass Object with keys 'quiz' (the reference quiz), 'cm' (the
      * respective cm), 'course' (the course itself), 'attemptids' (array of all
      * attempt ids inside the reference quiz), 'userids' (array of all user ids
      * with attempts in the reference quiz)
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     * @throws Exception
      */
     public function import_reference_course(): \stdClass {
         global $DB;
@@ -189,7 +190,16 @@ class quiz_archiver_generator extends \testing_data_generator {
         );
 
         if (!$rc->execute_precheck()) {
-            throw new \restore_controller_exception('Backup restore precheck failed.'); // @codeCoverageIgnore
+            // @codeCoverageIgnoreStart
+            $precheck = $rc->get_precheck_results();
+
+            // Moodle 5.0 will throw warnings for import destinations of question
+            // banks. We can safely ignore this and only fail on errors.
+            if (array_key_exists('errors', $precheck)) {
+                print_r($precheck); // @codingStandardsIgnoreLine
+                throw new \restore_controller_exception('Backup restore precheck failed');
+            }
+            // @codeCoverageIgnoreEnd
         }
         $rc->execute_plan();
         if ($rc->get_status() != backup::STATUS_FINISHED_OK) {

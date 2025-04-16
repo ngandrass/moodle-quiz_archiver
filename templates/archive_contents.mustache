@@ -62,8 +62,11 @@
             <td>
                 <span
                         class="badge badge-{{status_display_args.color}}"
+                        {{! Remove data-toggle and data-placement after Moodle 4.5 (LTS) deprecation }}
                         data-toggle="tooltip"
                         data-placement="top"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
                         title="{{status_display_args.help}}"
                 >
                     {{status_display_args.text}}
