@@ -42,17 +42,25 @@ require_once($CFG->libdir.'/tablelib.php');
  */
 class archive_contents_table extends \table_sql {
 
+    /** @var bool If true, filenames are shown as full text links instead of buttons with tooltips */
+    protected bool $expandfilenames;
+
     /**
      * Constructor
      *
      * @param string $uniqueid all tables have to have a unique id, this is used
      *      as a key when storing table properties like sort order in the session.
      * @param int $jobid Internal ID of the archive job to display data for
+     * @param bool $expandfilenames If true, filenames are shown as full text
+     * links instead of buttons with tooltips
      *
      * @throws \coding_exception
      */
-    public function __construct(string $uniqueid, int $jobid) {
+    public function __construct(string $uniqueid, int $jobid, bool $expandfilenames = false) {
         parent::__construct($uniqueid);
+
+        $this->expandfilenames = $expandfilenames;
+
         $this->define_columns([
             'id',
             'username',
@@ -124,7 +132,8 @@ class archive_contents_table extends \table_sql {
      */
     public function col_numattachments($values) {
         $color = $values->numattachments > 0 ? 'success' : 'danger';
-        $html = '<span class="badge badge-'.$color.' py-1 px-3"><b>'.$values->numattachments.'</b></span>';
+        $html = '<div class="d-flex align-items-top">';
+        $html .= '<div><span class="badge badge-'.$color.' py-1 px-3"><b>'.$values->numattachments.'</b></span></div>';
 
         if ($values->numattachments > 0) {
             // Prepare file data for display.
@@ -135,7 +144,7 @@ class archive_contents_table extends \table_sql {
                 /** @var \stored_file $file */
                 $file = $attachment['file'];
                 $filestodisplay[] = (object) [
-                    'title' => get_string('file') . ': ' . $file->get_filename() . ' (' . display_size($file->get_filesize()) . ')',
+                    'title' => $file->get_filename() . ' (' . display_size($file->get_filesize()) . ')',
                     'url' => \moodle_url::make_pluginfile_url(
                         $file->get_contextid(),
                         $file->get_component(),
@@ -151,13 +160,23 @@ class archive_contents_table extends \table_sql {
             }
 
             // Generate HTML for files.
-            $html .= '<span class="ml-2">';
-            foreach ($filestodisplay as $f) {
-                $html .= '<a href="'.$f->url.'" target="_blank" class="btn btn-sm btn-outline-primary ml-1" role="button" '.
-                         'data-toggle="tooltip" data-placement="top" title="'.$f->title.'" alt="'.$f->title.'">'.
-                         '<i class="fa fa-file"></i></a>';
+            $html .= '<div class="ml-2">';
+            if ($this->expandfilenames) {
+                // Render attachments as list.
+                $html .= '<ul class="pl-3 mb-0">';
+                foreach ($filestodisplay as $f) {
+                    $html .= '<li><a href="'.$f->url.'" target="_blank" title="'.$f->title.'">'.$f->title.'</a></li>';
+                }
+                $html .= '</ul>';
+            } else {
+                // Render attachments as buttons.
+                foreach ($filestodisplay as $f) {
+                    $html .= '<a href="'.$f->url.'" target="_blank" class="btn btn-sm btn-outline-primary ml-1" role="button" '.
+                        'data-toggle="tooltip" data-placement="top" title="'.$f->title.'" alt="'.$f->title.'">'.
+                        '<i class="fa fa-file"></i></a>';
+                }
             }
-            $html .= '</span>';
+            $html .= '</div></div>';
         }
 
         return $html;

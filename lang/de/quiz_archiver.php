@@ -41,6 +41,8 @@ $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen 
 // General.
 $string['a'] = '{$a}';
 $string['attachments'] = 'Dateiabgaben';
+$string['attechmentscolumnstyle_button'] = 'Dateinamen verbergen';
+$string['attechmentscolumnstyle_list'] = 'Dateinamen anzeigen';
 $string['attempt'] = 'Versuch';
 $string['archive_contents'] = 'Testarchiv Inhalt';
 $string['archive_contents_table_description'] = 'Die folgende Tabelle beinhaltet alle Testversuche die in dem oben angegebenen Testarchiv enthalten sind.<br/>Einzelne Testversuche können über einen Klick auf die jeweilige Versuchs-ID aufgerufen werden';

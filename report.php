@@ -611,13 +611,15 @@ class quiz_archiver_report extends report_base {
         }
 
         // Build archive contents table.
+        $expandfilenames = optional_param('expandfilenames', false, PARAM_BOOL);
         $baseurl = $this->base_url();
         $baseurl->params([
             'action' => 'showcontents',
             'jobid' => $jobid,
+            'expandfilenames' => $expandfilenames,
         ]);
 
-        $contentstbl = new archive_contents_table('archive_contents_table', $jobid);
+        $contentstbl = new archive_contents_table('archive_contents_table', $jobid, $expandfilenames);
         $contentstbl->define_baseurl($baseurl);
 
         ob_start();
@@ -634,6 +636,16 @@ class quiz_archiver_report extends report_base {
                 'courseurl' => (new moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(),
                 'quizurl' => (new moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(),
                 'userurl' => (new moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(),
+                'attachmentstyleurl' => (new moodle_url($this->base_url(), [
+                    'action' => 'showcontents',
+                    'jobid' => $jobid,
+                    'expandfilenames' => (int) !$expandfilenames,
+                    'page' => optional_param('page', 0, PARAM_INT),
+                ]))->out(),
+                'attachmentstyletext' => get_string(
+                    'attechmentscolumnstyle_'.($expandfilenames ? 'button' : 'list'),
+                    'quiz_archiver'
+                ),
             ]
         );
     }
