@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 3.Y.Z (YYYYDDMMNN)
+## Version 3.0.0 (2025041600)
 
 - Support for Moodle 5.0 and PHP 8.4
 - Allow attempt folder names to be fully customized using variables
