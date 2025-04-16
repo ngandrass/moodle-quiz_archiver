@@ -40,6 +40,19 @@ $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen 
 
 // General.
 $string['a'] = '{$a}';
+$string['attachments'] = 'Dateiabgaben';
+$string['attechmentscolumnstyle_button'] = 'Dateinamen verbergen';
+$string['attechmentscolumnstyle_list'] = 'Dateinamen anzeigen';
+$string['attempt'] = 'Versuch';
+$string['archive_contents'] = 'Testarchiv Inhalt';
+$string['archive_contents_table_description'] = 'Die folgende Tabelle beinhaltet alle Testversuche die in dem oben angegebenen Testarchiv enthalten sind.<br/>Einzelne Testversuche können über einen Klick auf die jeweilige Versuchs-ID aufgerufen werden';
+$string['back_to_overview'] = 'Zurück zur Übersicht';
+$string['contents'] = 'Inhalt';
+$string['id'] = 'ID';
+$string['inspect_archive'] = 'Testarchiv inspizieren';
+$string['inspect_archive_contents'] = 'Testarchivinhalt anzeigen';
+$string['job_not_found'] = 'Der gewünschte Archivierungsauftrat konnte nicht gefunden werden.';
+$string['job_not_found_in_context'] = 'Der gewünschte Archivierungsauftrag konnte im aktuellen Context nicht gefunden werden.';
 $string['progress'] = 'Fortschritt';
 $string['quiz_archive'] = 'Testarchiv';
 $string['quiz_archive_details'] = 'Details des Testarchivs';

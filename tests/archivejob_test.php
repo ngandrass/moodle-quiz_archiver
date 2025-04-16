@@ -373,6 +373,45 @@ final class archivejob_test extends \advanced_testcase {
     }
 
     /**
+     * Tests generation of the metadata array for a single archive job
+     *
+     * @covers \quiz_archiver\ArchiveJob::get_metadata
+     * @covers \quiz_archiver\ArchiveJob::get_metadata_for_jobs
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_single_job_metadata_retrieval(): void {
+        // Create test job.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $jobid = '42420000-1234-5678-abcd-ef4242424242';
+        $job = ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings,
+            ArchiveJob::STATUS_AWAITING_PROCESSING
+        );
+
+        // Generate metadata.
+        $metadata = $job->get_metadata();
+        $this->assertEquals($jobid, $metadata['jobid'], 'Jobid was not returned correctly');
+        $this->assertEquals(ArchiveJob::STATUS_AWAITING_PROCESSING, $metadata['status'], 'Status was not returned correctly');
+        $this->assertEquals($mocks->course->id, $metadata['course']['id'], 'Course ID was not returned correctly');
+        $this->assertEquals($mocks->quiz->cmid, $metadata['quiz']['cmid'], 'Course module ID was not returned correctly');
+        $this->assertEquals($mocks->quiz->id, $metadata['quiz']['id'], 'Quiz ID was not returned correctly');
+        $this->assertEquals($mocks->user->id, $metadata['user']['id'], 'User ID was not returned correctly');
+    }
+
+    /**
      * Test status changes of jobs
      *
      * @dataProvider set_job_status_data_provider
@@ -1287,7 +1326,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of valid attempt folder names
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      *
      * @return void
      * @throws \coding_exception
@@ -1326,7 +1365,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of attempt folder names without variables
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      * @covers \quiz_archiver\ArchiveJob::get_user_groups
      *
      * @return void
@@ -1353,7 +1392,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of attempt folder names with invalid patterns
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      *
      * @return void
      * @throws \coding_exception
@@ -1380,7 +1419,7 @@ final class archivejob_test extends \advanced_testcase {
      * Test generation of attempt folder names with invalid variables
      *
      * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
-     * @covers \quiz_archiver\ArchiveJob::sanitize_filename
+     * @covers \quiz_archiver\ArchiveJob::sanitize_foldername
      *
      * @return void
      * @throws \coding_exception

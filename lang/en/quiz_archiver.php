@@ -40,6 +40,19 @@ $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (rea
 
 // General.
 $string['a'] = '{$a}';
+$string['attempt'] = 'Attempt';
+$string['attachments'] = 'Attachments';
+$string['attechmentscolumnstyle_button'] = 'Hide attachment filenames';
+$string['attechmentscolumnstyle_list'] = 'Show attachment filenames';
+$string['archive_contents'] = 'Quiz archive contents';
+$string['archive_contents_table_description'] = 'The following table contains all quiz attempts that are contained in this quiz archive.<br/>Quiz attempts can be reviewed by clicking on the respective attempt ID.';
+$string['back_to_overview'] = 'Back to overview';
+$string['contents'] = 'Contents';
+$string['id'] = 'ID';
+$string['inspect_archive'] = 'Inspect quiz archive';
+$string['inspect_archive_contents'] = 'Inspect quiz archive contents';
+$string['job_not_found'] = 'The requested archive job could not be found.';
+$string['job_not_found_in_context'] = 'The requested archive job could not be found in the given context.';
 $string['progress'] = 'Progress';
 $string['quiz_archive'] = 'Quiz archive';
 $string['quiz_archive_details'] = 'Quiz archive details';

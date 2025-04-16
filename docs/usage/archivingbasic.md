@@ -4,13 +4,13 @@ Once the Moodle plugin and the archive worker service are [installed](/installat
 and [set up](/configuration), quizzes can be archived by performing the following steps:
 
 1. Navigate to a Moodle quiz
-2. Select the _Results_ tab (1), open the dropdown menu (2), and select _Quiz Archiver_        
-3. Set your desired archiving options (3) and initiate a new archive job by
-   clicking the _Archive quiz_ button (4)
-4. Confirm that your archive job was created (5) and wait for it to finish. You
-   can check its current status using the refresh button (6)
+2. Select the _Results_ tab {{n1}}, open the dropdown menu {{n2}}, and select _Quiz Archiver_        
+3. Set your desired archiving options {{n3}} and initiate a new archive job by
+   clicking the _Archive quiz_ button {{n4}}
+4. Confirm that your archive job was created {{n5}} and wait for it to finish. You
+   can check its current status using the refresh button {{n6}}
 5. Once the job is completed, you can download the archive by clicking the
-   _Download archive_ button (7)
+   _Download archive_ button {{n7}} 
 
 ![Screenshot: Creating a new quiz archive 1](/assets/configuration/configuration_quiz_archive_creation_1.png){ .img-thumbnail }
 ![Screenshot: Creating a new quiz archive 2](/assets/configuration/configuration_quiz_archive_creation_2.png){ .img-thumbnail }
@@ -20,17 +20,33 @@ and [set up](/configuration), quizzes can be archived by performing the followin
 
 ## Inspecting Quiz Archive Details
 
-To inspect the details of a quiz archive job, click the _Show details_ button (1).
+To inspect the details of a quiz archive job, click the _Show details_ button {{n1}}.
 This will open a modal dialog showing all relevant information.
 
 ![Screenshot: Inspecting a quiz archive 1](/assets/configuration/configuration_quiz_archive_inspection_1.png){ .img-thumbnail }<br>
 ![Screenshot: Inspecting a quiz archive 2](/assets/configuration/configuration_quiz_archive_inspection_2.png){ .img-thumbnail }
 
 
+## Inspecting Quiz Archive Contents
+
+To see the attempts that are contained inside a single quiz archive, click the
+_Inspect quiz archive contents_ button {{n1}}.
+
+This will bring you to a page listing certain archive metadata and all attempts
+that are contained inside the quiz archive. You can sort the attempts table by
+clicking the column headers {{n2}}. If a student attached one or more files the
+indicator inside the _Attachments_ column {{n3}} will turn green and show the
+number of total attachments. For a quick check, uploaded files can conveniently
+be accessed by using the file buttons in the respective attempt column {{n4}}.
+
+![Screenshot: Listing contents of a quiz archive 1](/assets/configuration/configuration_quiz_archive_contents_1.png){ .img-thumbnail }<br>
+![Screenshot: Listing contents of a quiz archive 2](/assets/configuration/configuration_quiz_archive_contents_2.png){ .img-thumbnail }
+
+
 ## Downloading Quiz Archives
 
 Once a quiz archive job is finished, the archive can be downloaded by clicking
-the _Download archive_ button (1) located inside the job overview table or within
+the _Download archive_ button {{n1}} located inside the job overview table or within
 each archive jobs details dialog.
 
 ![Screenshot: Downloading a quiz archive](/assets/configuration/configuration_quiz_archive_download_1.png){ .img-thumbnail }
@@ -42,7 +58,7 @@ each archive jobs details dialog.
     This action is irreversible and will permanently delete the archive and all
     associated data. Make sure to download the archive before deleting it.
 
-Created archives can be deleted by clicking the _Delete archive_ (1) button
+Created archives can be deleted by clicking the _Delete archive_ {{n1}} button
 within the job overview table.
 
 ![Screenshot: Deleting a quiz archive](/assets/configuration/configuration_quiz_archive_delete_1.png){ .img-thumbnail }

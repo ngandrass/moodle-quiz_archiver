@@ -260,6 +260,7 @@ class ArchiveJob {
                 'jobid' => $id,
                 'userid' => $data->userid,
                 'attemptid' => $data->attemptid,
+                'numattachments' => 0,  // Set to 0 for now. Will be populated once attempt was actually processed.
             ];
         }, $attempts));
 
@@ -358,20 +359,21 @@ class ArchiveJob {
     }
 
     /**
-     * Generates an array containing all jobs that match the given selector
-     * containing: jobid, status, timecreated, timemodified.
+     * Generates an array containing all jobs that match the given selector with
+     * their respective metadata.
      *
      * This is the preferred way to access status of ALL jobs, instead of using
      * ArchiveJob::get_jobs() and call get_status() on each job individually!
      *
-     * @param int $courseid
-     * @param int $cmid
-     * @param int $quizid
+     * @param int $courseid ID of the course to filter for
+     * @param int $cmid ID of the course module to filter for
+     * @param int $quizid ID of the quiz to filter for
+     * @param int|null $jobid ID of the job to filter for (optional)
      * @return array
      * @throws \dml_exception
      * @throws \coding_exception
      */
-    public static function get_metadata_for_jobs(int $courseid, int $cmid, int $quizid): array {
+    public static function get_metadata_for_jobs(int $courseid, int $cmid, int $quizid, ?int $jobid = null): array {
         global $DB;
         $records = $DB->get_records_sql(
             'SELECT '.
@@ -388,12 +390,13 @@ class ArchiveJob {
             'WHERE '.
             '    j.courseid = :courseid AND '.
             '    j.cmid = :cmid AND '.
-            '    j.quizid = :quizid ',
+            '    j.quizid = :quizid '.
+            ($jobid > 0 ? 'AND j.id = :jobid ' : ''),
             [
                 'courseid' => $courseid,
                 'cmid' => $cmid,
                 'quizid' => $quizid,
-            ]
+            ] + ($jobid > 0 ? ['jobid' => $jobid] : [])
         );
 
         return array_values(array_map(function($j): array {
@@ -504,6 +507,23 @@ class ArchiveJob {
                 ),
             ];
         }, $records));
+    }
+
+    /**
+     * Retrieves an array of metadata for this job. This function does the same
+     * as get_metadata_for_jobs() but is limited to this job.
+     *
+     * @return array Metadata array for this job
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_metadata(): array {
+        return self::get_metadata_for_jobs(
+            $this->courseid,
+            $this->cmid,
+            $this->quizid,
+            $this->id
+        )[0];
     }
 
     /**
@@ -1248,12 +1268,12 @@ class ArchiveJob {
 
         // Prepare data.
         $data = [
-            'courseid' => $course->id,
-            'cmid' => $cm->id,
-            'quizid' => $quiz->id,
-            'coursename' => $course->fullname,
-            'courseshortname' => $course->shortname,
-            'quizname' => $quiz->name,
+            'courseid' => $course->id ?: 0,
+            'cmid' => $cm->id ?: 0,
+            'quizid' => $quiz->id ?: 0,
+            'coursename' => $course->fullname ?: 'null',
+            'courseshortname' => $course->shortname ?: 'null',
+            'quizname' => $quiz->name ?: 'null',
             'timestamp' => time(),
             'date' => date('Y-m-d'),
             'time' => date('H-i-s'),
@@ -1299,25 +1319,25 @@ class ArchiveJob {
         $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
         $usergroups = self::get_user_groups($course->id, $userinfo->id);
         $data = [
-            'courseid' => $course->id,
-            'cmid' => $cm->id,
-            'quizid' => $quiz->id,
-            'attemptid' => $attemptid,
-            'coursename' => $course->fullname,
-            'courseshortname' => $course->shortname,
+            'courseid' => $course->id ?: 0,
+            'cmid' => $cm->id ?: 0,
+            'quizid' => $quiz->id ?: 0,
+            'attemptid' => $attemptid ?: 0,
+            'coursename' => $course->fullname ?: 'null',
+            'courseshortname' => $course->shortname ?: 'null',
             'groupids' => join('-', array_map(fn($group) => $group->id, $usergroups)) ?: 0,
             'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
             'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
-            'quizname' => $quiz->name,
+            'quizname' => $quiz->name ?: 'null',
             'timestamp' => time(),
             'date' => date('Y-m-d'),
             'time' => date('H-i-s'),
-            'timestart' => $attemptinfo->timestart,
-            'timefinish' => $attemptinfo->timefinish,
-            'username' => $userinfo->username,
-            'firstname' => $userinfo->firstname,
-            'lastname' => $userinfo->lastname,
-            'idnumber' => $userinfo->idnumber,
+            'timestart' => $attemptinfo->timestart ?: 0,
+            'timefinish' => $attemptinfo->timefinish ?: 0,
+            'username' => $userinfo->username ?: 'null',
+            'firstname' => $userinfo->firstname ?: 'null',
+            'lastname' => $userinfo->lastname ?: 'null',
+            'idnumber' => $userinfo->idnumber ?: 'null',
         ];
 
         // Substitute variables.
@@ -1360,25 +1380,25 @@ class ArchiveJob {
         $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
         $usergroups = self::get_user_groups($course->id, $userinfo->id);
         $data = [
-            'courseid' => $course->id,
-            'cmid' => $cm->id,
-            'quizid' => $quiz->id,
-            'attemptid' => $attemptid,
-            'coursename' => $course->fullname,
-            'courseshortname' => $course->shortname,
+            'courseid' => $course->id ?: 0,
+            'cmid' => $cm->id ?: 0,
+            'quizid' => $quiz->id ?: 0,
+            'attemptid' => $attemptid ?: 0,
+            'coursename' => $course->fullname ?: 'null',
+            'courseshortname' => $course->shortname ?: 'null',
             'groupids' => join('-', array_map(fn($group) => $group->id, $usergroups)) ?: 0,
             'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
             'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
-            'quizname' => $quiz->name,
+            'quizname' => $quiz->name ?: 'null',
             'timestamp' => time(),
             'date' => date('Y-m-d'),
             'time' => date('H-i-s'),
-            'timestart' => $attemptinfo->timestart,
-            'timefinish' => $attemptinfo->timefinish,
-            'username' => $userinfo->username,
-            'firstname' => $userinfo->firstname,
-            'lastname' => $userinfo->lastname,
-            'idnumber' => $userinfo->idnumber,
+            'timestart' => $attemptinfo->timestart ?: 0,
+            'timefinish' => $attemptinfo->timefinish ?: 0,
+            'username' => $userinfo->username ?: 'null',
+            'firstname' => $userinfo->firstname ?: 'null',
+            'lastname' => $userinfo->lastname ?: 'null',
+            'idnumber' => $userinfo->idnumber ?: 'null',
         ];
 
         // Substitute variables.

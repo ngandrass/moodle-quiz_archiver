@@ -287,11 +287,11 @@ class Report {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function get_attempt_attachments(int $attemptid): array {
+    public static function get_attempt_attachments(int $attemptid): array {
         // Prepare.
         $files = [];
-        $ctx = \context_module::instance($this->cm->id);
-        $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
+        $attemptobj = quiz_create_attempt_handling_errors($attemptid);
+        $ctx = \context_module::instance($attemptobj->get_cmid());
 
         // Get all files from all questions inside this attempt.
         foreach ($attemptobj->get_slots() as $slot) {

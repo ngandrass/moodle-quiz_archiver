@@ -31,7 +31,7 @@ service worker, you can use the free public demo worker.
 
 To use the free public demo worker, you can skip the installation for now and
 directly proceed to the [configuration section](/configuration). Make sure to
-specify the following _Archive worker URL_ (1) during configuration:
+specify the following _Archive worker URL_ {{n1}} during configuration:
 
 ```text title="Archive worker URL"
 https://demoworker.quizarchiver.gandrass.de

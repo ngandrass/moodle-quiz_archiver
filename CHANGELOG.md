@@ -1,11 +1,16 @@
 # Changelog
 
-## Version X.Y.Z (YYYYDDMMNN)
+## Version 3.Y.Z (YYYYDDMMNN)
 
 - Add support for fully customizable attempt folder names
 - Add group names, group IDs, and group ID numbers as valid variables for attempt folder- and filenames
+- Create sub-page allowing to view the attempts that are contained inside each archive, including the number of file submissions per attempt
 - Automatically trim attempt and archive filenames
+- Create default values for unset filename variables
+- Improve webservice API implementation for attempt report and metadata retrieval
 - Automatically check code coverage during PHP unit test execution and evaluate results
+- Improve references to illustrations in the documentation
+- Update images in the documentation and add help for new features
 
 
 ## Version 2.3.2 (2025040100)

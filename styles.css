@@ -26,15 +26,23 @@
     border-bottom: 0;
 }
 
-/* Job overview table */
-.quiz_archiver-job-overview-table > .pagination:nth-of-type(1) {
+/* Job overview and archive contents table */
+.quiz_archiver-job-overview-table > .pagination:nth-of-type(1),
+.quiz_archiver-archive-contents-table > .pagination:nth-of-type(1) {
     display: none;
 }
 
-.quiz_archiver-job-overview-table th.header {
+.quiz_archiver-job-overview-table th.header,
+.quiz_archiver-archive-contents-table th.header {
     border-top: 0;
 }
 
-.quiz_archiver-job-overview-table th > a {
+.quiz_archiver-job-overview-table th > a,
+.quiz_archiver-archive-contents-table th > a {
     display: inline-block;
+}
+
+.quiz_archiver-job-overview-table,
+.quiz_archiver-archive-contents-table {
+    margin-bottom: 8px;
 }
