@@ -246,11 +246,12 @@ class quiz_archiver_generator extends \testing_data_generator {
      * Imports the reference quiz artifact from the test fixtures directory into
      * the a Moodle stored_file residing inside a users draft filearea.
      *
+     * @param $extension string The file extension to use for the artifact
      * @return \stored_file
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    public function import_reference_quiz_artifact_as_draft(): \stored_file {
+    public function import_reference_quiz_artifact_as_draft(string $extension): \stored_file {
         $ctx = context_user::instance($this->create_user()->id);
 
         return get_file_storage()->create_file_from_pathname([
@@ -259,10 +260,10 @@ class quiz_archiver_generator extends \testing_data_generator {
             'filearea'     => 'draft',
             'itemid'       => 0,
             'filepath'     => "/",
-            'filename'     => 'reference_quiz_artifact.tar.gz',
+            'filename'     => 'reference_quiz_artifact'.$extension,
             'timecreated'  => time(),
             'timemodified' => time(),
-        ], __DIR__.'/../fixtures/referencequiz-artifact.tar.gz');
+        ], __DIR__.'/../fixtures/referencequiz-artifact'.$extension);
     }
 
     /**
