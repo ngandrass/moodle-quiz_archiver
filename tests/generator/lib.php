@@ -246,7 +246,7 @@ class quiz_archiver_generator extends \testing_data_generator {
      * Imports the reference quiz artifact from the test fixtures directory into
      * the a Moodle stored_file residing inside a users draft filearea.
      *
-     * @param $extension string The file extension to use for the artifact
+     * @param string $extension The file extension to use for the artifact
      * @return \stored_file
      * @throws \file_exception
      * @throws \stored_file_creation_exception

@@ -180,7 +180,7 @@ final class generator_test extends \advanced_testcase {
      *
      * @dataProvider artifact_file_extension_data_provider
      *
-     * @param $extension string The file extension to use for the artifact
+     * @param string $extension The file extension to use for the artifact
      * @return void
      * @throws \file_exception
      * @throws \stored_file_creation_exception
