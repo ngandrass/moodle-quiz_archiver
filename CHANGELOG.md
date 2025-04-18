@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Switch from `.tar.gz` to `.zip` format for quiz archives
+
+
 ## Version 3.0.0 (2025041600)
 
 - Support for Moodle 5.0 and PHP 8.4
