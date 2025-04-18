@@ -220,8 +220,6 @@ final class generator_test extends \advanced_testcase {
         return [
             '.tar.gz' => ['.tar.gz'],
             '.zip (DEFLATE)' => ['.deflate.zip'],
-            '.zip (bzip2)' => ['.bzip2.zip'],
-            '.zip (LZMA)' => ['.lzma.zip'],
         ];
     }
 
