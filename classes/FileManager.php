@@ -342,8 +342,21 @@ class FileManager {
     public function extract_attempt_data_from_artifact(stored_file $artifactfile, int $jobid, int $attemptid): ?stored_file {
         global $CFG;
 
-        // Prepare.
-        $packer = get_file_packer('application/x-gzip');
+        // Determine packer based on mimetype. We cannot pass this directly to get_file_packer() since RFC 6713 is ignored here ...
+        switch ($artifactfile->get_mimetype()) {
+            case 'application/gzip':
+            case 'application/g-zip':
+            case 'application/x-gzip':
+            case 'application/x-tgz':
+                $packer = get_file_packer('application/x-gzip');
+                break;
+            case 'application/zip':
+                $packer = get_file_packer('application/zip');
+                break;
+            default:
+                throw new \moodle_exception('Unsupported file extension for artifact archive');
+        }
+
         // @codingStandardsIgnoreLine
         $workdir = "{$CFG->tempdir}/quiz_archiver/jid{$jobid}_cid{$this->courseid}_cmid{$this->cmid}_qid{$this->quizid}_aid{$attemptid}";
 
@@ -384,9 +397,10 @@ class FileManager {
             // All files must be given explicitly to tgz_packer::extract_to_pathname(). Wildcards
             // are unsupported. Therefore, we list the contents and filter the index. This reduces
             // space and time complexity compared to extracting the whole archive at once.
+            $localfilepath = get_file_storage()->get_file_system()->get_local_path_from_storedfile($artifactfile);
             $attemptfiles = array_unique(array_values(array_map(
                 fn($file): string => $file->pathname,
-                array_filter($packer->list_files($artifactfile), function ($file) use ($attemptpath) {
+                array_filter($packer->list_files($localfilepath), function ($file) use ($attemptpath) {
                     return strpos($file->pathname, ltrim($attemptpath, '/')) === 0;
                 })
             )));
