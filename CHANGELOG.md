@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 3.1.0 (2025041900)
 
 - Switch from `.tar.gz` to `.zip` format for quiz archives
 - Fix problems with very long archive / attempt names and paths
