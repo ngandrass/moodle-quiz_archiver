@@ -178,20 +178,23 @@ final class generator_test extends \advanced_testcase {
      *
      * @covers \quiz_archiver_generator::import_reference_quiz_artifact_as_draft
      *
+     * @dataProvider artifact_file_extension_data_provider
+     *
+     * @param string $extension The file extension to use for the artifact
      * @return void
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    public function test_import_reference_quiz_artifact_as_draft(): void {
+    public function test_import_reference_quiz_artifact_as_draft(string $extension): void {
         // Import reference quiz artifact as draft.
         $generator = self::getDataGenerator();
         $this->resetAfterTest();
-        $artifact = $generator->import_reference_quiz_artifact_as_draft();
+        $artifact = $generator->import_reference_quiz_artifact_as_draft($extension);
 
         // Verify artifact file.
         $this->assertNotEmpty($artifact, 'The artifact file was not imported');
         $this->assertEquals(
-            'reference_quiz_artifact.tar.gz',
+            'reference_quiz_artifact'.$extension,
             $artifact->get_filename(),
             'The artifact file has the wrong filename'
         );
@@ -206,6 +209,18 @@ final class generator_test extends \advanced_testcase {
             'The artifact file has the wrong filearea'
         );
         $this->assertGreaterThan(16384, $artifact->get_filesize(), 'The artifact file is too small');
+    }
+
+    /**
+     * Data provider for test_import_reference_quiz_artifact_as_draft
+     *
+     * @return array[] Test data for artifact file extensions
+     */
+    public static function artifact_file_extension_data_provider(): array {
+        return [
+            '.tar.gz' => ['.tar.gz'],
+            '.zip (DEFLATE)' => ['.deflate.zip'],
+        ];
     }
 
     /**

@@ -534,6 +534,9 @@ final class filemanager_test extends \advanced_testcase {
      *
      * @covers \quiz_archiver\FileManager::extract_attempt_data_from_artifact
      *
+     * @dataProvider artifact_file_extension_data_provider
+     *
+     * @param string $artifactextension File extension of the artifact file to use
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -541,7 +544,7 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \stored_file_creation_exception
      */
-    public function test_extract_attempt_data_from_artifact(): void {
+    public function test_extract_attempt_data_from_artifact(string $artifactextension): void {
         // Prepare a finished archive job that has a valid artifact file.
         $this->resetAfterTest();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
@@ -558,7 +561,7 @@ final class filemanager_test extends \advanced_testcase {
             ArchiveJob::STATUS_FINISHED
         );
 
-        $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft();
+        $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft($artifactextension);
         $attemptid = 13775;
 
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
@@ -578,6 +581,10 @@ final class filemanager_test extends \advanced_testcase {
      *
      * @covers \quiz_archiver\FileManager::extract_attempt_data_from_artifact
      *
+     * @dataProvider artifact_file_extension_data_provider
+     *
+     * @param string $artifactextension File extension of the artifact file to use
+     * @return void
      * @return void
      * @throws \coding_exception
      * @throws \dml_exception
@@ -585,7 +592,7 @@ final class filemanager_test extends \advanced_testcase {
      * @throws \moodle_exception
      * @throws \stored_file_creation_exception
      */
-    public function test_extract_attempt_data_for_nonexisting_attemptid(): void {
+    public function test_extract_attempt_data_for_nonexisting_attemptid(string $artifactextension): void {
         // Prepare a finished archive job that has a valid artifact file.
         $this->resetAfterTest();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
@@ -601,7 +608,7 @@ final class filemanager_test extends \advanced_testcase {
             [],
             ArchiveJob::STATUS_FINISHED
         );
-        $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft();
+        $draftartifact = $this->getDataGenerator()->import_reference_quiz_artifact_as_draft($artifactextension);
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $fm->store_uploaded_artifact($draftartifact, $job->get_id());
         $storedartifacts = $fm->get_stored_artifacts();
@@ -611,6 +618,19 @@ final class filemanager_test extends \advanced_testcase {
         $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessageMatches('/Attempt not found/');
         $fm->extract_attempt_data_from_artifact($storedartifact, $job->get_id(), 9999999);
+    }
+
+    /**
+     * Data provider for test_extract_attempt_data_from_artifact and
+     * test_extract_attempt_data_for_nonexisting_attemptid
+     *
+     * @return array[] Test data for artifact file extensions
+     */
+    public static function artifact_file_extension_data_provider(): array {
+        return [
+            '.tar.gz' => ['.tar.gz'],
+            '.zip (DEFLATE)' => ['.deflate.zip'],
+        ];
     }
 
     /**
