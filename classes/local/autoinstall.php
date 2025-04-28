@@ -118,6 +118,8 @@ class autoinstall {
         string $username = self::DEFAULT_USERNAME,
         bool $force = false
     ): array {
+        global $CFG;
+
         // Prepare return values.
         $success = false;
 
@@ -183,6 +185,7 @@ class autoinstall {
                     'confirmed' => 1,
                     'deleted' => 0,
                     'policyagreed' => 1,
+                    'mnethostid' => $CFG->mnet_localhost_id,
                 ]);
                 $webserviceuser = \core_user::get_user($webserviceuserid);
                 $log[] = "  -> Web service user '{$webserviceuser->username}' with ID {$webserviceuser->id} created.";

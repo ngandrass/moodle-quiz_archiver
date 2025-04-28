@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Fix autoinstall not setting `mnethostid` to local host when creating the service account user
+
+
 ## Version 3.1.0 (2025041900)
 
 - Switch from `.tar.gz` to `.zip` format for quiz archives
