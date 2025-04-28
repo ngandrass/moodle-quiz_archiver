@@ -52,7 +52,7 @@ final class autoinstall_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_autoinstall(): void {
-        global $DB;
+        global $CFG, $DB;
         $this->resetAfterTest();
 
         // Gain privileges.
@@ -120,6 +120,7 @@ final class autoinstall_test extends \advanced_testcase {
             'User role was not assigned'
         );
         $this->assertSame($user->id, get_config('quiz_archiver', 'webservice_userid'), 'User ID was not set correctly');
+        $this->assertEquals($user->mnethostid, $CFG->mnet_localhost_id, 'User was not created on localhost');
     }
 
     /**
