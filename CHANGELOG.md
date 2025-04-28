@@ -1,8 +1,9 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 3.1.1 (2025042800)
 
-- Fix autoinstall not setting `mnethostid` to local host when creating the service account user
+- Fix autoinstall not setting `mnethostid` to local host when creating the service account user, preventing the user from being deleted using the web interface
+- Automatically set correct `mnethostid` for the service account user during this plugin upgrade
 
 
 ## Version 3.1.0 (2025041900)
