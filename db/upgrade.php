@@ -39,7 +39,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @throws upgrade_exception
  */
 function xmldb_quiz_archiver_upgrade($oldversion) {
-    global $DB;
+    global $CFG, $DB;
 
     $dbman = $DB->get_manager();
 
@@ -246,6 +246,23 @@ function xmldb_quiz_archiver_upgrade($oldversion) {
 
         // Archiver savepoint reached.
         upgrade_plugin_savepoint(true, 2025040200, 'quiz', 'archiver');
+    }
+
+    if ($oldversion < 2025042800) {
+        // Ensure service account users have a local mnethostid record.
+        $webserviceuserid = get_config('quiz_archiver', 'webservice_userid');
+        if ($webserviceuserid) {
+            $user = $DB->get_record('user', ['id' => $webserviceuserid]);
+            if ($user && $user->mnethostid == 0) {
+                $DB->update_record('user', [
+                    'id' => $user->id,
+                    'mnethostid' => $CFG->mnet_localhost_id,
+                ]);
+            }
+        }
+
+        // Archiver savepoint reached.
+        upgrade_plugin_savepoint(true, 2025042800, 'quiz', 'archiver');
     }
 
     return true;
