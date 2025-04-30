@@ -73,7 +73,8 @@ class update_job_status extends external_api {
         return new external_single_structure([
             'status' => new external_value(
                 PARAM_TEXT,
-                'Status of the executed wsfunction'
+                'Status of the executed wsfunction',
+                VALUE_REQUIRED
             ),
         ]);
     }
