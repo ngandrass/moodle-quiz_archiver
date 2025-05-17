@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Fix Moodle CSS stylelint errors for mkdocs extra CSS file to make Moodle plugin directory prechecks happy
+
+
 ## Version 3.1.1 (2025042800)
 
 - Fix autoinstall not setting `mnethostid` to local host when creating the service account user, preventing the user from being deleted using the web interface
