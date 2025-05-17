@@ -1,3 +1,9 @@
+/* This file is used by mkdocs only.
+ * It depends on the mkdocs-material theme and is fully independent of Moodle.
+ *
+ * Disabling Moodle stylelint checks to prevent false errors and warnings.
+ */
+
 /* stylelint-disable */
 
 .md-main {
