@@ -24,8 +24,6 @@
 
 namespace quiz_archiver;
 
-use backup;
-
 // @codingStandardsIgnoreLine
 global $CFG;
 
