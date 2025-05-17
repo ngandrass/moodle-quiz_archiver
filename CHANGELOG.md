@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDXX)
 
 - Fix Moodle CSS stylelint errors for mkdocs extra CSS file to make Moodle plugin directory prechecks happy
+- Fix attempt report generation unit tests for latest Moodle version >= 4.5
 
 
 ## Version 3.1.1 (2025042800)
