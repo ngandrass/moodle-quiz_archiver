@@ -156,7 +156,7 @@ final class report_test extends \advanced_testcase {
         // Verify questions.
         foreach ($this->getDataGenerator()::QUESTION_TYPES_IN_REFERENCE_QUIZ as $qtype) {
             $this->assertMatchesRegularExpression(
-                '/<[^<>]*class="[^\"<>]*que[^\"<>]*' . preg_quote($qtype, '/') . '[^\"<>]*"[^<>]*>/',
+                '/<[^<>]*class="[^"<>]*que[^"<>]*' . preg_quote($qtype, '/') . '[^"<>]*"[^<>]*>/',
                 $html,
                 'Question of type ' . $qtype . ' not found'
             );
@@ -164,28 +164,28 @@ final class report_test extends \advanced_testcase {
 
         // Verify individual question feedback.
         $this->assertMatchesRegularExpression(
-            '/<div class="specificfeedback">/',
+            '/<div [^<>]*class="[^<>"]*specificfeedback[^<>"]*"[^<>]*>/',
             $html,
             'Individual question feedback not found'
         );
 
         // Verify general question feedback.
         $this->assertMatchesRegularExpression(
-            '/<div class="generalfeedback">/',
+            '/<div [^<>]*class="[^<>"]*generalfeedback[^<>"]*"[^<>]*>/',
             $html,
             'General question feedback not found'
         );
 
         // Verify correct answers.
         $this->assertMatchesRegularExpression(
-            '/<div class="rightanswer">/',
+            '/<div [^<>]*class="[^<>"]*rightanswer[^<>"]*"[^<>]*>/',
             $html,
             'Correct question answers not found'
         );
 
         // Verify answer history.
         $this->assertMatchesRegularExpression(
-            '/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/',
+            '/<[^<>]*class="responsehistoryheader[^<>"]*"[^<>]*>/',
             $html,
             'Answer history not found'
         );
@@ -322,22 +322,22 @@ final class report_test extends \advanced_testcase {
 
         // If questions are disabled, question_feedback, general_feedback, rightanswer and history should be absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<div class="specificfeedback">/',
+            '/<div [^<>]*class="[^<>"]*specificfeedback[^<>"]*"[^<>]*>/',
             $html,
             'Individual question feedback found when it should be absent'
         );
         $this->assertDoesNotMatchRegularExpression(
-            '/<div class="generalfeedback">/',
+            '/<div [^<>]*class="[^<>"]*generalfeedback[^<>"]*"[^<>]*>/',
             $html,
             'General question feedback found when it should be absent'
         );
         $this->assertDoesNotMatchRegularExpression(
-            '/<div class="rightanswer">/',
+            '/<div [^<>]*class="[^<>"]*rightanswer[^<>"]*"[^<>]*>/',
             $html,
             'Correct question answers found when they should be absent'
         );
         $this->assertDoesNotMatchRegularExpression(
-            '/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/',
+            '/<div [^<>]*class="[^<>"]*responsehistoryheader[^<>"]*"[^<>]*>/',
             $html,
             'Answer history found when it should be absent'
         );
@@ -367,7 +367,7 @@ final class report_test extends \advanced_testcase {
 
         // Verify that question feedback is absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<div class="specificfeedback">/',
+            '/<div [^<>]*class="[^<>"]*specificfeedback[^<>"]*"[^<>]*>/',
             $html,
             'Individual question feedback found when it should be absent'
         );
@@ -397,7 +397,7 @@ final class report_test extends \advanced_testcase {
 
         // Verify that general feedback is absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<div class="generalfeedback">/',
+            '/<div [^<>]*class="[^<>"]*generalfeedback[^<>"]*"[^<>]*>/',
             $html,
             'General question feedback found when it should be absent'
         );
@@ -427,7 +427,7 @@ final class report_test extends \advanced_testcase {
 
         // Verify that right answers are absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<div class="rightanswer">/',
+            '/<div [^<>]*class="[^<>"]*rightanswer[^<>"]*"[^<>]*>/',
             $html,
             'Correct question answers found when they should be absent'
         );
@@ -457,7 +457,7 @@ final class report_test extends \advanced_testcase {
 
         // Verify that answer history is absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<[^<>]*class="responsehistoryheader[^\"<>]*"[^<>]*>/',
+            '/<div [^<>]*class="[^<>"]*responsehistoryheader[^<>"]*"[^<>]*>/',
             $html,
             'Answer history found when it should be absent'
         );
