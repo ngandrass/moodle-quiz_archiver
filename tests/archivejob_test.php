@@ -1046,6 +1046,10 @@ final class archivejob_test extends \advanced_testcase {
                 'pattern' => 'quiz-archive: foo!bar',
                 'isvalid' => false,
             ],
+            'Slashes' => [
+                'pattern' => 'foo/bar',
+                'isvalid' => false,
+            ],
             'Only invalid characters' => [
                 'pattern' => '.!',
                 'isvalid' => false,
@@ -1192,6 +1196,10 @@ final class archivejob_test extends \advanced_testcase {
             ],
             'Forbidden characters' => [
                 'pattern' => 'attempt: foo!bar',
+                'isvalid' => false,
+            ],
+            'Slashes' => [
+                'pattern' => 'foo/bar',
                 'isvalid' => false,
             ],
             'Only invalid characters' => [

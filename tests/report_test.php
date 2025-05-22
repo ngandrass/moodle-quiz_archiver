@@ -337,7 +337,7 @@ final class report_test extends \advanced_testcase {
             'Correct question answers found when they should be absent'
         );
         $this->assertDoesNotMatchRegularExpression(
-            '/<div [^<>]*class="[^<>"]*responsehistoryheader[^<>"]*"[^<>]*>/',
+            '/<[^<>]*class="[^<>"]*responsehistoryheader[^<>"]*"[^<>]*>/',
             $html,
             'Answer history found when it should be absent'
         );
@@ -457,7 +457,7 @@ final class report_test extends \advanced_testcase {
 
         // Verify that answer history is absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<div [^<>]*class="[^<>"]*responsehistoryheader[^<>"]*"[^<>]*>/',
+            '/<[^<>]*class="[^<>"]*responsehistoryheader[^<>"]*"[^<>]*>/',
             $html,
             'Answer history found when it should be absent'
         );

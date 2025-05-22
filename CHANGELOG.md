@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 3.1.3 (2025052200)
+
+- Fix archive job creation for quizzes with forward slashes in names when the `${quizname}` variable is used
+
+
 ## Version 3.1.2 (2025051700)
 
 - Fix Moodle CSS stylelint errors for mkdocs extra CSS file to make Moodle plugin directory prechecks happy
