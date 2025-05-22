@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 3.1.3 (2025052200)
 
 - Fix archive job creation for quizzes with forward slashes in names when the `${quizname}` variable is used
 
