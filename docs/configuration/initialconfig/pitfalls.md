@@ -95,6 +95,29 @@ If you are running Ubuntu or Debian, you can ensure this by installing the
 If you are using the official Docker image, please open a bug report instead.
 
 
+## Readiness probe fails (MathJax, GeoGebra, ...)
+
+Some question types contain content that is rendered asynchronously by JavaScript
+after the page has already been loaded (e.g., MathJax, GeoGebra, ...). Therefore,
+the archive worker service contains a readiness probe that determines whether
+all dynamic content has been rendered and delays PDF generation until everything
+is ready.
+
+If your quiz contains such dynamically rendered content and your archive jobs
+fail after a short time, you should check the logs of your archive worker for
+messages like `Ready signal not received ` or similar.
+
+At this point you can try increasing the number of seconds the archive worker
+waits before considering the check to have failed via
+[`QUIZ_ARCHIVER_WAIT_FOR_READY_SIGNAL_TIMEOUT_SEC`](../../installation/archiveworker.md).
+If desired, you can also make the archive worker simply continue after the
+timeout is reached and generating the PDF as is by setting
+[`QUIZ_ARCHIVER_CONTINUE_AFTER_READY_SIGNAL_TIMEOUT=True`](../..//installation/archiveworker.md).
+
+If you believe that the readiness probe failure is caused by a bug, please do
+not hesitate to [open a bug report](https://github.com/ngandrass/moodle-quiz_archiver/issues).
+
+
 ## Checking the plugin config
 
 If you are unsure whether there is a problem with your plugin configuration, you
