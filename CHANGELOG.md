@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Add Moodle 5.1 and all supported PHP versions to CI test matrix
+
+
 ## Version 3.1.3 (2025052200)
 
 - Fix archive job creation for quizzes with forward slashes in names when the `${quizname}` variable is used
