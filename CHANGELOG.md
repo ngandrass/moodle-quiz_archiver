@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Ensure compatibility with Moodle 5.1
 - Add Moodle 5.1 and all supported PHP versions to CI test matrix
 - Comply with Moodle coding style version 3.6
 
