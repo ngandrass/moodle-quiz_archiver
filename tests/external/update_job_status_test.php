@@ -31,7 +31,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the update_job_status external service
  */
 final class update_job_status_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -464,5 +463,4 @@ final class update_job_status_test extends \advanced_testcase {
             ],
         ];
     }
-
 }

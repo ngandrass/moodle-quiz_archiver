@@ -31,7 +31,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the get_backup_status external service
  */
 final class get_backup_status_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -125,7 +124,7 @@ final class get_backup_status_test extends \advanced_testcase {
     public function test_parameter_validation(
         ?string $jobid,
         ?string $backupid,
-        bool    $shouldfail
+        bool $shouldfail
     ): void {
         // Gain webservice permission.
         $this->setAdminUser();
@@ -249,5 +248,4 @@ final class get_backup_status_test extends \advanced_testcase {
             'Invalid job ID should return E_JOB_NOT_FOUND'
         );
     }
-
 }

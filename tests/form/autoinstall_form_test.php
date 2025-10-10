@@ -29,7 +29,6 @@ namespace quiz_archiver\form;
  * Tests for the autoinstall_form
  */
 final class autoinstall_form_test extends \advanced_testcase {
-
     /**
      * Basic code coverage to verify validity of form definition and detect
      * possible errors during form element definition.
@@ -43,5 +42,4 @@ final class autoinstall_form_test extends \advanced_testcase {
         $form = new autoinstall_form();
         $this->assertInstanceOf(\moodleform::class, $form);
     }
-
 }

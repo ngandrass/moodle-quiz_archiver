@@ -32,7 +32,6 @@ use context_module;
  * Tests for the BackupManager class
  */
 final class backupmanager_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -389,5 +388,4 @@ final class backupmanager_test extends \advanced_testcase {
             'Quiz backup was detected as associated with an unrelated job'
         );
     }
-
 }

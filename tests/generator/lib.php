@@ -30,7 +30,6 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php'); // @
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class quiz_archiver_generator extends \testing_data_generator {
-
     /** @var string[] Question types present in the reference quiz */
     const QUESTION_TYPES_IN_REFERENCE_QUIZ = [
         'description',
@@ -119,7 +118,7 @@ class quiz_archiver_generator extends \testing_data_generator {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' .
             'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
@@ -148,7 +147,7 @@ class quiz_archiver_generator extends \testing_data_generator {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' .
             'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
@@ -173,7 +172,7 @@ class quiz_archiver_generator extends \testing_data_generator {
         $backupid = 'referencequiz';
         $backuppath = make_backup_temp_directory($backupid);
         get_file_packer('application/vnd.moodle.backup')->extract_to_pathname(
-            __DIR__."/../fixtures/referencequiz.mbz",
+            __DIR__ . "/../fixtures/referencequiz.mbz",
             $backuppath
         );
 
@@ -260,10 +259,10 @@ class quiz_archiver_generator extends \testing_data_generator {
             'filearea'     => 'draft',
             'itemid'       => 0,
             'filepath'     => "/",
-            'filename'     => 'reference_quiz_artifact'.$extension,
+            'filename'     => 'reference_quiz_artifact' . $extension,
             'timecreated'  => time(),
             'timemodified' => time(),
-        ], __DIR__.'/../fixtures/referencequiz-artifact'.$extension);
+        ], __DIR__ . '/../fixtures/referencequiz-artifact' . $extension);
     }
 
     /**
@@ -284,14 +283,13 @@ class quiz_archiver_generator extends \testing_data_generator {
                 'component'    => FileManager::COMPONENT_NAME,
                 'filearea'     => FileManager::TEMP_FILEAREA_NAME,
                 'itemid'       => 0,
-                'filepath'     => '/'.$expiry.'/',
+                'filepath'     => '/' . $expiry . '/',
                 'filename'     => $filename,
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do '.
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' .
             'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
     }
-
 }

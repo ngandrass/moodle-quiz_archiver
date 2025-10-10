@@ -34,7 +34,6 @@ require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
  * Tests for the Report class
  */
 final class report_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -66,7 +65,7 @@ final class report_test extends \advanced_testcase {
     protected static function get_formdata_all_reports_sections_enabled(): object {
         $formdata = new \stdClass();
         foreach (Report::SECTIONS as $section) {
-            $formdata->{'export_report_section_'.$section} = 1;
+            $formdata->{'export_report_section_' . $section} = 1;
         }
         return $formdata;
     }
@@ -135,23 +134,23 @@ final class report_test extends \advanced_testcase {
             'Quiz header table not found'
         );
         $this->assertMatchesRegularExpression(
-            '/<td[^<>]*>' . preg_quote($rc->course->fullname,
-                '/') . '[^<>]+<\/td>/',
-            $html, 'Course name not found'
+            '/<td[^<>]*>' . preg_quote($rc->course->fullname, '/') . '[^<>]+<\/td>/',
+            $html,
+            'Course name not found'
         );
         $this->assertMatchesRegularExpression(
-            '/<td[^<>]*>' . preg_quote($rc->quiz->name,
-                '/') . '[^<>]+<\/td>/',
-            $html, 'Quiz name not found'
+            '/<td[^<>]*>' . preg_quote($rc->quiz->name, '/') . '[^<>]+<\/td>/',
+            $html,
+            'Quiz name not found'
         );
 
         // Verify overall quiz feedback.
         // TODO (MDL-0): Add proper overall feedback to reference quiz and check its contents.
         $this->assertMatchesRegularExpression(
-            '/<th[^<>]*>\s*' . preg_quote(get_string('feedback',
-                'quiz'),
-                '/'
-            ) . '\s*<\/th>/', $html, 'Overall feedback header not found');
+            '/<th[^<>]*>\s*' . preg_quote(get_string('feedback', 'quiz'), '/') . '\s*<\/th>/',
+            $html,
+            'Overall feedback header not found'
+        );
 
         // Verify questions.
         foreach ($this->getDataGenerator()::QUESTION_TYPES_IN_REFERENCE_QUIZ as $qtype) {
@@ -212,8 +211,8 @@ final class report_test extends \advanced_testcase {
         $html = $report->generate_full_page(
             $rc->attemptids[0],
             self::get_all_report_sections_enabled(),
-            false,  // We need to disable this since $OUTPUT->header() is not working during tests.
-            false,  // We need to disable this since $OUTPUT->header() is not working during tests.
+            false, // We need to disable this since $OUTPUT->header() is not working during tests.
+            false, // We need to disable this since $OUTPUT->header() is not working during tests.
             true
         );
         $this->assertNotEmpty($html, 'Generated report is empty');
@@ -249,7 +248,7 @@ final class report_test extends \advanced_testcase {
 
         // If the quiz header is disabled, the quiz feedback should also be absent.
         $this->assertDoesNotMatchRegularExpression(
-            '/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/',
+            '/<th[^<>]*>\s*' . preg_quote(get_string('feedback', 'quiz'), '/') . '\s*<\/th>/',
             $html,
             'Overall feedback header found when it should be absent'
         );
@@ -285,7 +284,7 @@ final class report_test extends \advanced_testcase {
             'Quiz header table not found'
         );
         $this->assertDoesNotMatchRegularExpression(
-            '/<th[^<>]*>\s*'.preg_quote(get_string('feedback', 'quiz'), '/').'\s*<\/th>/',
+            '/<th[^<>]*>\s*' . preg_quote(get_string('feedback', 'quiz'), '/') . '\s*<\/th>/',
             $html,
             'Overall feedback header found when it should be absent'
         );
@@ -686,5 +685,4 @@ final class report_test extends \advanced_testcase {
         $sections = Report::build_report_sections_from_formdata($formdata);
         $this->assertEquals(self::get_all_report_sections_enabled(), $sections, 'Superfluous section not removed correctly');
     }
-
 }

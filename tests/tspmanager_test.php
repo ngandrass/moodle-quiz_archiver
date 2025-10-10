@@ -24,13 +24,10 @@
 
 namespace quiz_archiver;
 
-use context_course;
-
 /**
  * Tests for the TSPManager class
  */
 final class tspmanager_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -52,9 +49,9 @@ final class tspmanager_test extends \advanced_testcase {
      */
     protected function create_mock_tspmanager(
         ArchiveJob $job,
-        string     $dummyserver = 'localhost',
-        string     $dummyquery = 'tsp-dummy-query',
-        string     $dummyreply = 'tsp-dummy-reply-0123456789abcdef'
+        string $dummyserver = 'localhost',
+        string $dummyquery = 'tsp-dummy-query',
+        string $dummyreply = 'tsp-dummy-reply-0123456789abcdef'
     ): TSPManager {
         // Prepare TimeStampProtocolClient that returns dummy data.
         $tspclientmock = $this->getMockBuilder(TimeStampProtocolClient::class)
@@ -300,5 +297,4 @@ final class tspmanager_test extends \advanced_testcase {
         $this->expectExceptionMessage(get_string('archive_signing_failed_tsp_disabled', 'quiz_archiver'));
         $this->create_mock_tspmanager($job)->timestamp();
     }
-
 }

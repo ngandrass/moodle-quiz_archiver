@@ -32,7 +32,6 @@ use quiz_archiver\FileManager;
  * Tests for the process_uploaded_artifact external service
  */
 final class process_uploaded_artifact_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -215,14 +214,14 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
     public function test_parameter_validation(
         ?string $jobid,
         ?string $artifactcomponent,
-        ?int    $artifactcontextid,
-        ?int    $artifactuserid,
+        ?int $artifactcontextid,
+        ?int $artifactuserid,
         ?string $artifactfilearea,
         ?string $artifactfilename,
         ?string $artifactfilepath,
-        ?int    $artifactitemid,
+        ?int $artifactitemid,
         ?string $artifactsha256sum,
-        bool    $shouldfail
+        bool $shouldfail
     ): void {
         // Create mock quiz.
         $this->resetAfterTest();
@@ -430,7 +429,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $r['jobid'],
             $artifact->get_component(),
             $artifact->get_contextid(),
-            (int) $artifact->get_userid(),  // Int cast is required since Moodle likes to return strings here...
+            (int) $artifact->get_userid(), // Int cast is required since Moodle likes to return strings here...
             $artifact->get_filearea(),
             $artifact->get_filename(),
             $artifact->get_filepath(),
@@ -438,5 +437,4 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
         ));
     }
-
 }

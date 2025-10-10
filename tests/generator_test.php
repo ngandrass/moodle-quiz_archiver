@@ -29,7 +29,6 @@ namespace quiz_archiver;
  * Tests for the quiz_archiver_generator class
  */
 final class generator_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -194,7 +193,7 @@ final class generator_test extends \advanced_testcase {
         // Verify artifact file.
         $this->assertNotEmpty($artifact, 'The artifact file was not imported');
         $this->assertEquals(
-            'reference_quiz_artifact'.$extension,
+            'reference_quiz_artifact' . $extension,
             $artifact->get_filename(),
             'The artifact file has the wrong filename'
         );
@@ -250,5 +249,4 @@ final class generator_test extends \advanced_testcase {
             'The temp file has the wrong content'
         );
     }
-
 }

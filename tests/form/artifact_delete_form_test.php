@@ -31,7 +31,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the artifact_delete_form
  */
 final class artifact_delete_form_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -125,5 +124,4 @@ final class artifact_delete_form_test extends \advanced_testcase {
         $form = new artifact_delete_form();
         $this->assertInstanceOf(\moodleform::class, $form);
     }
-
 }

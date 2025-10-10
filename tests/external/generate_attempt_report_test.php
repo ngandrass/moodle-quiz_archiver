@@ -31,7 +31,6 @@ use quiz_archiver\Report;
  * Tests for the generate_attempt_report external service
  */
 final class generate_attempt_report_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -237,7 +236,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
 
         // Execute the request.
         $this->expectException(\invalid_parameter_exception::class);
-        $this->expectExceptionMessageMatches('/.*'.$invalidparameterkey.'.*/');
+        $this->expectExceptionMessageMatches('/.*' . $invalidparameterkey . '.*/');
         generate_attempt_report::execute(
             $jobid,
             $invalidparameterkey == 'courseid' ? 0 : $r['courseid'],
@@ -373,5 +372,4 @@ final class generate_attempt_report_test extends \advanced_testcase {
             'Invalid job ID should return E_JOB_NOT_FOUND'
         );
     }
-
 }

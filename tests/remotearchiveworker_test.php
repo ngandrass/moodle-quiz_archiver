@@ -28,7 +28,6 @@ namespace quiz_archiver;
  * Tests for the RemoteArchiveWorker class
  */
 final class remotearchiveworker_test extends \advanced_testcase {
-
     /**
      * Test creation of request and interaction with the Moodle curl wrapper
      *
@@ -53,5 +52,4 @@ final class remotearchiveworker_test extends \advanced_testcase {
             []
         );
     }
-
 }
