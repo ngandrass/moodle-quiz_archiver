@@ -29,14 +29,13 @@ use quiz_archiver\ArchiveJob;
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
-require_once($CFG->dirroot.'/lib/formslib.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/lib/formslib.php'); // @codeCoverageIgnore
 
 
 /**
  * Form to trigger deletion of a job artifact
  */
 class artifact_delete_form extends \moodleform {
-
     /**
      * Form definiton.
      *
@@ -56,10 +55,10 @@ class artifact_delete_form extends \moodleform {
 
         if ($artifactfile) {
             $warnmsg = get_string('delete_artifact_warning', 'quiz_archiver');
-            $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
+            $warndetails = get_string('jobid', 'quiz_archiver') . ': ' . $job->get_jobid();
             $warndetails .= '<br>';
-            $warndetails .= get_string('quiz_archive', 'quiz_archiver').': '.$artifactfile->get_filename().
-                            ' ('.display_size($artifactfile->get_filesize()).')';
+            $warndetails .= get_string('quiz_archive', 'quiz_archiver') . ': ' . $artifactfile->get_filename() .
+                            ' (' . display_size($artifactfile->get_filesize()) . ')';
 
             // Warn additionally if job is scheduled for automatic deletion.
             if ($job->is_autodelete_enabled()) {
@@ -73,8 +72,8 @@ class artifact_delete_form extends \moodleform {
                 }
             }
         } else {
-            $warnmsg = get_string('error').': '.get_string('quiz_archive_not_found', 'quiz_archiver', $job->get_jobid());
-            $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
+            $warnmsg = get_string('error') . ': ' . get_string('quiz_archive_not_found', 'quiz_archiver', $job->get_jobid());
+            $warndetails = get_string('jobid', 'quiz_archiver') . ': ' . $job->get_jobid();
         }
 
         // Print warning element.
@@ -103,5 +102,4 @@ class artifact_delete_form extends \moodleform {
             $this->add_action_buttons(false, get_string('back'));
         }
     }
-
 }

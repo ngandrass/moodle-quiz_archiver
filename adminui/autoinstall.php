@@ -22,7 +22,7 @@
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../../../../config.php');
+require_once(__DIR__ . '/../../../../../config.php');
 require_once("{$CFG->libdir}/moodlelib.php");
 require_once("{$CFG->dirroot}/mod/quiz/report/archiver/classes/form/autoinstall_form.php");
 
@@ -63,11 +63,11 @@ if (autoinstall::plugin_is_unconfigured()) {
 
     if ($form->is_cancelled()) {
         // Cancelled.
-        echo '<p>'.get_string('autoinstall_cancelled', 'quiz_archiver').'</p>';
-        echo '<p>'.$returnlink.'</p>';
+        echo '<p>' . get_string('autoinstall_cancelled', 'quiz_archiver') . '</p>';
+        echo '<p>' . $returnlink . '</p>';
     } else if ($data = $form->get_data()) {
         // Perform autoinstall.
-        list($success, $log) = autoinstall::execute(
+        [$success, $log] = autoinstall::execute(
             $data->workerurl,
             $data->wsname,
             $data->rolename,
@@ -75,25 +75,25 @@ if (autoinstall::plugin_is_unconfigured()) {
         );
 
         // Show result.
-        echo '<p>'.get_string('autoinstall_started', 'quiz_archiver').'</p>';
-        echo '<p>'.get_string('logs').'</p>';
+        echo '<p>' . get_string('autoinstall_started', 'quiz_archiver') . '</p>';
+        echo '<p>' . get_string('logs') . '</p>';
         echo "<pre>{$log}</pre><br/>";
 
         if ($success) {
-            echo '<p>'.get_string('autoinstall_success', 'quiz_archiver').'</p>';
+            echo '<p>' . get_string('autoinstall_success', 'quiz_archiver') . '</p>';
         } else {
-            echo '<p>'.get_string('autoinstall_failure', 'quiz_archiver').'</p>';
+            echo '<p>' . get_string('autoinstall_failure', 'quiz_archiver') . '</p>';
         }
 
-        echo '<p>'.$returnlink.'</p>';
+        echo '<p>' . $returnlink . '</p>';
     } else {
-        echo '<p>'.get_string('autoinstall_explanation', 'quiz_archiver').'</p>';
-        echo '<p>'.get_string('autoinstall_explanation_details', 'quiz_archiver').'</p>';
+        echo '<p>' . get_string('autoinstall_explanation', 'quiz_archiver') . '</p>';
+        echo '<p>' . get_string('autoinstall_explanation_details', 'quiz_archiver') . '</p>';
         $form->display();
     }
 } else {
-    echo '<p>'.get_string('autoinstall_already_configured_long', 'quiz_archiver').'</p>';
-    echo '<p>'.$returnlink.'</p>';
+    echo '<p>' . get_string('autoinstall_already_configured_long', 'quiz_archiver') . '</p>';
+    echo '<p>' . $returnlink . '</p>';
 }
 
 // End page.

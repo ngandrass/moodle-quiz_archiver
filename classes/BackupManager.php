@@ -33,13 +33,12 @@ use context_module;
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
-require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php'); // @codeCoverageIgnore
 
 /**
  * Manages everything related to backups via the Moodle Backup API
  */
 class BackupManager {
-
     /** @var \stdClass Backup controller metadata from DB */
     protected \stdClass $backupmetadata;
 
@@ -195,7 +194,7 @@ class BackupManager {
             backup::RELEASESESSION_YES
         );
         $backupid = $bc->get_backupid();
-        $filename = 'quiz_archiver-'.$type.'-backup-'.$id.'-'.date("Ymd-His").'.mbz';
+        $filename = 'quiz_archiver-' . $type . '-backup-' . $id . '-' . date("Ymd-His") . '.mbz';
 
         // Configure backup.
         $tasks = $bc->get_plan()->get_tasks();
@@ -226,7 +225,7 @@ class BackupManager {
             $contextid,
             'backup',
             $type,
-            null,  // The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
+            null, // The make_webservice_pluginfile_url expects null if no itemid is given against it's PHPDoc specification ...
             '/',
             $filename
         ));
@@ -277,5 +276,4 @@ class BackupManager {
     public static function initiate_course_backup(int $courseid, int $userid): object {
         return self::initiate_backup(backup::TYPE_1COURSE, $courseid, $userid);
     }
-
 }

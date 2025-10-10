@@ -29,14 +29,13 @@ use quiz_archiver\ArchiveJob;
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
-require_once($CFG->dirroot.'/lib/formslib.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/lib/formslib.php'); // @codeCoverageIgnore
 
 
 /**
  * Form to trigger deletion of an archive job
  */
 class job_delete_form extends \moodleform {
-
     /**
      * Form definiton.
      *
@@ -54,13 +53,13 @@ class job_delete_form extends \moodleform {
         // Generic warning message.
         $warnhead = get_string('delete_job', 'quiz_archiver');
         $warnmsg = get_string('delete_job_warning', 'quiz_archiver');
-        $warndetails = get_string('jobid', 'quiz_archiver').': '.$job->get_jobid();
+        $warndetails = get_string('jobid', 'quiz_archiver') . ': ' . $job->get_jobid();
 
         // Add artifact details if available.
         if ($artifactfile) {
             $warndetails .= '<br>';
-            $warndetails .= get_string('quiz_archive', 'quiz_archiver').': ' .$artifactfile->get_filename().
-                            ' ('.display_size($artifactfile->get_filesize()).')';
+            $warndetails .= get_string('quiz_archive', 'quiz_archiver') . ': '  . $artifactfile->get_filename() .
+                            ' (' . display_size($artifactfile->get_filesize()) . ')';
         }
 
         // Warn additionally if job is scheduled for automatic deletion.
@@ -97,5 +96,4 @@ class job_delete_form extends \moodleform {
         // Action buttons.
         $this->add_action_buttons(true, get_string('delete', 'moodle'));
     }
-
 }

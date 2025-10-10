@@ -34,7 +34,7 @@ use quiz_archiver\local\autoinstall;
 
 // XXX-> CLI options parsing.
 
-list($options, $unrecognised) = cli_get_params(
+[$options, $unrecognised] = cli_get_params(
     [
         'help' => false,
         'workerurl' => 'http://localhost:8080',
@@ -90,7 +90,7 @@ $USER = get_admin();
 cli_writeln("Starting automatic installation of quiz archiver plugin...");
 cli_separator();
 
-list($success, $log) = autoinstall::execute(
+[$success, $log] = autoinstall::execute(
     $options['workerurl'],
     $options['wsname'],
     $options['rolename'],
@@ -98,7 +98,7 @@ list($success, $log) = autoinstall::execute(
     $options['force']
 );
 
-cli_write($log."\r\n");
+cli_write($log . "\r\n");
 
 if ($success) {
     cli_separator();

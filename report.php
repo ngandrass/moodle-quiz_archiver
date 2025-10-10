@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
 
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
@@ -46,7 +46,6 @@ use quiz_archiver\output\job_overview_table;
  * The quiz archiver report class.
  */
 class quiz_archiver_report extends report_base {
-
     /** @var object course object. */
     protected $course;
     /** @var object course module object. */
@@ -189,7 +188,7 @@ class quiz_archiver_report extends report_base {
      * @throws moodle_exception
      */
     protected function generate_job_metadata_tplctx(): array {
-        return array_map(function($jm): array {
+        return array_map(function ($jm): array {
             // Generate action URLs.
             $jm['action_urls'] = [
                 'delete_job' => (new moodle_url($this->base_url(), [
@@ -256,17 +255,17 @@ class quiz_archiver_report extends report_base {
      * @throws RuntimeException Used to signal a soft failure to calling context
      */
     protected function initiate_archive_job(
-        bool   $exportattempts,
-        array  $reportsections,
-        bool   $reportkeephtmlfiles,
+        bool $exportattempts,
+        array $reportsections,
+        bool $reportkeephtmlfiles,
         string $paperformat,
-        bool   $exportquizbackup,
-        bool   $exportcoursebackup,
+        bool $exportquizbackup,
+        bool $exportcoursebackup,
         string $archivefilenamepattern,
         string $attemptsfoldernamepattern,
         string $attemptsfilenamepattern,
         ?array $imageoptimize = null,
-        ?int   $retentionseconds = null
+        ?int $retentionseconds = null
     ): ?ArchiveJob {
         global $CFG, $USER;
 
@@ -351,7 +350,7 @@ class quiz_archiver_report extends report_base {
         }
 
         // Request archive worker.
-        $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/').'/archive', 10, 20);
+        $worker = new RemoteArchiveWorker(rtrim($this->config->worker_url, '/') . '/archive', 10, 20);
         try {
             $jobmetadata = $worker->enqueue_archive_job(
                 $wstoken,
@@ -397,7 +396,7 @@ class quiz_archiver_report extends report_base {
         } catch (\invalid_parameter_exception $e) {
             throw new \RuntimeException(get_string('error_preparing_job', 'quiz_archiver', $e->getMessage()));
         } catch (Exception $e) {
-            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver')." ".$e->getMessage());
+            throw new \RuntimeException(get_string('error_worker_unknown', 'quiz_archiver') . " " . $e->getMessage());
         }
 
         return $job;
@@ -483,7 +482,7 @@ class quiz_archiver_report extends report_base {
                 // Execute signing.
                 $formdata = $jobsignform->get_data();
                 $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
-                $jobidlogstr = ' ('.get_string('jobid', 'quiz_archiver').': '.$formdata->jobid.')';
+                $jobidlogstr = ' (' . get_string('jobid', 'quiz_archiver') . ': ' . $formdata->jobid . ')';
                 if ($tspmanager->has_tsp_timestamp()) {
                     redirect($this->base_url_with_alert(
                         \core\output\notification::NOTIFY_ERROR,
@@ -603,7 +602,8 @@ class quiz_archiver_report extends report_base {
         }
 
         // Check if job matches context.
-        if ($job->get_courseid() != $this->course->id ||
+        if (
+            $job->get_courseid() != $this->course->id ||
             $job->get_cmid() != $this->cm->id ||
             $job->get_quizid() != $this->quiz->id
         ) {
@@ -643,7 +643,7 @@ class quiz_archiver_report extends report_base {
                     'page' => optional_param('page', 0, PARAM_INT),
                 ]))->out(),
                 'attachmentstyletext' => get_string(
-                    'attechmentscolumnstyle_'.($expandfilenames ? 'button' : 'list'),
+                    'attechmentscolumnstyle_' . ($expandfilenames ? 'button' : 'list'),
                     'quiz_archiver'
                 ),
             ]
@@ -687,5 +687,4 @@ class quiz_archiver_report extends report_base {
 
         return $url;
     }
-
 }

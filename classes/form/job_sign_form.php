@@ -27,14 +27,13 @@ namespace quiz_archiver\form;
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
-require_once($CFG->dirroot.'/lib/formslib.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/lib/formslib.php'); // @codeCoverageIgnore
 
 
 /**
  * Form to trigger manual archive signing
  */
 class job_sign_form extends \moodleform {
-
     /**
      * Form definiton.
      *
@@ -47,7 +46,7 @@ class job_sign_form extends \moodleform {
         // Warning message.
         $warnhead = get_string('areyousure', 'moodle');
         $warnmsg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
-        $warndetails = get_string('jobid', 'quiz_archiver').': '.$this->optional_param('jobid', null, PARAM_TEXT);
+        $warndetails = get_string('jobid', 'quiz_archiver') . ': ' . $this->optional_param('jobid', null, PARAM_TEXT);
         $mform->addElement('html', $OUTPUT->notification(
             "<h4>$warnhead</h4> $warnmsg <hr/> $warndetails",
             \core\output\notification::NOTIFY_INFO,
@@ -69,5 +68,4 @@ class job_sign_form extends \moodleform {
         // Action buttons.
         $this->add_action_buttons(true, get_string('sign_archive', 'quiz_archiver'));
     }
-
 }

@@ -35,7 +35,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * A single quiz archive job
  */
 class ArchiveJob {
-
     /** @var int Database id of this job */
     protected int $id;
     /** @var string UUID of the job, as assigned by the archive worker */
@@ -155,14 +154,14 @@ class ArchiveJob {
      * @param string $wstoken The webservice token that is allowed to write to this job via API
      */
     protected function __construct(
-        int    $id,
+        int $id,
         string $jobid,
-        int    $courseid,
-        int    $cmid,
-        int    $quizid,
-        int    $userid,
-        int    $timecreated,
-        ?int   $retentiontime,
+        int $courseid,
+        int $cmid,
+        int $quizid,
+        int $userid,
+        int $timecreated,
+        ?int $retentiontime,
         string $wstoken
     ) {
         $this->id = $id;
@@ -212,14 +211,14 @@ class ArchiveJob {
      */
     public static function create(
         string $jobid,
-        int    $courseid,
-        int    $cmid,
-        int    $quizid,
-        int    $userid,
-        ?int   $retentionseconds,
+        int $courseid,
+        int $cmid,
+        int $quizid,
+        int $userid,
+        ?int $retentionseconds,
         string $wstoken,
-        array  $attempts,
-        array  $settings,
+        array $attempts,
+        array $settings,
         string $status = self::STATUS_UNKNOWN
     ): ArchiveJob {
         global $DB;
@@ -246,7 +245,7 @@ class ArchiveJob {
         ]);
 
         // Store job settings.
-        $DB->insert_records(self::JOB_SETTINGS_TABLE_NAME, array_map(function($key, $value) use ($id): array {
+        $DB->insert_records(self::JOB_SETTINGS_TABLE_NAME, array_map(function ($key, $value) use ($id): array {
             return [
                 'jobid' => $id,
                 'settingkey' => strval($key),
@@ -255,12 +254,12 @@ class ArchiveJob {
         }, array_keys($settings), $settings));
 
         // Remember attempts associated with this archive.
-        $DB->insert_records(self::ATTEMPTS_TABLE_NAME, array_map(function($data) use ($id): array {
+        $DB->insert_records(self::ATTEMPTS_TABLE_NAME, array_map(function ($data) use ($id): array {
             return [
                 'jobid' => $id,
                 'userid' => $data->userid,
                 'attemptid' => $data->attemptid,
-                'numattachments' => 0,  // Set to 0 for now. Will be populated once attempt was actually processed.
+                'numattachments' => 0, // Set to 0 for now. Will be populated once attempt was actually processed.
             ];
         }, $attempts));
 
@@ -376,21 +375,21 @@ class ArchiveJob {
     public static function get_metadata_for_jobs(int $courseid, int $cmid, int $quizid, ?int $jobid = null): array {
         global $DB;
         $records = $DB->get_records_sql(
-            'SELECT '.
-            '    j.*, '.
-            '    tsp.timecreated as tsp_timecreated, tsp.server AS tsp_server,'.
-            '    u.firstname AS userfirstname, u.lastname AS userlastname, u.username, '.
-            '    c.fullname AS coursename, '.
-            '    q.name as quizname '.
-            'FROM {quiz_archiver_jobs} j '.
-            '    LEFT JOIN {quiz_archiver_tsp} tsp ON j.id = tsp.jobid '.
-            '    LEFT JOIN {user} u ON j.userid = u.id '.
-            '    LEFT JOIN {course} c ON j.courseid = c.id '.
-            '    LEFT JOIN {quiz} q ON j.quizid = q.id '.
-            'WHERE '.
-            '    j.courseid = :courseid AND '.
-            '    j.cmid = :cmid AND '.
-            '    j.quizid = :quizid '.
+            'SELECT ' .
+            '    j.*, ' .
+            '    tsp.timecreated as tsp_timecreated, tsp.server AS tsp_server,' .
+            '    u.firstname AS userfirstname, u.lastname AS userlastname, u.username, ' .
+            '    c.fullname AS coursename, ' .
+            '    q.name as quizname ' .
+            'FROM {quiz_archiver_jobs} j ' .
+            '    LEFT JOIN {quiz_archiver_tsp} tsp ON j.id = tsp.jobid ' .
+            '    LEFT JOIN {user} u ON j.userid = u.id ' .
+            '    LEFT JOIN {course} c ON j.courseid = c.id ' .
+            '    LEFT JOIN {quiz} q ON j.quizid = q.id ' .
+            'WHERE ' .
+            '    j.courseid = :courseid AND ' .
+            '    j.cmid = :cmid AND ' .
+            '    j.quizid = :quizid ' .
             ($jobid > 0 ? 'AND j.id = :jobid ' : ''),
             [
                 'courseid' => $courseid,
@@ -399,7 +398,7 @@ class ArchiveJob {
             ] + ($jobid > 0 ? ['jobid' => $jobid] : [])
         );
 
-        return array_values(array_map(function($j): array {
+        return array_values(array_map(function ($j): array {
             // Get artifactfile metadata if available.
             $artifactfilemetadata = null;
             if ($j->artifactfileid) {
@@ -436,7 +435,7 @@ class ArchiveJob {
                         $artifactfile->get_component(),
                         FileManager::TSP_DATA_FILEAREA_NAME,
                         0,
-                        $artifactfile->get_filepath()."{$j->id}/",
+                        $artifactfile->get_filepath() . "{$j->id}/",
                         FileManager::TSP_DATA_QUERY_FILENAME,
                         true
                     )->out(),
@@ -445,7 +444,7 @@ class ArchiveJob {
                         $artifactfile->get_component(),
                         FileManager::TSP_DATA_FILEAREA_NAME,
                         0,
-                        $artifactfile->get_filepath()."{$j->id}/",
+                        $artifactfile->get_filepath() . "{$j->id}/",
                         FileManager::TSP_DATA_REPLY_FILENAME,
                         true
                     )->out(),
@@ -464,7 +463,7 @@ class ArchiveJob {
                         'quiz_archiver',
                         util::duration_to_human_readable($j->retentiontime - time())
                     );
-                    $autodeletestr .= ' ('.userdate($j->retentiontime, get_string('strftimedatetime', 'core_langconfig')).')';
+                    $autodeletestr .= ' (' . userdate($j->retentiontime, get_string('strftimedatetime', 'core_langconfig')) . ')';
                 }
             } else {
                 $autodeletestr = get_string('archive_autodelete_disabled', 'quiz_archiver');
@@ -536,7 +535,7 @@ class ArchiveJob {
         global $DB;
         return array_reduce(
             $DB->get_records(self::JOB_SETTINGS_TABLE_NAME, ['jobid' => $this->id]),
-            function($res, $item): array {
+            function ($res, $item): array {
                 $res[$item->settingkey] = $item->settingvalue;
                 return $res;
             },
@@ -555,13 +554,15 @@ class ArchiveJob {
     public static function get_user_groups(int $courseid, int $userid): array {
         global $DB;
 
-        return $DB->get_records_sql("
-            SELECT g.id, g.idnumber, g.name
-            FROM {groups} g
-            JOIN {groups_members} gm ON g.id = gm.groupid
-            WHERE
-                g.courseid = :courseid AND
-                gm.userid = :userid;",
+        return $DB->get_records_sql(
+            "
+                SELECT g.id, g.idnumber, g.name
+                FROM {groups} g
+                JOIN {groups_members} gm ON g.id = gm.groupid
+                WHERE
+                    g.courseid = :courseid AND
+                    gm.userid = :userid;
+            ",
             [
                 'courseid' => $courseid,
                 'userid' => $userid,
@@ -765,8 +766,8 @@ class ArchiveJob {
     public function set_status(
         string $status,
         ?array $statusextras = null,
-        bool   $deletewstokenifcompleted = true,
-        bool   $deletetemporaryfilesifcompleted = true
+        bool $deletewstokenifcompleted = true,
+        bool $deletetemporaryfilesifcompleted = true
     ): void {
         global $DB;
 
@@ -951,9 +952,9 @@ class ArchiveJob {
         global $DB;
         try {
             $file = $DB->get_record_sql(
-                'SELECT pathnamehash '.
-                'FROM {files} files '.
-                'JOIN {'.self::JOB_TABLE_NAME.'} jobs ON files.id = jobs.artifactfileid '.
+                'SELECT pathnamehash ' .
+                'FROM {files} files ' .
+                'JOIN {' . self::JOB_TABLE_NAME . '} jobs ON files.id = jobs.artifactfileid ' .
                 'WHERE jobs.id = :id',
                 ['id' => $this->id]
             );
@@ -1148,7 +1149,7 @@ class ArchiveJob {
         }
 
         // Check for variables.
-        $residue = preg_replace('/\$\{\s*('.implode('|', $allowedvariables).')\s*\}/m', '', $pattern);
+        $residue = preg_replace('/\$\{\s*(' . implode('|', $allowedvariables) . ')\s*\}/m', '', $pattern);
         if (strpos($residue, '$') !== false) {
             return false;
         }
@@ -1283,7 +1284,7 @@ class ArchiveJob {
         $filename = $pattern;
         foreach ($data as $key => $value) {
             $filename = preg_replace(
-                '/\$\{\s*'.$key.'\s*\}/m',
+                '/\$\{\s*' . $key . '\s*\}/m',
                 substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
                 $filename
             );
@@ -1344,7 +1345,7 @@ class ArchiveJob {
         $filename = $pattern;
         foreach ($data as $key => $value) {
             $filename = preg_replace(
-                '/\$\{\s*'.$key.'\s*\}/m',
+                '/\$\{\s*' . $key . '\s*\}/m',
                 substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
                 $filename
             );
@@ -1405,7 +1406,7 @@ class ArchiveJob {
         $foldername = $pattern;
         foreach ($data as $key => $value) {
             $foldername = preg_replace(
-                '/\$\{\s*'.$key.'\s*\}/m',
+                '/\$\{\s*' . $key . '\s*\}/m',
                 substr($value, 0, self::FILENAME_VARIABLE_MAX_LENGTH),
                 $foldername
             );
@@ -1413,5 +1414,4 @@ class ArchiveJob {
 
         return self::sanitize_foldername($foldername);
     }
-
 }

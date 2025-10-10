@@ -37,7 +37,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @codeCoverageIgnore This is just a wrapper for ArchiveJob::delete_expired_artifacts()
  */
 class autodelete_job_artifacts extends \core\task\scheduled_task {
-
     /**
      * Return the task's name as shown in admin screens.
      *
@@ -59,5 +58,4 @@ class autodelete_job_artifacts extends \core\task\scheduled_task {
         $numfilesdeleted = ArchiveJob::delete_expired_artifacts();
         echo get_string('task_autodelete_job_artifacts_report', 'quiz_archiver', $numfilesdeleted) . "\n";
     }
-
 }

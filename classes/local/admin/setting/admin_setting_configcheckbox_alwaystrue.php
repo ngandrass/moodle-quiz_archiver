@@ -30,7 +30,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class admin_setting_configcheckbox_alwaystrue extends \admin_setting_configcheckbox {
-
     /**
      * Retrieves the current setting using the objects name
      *
@@ -48,5 +47,4 @@ class admin_setting_configcheckbox_alwaystrue extends \admin_setting_configcheck
     public function is_readonly(): bool {
         return true;
     }
-
 }

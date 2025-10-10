@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
 
 use core_external\external_api;
 use core_external\external_function_parameters;
@@ -41,7 +41,6 @@ use quiz_archiver\FileManager;
  * API endpoint to process an artifact that was uploaded by the quiz archiver worker service
  */
 class process_uploaded_artifact extends external_api {
-
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -104,8 +103,8 @@ class process_uploaded_artifact extends external_api {
         return new external_single_structure([
             'status' => new external_value(
                 PARAM_TEXT,
-                'Status of the executed wsfunction'),
-
+                'Status of the executed wsfunction'
+            ),
         ]);
     }
 
@@ -130,12 +129,12 @@ class process_uploaded_artifact extends external_api {
     public static function execute(
         string $jobidraw,
         string $artifactcomponentraw,
-        int    $artifactcontextidraw,
-        int    $artifactuseridraw,
+        int $artifactcontextidraw,
+        int $artifactuseridraw,
         string $artifactfilearearaw,
         string $artifactfilenameraw,
         string $artifactfilepathraw,
-        int    $artifactitemidraw,
+        int $artifactitemidraw,
         string $artifactsha256sumraw
     ): array {
         // Validate request.
@@ -242,5 +241,4 @@ class process_uploaded_artifact extends external_api {
         // @codingStandardsIgnoreLine
         // @codeCoverageIgnoreEnd
     }
-
 }

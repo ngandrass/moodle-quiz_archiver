@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
 
 use core_external\external_api;
 use core_external\external_function_parameters;
@@ -42,7 +42,6 @@ use quiz_archiver\Report;
  * API endpoint to generate a quiz attempt report
  */
 class generate_attempt_report extends external_api {
-
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -84,10 +83,11 @@ class generate_attempt_report extends external_api {
                 VALUE_REQUIRED
             ),
             'sections' => new external_single_structure(
-                array_combine(Report::SECTIONS,
+                array_combine(
+                    Report::SECTIONS,
                     array_map(fn ($section): external_value => new external_value(
                         PARAM_BOOL,
-                        'Whether to include the '.$section.' section',
+                        'Whether to include the ' . $section . ' section',
                         VALUE_REQUIRED
                     ), Report::SECTIONS)
                 ),
@@ -209,14 +209,14 @@ class generate_attempt_report extends external_api {
      */
     public static function execute(
         string $jobidraw,
-        int    $courseidraw,
-        int    $cmidraw,
-        int    $quizidraw,
-        int    $attemptidraw,
+        int $courseidraw,
+        int $cmidraw,
+        int $quizidraw,
+        int $attemptidraw,
         string $foldernamepatternraw,
         string $filenamepatternraw,
-        array  $sectionsraw,
-        bool   $attachmentsraw
+        array $sectionsraw,
+        bool $attachmentsraw
     ): array {
         global $DB, $PAGE;
 
@@ -340,5 +340,4 @@ class generate_attempt_report extends external_api {
         // @codingStandardsIgnoreLine
         // @codeCoverageIgnoreEnd
     }
-
 }
