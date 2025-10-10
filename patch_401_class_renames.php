@@ -34,29 +34,30 @@ if ($CFG->branch <= 401) {
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
     require_once($CFG->dirroot . '/lib/external/externallib.php');
 
-    // Patch renamed classes.
-    foreach (
-        [
-            // External API.
-            'external_api' => 'core_external\external_api',
-            'external_description' => 'core_external\external_description',
-            'external_files' => 'core_external\files',
-            'external_format_value' => 'core_external\external_format_value',
-            'external_function_parameters' => 'core_external\external_function_parameters',
-            'external_multiple_structure' => 'core_external\external_multiple_structure',
-            'external_settings' => 'core_external\external_settings',
-            'external_single_structure' => 'core_external\external_single_structure',
-            'external_util' => 'core_external\util',
-            'external_value' => 'core_external\external_value',
-            'external_warnings' => 'core_external\external_warnings',
-            'restricted_context_exception' => 'core_external\restricted_context_exception',
+    // Define mapping of old class names to new class names.
+    $classaliases = [
+        // External API.
+        'external_api' => 'core_external\external_api',
+        'external_description' => 'core_external\external_description',
+        'external_files' => 'core_external\files',
+        'external_format_value' => 'core_external\external_format_value',
+        'external_function_parameters' => 'core_external\external_function_parameters',
+        'external_multiple_structure' => 'core_external\external_multiple_structure',
+        'external_settings' => 'core_external\external_settings',
+        'external_single_structure' => 'core_external\external_single_structure',
+        'external_util' => 'core_external\util',
+        'external_value' => 'core_external\external_value',
+        'external_warnings' => 'core_external\external_warnings',
+        'restricted_context_exception' => 'core_external\restricted_context_exception',
 
-            // Module: mod_quiz.
-            'quiz_default_report' => 'mod_quiz\local\reports\report_base',
-            'quiz_attempt' => 'mod_quiz\quiz_attempt',
-            'mod_quiz_display_options' => 'mod_quiz\question\display_options',
-        ] as $old => $new
-    ) {
+        // Module: mod_quiz.
+        'quiz_default_report' => 'mod_quiz\local\reports\report_base',
+        'quiz_attempt' => 'mod_quiz\quiz_attempt',
+        'mod_quiz_display_options' => 'mod_quiz\question\display_options',
+    ];
+
+    // Patch renamed classes.
+    foreach ($classaliases as $old => $new) {
         if (class_exists($old)) {
             class_alias($old, $new);
         }
