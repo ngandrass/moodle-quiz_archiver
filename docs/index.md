@@ -2,7 +2,7 @@
 
 [![Latest Version](https://img.shields.io/github/v/release/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/releases)
 [![PHP Support](https://img.shields.io/badge/PHP-7.4%20--%208.4-blue)](https://github.com/ngandrass/moodle-quiz_archiver)
-[![Moodle Support](https://img.shields.io/badge/Moodle-4.1%20--%205.0-orange)](https://github.com/ngandrass/moodle-quiz_archiver)
+[![Moodle Support](https://img.shields.io/badge/Moodle-4.1%20--%205.1-orange)](https://github.com/ngandrass/moodle-quiz_archiver)
 [![GitHub Workflow Status: Moodle Plugin CI](https://img.shields.io/github/actions/workflow/status/ngandrass/moodle-quiz_archiver/moodle-plugin-ci.yml?label=Moodle%20Plugin%20CI)](https://github.com/ngandrass/moodle-quiz_archiver/actions/workflows/moodle-plugin-ci.yml)
 [![Code Coverage](https://img.shields.io/coverallsCoverage/github/ngandrass/moodle-quiz_archiver)](https://coveralls.io/github/ngandrass/moodle-quiz_archiver)
 [![GitHub Issues](https://img.shields.io/github/issues/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/issues)

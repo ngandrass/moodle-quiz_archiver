@@ -31,11 +31,11 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 global $CFG;
 
 if ($CFG->branch <= 401) {
-    require_once($CFG->dirroot.'/mod/quiz/locallib.php');
-    require_once($CFG->dirroot.'/lib/external/externallib.php');
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+    require_once($CFG->dirroot . '/lib/external/externallib.php');
 
-    // Patch renamed classes.
-    foreach ([
+    // Define mapping of old class names to new class names.
+    $classaliases = [
         // External API.
         'external_api' => 'core_external\external_api',
         'external_description' => 'core_external\external_description',
@@ -54,7 +54,10 @@ if ($CFG->branch <= 401) {
         'quiz_default_report' => 'mod_quiz\local\reports\report_base',
         'quiz_attempt' => 'mod_quiz\quiz_attempt',
         'mod_quiz_display_options' => 'mod_quiz\question\display_options',
-    ] as $old => $new) {
+    ];
+
+    // Patch renamed classes.
+    foreach ($classaliases as $old => $new) {
         if (class_exists($old)) {
             class_alias($old, $new);
         }

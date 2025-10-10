@@ -31,14 +31,13 @@ use quiz_archiver\Report;
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
-require_once($CFG->dirroot.'/lib/formslib.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/lib/formslib.php'); // @codeCoverageIgnore
 
 
 /**
  * Form to initiate a new quiz archive job
  */
 class archive_quiz_form extends \moodleform {
-
     /** @var string Name of the quiz to be exported */
     protected string $quizname;
     /** @var int Number of attempts to be exported */
@@ -68,8 +67,8 @@ class archive_quiz_form extends \moodleform {
         $mform = $this->_form;
 
         // Title and description.
-        $mform->addElement('html', '<h1>'.get_string('create_quiz_archive', 'quiz_archiver').'</h1>');
-        $mform->addElement('html', '<p>'.get_string('archive_quiz_form_desc', 'quiz_archiver').'</p>');
+        $mform->addElement('html', '<h1>' . get_string('create_quiz_archive', 'quiz_archiver') . '</h1>');
+        $mform->addElement('html', '<p>' . get_string('archive_quiz_form_desc', 'quiz_archiver') . '</p>');
 
         // Internal information of mod_quiz.
         $mform->addElement('hidden', 'id', $this->optional_param('id', null, PARAM_INT));
@@ -98,16 +97,17 @@ class archive_quiz_form extends \moodleform {
         foreach (Report::SECTIONS as $section) {
             $mform->addElement(
                 'advcheckbox',
-                'export_report_section_'.$section, '&nbsp;',
-                get_string('export_report_section_'.$section, 'quiz_archiver'),
-                $config->{'job_preset_export_report_section_'.$section.'_locked'} ? 'disabled' : null
+                'export_report_section_' . $section,
+                '&nbsp;',
+                get_string('export_report_section_' . $section, 'quiz_archiver'),
+                $config->{'job_preset_export_report_section_' . $section . '_locked'} ? 'disabled' : null
             );
-            $mform->addHelpButton('export_report_section_'.$section, 'export_report_section_'.$section, 'quiz_archiver');
-            $mform->setDefault('export_report_section_'.$section, $config->{'job_preset_export_report_section_'.$section});
+            $mform->addHelpButton('export_report_section_' . $section, 'export_report_section_' . $section, 'quiz_archiver');
+            $mform->setDefault('export_report_section_' . $section, $config->{'job_preset_export_report_section_' . $section});
 
-            if (!$config->{'job_preset_export_report_section_'.$section.'_locked'}) {
+            if (!$config->{'job_preset_export_report_section_' . $section . '_locked'}) {
                 foreach (REPORT::SECTION_DEPENDENCIES[$section] as $dependency) {
-                    $mform->disabledIf('export_report_section_'.$section, 'export_report_section_'.$dependency, 'notchecked');
+                    $mform->disabledIf('export_report_section_' . $section, 'export_report_section_' . $dependency, 'notchecked');
                 }
             }
         }
@@ -165,9 +165,9 @@ class archive_quiz_form extends \moodleform {
                 [
                     'variables' => array_reduce(
                         ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
-                        fn($res, $varname) => $res."<li>".
-                                "<code>\${".$varname."}</code>: ".
-                                get_string('archive_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                        fn($res, $varname) => $res . "<li>" .
+                                "<code>\${" . $varname . "}</code>: " .
+                                get_string('archive_filename_pattern_variable_' . $varname, 'quiz_archiver') .
                             "</li>",
                         ""
                     ),
@@ -199,9 +199,9 @@ class archive_quiz_form extends \moodleform {
                 [
                     'variables' => array_reduce(
                         ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
-                        fn($res, $varname) => $res."<li>".
-                            "<code>\${".$varname."}</code>: ".
-                            get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                        fn($res, $varname) => $res . "<li>" .
+                            "<code>\${" . $varname . "}</code>: " .
+                            get_string('export_attempts_filename_pattern_variable_' . $varname, 'quiz_archiver') .
                             "</li>",
                         ""
                     ),
@@ -237,9 +237,9 @@ class archive_quiz_form extends \moodleform {
                 [
                     'variables' => array_reduce(
                         ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
-                        fn($res, $varname) => $res."<li>".
-                                "<code>\${".$varname."}</code>: ".
-                                get_string('export_attempts_filename_pattern_variable_'.$varname, 'quiz_archiver').
+                        fn($res, $varname) => $res . "<li>" .
+                                "<code>\${" . $varname . "}</code>: " .
+                                get_string('export_attempts_filename_pattern_variable_' . $varname, 'quiz_archiver') .
                             "</li>",
                         ""
                     ),
@@ -401,7 +401,7 @@ class archive_quiz_form extends \moodleform {
                 'static',
                 'archive_retention_time_static',
                 '',
-                $durationwithunit[0].' '.$durationwithunit[1]
+                $durationwithunit[0] . ' ' . $durationwithunit[1]
             );
             $mform->addElement('hidden', 'archive_retention_time', $config->job_preset_archive_retention_time);
         } else {
@@ -479,5 +479,4 @@ class archive_quiz_form extends \moodleform {
 
         return $data;
     }
-
 }

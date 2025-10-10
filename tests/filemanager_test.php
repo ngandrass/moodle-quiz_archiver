@@ -28,7 +28,6 @@ namespace quiz_archiver;
  * Tests for the FileManager class
  */
 final class filemanager_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -289,7 +288,7 @@ final class filemanager_test extends \advanced_testcase {
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
-            "/{$mocks->course->id}/{$mocks->quiz->cmid}/{$mocks->quiz->id}/{$job->get_id()}/".FileManager::TSP_DATA_QUERY_FILENAME
+            "/{$mocks->course->id}/{$mocks->quiz->cmid}/{$mocks->quiz->id}/{$job->get_id()}/" . FileManager::TSP_DATA_QUERY_FILENAME
         );
     }
 
@@ -341,7 +340,7 @@ final class filemanager_test extends \advanced_testcase {
         $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
-            "/{$mocks->course->id}/{$mocks->quiz->cmid}/{$mocks->quiz->id}/{$job->get_id()}/".FileManager::TSP_DATA_REPLY_FILENAME
+            "/{$mocks->course->id}/{$mocks->quiz->cmid}/{$mocks->quiz->id}/{$job->get_id()}/" . FileManager::TSP_DATA_REPLY_FILENAME
         );
     }
 
@@ -379,7 +378,7 @@ final class filemanager_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/resource id/');
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
-            "/{$mocks->course->id}/{$mocks->quiz->cmid}/0/{$job->get_id()}/".FileManager::TSP_DATA_REPLY_FILENAME
+            "/{$mocks->course->id}/{$mocks->quiz->cmid}/0/{$job->get_id()}/" . FileManager::TSP_DATA_REPLY_FILENAME
         );
     }
 
@@ -416,7 +415,7 @@ final class filemanager_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/No TSP data found/');
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
-            "/{$mocks->course->id}/{$mocks->quiz->cmid}/{$mocks->quiz->id}/{$job->get_id()}/".FileManager::TSP_DATA_REPLY_FILENAME
+            "/{$mocks->course->id}/{$mocks->quiz->cmid}/{$mocks->quiz->id}/{$job->get_id()}/" . FileManager::TSP_DATA_REPLY_FILENAME
         );
     }
 
@@ -480,7 +479,7 @@ final class filemanager_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/jobid/');
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
-            '/0/0/0/invalidjobid/'.FileManager::TSP_DATA_REPLY_FILENAME
+            '/0/0/0/invalidjobid/' . FileManager::TSP_DATA_REPLY_FILENAME
         );
     }
 
@@ -504,7 +503,7 @@ final class filemanager_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/not found/');
         $fm->send_virtual_file(
             FileManager::TSP_DATA_FILEAREA_NAME,
-            '/1/2/3/9999999/'.FileManager::TSP_DATA_REPLY_FILENAME
+            '/1/2/3/9999999/' . FileManager::TSP_DATA_REPLY_FILENAME
         );
     }
 
@@ -708,5 +707,4 @@ final class filemanager_test extends \advanced_testcase {
             $this->assertNotEmpty(get_file_storage()->get_file_by_id($file->get_id()), 'Active temp file was falsely deleted');
         }
     }
-
 }

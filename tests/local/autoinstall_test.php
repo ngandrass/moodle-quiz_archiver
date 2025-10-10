@@ -28,7 +28,6 @@ namespace quiz_archiver\local;
  * Tests for the autoinstall class
  */
 final class autoinstall_test extends \advanced_testcase {
-
     /**
      * Tests that the autoinstall process checks user privileges
      *
@@ -38,7 +37,7 @@ final class autoinstall_test extends \advanced_testcase {
      */
     public function test_autoinstall_requires_admin(): void {
         $this->resetAfterTest();
-        list($success, $log) = autoinstall::execute('http://foo.bar:1337');
+        [$success, $log] = autoinstall::execute('http://foo.bar:1337');
         $this->assertFalse($success, 'Autoinstall was successful without admin privileges');
         $this->assertStringContainsString('Error: You need to be a site administrator', $log, 'Error message was not displayed');
     }
@@ -64,7 +63,7 @@ final class autoinstall_test extends \advanced_testcase {
         $rolename = 'test_role_name';
         $username = 'test_user_name';
 
-        list($success, $log) = autoinstall::execute(
+        [$success, $log] = autoinstall::execute(
             $workerurl,
             $wsname,
             $rolename,
@@ -143,19 +142,19 @@ final class autoinstall_test extends \advanced_testcase {
         $this->assertTrue(autoinstall::plugin_is_unconfigured(), 'Plugin was not unconfigured');
 
         // Perform autoinstall.
-        list($success, $log) = autoinstall::execute('http://foo.bar:1337');
+        [$success, $log] = autoinstall::execute('http://foo.bar:1337');
         $this->assertTrue($success, 'First autoinstall failed');
 
         // Try to detect autoinstall.
         $this->assertFalse(autoinstall::plugin_is_unconfigured(), 'Successful autoinstall was not detected');
 
         // Try to autoinstall a second time.
-        list($success, $log) = autoinstall::execute('http://foo.bar:1337');
+        [$success, $log] = autoinstall::execute('http://foo.bar:1337');
         $this->assertFalse($success, 'Second autoinstall was successful');
         $this->assertNotEmpty($log, 'Second autoinstall returned empty log');
 
         // Try with force.
-        list($success, $log) = autoinstall::execute(
+        [$success, $log] = autoinstall::execute(
             'http://foo.bar:1337',
             'anotherwsname',
             'anotherroleshortname',
@@ -165,5 +164,4 @@ final class autoinstall_test extends \advanced_testcase {
         $this->assertTrue($success, 'Forced autoinstall failed');
         $this->assertNotEmpty($log, 'Forced autoinstall returned empty log');
     }
-
 }

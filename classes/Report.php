@@ -38,7 +38,6 @@ require_once("$CFG->dirroot/mod/quiz/locallib.php");  // @codeCoverageIgnore
  * Quiz report renderer
  */
 class Report {
-
     /** @var object Moodle admin settings object */
     protected object $config;
     /** @var object Moodle course this report is part of */
@@ -163,14 +162,15 @@ class Report {
 
         // Handle attempt ID filter.
         if ($filterattemptids) {
-            $filterwhereclause = "AND qa.id IN (".implode(', ', array_map(fn ($v): string => intval($v), $filterattemptids)). ")";
+            $filterattemptidslist = implode(', ', array_map(fn ($v): string => intval($v), $filterattemptids));
+            $filterwhereclause = "AND qa.id IN (" . $filterattemptidslist .  ")";
         }
 
         // Get all requested attempts.
         return $DB->get_records_sql(
-            "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, ".
-            "       u.username, u.firstname, u.lastname, u.idnumber ".
-            "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id ".
+            "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, " .
+            "       u.username, u.firstname, u.lastname, u.idnumber " .
+            "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id " .
             "WHERE qa.preview = 0 AND qa.quiz = :quizid " . ($filterwhereclause ?? ''),
             [
                 "quizid" => $this->quiz->id,
@@ -218,8 +218,8 @@ class Report {
         $res = $DB->get_records_sql(
             "SELECT id AS attemptid " .
             "FROM {quiz_attempts} " .
-            "WHERE preview = 0 AND quiz = :quizid AND userid = :userid ".
-            "ORDER BY id DESC ".
+            "WHERE preview = 0 AND quiz = :quizid AND userid = :userid " .
+            "ORDER BY id DESC " .
             "LIMIT 1",
             [
                 "quizid" => $this->quiz->id,
@@ -261,7 +261,7 @@ class Report {
         // Extract section settings from form data object.
         $reportsections = [];
         foreach (self::SECTIONS as $section) {
-            $reportsections[$section] = $archivequizformdata->{'export_report_section_'.$section};
+            $reportsections[$section] = $archivequizformdata->{'export_report_section_' . $section};
         }
 
         // Disable all sections that depend on a disabled section.
@@ -412,7 +412,7 @@ class Report {
             // User ID number.
             $quizheaderdata['useridnumber'] = [
                 'title' => get_string('idnumber'),
-                'content' => $attemptuser->idnumber ?: '<i>'.get_string('none').'</i>',
+                'content' => $attemptuser->idnumber ?: '<i>' . get_string('none') . '</i>',
             ];
 
             // Quiz metadata.
@@ -482,8 +482,7 @@ class Report {
                     $a->grade = \html_writer::tag('b', quiz_format_grade($quiz, $grade));
                     $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
                     if ($quiz->grade != 100) {
-                        $a->percent = \html_writer::tag('b', format_float(
-                            $attempt->sumgrades * 100 / $quiz->sumgrades, 0));
+                        $a->percent = \html_writer::tag('b', format_float($attempt->sumgrades * 100 / $quiz->sumgrades, 0));
                         $formattedgrade = get_string('outofpercent', 'quiz', $a);
                     } else {
                         $formattedgrade = get_string('outof', 'quiz', $a);
@@ -503,7 +502,7 @@ class Report {
                 $feedback = $attemptobj->get_overall_feedback($grade);
                 $quizheaderdata['feedback'] = [
                     'title' => get_string('feedback', 'quiz'),
-                    'content' => $feedback ?: '<i>'.get_string('none').'</i>',
+                    'content' => $feedback ?: '<i>' . get_string('none') . '</i>',
                 ];
             }
 
@@ -549,7 +548,8 @@ class Report {
                 // Render question as HTML.
                 if ($slot != $originalslot) {
                     $attemptobj->get_question_attempt($slot)->set_max_mark(
-                        $attemptobj->get_question_attempt($originalslot)->get_max_mark());
+                        $attemptobj->get_question_attempt($originalslot)->get_max_mark()
+                    );
                 }
                 $html .= $quba->render_question($slot, $displayoptions, $number);
             }
@@ -579,11 +579,11 @@ class Report {
      * @throws \DOMException
      */
     public function generate_full_page(
-        int   $attemptid,
+        int $attemptid,
         array $sections,
-        bool  $fixrelativeurls = true,
-        bool  $minimal = true,
-        bool  $inlineimages = true
+        bool $fixrelativeurls = true,
+        bool $minimal = true,
+        bool $inlineimages = true
     ): string {
         global $CFG, $OUTPUT, $PAGE;
 
@@ -705,7 +705,7 @@ class Report {
 
         // Convert relative URLs to absolute URLs.
         $config = get_config('quiz_archiver');
-        $moodlebaseurl = rtrim($config->internal_wwwroot ?: $CFG->wwwroot, '/').'/';
+        $moodlebaseurl = rtrim($config->internal_wwwroot ?: $CFG->wwwroot, '/') . '/';
         if ($config->internal_wwwroot) {
             $imgsrc = str_replace(rtrim($CFG->wwwroot, '/'), rtrim($config->internal_wwwroot, '/'), $imgsrc);
         }
@@ -759,7 +759,7 @@ class Report {
                     $regexmatches['component'],
                     $regexmatches['filearea'],
                     !empty($regexmatches['itemid']) ? $regexmatches['itemid'] : 0,
-                    '/',  // Dirty simplification but works for now *sigh*.
+                    '/', // Dirty simplification but works for now *sigh*.
                     $regexmatches['filename'],
                 );
 
@@ -826,7 +826,7 @@ class Report {
             return false;
         }
         $imgbase64 = base64_encode($imgdata);
-        $img->setAttribute('src', 'data:'.$imgmime.';base64,'.$imgbase64);
+        $img->setAttribute('src', 'data:' . $imgmime . ';base64,' . $imgbase64);
 
         return true;
     }
@@ -848,7 +848,7 @@ class Report {
 
         // Queries and anchors.
         if ($url[0] == '#' || $url[0] == '?') {
-            return $base.$url;
+            return $base . $url;
         }
 
         // Parse base URL and convert to local variables: $scheme, $host, $path.
@@ -875,7 +875,6 @@ class Report {
         }
 
         // Absolute URL is ready!
-        return $scheme.'://'.$abs;
+        return $scheme . '://' . $abs;
     }
-
 }

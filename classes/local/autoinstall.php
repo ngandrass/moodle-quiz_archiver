@@ -40,7 +40,6 @@ use webservice;
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class autoinstall {
-
     /** @var string Default name for the webservice to create */
     const DEFAULT_WSNAME = 'quiz_archiver_webservice';
 
@@ -169,7 +168,7 @@ class autoinstall {
             try {
                 $systemcontext = context_system::instance();
             } catch (dml_exception $e) {
-                $log[] = "Error: Cannot get system context: ".$e->getMessage();
+                $log[] = "Error: Cannot get system context: " . $e->getMessage();
                 throw new \RuntimeException();
             }
 
@@ -178,7 +177,7 @@ class autoinstall {
                 $webserviceuserid = user_create_user([
                     'auth' => 'manual',
                     'username' => $username,
-                    'password' => bin2hex(random_bytes(28))."#1A",
+                    'password' => bin2hex(random_bytes(28)) . "#1A",
                     'firstname' => 'Quiz Archiver',
                     'lastname' => 'Service Account',
                     'email' => 'noreply@localhost',
@@ -190,10 +189,10 @@ class autoinstall {
                 $webserviceuser = \core_user::get_user($webserviceuserid);
                 $log[] = "  -> Web service user '{$webserviceuser->username}' with ID {$webserviceuser->id} created.";
             } catch (dml_exception $e) {
-                $log[] = "Error: Cloud not create webservice user: ".$e->getMessage();
+                $log[] = "Error: Cloud not create webservice user: " . $e->getMessage();
                 throw new \RuntimeException();
             } catch (\Exception $e) {  // Random\RandomException is only thrown with PHP >= 8.2, generic \Exception otherwise.
-                $log[] = "Error: Could not create webservice user: ".$e->getMessage();
+                $log[] = "Error: Could not create webservice user: " . $e->getMessage();
                 throw new \RuntimeException();
             }
 
@@ -227,7 +226,7 @@ class autoinstall {
                 role_assign($wsroleid, $webserviceuser->id, $systemcontext->id);
                 $log[] = "  -> Role '{$rolename}' assigned to user '{$webserviceuser->username}'.";
             } catch (coding_exception $e) {
-                $log[] = "Error: Cannot assign role to webservice user: ".$e->getMessage();
+                $log[] = "Error: Cannot assign role to webservice user: " . $e->getMessage();
                 throw new \RuntimeException();
             }
 
@@ -242,7 +241,7 @@ class autoinstall {
                 }
                 $log[] = "  -> REST webservice protocol enabled.";
             } catch (dml_exception $e) {
-                $log[] = "Error: Cannot get config setting webserviceprotocols: ".$e->getMessage();
+                $log[] = "Error: Cannot get config setting webserviceprotocols: " . $e->getMessage();
                 throw new \RuntimeException();
             }
 
@@ -294,7 +293,7 @@ class autoinstall {
                 set_config('worker_url', $workerurl, 'quiz_archiver');
                 $log[] = "    -> Worker URL set to '{$workerurl}'.";
             } catch (\Exception $e) {
-                $log[] = "Error: Failed to set config settings for quiz_archiver plugin: ".$e->getMessage();
+                $log[] = "Error: Failed to set config settings for quiz_archiver plugin: " . $e->getMessage();
                 throw new \RuntimeException();
             }
 
@@ -303,10 +302,9 @@ class autoinstall {
             $success = false;
         } catch (\Exception $e) {
             $success = false;
-            $log[] = "Error: An unexpected error occurred: ".$e->getMessage();
+            $log[] = "Error: An unexpected error occurred: " . $e->getMessage();
         } finally {
             return [$success, implode("\r\n", $log)];
         }
     }
-
 }

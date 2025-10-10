@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // @codeCoverageIgnoreStart
 global $CFG;
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/tablelib.php');
 // @codeCoverageIgnoreEnd
 
 
@@ -39,7 +39,6 @@ require_once($CFG->libdir.'/tablelib.php');
  * Table renderer for the job overview table
  */
 class job_overview_table extends \table_sql {
-
     /**
      * Constructor
      *
@@ -72,10 +71,10 @@ class job_overview_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'j.id, j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.statusextras, j.retentiontime, '.
+            'j.id, j.jobid, j.userid, j.timecreated, j.timemodified, j.status, j.statusextras, j.retentiontime, ' .
                 'j.artifactfilechecksum, f.pathnamehash, f.filesize, u.username',
-            '{'.ArchiveJob::JOB_TABLE_NAME.'} j '.
-                'JOIN {user} u ON j.userid = u.id '.
+            '{' . ArchiveJob::JOB_TABLE_NAME . '} j ' .
+                'JOIN {user} u ON j.userid = u.id ' .
                 'LEFT JOIN {files} f ON j.artifactfileid = f.id',
             'j.courseid = :courseid AND j.cmid = :cmid AND j.quizid = :quizid',
             [
@@ -115,17 +114,17 @@ class job_overview_table extends \table_sql {
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top"'.
-                             'title="'.$s['help'].'"';
-        $html .= '<span class="badge badge-'.$s['color'].'" '.$statustooltiphtml.'>'.$s['text'].'</span><br/>';
+        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top"' .
+                             'title="' . $s['help'] . '"';
+        $html .= '<span class="badge badge-' . $s['color'] . '" ' . $statustooltiphtml . '>' . $s['text'] . '</span><br/>';
 
         if (isset($s['statusextras']['progress'])) {
-            $html .= '<span title="'.get_string('progress', 'quiz_archiver').'">';
-            $html .= '<i class="fa fa-spinner"></i>&nbsp;'.$s['statusextras']['progress'].'%';
+            $html .= '<span title="' . get_string('progress', 'quiz_archiver') . '">';
+            $html .= '<i class="fa fa-spinner"></i>&nbsp;' . $s['statusextras']['progress'] . '%';
             $html .= '</span><br/>';
         }
 
-        $html .= '<small>'.date('H:i:s', $values->timemodified).'</small>';
+        $html .= '<small>' . date('H:i:s', $values->timemodified) . '</small>';
 
         return $html;
     }
@@ -138,7 +137,7 @@ class job_overview_table extends \table_sql {
      * @throws \moodle_exception
      */
     public function col_user($values) {
-        return '<a href="'.new \moodle_url('/user/profile.php', ['id' => $values->userid]).'">'.$values->username.'</a>';
+        return '<a href="' . new \moodle_url('/user/profile.php', ['id' => $values->userid]) . '">' . $values->username . '</a>';
     }
 
     /**
@@ -214,5 +213,4 @@ class job_overview_table extends \table_sql {
 
         return $html;
     }
-
 }

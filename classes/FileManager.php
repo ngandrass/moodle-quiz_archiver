@@ -38,7 +38,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * path pattern: <FILEAREA_NAME>/<COURSE_ID>/<CM_ID>/<QUIZ_ID>/<FILENAME>
  */
 class FileManager {
-
     /** @var string Name of the component passed to the Moodle File API */
     const COMPONENT_NAME = 'quiz_archiver';
     /** @var string Name of the filearea all artifact files should be stored in */
@@ -310,12 +309,12 @@ class FileManager {
         ob_clean();
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename="'.$downloadfilename.'"');
+        header('Content-Disposition: attachment; filename="' . $downloadfilename . '"');
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
         header('Cache-Control: private, must-revalidate, post-check=0, pre-check=0, no-transform');
         header('Pragma: no-cache');
-        header('Content-Length: '.strlen($filecontents));
+        header('Content-Length: ' . strlen($filecontents));
         echo $filecontents;
         ob_flush();
 
@@ -368,7 +367,7 @@ class FileManager {
             ]);
             $metadata = array_map(
                 fn($csv) => str_getcsv($csv, ",", "\"", "\\"),
-                file($workdir."/".self::ARTIFACT_METADATA_FILE)
+                file($workdir . "/" . self::ARTIFACT_METADATA_FILE)
             );
 
             if ($metadata[0][0] !== 'attemptid' || $metadata[0][9] !== 'path') {
@@ -405,7 +404,7 @@ class FileManager {
                 })
             )));
 
-            if (!$packer->extract_to_pathname($artifactfile, $workdir."/attemptdata", $attemptfiles)) {
+            if (!$packer->extract_to_pathname($artifactfile, $workdir . "/attemptdata", $attemptfiles)) {
                 throw new \moodle_exception('Failed to extract attempt data from artifact archive');
             }
 
@@ -413,7 +412,7 @@ class FileManager {
             $exportexpiry = time() + self::ARTIFACT_EXPORT_TEMPFILE_LIFETIME_SECONDS;
             $exportfile = $packer->archive_to_storage(
                 [
-                    $workdir."/attemptdata",
+                    $workdir . "/attemptdata",
                 ],
                 $this->context->id,
                 self::COMPONENT_NAME,
@@ -462,8 +461,8 @@ class FileManager {
         // Query using raw SQL to get temp files independent of contextid to speed this up a LOT.
         $tempfilerecords = $DB->get_records_sql("
             SELECT id, filepath, filesize FROM {files}
-            WHERE component = '".self::COMPONENT_NAME."'
-                AND filearea = '".self::TEMP_FILEAREA_NAME."'
+            WHERE component = '" . self::COMPONENT_NAME . "'
+                AND filearea = '" . self::TEMP_FILEAREA_NAME . "'
                 AND filepath != '/';
         ");
 
@@ -483,5 +482,4 @@ class FileManager {
 
         return $numfilesdeleted;
     }
-
 }

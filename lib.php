@@ -60,7 +60,7 @@ function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $for
     // Try to serve file.
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/".FileManager::COMPONENT_NAME."/$filearea/$relativepath";
+    $fullpath = "/$context->id/" . FileManager::COMPONENT_NAME . "/$filearea/$relativepath";
 
     // Catch virtual files.
     if (FileManager::filearea_is_virtual($filearea)) {

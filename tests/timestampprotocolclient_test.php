@@ -28,7 +28,6 @@ namespace quiz_archiver;
  * Tests for the TimeStampProtocolClient class
  */
 final class timestampprotocolclient_test extends \advanced_testcase {
-
     /**
      * Tests the creation of a TimeStampProtocolClient instance
      *
@@ -78,7 +77,7 @@ final class timestampprotocolclient_test extends \advanced_testcase {
         $client = new TimeStampProtocolClient('http://localhost:12345');
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessageMatches('/'.get_string('tsp_client_error_curl', 'quiz_archiver', '').'/');
+        $this->expectExceptionMessageMatches('/' . get_string('tsp_client_error_curl', 'quiz_archiver', '') . '/');
         $client->sign('6e82908cfa04dbf1706aa938e32f27e6a1d5f096df5c472795a93f8ab9de4c72');
     }
 
@@ -97,5 +96,4 @@ final class timestampprotocolclient_test extends \advanced_testcase {
         $this->expectExceptionMessageMatches('/Invalid hexadecimal SHA256 hash/');
         $client->sign('invalid-data');
     }
-
 }

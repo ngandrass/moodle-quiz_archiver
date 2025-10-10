@@ -28,7 +28,6 @@ namespace quiz_archiver\local;
  * Tests for the autoinstall class
  */
 final class util_test extends \advanced_testcase {
-
     /**
      * Tests the duration_to_human_readable util function
      *
@@ -110,5 +109,4 @@ final class util_test extends \advanced_testcase {
             '42 hours' => [42 * HOURSECS, 42, 'hours'],
         ];
     }
-
 }

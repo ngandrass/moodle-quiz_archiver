@@ -31,7 +31,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the archive_contents_table
  */
 final class archive_contents_table_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -90,5 +89,4 @@ final class archive_contents_table_test extends \advanced_testcase {
         $this->assertdebuggingcalledcount(2);
         $this->expectOutputRegex('/<table.*>.*<\/table>/s');
     }
-
 }

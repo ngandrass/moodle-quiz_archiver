@@ -31,7 +31,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the archive_quiz_form
  */
 final class archive_quiz_form_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -237,7 +236,7 @@ final class archive_quiz_form_test extends \advanced_testcase {
         // Load valid form POST data and create form.
         $USER->ignoresesskey = true;
         $validpostdata = json_decode(
-            file_get_contents(__DIR__.'/../fixtures/archive_quiz_form_request_valid.json'),
+            file_get_contents(__DIR__ . '/../fixtures/archive_quiz_form_request_valid.json'),
             true
         );
         foreach ($validpostdata as $key => $value) {
@@ -272,5 +271,4 @@ final class archive_quiz_form_test extends \advanced_testcase {
             'Job preset locked: Retention time' => ['archive_retention_time', '315360000', '60'],
         ];
     }
-
 }

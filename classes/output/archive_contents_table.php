@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 // @codeCoverageIgnoreStart
 global $CFG;
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/tablelib.php');
 // @codeCoverageIgnoreEnd
 
 
@@ -41,7 +41,6 @@ require_once($CFG->libdir.'/tablelib.php');
  * Table renderer for the archive contents table
  */
 class archive_contents_table extends \table_sql {
-
     /** @var bool If true, filenames are shown as full text links instead of buttons with tooltips */
     protected bool $expandfilenames;
 
@@ -76,13 +75,13 @@ class archive_contents_table extends \table_sql {
         ]);
 
         $this->set_sql(
-            'am.id, am.userid, am.attemptid, am.numattachments, '.
-                'j.courseid, j.cmid, j.quizid, '.
-                'u.id AS userid, u.firstname, u.lastname, u.username, '.
+            'am.id, am.userid, am.attemptid, am.numattachments, ' .
+                'j.courseid, j.cmid, j.quizid, ' .
+                'u.id AS userid, u.firstname, u.lastname, u.username, ' .
                 'a.timestart ',
-            '{'.ArchiveJob::ATTEMPTS_TABLE_NAME.'} am '.
-                'JOIN {'.ArchiveJob::JOB_TABLE_NAME.'} j ON j.id = am.jobid '.
-                'LEFT JOIN {user} u ON am.userid = u.id '.
+            '{' . ArchiveJob::ATTEMPTS_TABLE_NAME . '} am ' .
+                'JOIN {' . ArchiveJob::JOB_TABLE_NAME . '} j ON j.id = am.jobid ' .
+                'LEFT JOIN {user} u ON am.userid = u.id ' .
                 'LEFT JOIN {quiz_attempts} a ON am.attemptid = a.id ',
             'am.jobid = :jobid',
             [
@@ -104,7 +103,7 @@ class archive_contents_table extends \table_sql {
     public function col_username($values) {
         $userurl = new \moodle_url('/user/profile.php', ['id' => $values->userid]);
         $usertitle = "{$values->firstname} {$values->lastname} ({$values->username})";
-        return '<a href="'.$userurl.'" target="_blank">'.$usertitle.'</a>';
+        return '<a href="' . $userurl . '" target="_blank">' . $usertitle . '</a>';
     }
 
     /**
@@ -116,8 +115,8 @@ class archive_contents_table extends \table_sql {
      */
     public function col_attemptid($values) {
         $attempturl = new \moodle_url('/mod/quiz/review.php', ['attempt' => $values->attemptid]);
-        return '<a href="'.$attempturl.'" target="_blank">'.get_string('id', 'quiz_archiver').': '.$values->attemptid.'</a>'.
-               '<br/>'.userdate($values->timestart, get_string('strftimedatemonthtimeshort', 'langconfig'));
+        return '<a href="' . $attempturl . '" target="_blank">' . get_string('id', 'quiz_archiver') . ': ' . $values->attemptid .
+                '</a>' . '<br/>' . userdate($values->timestart, get_string('strftimedatemonthtimeshort', 'langconfig'));
     }
 
     /**
@@ -133,7 +132,7 @@ class archive_contents_table extends \table_sql {
     public function col_numattachments($values) {
         $color = $values->numattachments > 0 ? 'success' : 'danger';
         $html = '<div class="d-flex align-items-top">';
-        $html .= '<div><span class="badge badge-'.$color.' py-1 px-3"><b>'.$values->numattachments.'</b></span></div>';
+        $html .= '<div><span class="badge badge-' . $color . ' py-1 px-3"><b>' . $values->numattachments . '</b></span></div>';
 
         if ($values->numattachments > 0) {
             // Prepare file data for display.
@@ -165,15 +164,15 @@ class archive_contents_table extends \table_sql {
                 // Render attachments as list.
                 $html .= '<ul class="pl-3 mb-0">';
                 foreach ($filestodisplay as $f) {
-                    $html .= '<li><a href="'.$f->url.'" target="_blank" title="'.$f->title.'">'.$f->title.'</a></li>';
+                    $html .= '<li><a href="' . $f->url . '" target="_blank" title="' . $f->title . '">' . $f->title . '</a></li>';
                 }
                 $html .= '</ul>';
             } else {
                 // Render attachments as buttons.
                 foreach ($filestodisplay as $f) {
-                    $html .= '<a href="'.$f->url.'" target="_blank" class="btn btn-sm btn-outline-primary ml-1" role="button" '.
-                        'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" '.
-                        'title="'.$f->title.'" alt="'.$f->title.'"><i class="fa fa-file"></i></a>';
+                    $html .= '<a href="' . $f->url . '" target="_blank" class="btn btn-sm btn-outline-primary ml-1" ' .
+                        'role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" ' .
+                        'data-bs-placement="top" title="' . $f->title . '" alt="' . $f->title . '"><i class="fa fa-file"></i></a>';
                 }
             }
             $html .= '</div></div>';
@@ -181,5 +180,4 @@ class archive_contents_table extends \table_sql {
 
         return $html;
     }
-
 }

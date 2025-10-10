@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @license   https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class util {
-
     /**
      * Convert duration in seconds to a human readable format.
      *
@@ -105,5 +104,4 @@ class util {
 
         return [$duration, get_string('seconds')];
     }
-
 }

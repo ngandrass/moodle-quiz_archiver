@@ -30,7 +30,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the get_attempts_metadata external service
  */
 final class get_attempts_metadata_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -264,7 +263,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
 
         // Execute the request.
         $this->expectException(\invalid_parameter_exception::class);
-        $this->expectExceptionMessageMatches('/.*'.$invalidparameterkey.'.*/');
+        $this->expectExceptionMessageMatches('/.*' . $invalidparameterkey . '.*/');
         get_attempts_metadata::execute(
             $r['jobid'],
             $invalidparameterkey == 'courseid' ? 0 : $r['courseid'],
@@ -377,5 +376,4 @@ final class get_attempts_metadata_test extends \advanced_testcase {
             'Invalid job ID should return E_JOB_NOT_FOUND'
         );
     }
-
 }

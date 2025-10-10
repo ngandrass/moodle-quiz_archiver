@@ -37,7 +37,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @codeCoverageIgnore This is just a wrapper for FileManager::cleanup_temp_files()
  */
 class cleanup_temp_files extends \core\task\scheduled_task {
-
     /**
      * Return the task's name as shown in admin screens.
      *
@@ -58,5 +57,4 @@ class cleanup_temp_files extends \core\task\scheduled_task {
         $numfilesdeleted = FileManager::cleanup_temp_files();
         echo get_string('task_cleanup_temp_files_report', 'quiz_archiver', $numfilesdeleted) . "\n";
     }
-
 }

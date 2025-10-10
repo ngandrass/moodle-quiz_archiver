@@ -34,7 +34,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * A client to interface the remote archive worker service
  */
 class RemoteArchiveWorker {
-
     /** @var string URL of the remote Quiz Archive Worker instance */
     protected string $serverurl;
     /** @var int Seconds to wait until a connection can be established before aborting */
@@ -82,12 +81,12 @@ class RemoteArchiveWorker {
      */
     public function enqueue_archive_job(
         string $wstoken,
-        int    $courseid,
-        int    $cmid,
-        int    $quizid,
-        array  $joboptions,
-               $taskarchivequizattempts,
-               $taskmoodlebackups
+        int $courseid,
+        int $cmid,
+        int $quizid,
+        array $joboptions,
+        $taskarchivequizattempts,
+        $taskmoodlebackups
     ) {
         global $CFG;
         $moodleurlbase = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
@@ -97,8 +96,8 @@ class RemoteArchiveWorker {
             [
                 "api_version" => self::API_VERSION,
                 "moodle_base_url" => $moodleurlbase,
-                "moodle_ws_url" => $moodleurlbase.'/webservice/rest/server.php',
-                "moodle_upload_url" => $moodleurlbase.'/webservice/upload.php',
+                "moodle_ws_url" => $moodleurlbase . '/webservice/rest/server.php',
+                "moodle_upload_url" => $moodleurlbase . '/webservice/upload.php',
                 "wstoken" => $wstoken,
                 "courseid" => $courseid,
                 "cmid" => $cmid,
@@ -118,7 +117,7 @@ class RemoteArchiveWorker {
             'CURLOPT_TIMEOUT' => $this->requesttimeout,
             'CURLOPT_HTTPHEADER' => [
                 'Content-Type: application/json',
-                'Content-Length: '.strlen($payload),
+                'Content-Length: ' . strlen($payload),
             ],
         ]);
 
@@ -144,5 +143,4 @@ class RemoteArchiveWorker {
         // @codingStandardsIgnoreLine
         // @codeCoverageIgnoreEnd
     }
-
 }

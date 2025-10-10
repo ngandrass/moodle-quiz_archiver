@@ -31,7 +31,6 @@ use quiz_archiver\ArchiveJob;
  * Tests for the job_overview_table
  */
 final class job_overview_table_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -98,5 +97,4 @@ final class job_overview_table_test extends \advanced_testcase {
         $this->assertdebuggingcalledcount(2);
         $this->expectOutputRegex('/<table.*>.*<\/table>/s');
     }
-
 }

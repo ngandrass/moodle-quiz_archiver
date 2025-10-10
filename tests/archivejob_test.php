@@ -31,7 +31,6 @@ use context_system;
  * Tests for the ArchiveJob class
  */
 final class archivejob_test extends \advanced_testcase {
-
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -272,7 +271,7 @@ final class archivejob_test extends \advanced_testcase {
             for ($jobidx = 0; $jobidx < 3; $jobidx++) {
                 // Create job.
                 $jobs[$quizidx][$jobidx] = ArchiveJob::create(
-                    '30000000-1234-5678-abcd-'.$quizidx.'0000000000'.$jobidx,
+                    '30000000-1234-5678-abcd-' . $quizidx . '0000000000' . $jobidx,
                     $mocks[$quizidx]->course->id,
                     $mocks[$quizidx]->quiz->cmid,
                     $mocks[$quizidx]->quiz->id,
@@ -288,7 +287,7 @@ final class archivejob_test extends \advanced_testcase {
                     $mocks[$quizidx]->course->id,
                     $mocks[$quizidx]->quiz->cmid,
                     $mocks[$quizidx]->quiz->id,
-                    'test'.$quizidx.'-'.$jobidx.'.tar.gz'
+                    'test' . $quizidx . '-' . $jobidx . '.tar.gz'
                 );
                 $jobs[$quizidx][$jobidx]->link_artifact(
                     $artifacts[$quizidx][$jobidx]->get_id(),
@@ -311,7 +310,7 @@ final class archivejob_test extends \advanced_testcase {
             $this->assertEqualsCanonicalizing(
                 array_values($jobs[$quizidx]),
                 array_values(ArchiveJob::get_jobs($mock->course->id, $mock->quiz->cmid, $mock->quiz->id)),
-                'Jobs for quiz '.$quizidx.' were not returned properly by get_jobs()'
+                'Jobs for quiz ' . $quizidx . ' were not returned properly by get_jobs()'
             );
         }
 
@@ -323,7 +322,7 @@ final class archivejob_test extends \advanced_testcase {
             $this->assertSameSize(
                 $jobs[$quizidx],
                 $metadata,
-                'Metadata for quiz '.$quizidx.' does not contain the correct number of jobs'
+                'Metadata for quiz ' . $quizidx . ' does not contain the correct number of jobs'
             );
 
             // Check that the metadata array contains the correct data.
@@ -337,7 +336,7 @@ final class archivejob_test extends \advanced_testcase {
                 $this->assertCount(
                     1,
                     $actualjobs,
-                    'Metadata for job '.$jobidx.' of quiz '.$quizidx.' could not uniquely be identified'
+                    'Metadata for job ' . $jobidx . ' of quiz ' . $quizidx . ' could not uniquely be identified'
                 );
 
                 // Probe that the metadata contains the correct data.
@@ -452,7 +451,7 @@ final class archivejob_test extends \advanced_testcase {
         // Test status changes.
         $expectedjob->set_status($status);
         $actualjob = ArchiveJob::get_by_jobid('40000000-1234-5678-abcd-ef4242424242');
-        $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to '.$status);
+        $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to ' . $status);
         $this->assertEquals($iscompleted, $actualjob->is_complete(), 'Job completion was not detected correctly');
     }
 
@@ -517,7 +516,7 @@ final class archivejob_test extends \advanced_testcase {
         // Test status changes.
         $expectedjob->set_status($status, $statusextras);
         $actualjob = ArchiveJob::get_by_jobid('40000123-1234-5678-abcd-ef4242424242');
-        $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to '.$status);
+        $this->assertEquals($status, $actualjob->get_status(), 'Job status was not set correctly to ' . $status);
         $this->assertEquals($statusextras, $actualjob->get_statusextras(), 'Job statusextras were not set correctly');
     }
 
@@ -572,7 +571,7 @@ final class archivejob_test extends \advanced_testcase {
         // Create jobs and test all tokens against each job.
         foreach ($wstokens as $wstoken) {
             $job = ArchiveJob::create(
-                'xxx-'.$wstoken,
+                'xxx-' . $wstoken,
                 $mocks->course->id,
                 $mocks->quiz->cmid,
                 $mocks->quiz->id,
@@ -613,7 +612,7 @@ final class archivejob_test extends \advanced_testcase {
         global $CFG, $DB;
         if ($CFG->branch <= 401) {
             // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-            require_once($CFG->dirroot.'/lib/externallib.php');
+            require_once($CFG->dirroot . '/lib/externallib.php');
             $wstoken = \external_generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
                 1,
@@ -637,7 +636,7 @@ final class archivejob_test extends \advanced_testcase {
         $this->resetAfterTest();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = ArchiveJob::create(
-            'xxx-'.$wstoken,
+            'xxx-' . $wstoken,
             $mocks->course->id,
             $mocks->quiz->cmid,
             $mocks->quiz->id,
@@ -1009,7 +1008,7 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertSame(
             $isvalid,
             ArchiveJob::is_valid_archive_filename_pattern($pattern),
-            'Archive filename pattern validation failed for pattern "'.$pattern.'"'
+            'Archive filename pattern validation failed for pattern "' . $pattern . '"'
         );
     }
 
@@ -1028,7 +1027,7 @@ final class archivejob_test extends \advanced_testcase {
                 'pattern' => array_reduce(
                     ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES,
                     function ($carry, $item) {
-                        return $carry.'${'.$item.'}';
+                        return $carry . '${' . $item . '}';
                     },
                     ''
                 ),
@@ -1081,7 +1080,7 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertSame(
             $isvalid,
             ArchiveJob::is_valid_attempt_foldername_pattern($pattern),
-            'Attempt folder name pattern validation failed for pattern "'.$pattern.'"'
+            'Attempt folder name pattern validation failed for pattern "' . $pattern . '"'
         );
     }
 
@@ -1100,7 +1099,7 @@ final class archivejob_test extends \advanced_testcase {
                 'pattern' => array_reduce(
                     ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES,
                     function ($carry, $item) {
-                        return $carry.'${'.$item.'}';
+                        return $carry . '${' . $item . '}';
                     },
                     ''
                 ),
@@ -1161,7 +1160,7 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertSame(
             $isvalid,
             ArchiveJob::is_valid_attempt_filename_pattern($pattern),
-            'Attempt filename pattern validation failed for pattern "'.$pattern.'"'
+            'Attempt filename pattern validation failed for pattern "' . $pattern . '"'
         );
     }
 
@@ -1180,7 +1179,7 @@ final class archivejob_test extends \advanced_testcase {
                 'pattern' => array_reduce(
                     ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES,
                     function ($carry, $item) {
-                        return $carry.'${'.$item.'}';
+                        return $carry . '${' . $item . '}';
                     },
                     ''
                 ),
@@ -1236,7 +1235,7 @@ final class archivejob_test extends \advanced_testcase {
         // Full pattern.
         $fullpattern = 'archive';
         foreach (ArchiveJob::ARCHIVE_FILENAME_PATTERN_VARIABLES as $var) {
-            $fullpattern .= '-${'.$var.'}';
+            $fullpattern .= '-${' . $var . '}';
         }
         $filename = ArchiveJob::generate_archive_filename(
             $mocks->course,
@@ -1349,7 +1348,7 @@ final class archivejob_test extends \advanced_testcase {
         // Full pattern.
         $fullpattern = 'attempt';
         foreach (ArchiveJob::ATTEMPT_FOLDERNAME_PATTERN_VARIABLES as $var) {
-            $fullpattern .= '-${'.$var.'}';
+            $fullpattern .= '-${' . $var . '}';
         }
         $foldername = ArchiveJob::generate_attempt_foldername(
             $rc->course,
@@ -1470,7 +1469,7 @@ final class archivejob_test extends \advanced_testcase {
         // Full pattern.
         $fullpattern = 'attempt';
         foreach (ArchiveJob::ATTEMPT_FILENAME_PATTERN_VARIABLES as $var) {
-            $fullpattern .= '-${'.$var.'}';
+            $fullpattern .= '-${' . $var . '}';
         }
         $filename = ArchiveJob::generate_attempt_filename(
             $rc->course,
@@ -1584,17 +1583,17 @@ final class archivejob_test extends \advanced_testcase {
     public function test_status_display_args(string $status): void {
         $res = ArchiveJob::get_status_display_args($status);
         $this->assertSame(
-            get_string('job_status_'.$status, 'quiz_archiver'),
+            get_string('job_status_' . $status, 'quiz_archiver'),
             $res['text'],
-            'Status display args were not returned correctly for status: '.$status
+            'Status display args were not returned correctly for status: ' . $status
         );
         $this->assertNotEmpty(
             $res['color'],
-            'Status display args did not contain a color for status: '.$status
+            'Status display args did not contain a color for status: ' . $status
         );
         $this->assertNotEmpty(
             $res['help'],
-            'Status display args did not contain help text for status: '.$status
+            'Status display args did not contain help text for status: ' . $status
         );
     }
 
@@ -1632,17 +1631,17 @@ final class archivejob_test extends \advanced_testcase {
     public function test_status_display_args_with_statusextras(string $status, ?array $statusextras): void {
         $res = ArchiveJob::get_status_display_args($status, $statusextras);
         $this->assertSame(
-            get_string('job_status_'.$status, 'quiz_archiver'),
+            get_string('job_status_' . $status, 'quiz_archiver'),
             $res['text'],
-            'Status display args were not returned correctly for status: '.$status
+            'Status display args were not returned correctly for status: ' . $status
         );
         $this->assertNotEmpty(
             $res['color'],
-            'Status display args did not contain a color for status: '.$status
+            'Status display args did not contain a color for status: ' . $status
         );
         $this->assertNotEmpty(
             $res['help'],
-            'Status display args did not contain help text for status: '.$status
+            'Status display args did not contain help text for status: ' . $status
         );
         $this->assertSame(
             $statusextras ?? [],
@@ -1709,5 +1708,4 @@ final class archivejob_test extends \advanced_testcase {
             'ArchiveJob::tspmanager() did not return an instance of TSPManager'
         );
     }
-
 }

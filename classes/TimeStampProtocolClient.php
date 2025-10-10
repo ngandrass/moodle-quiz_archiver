@@ -36,7 +36,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * @see https://www.ietf.org/rfc/rfc3161.txt For more information about TSP
  */
 class TimeStampProtocolClient {
-
     /** @var string URL of the TSP server */
     private string $serverurl;
 
@@ -137,7 +136,7 @@ class TimeStampProtocolClient {
     protected static function create_timestamp_request(
         string $sha256hash,
         string $nonce,
-        bool   $requesttsapublickey = false
+        bool $requesttsapublickey = false
     ): string {
         // Validate input.
         if (strlen($sha256hash) !== 64) {
@@ -186,5 +185,4 @@ class TimeStampProtocolClient {
         // Build final ASN.1 encoded TimeStampReq.
         return implode('', $asn1);
     }
-
 }

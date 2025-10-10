@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-require_once($CFG->dirroot.'/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
 
 use core_external\external_api;
 use core_external\external_function_parameters;
@@ -43,7 +43,6 @@ use quiz_archiver\Report;
  * API endpoint to access quiz attempt metadata
  */
 class get_attempts_metadata extends external_api {
-
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -184,10 +183,10 @@ class get_attempts_metadata extends external_api {
      */
     public static function execute(
         string $jobidraw,
-        int    $courseidraw,
-        int    $cmidraw,
-        int    $quizidraw,
-        array  $attemptidsraw
+        int $courseidraw,
+        int $cmidraw,
+        int $quizidraw,
+        array $attemptidsraw
     ): array {
         global $DB;
 
@@ -251,5 +250,4 @@ class get_attempts_metadata extends external_api {
             'status' => 'OK',
         ];
     }
-
 }

@@ -43,11 +43,10 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  *
  * @codeCoverageIgnore This is handled by Moodle core tests
  */
-class provider implements
+class provider implements // phpcs:ignore
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Returns meta data about this system.
      *
@@ -100,14 +99,15 @@ class provider implements
         // Get all contexts where the user has a quiz archiver job.
         // Note: The context stays the same across all entries for a single
         // archive job. Hence, we only query the main job table.
-        $contextlist->add_from_sql("
-            SELECT DISTINCT c.id
-            FROM {context} c
-                JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
-                JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-                JOIN {quiz} q ON q.id = cm.instance
-                JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-            WHERE j.userid = :userid
+        $contextlist->add_from_sql(
+            "
+                SELECT DISTINCT c.id
+                FROM {context} c
+                    JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+                    JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                    JOIN {quiz} q ON q.id = cm.instance
+                    JOIN {" . ArchiveJob::JOB_TABLE_NAME . "} j ON j.quizid = q.id
+                WHERE j.userid = :userid
             ",
             [
                 'modname'       => 'quiz',
@@ -117,15 +117,16 @@ class provider implements
         );
 
         // Add all contexts where the user is part of a quiz archive.
-        $contextlist->add_from_sql("
-            SELECT DISTINCT c.id
-            FROM {context} c
-                JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
-                JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-                JOIN {quiz} q ON q.id = cm.instance
-                JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-                JOIN {".ArchiveJob::ATTEMPTS_TABLE_NAME."} a ON a.jobid = j.id
-            WHERE a.userid = :userid
+        $contextlist->add_from_sql(
+            "
+                SELECT DISTINCT c.id
+                FROM {context} c
+                    JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+                    JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                    JOIN {quiz} q ON q.id = cm.instance
+                    JOIN {" . ArchiveJob::JOB_TABLE_NAME . "} j ON j.quizid = q.id
+                    JOIN {" . ArchiveJob::ATTEMPTS_TABLE_NAME . "} a ON a.jobid = j.id
+                WHERE a.userid = :userid
             ",
             [
                 'modname'       => 'quiz',
@@ -154,21 +155,24 @@ class provider implements
         $subctxbase = get_string('pluginname', 'quiz_archiver');
         foreach ($contextlist->get_contexts() as $ctx) {
             // Get existing jobs for current context.
-            $jobs = $DB->get_records_sql("
-                SELECT *
-                FROM {context} c
-                    JOIN {course_modules} cm ON cm.id = c.instanceid
-                    JOIN {modules} m ON m.id = cm.module
-                    JOIN {quiz} q ON q.id = cm.instance
-                    JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-                WHERE (
-                    j.userid = :userid AND
-                    c.id = :contextid
-                )
-            ", [
-                'contextid' => $ctx->id,
-                'userid' => $userid,
-            ]);
+            $jobs = $DB->get_records_sql(
+                "
+                    SELECT *
+                    FROM {context} c
+                        JOIN {course_modules} cm ON cm.id = c.instanceid
+                        JOIN {modules} m ON m.id = cm.module
+                        JOIN {quiz} q ON q.id = cm.instance
+                        JOIN {" . ArchiveJob::JOB_TABLE_NAME . "} j ON j.quizid = q.id
+                    WHERE (
+                        j.userid = :userid AND
+                        c.id = :contextid
+                    )
+                ",
+                [
+                    'contextid' => $ctx->id,
+                    'userid' => $userid,
+                ]
+            );
 
             // Export each job.
             foreach ($jobs as $job) {
@@ -218,22 +222,25 @@ class provider implements
             }
 
             // Process artifact files for the user in the given context.
-            $attemptartifacts = $DB->get_records_sql("
-                SELECT a.id, j.id AS jobid, j.courseid, j.cmid, j.quizid, j.artifactfileid, a.attemptid
-                FROM {context} c
-                    JOIN {course_modules} cm ON cm.id = c.instanceid
-                    JOIN {modules} m ON m.id = cm.module
-                    JOIN {quiz} q ON q.id = cm.instance
-                    JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-                    JOIN {".ArchiveJob::ATTEMPTS_TABLE_NAME."} a ON a.jobid = j.id
-                WHERE (
-                    a.userid = :userid AND
-                    c.id = :contextid
-                )
-            ", [
-                'contextid' => $ctx->id,
-                'userid' => $userid,
-            ]);
+            $attemptartifacts = $DB->get_records_sql(
+                "
+                    SELECT a.id, j.id AS jobid, j.courseid, j.cmid, j.quizid, j.artifactfileid, a.attemptid
+                    FROM {context} c
+                        JOIN {course_modules} cm ON cm.id = c.instanceid
+                        JOIN {modules} m ON m.id = cm.module
+                        JOIN {quiz} q ON q.id = cm.instance
+                        JOIN {" . ArchiveJob::JOB_TABLE_NAME . "} j ON j.quizid = q.id
+                        JOIN {" . ArchiveJob::ATTEMPTS_TABLE_NAME . "} a ON a.jobid = j.id
+                    WHERE (
+                        a.userid = :userid AND
+                        c.id = :contextid
+                    )
+                ",
+                [
+                    'contextid' => $ctx->id,
+                    'userid' => $userid,
+                ]
+            );
 
             foreach ($attemptartifacts as $row) {
                 $fm = new FileManager($row->courseid, $row->cmid, $row->quizid);
@@ -263,12 +270,12 @@ class provider implements
         $userlist->add_from_sql(
             'userid',
             "
-            SELECT j.userid
-            FROM {course_modules} cm
-                JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                JOIN {quiz} q ON q.id = cm.instance
-                JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-            WHERE cm.id = :instanceid
+                SELECT j.userid
+                FROM {course_modules} cm
+                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                    JOIN {quiz} q ON q.id = cm.instance
+                    JOIN {" . ArchiveJob::JOB_TABLE_NAME . "} j ON j.quizid = q.id
+                WHERE cm.id = :instanceid
             ",
             [
                 'instanceid'    => $context->instanceid,
@@ -280,13 +287,13 @@ class provider implements
         $userlist->add_from_sql(
             'userid',
             "
-            SELECT DISTINCT a.userid
-            FROM {course_modules} cm
-                JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                JOIN {quiz} q ON q.id = cm.instance
-                JOIN {".ArchiveJob::JOB_TABLE_NAME."} j ON j.quizid = q.id
-                JOIN {".ArchiveJob::ATTEMPTS_TABLE_NAME."} a ON a.jobid = j.id
-            WHERE cm.id = :instanceid
+                SELECT DISTINCT a.userid
+                FROM {course_modules} cm
+                    JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                    JOIN {quiz} q ON q.id = cm.instance
+                    JOIN {" . ArchiveJob::JOB_TABLE_NAME . "} j ON j.quizid = q.id
+                    JOIN {" . ArchiveJob::ATTEMPTS_TABLE_NAME . "} a ON a.jobid = j.id
+                WHERE cm.id = :instanceid
             ",
             [
                 'instanceid'    => $context->instanceid,
@@ -321,5 +328,4 @@ class provider implements
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         // We cannot simply delete data that needs to be archived for a specified amount of time.
     }
-
 }

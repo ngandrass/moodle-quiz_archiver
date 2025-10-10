@@ -32,7 +32,6 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * Manages all Time-Stamp Protocol (TSP) related tasks for an ArchiveJob.
  */
 class TSPManager {
-
     /** @var ArchiveJob The associated ArchiveJob this TSPManager acts upon */
     protected ArchiveJob $job;
     /** @var \stdClass Moodle config object for this plugin */
@@ -70,9 +69,11 @@ class TSPManager {
      * @throws \dml_exception On database error
      */
     public function wants_tsp_timestamp(): bool {
-        if ($this->config->tsp_enable &&
+        if (
+            $this->config->tsp_enable &&
             $this->config->tsp_automatic_signing &&
-            $this->has_tsp_timestamp() === false) {
+            $this->has_tsp_timestamp() === false
+        ) {
                 return true;
         }
 
@@ -166,5 +167,4 @@ class TSPManager {
             'timestampreply' => $tspdata['reply'],
         ]);
     }
-
 }
