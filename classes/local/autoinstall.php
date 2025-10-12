@@ -54,7 +54,6 @@ class autoinstall {
         'mod/quiz:reviewmyattempts',
         'mod/quiz:view',
         'mod/quiz:viewreports',
-        'mod/quiz_archiver:use_webservice',
         'moodle/backup:anonymise',
         'moodle/backup:backupactivity',
         'moodle/backup:backupcourse',
@@ -69,6 +68,7 @@ class autoinstall {
         'moodle/course:viewhiddencourses',
         'moodle/course:viewhiddensections',
         'moodle/user:ignoreuserquota',
+        'quiz/archiver:use_webservice',
         'webservice/rest:use',
     ];
 
