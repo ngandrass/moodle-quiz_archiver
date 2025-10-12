@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 3.1.4 (2025101200)
 
 - Ensure compatibility with Moodle 5.1
 - Fix naming of capabilities and migrate old capability assignments to renamed capabilities during upgrade. No manual action is required.
