@@ -173,7 +173,7 @@ class process_uploaded_artifact extends external_api {
 
         // Check capabilities.
         $context = \context_module::instance($job->get_cmid());
-        require_capability('mod/quiz_archiver:use_webservice', $context);
+        require_capability('quiz/archiver:use_webservice', $context);
 
         // Validate uploaded file.
         // Note: We use SHA256 instead of Moodle sha1, since SHA1 is prone to.

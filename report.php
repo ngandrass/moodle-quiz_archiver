@@ -98,7 +98,7 @@ class quiz_archiver_report extends report_base {
 
         // Check permissions.
         $this->context = context_module::instance($cm->id);
-        require_capability('mod/quiz_archiver:view', $this->context);
+        require_capability('quiz/archiver:view', $this->context);
 
         // Handle forms before output starts.
         $formhtml = $this->handle_posted_forms();
@@ -270,7 +270,7 @@ class quiz_archiver_report extends report_base {
         global $CFG, $USER;
 
         // Check permissions.
-        require_capability('mod/quiz_archiver:create', $this->context);
+        require_capability('quiz/archiver:create', $this->context);
 
         // Check if webservice is configured properly.
         if (autoinstall::plugin_is_unconfigured()) {
@@ -423,7 +423,7 @@ class quiz_archiver_report extends report_base {
 
             if ($jobdeleteform->is_submitted()) {
                 // Check permissions.
-                require_capability('mod/quiz_archiver:delete', $this->context);
+                require_capability('quiz/archiver:delete', $this->context);
 
                 // Execute deletion.
                 $formdata = $jobdeleteform->get_data();
@@ -450,7 +450,7 @@ class quiz_archiver_report extends report_base {
 
             if ($artifactdeleteform->is_submitted()) {
                 // Check permissions.
-                require_capability('mod/quiz_archiver:delete', $this->context);
+                require_capability('quiz/archiver:delete', $this->context);
 
                 // Execute deletion.
                 $formdata = $artifactdeleteform->get_data();
@@ -477,7 +477,7 @@ class quiz_archiver_report extends report_base {
 
             if ($jobsignform->is_submitted()) {
                 // Check permissions.
-                require_capability('mod/quiz_archiver:create', $this->context);
+                require_capability('quiz/archiver:create', $this->context);
 
                 // Execute signing.
                 $formdata = $jobsignform->get_data();

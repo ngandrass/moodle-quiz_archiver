@@ -109,7 +109,7 @@ class get_backup_status extends external_api {
 
         // Check capabilities.
         $context = \context_module::instance($job->get_cmid());
-        require_capability('mod/quiz_archiver:use_webservice', $context);
+        require_capability('quiz/archiver:use_webservice', $context);
 
         // The following code is tested covered by more specific tests.
         // @codingStandardsIgnoreLine

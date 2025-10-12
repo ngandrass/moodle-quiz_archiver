@@ -251,7 +251,7 @@ class generate_attempt_report extends external_api {
         } catch (\dml_exception $e) {
             throw new \invalid_parameter_exception("No module context with given cmid found");
         }
-        require_capability('mod/quiz_archiver:use_webservice', $context);
+        require_capability('quiz/archiver:use_webservice', $context);
 
         // Acquire required data objects.
         if (!$course = $DB->get_record('course', ['id' => $params['courseid']])) {
