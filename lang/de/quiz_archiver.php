@@ -34,9 +34,14 @@ $string['go_to_plugin_settings'] = 'Plugin-Einstellungen öffnen';
 $string['manual_configuration_continue'] = 'Um alle Plugin-Einstellungen manuell zu setzen, verwenden Sie die Schaltfläche "Weiter" am Ende dieser Seite.';
 
 // Capabilities.
-$string['quiz_archiver:view'] = 'Quiz Archiver Seite anzeigen';
-$string['quiz_archiver:archive'] = 'Erstellen und Löschen von Testarchiven';
+$string['archiver:create'] = 'Erstellen von Testarchiven';
+$string['archiver:delete'] = 'Löschen von Testarchiven';
+$string['archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen (lesend und schreibend)';
+$string['archiver:view'] = 'Testarchive anzeigen';
+$string['quiz_archiver:create'] = 'Erstellen von Testarchiven';
+$string['quiz_archiver:delete'] = 'Löschen von Testarchiven';
 $string['quiz_archiver:use_webservice'] = 'Webservice des Quiz Archivers nutzen (lesend und schreibend)';
+$string['quiz_archiver:view'] = 'Testarchive anzeigen';
 
 // General.
 $string['a'] = '{$a}';

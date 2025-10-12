@@ -34,9 +34,14 @@ $string['go_to_plugin_settings'] = 'Go to plugin settings';
 $string['manual_configuration_continue'] = 'To manually configure all plugin settings use the "Continue" button at the bottom of this page.';
 
 // Capabilities.
-$string['quiz_archiver:view'] = 'View quiz archiver page';
-$string['quiz_archiver:archive'] = 'Create and delete quiz archives';
+$string['archiver:create'] = 'Create quiz archives';
+$string['archiver:delete'] = 'Delete quiz archives';
+$string['archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
+$string['archiver:view'] = 'View quiz archiver page';
+$string['quiz_archiver:create'] = 'Create quiz archives';
+$string['quiz_archiver:delete'] = 'Delete quiz archives';
 $string['quiz_archiver:use_webservice'] = 'Use the quiz archiver webservice (read and write)';
+$string['quiz_archiver:view'] = 'View quiz archiver page';
 
 // General.
 $string['a'] = '{$a}';

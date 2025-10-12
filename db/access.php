@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $capabilities = [
     // Capability to view the quiz archiver report page.
-    'mod/quiz_archiver:view' => [
+    'quiz/archiver:view' => [
         'riskbitmask' => (RISK_PERSONAL),
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -37,9 +37,10 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
+        'clonepermissionsfrom' => 'mod/quiz_archiver:view',
     ],
-    // Capability to create and delete quiz archives.
-    'mod/quiz_archiver:create' => [
+    // Capability to create quiz archives.
+    'quiz/archiver:create' => [
         'riskbitmask' => (RISK_PERSONAL),
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -47,9 +48,10 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
+        'clonepermissionsfrom' => 'mod/quiz_archiver:create',
     ],
     // Capability to delete quiz archives.
-    'mod/quiz_archiver:delete' => [
+    'quiz/archiver:delete' => [
         'riskbitmask' => (RISK_DATALOSS),
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -57,12 +59,33 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
         ],
+        'clonepermissionsfrom' => 'mod/quiz_archiver:delete',
     ],
     // Capability to use the webservice. Required for the webservice user.
-    'mod/quiz_archiver:use_webservice' => [
+    'quiz/archiver:use_webservice' => [
         'riskbitmask' => (RISK_PERSONAL | RISK_DATALOSS),
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [],
+        'clonepermissionsfrom' => 'mod/quiz_archiver:use_webservice',
+    ],
+];
+
+$dedeprecatedcapabilities = [
+    'mod/quiz_archiver:view' => [
+        'replacement' => 'quiz/archiver:view',
+        'message' => 'This capability has been deprecated, please use quiz/archiver:view instead.',
+    ],
+    'mod/quiz_archiver:create' => [
+        'replacement' => 'quiz/archiver:create',
+        'message' => 'This capability has been deprecated, please use quiz/archiver:create instead.',
+    ],
+    'mod/quiz_archiver:delete' => [
+        'replacement' => 'quiz/archiver:delete',
+        'message' => 'This capability has been deprecated, please use quiz/archiver:delete instead.',
+    ],
+    'mod/quiz_archiver:use_webservice' => [
+        'replacement' => 'quiz/archiver:use_webservice',
+        'message' => 'This capability has been deprecated, please use quiz/archiver:use_webservice instead.',
     ],
 ];

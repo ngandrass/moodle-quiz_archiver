@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDXX)
 
 - Ensure compatibility with Moodle 5.1
+- Fix naming of capabilities and migrate old capability assignments to renamed capabilities during upgrade. No manual action is required.
 - Add Moodle 5.1 and all supported PHP versions to CI test matrix
 - Comply with Moodle coding style version 3.6
 

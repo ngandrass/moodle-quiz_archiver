@@ -70,7 +70,7 @@ final class get_backup_status_test extends \advanced_testcase {
 
         // Check that a user without the required capability is rejected.
         $this->expectException(\required_capability_exception::class);
-        $this->expectExceptionMessageMatches('/.*mod\/quiz_archiver:use_webservice.*/');
+        $this->expectExceptionMessageMatches('/.*' . preg_quote(get_string('archiver:use_webservice', 'quiz_archiver')) . '.*/');
         get_backup_status::execute($job->get_jobid(), 'f1d2d2f924e986ac86fdf7b36c94bcdf32beec15');
     }
 
