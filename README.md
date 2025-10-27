@@ -1,8 +1,8 @@
 # Quiz Archiver
 
 [![Latest Version](https://img.shields.io/github/v/release/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/releases)
-[![PHP Support](https://img.shields.io/badge/PHP-7.4%20--%208.4-blue)](https://github.com/ngandrass/moodle-quiz_archiver)
-[![Moodle Support](https://img.shields.io/badge/Moodle-4.1%20--%205.1-orange)](https://github.com/ngandrass/moodle-quiz_archiver)
+[![PHP Support](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fngandrass%2Fmoodle-quiz_archiver%2Frefs%2Fheads%2Fmaster%2Fversion.php&search=meta-supported-php%7B(%3F%3Cdata%3E%5B%5E%7D%5D%2B)%7D&replace=%24%3Cdata%3E&label=PHP&color=blue)](https://github.com/ngandrass/moodle-quiz_archiver/blob/master/version.php)
+[![Moodle Support](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fngandrass%2Fmoodle-quiz_archiver%2Frefs%2Fheads%2Fmaster%2Fversion.php&search=meta-supported-moodle%7B(%3F%3Cdata%3E%5B%5E%7D%5D%2B)%7D&replace=%24%3Cdata%3E&label=Moodle&color=orange)](https://github.com/ngandrass/moodle-quiz_archiver/blob/master/version.php)
 [![GitHub Workflow Status: Moodle Plugin CI](https://img.shields.io/github/actions/workflow/status/ngandrass/moodle-quiz_archiver/moodle-plugin-ci.yml?label=Moodle%20Plugin%20CI)](https://github.com/ngandrass/moodle-quiz_archiver/actions/workflows/moodle-plugin-ci.yml)
 [![Code Coverage](https://img.shields.io/coverallsCoverage/github/ngandrass/moodle-quiz_archiver)](https://coveralls.io/github/ngandrass/moodle-quiz_archiver)
 [![GitHub Issues](https://img.shields.io/github/issues/ngandrass/moodle-quiz_archiver)](https://github.com/ngandrass/moodle-quiz_archiver/issues)
