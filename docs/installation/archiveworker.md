@@ -159,7 +159,7 @@ command. It specifies the current directory as the build context.
 3. Clone the Git repository: `git clone https://github.com/ngandrass/moodle-quiz-archive-worker`
 4. Switch into the repository directory: `cd moodle-quiz-archive-worker`
 5. Install app dependencies: `poetry install`
-6. Download [Playwright](https://playwright.dev/) browser binaries: `poetry run python -m playwright install chromium`
+6. Download [Playwright](https://playwright.dev/) browser binaries: `poetry run python -m playwright install --only-shell chromium`
 7. Run the application: `poetry run python main.py`
 
 !!! info "Changing configuration values"
