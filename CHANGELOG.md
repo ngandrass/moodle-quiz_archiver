@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Force wrapping of long lines in code boxes to prevent overflowing out of page boundaries
+
+
 ## Version 3.1.4 (2025101200)
 
 - Ensure compatibility with Moodle 5.1

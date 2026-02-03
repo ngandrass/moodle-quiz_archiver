@@ -638,6 +638,12 @@ class Report {
                 .stackinputerror {
                     display: none !important;
                 }
+
+                /* Force code boxes to reflow to page width */
+                pre[class*='language-'] {
+                    overflow: visible !important;
+                    white-space: pre-wrap !important;
+                }
             ");
             $dom->getElementsByTagName('head')[0]->appendChild($csshacksnode);
         }
