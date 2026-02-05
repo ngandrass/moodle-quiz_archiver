@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 3.2.0 (2026020500)
 
 - Force wrapping of long lines in code boxes to prevent overflowing out of page boundaries
 - Reduce padding of comment boxes within code boxes to prevent them from overlapping student code
