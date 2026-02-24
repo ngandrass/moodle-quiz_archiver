@@ -146,7 +146,7 @@ You can also build the Docker image locally by conducting the following steps:
 5. Run a container: `docker run -p 8080:8080 moodle-quiz-archive-worker:latest`
 
 [^1]: The `.` at the end of the `docker build` command **must** be part of the
-command. It specifies the current directory as the build context. 
+command. It specifies the current directory as the build context.
 
 ## Manual Installation
 
@@ -202,6 +202,8 @@ using the following environment variables:
 | `QUIZ_ARCHIVER_PROXY_SERVER_URL`                                | `None`          | URL of the proxy server to use for all playwright requests. HTTP and SOCKS proxies are supported. If not set, auto-detection will be performed. If set to false, no proxy will be used                                                                             |
 | `QUIZ_ARCHIVER_PROXY_BYPASS_DOMAINS`                            | `None`          | Comma-separated list of domains that should always be accessed directly, bypassing the proxy                                                                                                                                                                       |
 | `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION`                      | `False`         | Whether to skip validation of TLS / SSL certs for all HTTPS connections                                                                                                                                                                                            |
+| `QUIZ_ARCHIVER_PDFA_CONVERSION`                                 | `True`          | Whether to convert exported attempt PDF files into a PDF/A compliant format                                                                                                                                                                                         |
+| `QUIZ_ARCHIVER_PDFA_CONVERSION_TIMEOUT_SEC`                     | `20`            | Number of seconds to wait before conversion process is aborted                                                                                                                                                                                                     |
 
 
 ### Archive Compression
@@ -225,6 +227,9 @@ variable to one of the following values:
     Please note that changing this setting will **only affect newly created
     archives**. Existing archives will remain unchanged.
 
+### PDF/A compliant exports
+
+By default any attempts are rendered to PDF file and then converted into a `PDF/A-3b` compliant format. If you want to disable PDF/A conversion, you can do so by setting the `QUIZ_ARCHIVER_PDFA_CONVERSION` environment variable to `False`.
 
 ### Proxy Servers
 
