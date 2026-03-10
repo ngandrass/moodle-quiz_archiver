@@ -160,7 +160,8 @@ command. It specifies the current directory as the build context.
 4. Switch into the repository directory: `cd moodle-quiz-archive-worker`
 5. Install app dependencies: `poetry install`
 6. Download [Playwright](https://playwright.dev/) browser binaries: `poetry run python -m playwright install --only-shell chromium`
-7. Run the application: `poetry run python main.py`
+7. (To support PDF/A conversion, install [Ghostscript](https://ghostscript.readthedocs.io/en/latest/Install.html). See [Ghostscript (PDF/A conversion)](#ghostscript-pdfa-conversion) for more details.)
+8. Run the application: `poetry run python main.py`
 
 !!! info "Changing configuration values"
     You can change configuration values by prepending the respective environment
@@ -171,6 +172,22 @@ command. It specifies the current directory as the build context.
     QUIZ_ARCHIVER_SERVER_PORT=4242 poetry run python moodle-quiz-archive-worker.py
     ```
 
+### Ghostscript (PDF/A conversion)
+
+For converting PDF file exports into a PDF/A-3b compliant format, the
+Quiz Archive Worker utilizes another external executable:
+[Ghostscript](https://ghostscript.com). If you are manually installing the
+Quiz Archive Worker you need to
+[install Ghostscript](https://ghostscript.readthedocs.io/en/latest/Install.html)
+on your machine as well.
+
+!!! info "Using a specific ghostscript installation"
+    You can change the path of the Ghostscript binary to use by editing the
+    corresponding environment variable.
+
+    ```text
+    QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH=/bin/ghostscript
+    ```
 
 ## Configuration
 
