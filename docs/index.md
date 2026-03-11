@@ -17,9 +17,10 @@
 
 This plugin creates archivable versions of quiz attempts as PDF and HTML files
 for long-term storage independent of Moodle. If desired, Moodle backups (`.mbz`)
-of both the quiz and the whole course can be included. A checksum is calculated
-for every file within the archive, as well as the archive itself, to allow
-verification of file integrity. Archives can optionally be cryptographically
+of both the quiz and the whole course can be included. Generated PDFs can be
+converted into a PDF/A-3b compliant format for long-term storage. A checksum is
+calculated for every file within the archive, as well as the archive itself, to
+allow verification of file integrity. Archives can optionally be cryptographically
 signed by a trusted authority using the [Time-Stamp Protocol (TSP)](https://en.wikipedia.org/wiki/Time_stamp_protocol).
 Comprehensive archive settings allow selecting what should be included in the
 generated reports on a fine-granular level (e.g., exclude example solutions,
@@ -52,7 +53,7 @@ Use the following buttons to jump to the desired section:
 
 ## Features
 
-- Archiving of quiz attempts as PDF and HTML files
+- Archiving of quiz attempts as PDF/A-3b and HTML files
 - Support for file submissions / attachments (e.g., essay files)
 - Quiz attempt reports are accessible completely independent of Moodle, hereby
   ensuring long-term readability

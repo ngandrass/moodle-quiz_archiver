@@ -146,7 +146,7 @@ You can also build the Docker image locally by conducting the following steps:
 5. Run a container: `docker run -p 8080:8080 moodle-quiz-archive-worker:latest`
 
 [^1]: The `.` at the end of the `docker build` command **must** be part of the
-command. It specifies the current directory as the build context. 
+command. It specifies the current directory as the build context.
 
 ## Manual Installation
 
@@ -160,7 +160,8 @@ command. It specifies the current directory as the build context.
 4. Switch into the repository directory: `cd moodle-quiz-archive-worker`
 5. Install app dependencies: `poetry install`
 6. Download [Playwright](https://playwright.dev/) browser binaries: `poetry run python -m playwright install --only-shell chromium`
-7. Run the application: `poetry run python main.py`
+7. If PDF/A conversion is desired, install [Ghostscript](https://ghostscript.readthedocs.io/en/latest/Install.html). See [PDF/A Conversion](#pdfa-conversion) for more details.
+8. Run the application: `poetry run python main.py`
 
 !!! info "Changing configuration values"
     You can change configuration values by prepending the respective environment
@@ -202,7 +203,9 @@ using the following environment variables:
 | `QUIZ_ARCHIVER_PROXY_SERVER_URL`                                | `None`          | URL of the proxy server to use for all playwright requests. HTTP and SOCKS proxies are supported. If not set, auto-detection will be performed. If set to false, no proxy will be used                                                                             |
 | `QUIZ_ARCHIVER_PROXY_BYPASS_DOMAINS`                            | `None`          | Comma-separated list of domains that should always be accessed directly, bypassing the proxy                                                                                                                                                                       |
 | `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION`                      | `False`         | Whether to skip validation of TLS / SSL certs for all HTTPS connections                                                                                                                                                                                            |
-
+| `QUIZ_ARCHIVER_PDFA_CONVERSION`                                 | `True`          | Whether to convert exported attempt PDF files into a PDF/A compliant format                                                                                                                                                                                        |
+| `QUIZ_ARCHIVER_PDFA_CONVERSION_TIMEOUT_SEC`                     | `30`            | Number of seconds to wait before conversion process is aborted                                                                                                                                                                                                     |
+| `QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH`         | `None`          | Path to the ghostscript binary that should be used for PDF/A conversion. If left unset, this will be detected automatically.                                                                                                                                       |
 
 ### Archive Compression
 
@@ -225,6 +228,35 @@ variable to one of the following values:
     Please note that changing this setting will **only affect newly created
     archives**. Existing archives will remain unchanged.
 
+### PDF/A Conversion
+
+The quiz archive worker can produce [PDF/A-3b compliant PDF files](https://en.wikipedia.org/wiki/PDF/A).
+PDF/A is an ISO-standardized version of the PDF format that is designed for
+long-term archiving and preservation of electronic documents. It ensures that
+the PDF files can be displayed exactly the same way in the future, regardless of
+the software used to create or view them.
+
+For converting attempt PDF files into a PDF/A-3b compliant format, the external
+dependency [Ghostscript](https://ghostscript.com) is required. If you are using
+the official Docker image, Ghostscript is already included and configured
+properly. If you are installing the worker service manually, please refer to the
+[Manual Installation](#manual-installation) section above.
+
+
+!!! info "Switching between PDF and PDF/A format"
+    PDF/A conversion is enabled by default, but can be disabled by setting:
+    ```text
+    QUIZ_ARCHIVER_PDFA_CONVERSION = False
+    ```
+
+!!! info "Using a specific Ghostscript installation"
+    The location of your Ghostscript binary is automatically detected on startup.
+    If automatic detection fails or you want to use a specific Ghostscript
+    distribution, you can set the path to your Ghostscript binary manually via the
+    corresponding environment variable.
+    ```text
+    QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH=/bin/gs
+    ```
 
 ### Proxy Servers
 
