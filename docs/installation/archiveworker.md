@@ -160,7 +160,7 @@ command. It specifies the current directory as the build context.
 4. Switch into the repository directory: `cd moodle-quiz-archive-worker`
 5. Install app dependencies: `poetry install`
 6. Download [Playwright](https://playwright.dev/) browser binaries: `poetry run python -m playwright install --only-shell chromium`
-7. (To support PDF/A conversion, install [Ghostscript](https://ghostscript.readthedocs.io/en/latest/Install.html). See [Ghostscript (PDF/A conversion)](#ghostscript-pdfa-conversion) for more details.)
+7. If PDF/A conversion is desired, install [Ghostscript](https://ghostscript.readthedocs.io/en/latest/Install.html). See [PDF/A Conversion](#pdfa-conversion) for more details.
 8. Run the application: `poetry run python main.py`
 
 !!! info "Changing configuration values"
@@ -172,22 +172,6 @@ command. It specifies the current directory as the build context.
     QUIZ_ARCHIVER_SERVER_PORT=4242 poetry run python moodle-quiz-archive-worker.py
     ```
 
-### Ghostscript (PDF/A conversion)
-
-For converting PDF file exports into a PDF/A-3b compliant format, the
-Quiz Archive Worker utilizes another external executable:
-[Ghostscript](https://ghostscript.com). If you are manually installing the
-Quiz Archive Worker you need to
-[install Ghostscript](https://ghostscript.readthedocs.io/en/latest/Install.html)
-on your machine as well.
-
-!!! info "Using a specific ghostscript installation"
-    You can change the path of the Ghostscript binary to use by editing the
-    corresponding environment variable.
-
-    ```text
-    QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH=/bin/ghostscript
-    ```
 
 ## Configuration
 
@@ -221,7 +205,7 @@ using the following environment variables:
 | `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION`                      | `False`         | Whether to skip validation of TLS / SSL certs for all HTTPS connections                                                                                                                                                                                            |
 | `QUIZ_ARCHIVER_PDFA_CONVERSION`                                 | `True`          | Whether to convert exported attempt PDF files into a PDF/A compliant format                                                                                                                                                                                        |
 | `QUIZ_ARCHIVER_PDFA_CONVERSION_TIMEOUT_SEC`                     | `30`            | Number of seconds to wait before conversion process is aborted                                                                                                                                                                                                     |
-| `QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH`         | `None`          | Path to the ghostscript binary that should be used for PDF/A conversion                                                                                                                                                                                            |
+| `QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH`         | `None`          | Path to the ghostscript binary that should be used for PDF/A conversion. If left unset, this will be detected automatically.                                                                                                                                       |
 
 ### Archive Compression
 
@@ -244,9 +228,35 @@ variable to one of the following values:
     Please note that changing this setting will **only affect newly created
     archives**. Existing archives will remain unchanged.
 
-### PDF/A compliant exports
+### PDF/A Conversion
 
-By default any attempts are rendered to PDF file and then converted into a `PDF/A-3b` compliant format. If you want to disable PDF/A conversion, you can do so by setting the `QUIZ_ARCHIVER_PDFA_CONVERSION` environment variable to `False`.
+The quiz archive worker can produce [PDF/A-3b compliant PDF files](https://en.wikipedia.org/wiki/PDF/A).
+PDF/A is an ISO-standardized version of the PDF format that is designed for
+long-term archiving and preservation of electronic documents. It ensures that
+the PDF files can be displayed exactly the same way in the future, regardless of
+the software used to create or view them.
+
+For converting attempt PDF files into a PDF/A-3b compliant format, the external
+dependency [Ghostscript](https://ghostscript.com) is required. If you are using
+the official Docker image, Ghostscript is already included and configured
+properly. If you are installing the worker service manually, please refer to the
+[Manual Installation](#manual-installation) section above.
+
+
+!!! info "Switching between PDF and PDF/A format"
+    PDF/A conversion is enabled by default, but can be disabled by setting:
+    ```text
+    QUIZ_ARCHIVER_PDFA_CONVERSION = False
+    ```
+
+!!! info "Using a specific Ghostscript installation"
+    The location of your Ghostscript binary is automatically detected on startup.
+    If automatic detection fails or you want to use a specific Ghostscript
+    distribution, you can set the path to your Ghostscript binary manually via the
+    corresponding environment variable.
+    ```text
+    QUIZ_ARCHIVER_PDFA_CONVERSION_GHOSTSCRIPT_BINARY_PATH=/bin/gs
+    ```
 
 ### Proxy Servers
 
