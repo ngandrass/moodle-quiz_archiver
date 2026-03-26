@@ -173,6 +173,29 @@ command. It specifies the current directory as the build context.
     ```
 
 
+## Resource usage guidelines
+
+For reference, the Moodle Quiz Archiver uses **1 CPU** and **1 GiB of RAM** for
+each parallel job while processing. By default, up to four jobs can be executed
+simultaneously.
+
+!!! warning
+    For complex or large quizzes, you may want to increase the amount of RAM
+    provisioned beyond the default reference.
+
+!!! info "Changing configuration values"
+    You can adjust the number of parallel jobs manually via the corresponding
+    environment variable.
+
+    Example:
+    ```text
+    QUIZ_ARCHIVER_PARALLEL_JOBS=2
+    ```
+
+For more details on all available configuration parameters see
+[Configuration](#configuration).
+
+
 ## Configuration
 
 Configuration parameters are located inside `config.py` and can be overwritten
@@ -184,6 +207,7 @@ using the following environment variables:
 | `QUIZ_ARCHIVER_SERVER_PORT`                                     | `8080`          | Port to bind to                                                                                                                                                                                                                                                    |
 | `QUIZ_ARCHIVER_LOG_LEVEL`                                       | `INFO`          | Logging level. One of the following: <br> `'CRITICAL'`, `'FATAL'`, `'ERROR'`, `'WARN'`, `'WARNING'`, `'INFO'`, `'DEBUG'`                                                                                                                                           |
 | `QUIZ_ARCHIVER_QUEUE_SIZE`                                      | `8`             | Maximum number of jobs to enqueue                                                                                                                                                                                                                                  |
+| `QUIZ_ARCHIVER_PARALLEL_JOBS`                                   | `4`             | Number of worker threads to process archive jobs in parallel. Value has to be greater than 0                                                                                                                                                                       |
 | `QUIZ_ARCHIVER_HISTORY_SIZE`                                    | `128`           | Maximum number of jobs to remember in job history                                                                                                                                                                                                                  |
 | `QUIZ_ARCHIVER_ZIP_COMPRESSION_ALGO`                            | `DEFLATED`      | Compression algorithm to use for ZIP archives. Use `DEFLATED` for compatibility with Windows and MacOS.<br>Possible values are: `STORED` (no compression), `DEFLATED` (light compression, default), `BZIP2` (medium compression), and `LZMA` (strong compression). |
 | `QUIZ_ARCHIVER_STATUS_REPORTING_INTERVAL_SEC`                   | `15`            | Number of seconds to wait between job progress updates                                                                                                                                                                                                             |
