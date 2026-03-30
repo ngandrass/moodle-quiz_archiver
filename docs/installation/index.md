@@ -34,6 +34,7 @@ prerequisites met:
 - PHP 7.4 or newer
 - PostgreSQL or MariaDB / MySQL
 - Admin access to the Moodle instance and shell access to the server (e.g., SSH)
+- At least 1 CPU core and 1 GB of RAM available for the [archive worker service](archiveworker.md)
 
 !!! danger "A note on PHP versions"
     Please always use the **most recent version of PHP** supported by your
