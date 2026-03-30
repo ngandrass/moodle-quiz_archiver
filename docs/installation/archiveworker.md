@@ -175,15 +175,20 @@ command. It specifies the current directory as the build context.
 
 ## Resource usage guidelines
 
-For reference, the Moodle Quiz Archiver uses **1 CPU** and **1 GiB of RAM** for
-each parallel job while processing. By default, up to four jobs can be executed
-simultaneously.
+The quiz archive worker is capable of processing multiple archive jobs in
+parallel. For each job, a separate browser context is spawned for rendering the
+quiz attempts. Therefore, the resource usage scales roughly with the number of
+parallel jobs.
+
+For reference, each archiving job uses roughly **1 CPU** and **1 GiB of RAM**
+while processing. By default, up to four jobs are executed simultaneously.
 
 !!! warning
     For complex or large quizzes, you may want to increase the amount of RAM
     provisioned beyond the default reference.
 
-!!! info "Changing configuration values"
+!!! info "Changing the number of parallel jobs"
+    By default, the quiz archive worker will process up to 4 jobs in parallel.
     You can adjust the number of parallel jobs manually via the corresponding
     environment variable.
 
