@@ -69,16 +69,15 @@
 </div>
 
 {{#js}}
-    require(['jquery', 'core/modal_factory', 'core/templates'], function($, ModalFactory, Templates) {
+    require(['jquery', 'core/modal', 'core/templates'], function($, Modal, Templates) {
         {{#jobs}}
             $('#job-details-{{jobid}}').click(async() => {
-                var modal = await ModalFactory.create({
-                    type: ModalFactory.types.DEFAULT,
+                var modal = await Modal.create({
                     title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
                     body: Templates.render('quiz_archiver/job_details', JSON.parse(atob('{{{base64Data}}}'))),
+                    show: true,
                     large: true,
                 });
-                modal.show();
             });
         {{/jobs}}
     });
