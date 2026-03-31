@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 4.0.0 (YYYYMMDDNN)
+
+- **🚨 BREAKING:** This version **requires at least Moodle 4.5 (LTS) and PHP 8.1**. If you are still using an older Moodle
+version, please upgrade to at least Moodle 4.5 (LTS) or stick to the latest available v3.x release of the plugin.
+- Ensure compatibility with Moodle 5.2
+
+**Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v4.0.0` is required.
+
+
 ## Version 3.2.0 (2026020500)
 
 - Force wrapping of long lines in code boxes to prevent overflowing out of page boundaries
