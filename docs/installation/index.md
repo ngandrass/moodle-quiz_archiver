@@ -30,8 +30,8 @@ the job to restrict queryable data to the required minimum.
 In order to use the quiz archiver plugin, you need to have the following
 prerequisites met:
 
-- Moodle 4.1 (LTS) or newer
-- PHP 7.4 or newer
+- Moodle 4.5 (LTS) or newer
+- PHP 8.1 or newer
 - PostgreSQL or MariaDB / MySQL
 - Admin access to the Moodle instance and shell access to the server (e.g., SSH)
 - At least 1 CPU core and 1 GB of RAM available for the [archive worker service](archiveworker.md)
