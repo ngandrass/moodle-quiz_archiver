@@ -608,29 +608,17 @@ final class archivejob_test extends \advanced_testcase {
      * @throws \moodle_exception
      */
     public function test_delete_webservice_token(): void {
-        // Create temporary webservice token.
         global $CFG, $DB;
-        if ($CFG->branch <= 401) {
-            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-            require_once($CFG->dirroot . '/lib/externallib.php');
-            $wstoken = \external_generate_token(
-                EXTERNAL_TOKEN_PERMANENT,
-                1,
-                1,
-                context_system::instance(),
-                time() + 3600,
-                0
-            );
-        } else {
-            $wstoken = \core_external\util::generate_token(
-                EXTERNAL_TOKEN_PERMANENT,
-                \core_external\util::get_service_by_id(1),
-                1,
-                context_system::instance(),
-                time() + 3600,
-                0
-            );
-        }
+
+        // Create temporary webservice token.
+        $wstoken = \core_external\util::generate_token(
+            EXTERNAL_TOKEN_PERMANENT,
+            \core_external\util::get_service_by_id(1),
+            1,
+            context_system::instance(),
+            time() + 3600,
+            0
+        );
 
         // Create job and test token access.
         $this->resetAfterTest();

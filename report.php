@@ -22,11 +22,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
-
-// TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-require_once($CFG->dirroot . '/mod/quiz/report/archiver/patch_401_class_renames.php'); // @codeCoverageIgnore
 
 use mod_quiz\local\reports\report_base;
 use quiz_archiver\ArchiveJob;
@@ -278,28 +276,14 @@ class quiz_archiver_report extends report_base {
         }
 
         // Create temporary webservice token.
-        if ($CFG->branch > 401 && class_exists('core_external\util')) {
-            // Moodle 4.2 and above.
-            $wstoken = core_external\util::generate_token(
-                EXTERNAL_TOKEN_PERMANENT,
-                core_external\util::get_service_by_id($this->config->webservice_id),
-                $this->config->webservice_userid,
-                context_system::instance(),
-                time() + ($this->config->job_timeout_min * 60),
-                0
-            );
-        } else {
-            // Moodle 4.1 and below.
-            // TODO (MDL-0): Remove after deprecation of Moodle 4.1 (LTS) on 08-12-2025.
-            $wstoken = external_generate_token(
-                EXTERNAL_TOKEN_PERMANENT,
-                $this->config->webservice_id,
-                $this->config->webservice_userid,
-                context_system::instance(),
-                time() + ($this->config->job_timeout_min * 60),
-                0
-            );
-        }
+        $wstoken = core_external\util::generate_token(
+            EXTERNAL_TOKEN_PERMANENT,
+            core_external\util::get_service_by_id($this->config->webservice_id),
+            $this->config->webservice_userid,
+            context_system::instance(),
+            time() + ($this->config->job_timeout_min * 60),
+            0
+        );
 
         // Get attempt metadata.
         $attempts = $this->report->get_attempts();
