@@ -1,10 +1,16 @@
 # Changelog
 
-## Version 4.0.0 (YYYYMMDDNN)
+## Version 4.0.0 (2026040100)
 
-- **🚨 BREAKING:** This version **requires at least Moodle 4.5 (LTS) and PHP 8.1**. If you are still using an older Moodle
+**🚨 BREAKING 🚨** This version **requires at least Moodle 4.5 (LTS) and PHP 8.1**. If you are still using an older Moodle
 version, please upgrade to at least Moodle 4.5 (LTS) or stick to the latest available v3.x release of the plugin.
+
 - Ensure compatibility with Moodle 5.2
+- Add PDF/A-3b compliant PDF file export
+- Add parallel job execution capability
+- Add support for MathJax 4 (used by default by Moodle >= 5.2)
+- Various technical improvements of the archive worker service
+- Cleanup of old Moodle 4.1 (LTS) compatibility code
 
 **Note:** Use of [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) `>= v4.0.0` is required.
 
