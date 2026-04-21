@@ -60,11 +60,10 @@ jobs:
           - {moodle-branch: 'MOODLE_501_STABLE', php: '8.4', database: 'mariadb'}
 
           # Moodle 5.2, PHP 8.3 to 8.4, PostgreSQL and MariaDB
-          # FIXME: Switch to MOODLE_502_STABLE once it is available.
-          - {moodle-branch: 'main', php: '8.3', database: 'pgsql'}
-          - {moodle-branch: 'main', php: '8.3', database: 'mariadb'}
-          - {moodle-branch: 'main', php: '8.4', database: 'pgsql'}
-          - {moodle-branch: 'main', php: '8.4', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_502_STABLE', php: '8.3', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_502_STABLE', php: '8.3', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_502_STABLE', php: '8.4', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_502_STABLE', php: '8.4', database: 'mariadb'}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
