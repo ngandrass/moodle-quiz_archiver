@@ -25,6 +25,7 @@
 namespace quiz_archiver;
 
 use context_course;
+use stdClass;
 use stored_file;
 
 // @codingStandardsIgnoreLine
@@ -182,6 +183,67 @@ class FileManager {
      */
     public static function get_draft_file(int $contextid, int $itemid, string $filepath, string $filename): ?stored_file {
         return get_file_storage()->get_file($contextid, 'user', 'draft', $itemid, $filepath, $filename) ?: null;
+    }
+
+    /**
+     * Reassembles the individual uploaded chunks from the draft file area and stores them as the original file.
+     *
+     * @param int $contextid
+     * @param int $itemid
+     * @param string $filepath
+     * @param string $originalfilename Name of original file to reasamble.
+     * @param array $chunkfilenames Array of chunk filenames to be reasambled.
+     * @return stored_file|null
+     */
+    public static function reasamble_chunked_file(
+        int $contextid,
+        int $itemid,
+        string $filepath,
+        string $originalfilename,
+        array $chunkfilenames,
+    ): ?stored_file {
+
+        // Ensure chunk file names are in order for reasambly.
+        sort($chunkfilenames);
+
+        // Create temporary file on disk to append chunks to one by one.
+        // This is required because you can not write inside the file storage.
+        $temporaryfile = tmpfile();
+        $temporaryfilepath = stream_get_meta_data($temporaryfile)['uri']; // See php manual.
+
+        foreach ($chunkfilenames as $i => $chunkfilename) {
+            $chunkfile = get_file_storage()->get_file($contextid, 'user', 'draft', $itemid, $filepath, $chunkfilename);
+            $chunkfilehandle = $chunkfile->get_content_file_handle(stored_file::FILE_HANDLE_FOPEN);
+
+            // Append chunk files content in mini chunks of 4KB.
+            while (!feof($chunkfilehandle)) {
+                $buffer = fread($chunkfilehandle, 4096);
+                fwrite($temporaryfile, $buffer);
+            }
+            fclose($chunkfilehandle);
+
+            // Remove appended chunk.
+            $chunkfile->delete();
+        }
+
+        // Ensure changes are written to disk.
+        fflush($temporaryfile);
+
+        // Import temporary file into file storage.
+        $fileinfo = [
+            'contextid' => $contextid,
+            'component' => 'user',
+            'filearea'  => 'draft',
+            'itemid'    => $itemid,
+            'filepath'  => $filepath,
+            'filename'  => $originalfilename,
+        ];
+        $originalfile = get_file_storage()->create_file_from_pathname($fileinfo, $temporaryfilepath);
+
+        // Clean up temporaray file by closing its handle.
+        fclose($temporaryfile);
+
+        return $originalfile;
     }
 
     /**
