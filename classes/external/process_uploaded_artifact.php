@@ -90,14 +90,10 @@ class process_uploaded_artifact extends external_api {
                 'SHA256 checksum of the file',
                 VALUE_REQUIRED
             ),
-            // NOTE: We use an `external_value` type instead of a
-            // NOTE: `external_multiple_structure` type because of its request
-            // NOTE: overhead. Having a comma seperated value list reduces the
-            // NOTE: characters required for encoding the request in the URL.
-            'artifact_chunks' => new external_value(
-                PARAM_TEXT,
-                'filenames of individually uploaded chunks as comma seperated value list',
-                VALUE_OPTIONAL
+            'artifact_count' => new external_value(
+                PARAM_INT,
+                'Number of individually uploaded files to process',
+                VALUE_REQUIRED
             ),
         ]);
     }
@@ -127,7 +123,7 @@ class process_uploaded_artifact extends external_api {
      * @param string $artifactfilepathraw
      * @param int $artifactitemidraw
      * @param string $artifactsha256sumraw
-     * @param string $artifactchunks
+     * @param int $artifactcountraw
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception
@@ -144,7 +140,7 @@ class process_uploaded_artifact extends external_api {
         string $artifactfilepathraw,
         int $artifactitemidraw,
         string $artifactsha256sumraw,
-        string $artifactchunks,
+        int $artifactcountraw,
     ): array {
         // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
@@ -157,7 +153,7 @@ class process_uploaded_artifact extends external_api {
             'artifact_filepath' => $artifactfilepathraw,
             'artifact_itemid' => $artifactitemidraw,
             'artifact_sha256sum' => $artifactsha256sumraw,
-            'artifact_chunks' => $artifactchunks,
+            'artifact_count' => $artifactcountraw,
         ]);
 
         // Validate that the jobid exists and no artifact was uploaded previously.
@@ -187,15 +183,14 @@ class process_uploaded_artifact extends external_api {
 
         // Get or reconstruct uploaded file/-s.
         $draftfile = null;
-        if (!isset($artifactchunks) || $artifactchunks != "") {
+        if ($params['artifact_count'] > 1) {
             // Reasabmle orgininal file.
-            $chunkfilenames = explode(",", $artifactchunks);
             $draftfile = FileManager::reasamble_chunked_file(
                 $params['artifact_contextid'],
                 $params['artifact_itemid'],
                 $params['artifact_filepath'],
                 $params['artifact_filename'],
-                $chunkfilenames,
+                $params['artifact_count']
             );
             if (!$draftfile) {
                 $job->set_status(ArchiveJob::STATUS_FAILED);
