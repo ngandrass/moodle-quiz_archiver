@@ -183,7 +183,21 @@ class process_uploaded_artifact extends external_api {
 
         // Get or reconstruct uploaded file/-s.
         $draftfile = null;
-        if ($params['artifact_count'] > 1) {
+        if ($params['artifact_count'] == 1) {
+            // Find previously uploaded file.
+            $draftfile = FileManager::get_draft_file(
+                $params['artifact_contextid'],
+                $params['artifact_itemid'],
+                $params['artifact_filepath'],
+                $params['artifact_filename'],
+            );
+            if (!$draftfile) {
+                $job->set_status(ArchiveJob::STATUS_FAILED);
+                return [
+                    'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND',
+                ];
+            }
+        } else if ($params['artifact_count'] > 1) {
             // Reasabmle orgininal file.
             $draftfile = FileManager::reasamble_chunked_file(
                 $params['artifact_contextid'],
@@ -199,19 +213,10 @@ class process_uploaded_artifact extends external_api {
                 ];
             }
         } else {
-            // Find previously uploaded file.
-            $draftfile = FileManager::get_draft_file(
-                $params['artifact_contextid'],
-                $params['artifact_itemid'],
-                $params['artifact_filepath'],
-                $params['artifact_filename'],
-            );
-            if (!$draftfile) {
-                $job->set_status(ArchiveJob::STATUS_FAILED);
-                return [
-                    'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND',
-                ];
-            }
+            $job->set_status(ArchiveJob::STATUS_FAILED);
+            return [
+                'status' => 'E_INVALID_ARTIFACT_COUNT',
+            ];
         }
 
         // Validate uploaded file.
