@@ -48,9 +48,10 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * @param string $jobid Job ID
      * @param int $cmid Course module ID
      * @param int $userid User ID
+     * @param int $artifactcount Number of individually uploaded artifacts
      * @return array Valid request parameters
      */
-    protected function generate_valid_request(string $jobid, int $cmid, int $userid): array {
+    protected function generate_valid_request(string $jobid, int $cmid, int $userid, int $artifactcount): array {
         return [
             'jobid' => $jobid,
             'artifact_component' => FileManager::COMPONENT_NAME,
@@ -61,6 +62,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             'artifact_filepath' => '/',
             'artifact_itemid' => 1,
             'artifact_sha256sum' => '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+            'artifact_count' => $artifactcount,
         ];
     }
 
@@ -126,7 +128,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
 
         // Execute test call.
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, 1);
         process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -136,7 +138,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $r['artifact_filename'],
             $r['artifact_filepath'],
             $r['artifact_itemid'],
-            $r['artifact_sha256sum']
+            $r['artifact_sha256sum'],
+            $r['artifact_count']
         );
     }
 
@@ -171,7 +174,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
 
         // Execute test call.
         $_GET['wstoken'] = 'INVALID-WS-TOKEN';
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, 1);
         $res = process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -181,7 +184,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $r['artifact_filename'],
             $r['artifact_filepath'],
             $r['artifact_itemid'],
-            $r['artifact_sha256sum']
+            $r['artifact_sha256sum'],
+            $r['artifact_count']
         );
 
         // Ensure that the access was denied.
@@ -204,6 +208,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      * @param string|null $artifactfilepath File path
      * @param int|null $artifactitemid Item ID
      * @param string|null $artifactsha256sum SHA256 checksum
+     * @param int|null $artifactcount Number of individually uploaded files
      * @param bool $shouldfail Whether a failure is expected
      * @return void
      * @throws \coding_exception
@@ -221,12 +226,13 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         ?string $artifactfilepath,
         ?int $artifactitemid,
         ?string $artifactsha256sum,
+        ?int $artifactcount,
         bool $shouldfail
     ): void {
         // Create mock quiz.
         $this->resetAfterTest();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
-        $base = $this->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id);
+        $base = $this->generate_valid_request('xxx', $mocks->quiz->cmid, $mocks->user->id, 1);
 
         if ($shouldfail) {
             $this->expectException(\invalid_parameter_exception::class);
@@ -241,7 +247,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $artifactfilename === null ? $base['artifact_filename'] : $artifactfilename,
             $artifactfilepath === null ? $base['artifact_filepath'] : $artifactfilepath,
             $artifactitemid === null ? $base['artifact_itemid'] : $artifactitemid,
-            $artifactsha256sum === null ? $base['artifact_sha256sum'] : $artifactsha256sum
+            $artifactsha256sum === null ? $base['artifact_sha256sum'] : $artifactsha256sum,
+            $artifactcount === null ? $base['artifact_count'] : $artifactcount
         );
     }
 
@@ -262,6 +269,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             "artifactfilepath" => null,
             "artifactitemid" => null,
             "artifactsha256sum" => null,
+            "artifactcount" => null,
         ];
 
         // Define test datasets.
@@ -327,7 +335,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
 
         // Execute test call.
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, 1);
         $this->assertSame(['status' => 'E_NO_ARTIFACT_UPLOAD_EXPECTED'], process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -337,7 +345,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $r['artifact_filename'],
             $r['artifact_filepath'],
             $r['artifact_itemid'],
-            $r['artifact_sha256sum']
+            $r['artifact_sha256sum'],
+            $r['artifact_count']
         ));
     }
 
@@ -374,7 +383,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Execute test call.
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, 1);
         $this->assertSame(['status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'], process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -384,7 +393,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $r['artifact_filename'],
             $r['artifact_filepath'],
             $r['artifact_itemid'],
-            $r['artifact_sha256sum']
+            $r['artifact_sha256sum'],
+            $r['artifact_count']
         ));
     }
 
@@ -424,7 +434,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Execute test call.
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, 1);
         $this->assertSame(['status' => 'E_ARTIFACT_CHECKSUM_INVALID'], process_uploaded_artifact::execute(
             $r['jobid'],
             $artifact->get_component(),
@@ -434,7 +444,8 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             $artifact->get_filename(),
             $artifact->get_filepath(),
             $artifact->get_itemid(),
-            '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+            '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+            $r['artifact_count']
         ));
     }
 }
