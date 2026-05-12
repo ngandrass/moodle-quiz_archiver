@@ -206,6 +206,73 @@ final class filemanager_test extends \advanced_testcase {
     }
 
     /**
+     * Test reassambly of individually uploaded files to the file storage
+     *
+     * @covers \quiz_archiver\FileManager::reasamble_chunked_file
+     *
+     * @return void
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_reasamble_chunked_file(): void {
+        // Prepare mocks.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $fm = new FileManager($mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        $userreference = $this->getDataGenerator()->create_user();
+        $usercontext = \context_user::instance($userreference->id);
+        $originalfilename = 'testfile.tar.gz';
+        // NOTE: This SHA256 hash is precomputed based on the per file mock data,
+        // defined in `create_draft_file` of the `quiz_archiver_generator` class.
+        // Because we concatinate three dummy files, the expected value should be,
+        // the SHA256 hash of the dummy data repeated three times.
+        $expectedfilehash = 'b6b34e2b8247c3ff64a1cc6793c663bdb7226ffd801859549462bbd20b563f9a';
+
+        // Create mock chunk files.
+        $chunkfiles = [
+            $this->getDataGenerator()->create_draft_file($originalfilename . '.chunk000000000.bin', userid: $userreference->id),
+            $this->getDataGenerator()->create_draft_file($originalfilename . '.chunk000000001.bin', userid: $userreference->id),
+            $this->getDataGenerator()->create_draft_file($originalfilename . '.chunk000000002.bin', userid: $userreference->id),
+        ];
+        foreach ($chunkfiles as $file) {
+            $this->assertNotNull($file, 'Failed to create mock chunk file');
+        }
+
+        // Try to rassemble individual chunks to the "original file".
+        $reassambledfile = $fm->reasamble_chunked_file(
+            $usercontext->id,
+            0, // Always zero in test cases.
+            '/', // Always '/' in test cases.
+            $originalfilename,
+            count($chunkfiles),
+        );
+        $this->assertNotNull($reassambledfile, 'File reassambly failed');
+
+        // Check if reassembly creates true byte concatinated file.
+        $actualhash = FileManager::hash_file($reassambledfile);
+        $this->assertEquals(
+            $expectedfilehash,
+            $actualhash,
+            'Reassembly of original file is not byte perfect: Mismatch in expected and actual SHA256 file hashes.'
+        );
+
+        // Check if individual chunks were cleaned up.
+        foreach ($chunkfiles as $file) {
+            $this->assertFalse(
+                get_file_storage()->get_file(
+                    $file->get_contextid(),
+                    $file->get_component(),
+                    $file->get_filearea(),
+                    $file->get_itemid(),
+                    $file->get_filepath(),
+                    $file->get_filename()
+                ),
+                'Missing cleanup of at least one chunk file'
+            );
+        }
+    }
+
+    /**
      * Tests the hash generation for a valid stored_file
      *
      * @covers \quiz_archiver\FileManager::hash_file
