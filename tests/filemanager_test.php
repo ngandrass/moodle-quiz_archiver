@@ -206,7 +206,7 @@ final class filemanager_test extends \advanced_testcase {
     }
 
     /**
-     * Test reassambly of individually uploaded files to the file storage
+     * Test reassembly of individually uploaded files to the file storage
      *
      * @covers \quiz_archiver\FileManager::reasamble_chunked_file
      *
@@ -239,17 +239,17 @@ final class filemanager_test extends \advanced_testcase {
         }
 
         // Try to rassemble individual chunks to the "original file".
-        $reassambledfile = $fm->reasamble_chunked_file(
+        $reassembledfile = $fm->reasamble_chunked_file(
             $usercontext->id,
             0, // Always zero in test cases.
             '/', // Always '/' in test cases.
             $originalfilename,
             count($chunkfiles),
         );
-        $this->assertNotNull($reassambledfile, 'File reassambly failed');
+        $this->assertNotNull($reassembledfile, 'File reassembly failed');
 
         // Check if reassembly creates true byte concatinated file.
-        $actualhash = FileManager::hash_file($reassambledfile);
+        $actualhash = FileManager::hash_file($reassembledfile);
         $this->assertEquals(
             $expectedfilehash,
             $actualhash,

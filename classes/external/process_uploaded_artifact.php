@@ -209,7 +209,7 @@ class process_uploaded_artifact extends external_api {
             if (!$draftfile) {
                 $job->set_status(ArchiveJob::STATUS_FAILED);
                 return [
-                    'status' => 'E_CHUNK_REASAMBLY_FAILED',
+                    'status' => 'E_CHUNK_REASSEMBLY_FAILED',
                 ];
             }
         } else {

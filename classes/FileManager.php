@@ -193,7 +193,7 @@ class FileManager {
      * @param string $originalfilename Name of original file to reasamble.
      * @param int $artifactcount Number of chunks original file was split into.
      * @return stored_file|null
-     * @throws \file_exception If chunk data can not be appended while reassambly.
+     * @throws \file_exception If chunk data can not be appended while reassembly.
      */
     public static function reasamble_chunked_file(
         int $contextid,
