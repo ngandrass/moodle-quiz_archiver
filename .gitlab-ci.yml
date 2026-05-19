@@ -1,0 +1,124 @@
+# This is a quick and dirty GitLab CI configuration file for running the Moodle
+# Plugin CI checks. It is not intended to be a complete or polished solution,
+# but still better than nothing at all ;)
+#
+# No optimizations, no caching - DO NOT use this in big production environments
+# with large volume jobs!
+#
+# This will most likely be superseded by a more complete solution once the CI
+# steps implementation of GitLab is mature. This would allow to resemble the way
+# the provided GitHub workflow definition is built. See for more info on GitLab
+# CI steps: https://docs.gitlab.com/ci/steps/
+#
+# Moodle Plugin CI: https://github.com/moodlehq/moodle-plugin-ci
+
+stages:
+  - pluginci
+
+###############################
+# Moodle Plugin CI - Template #
+###############################
+
+.stage-pluginci-common: &stage-pluginci-common
+  stage: pluginci
+  image: moodlehq/moodle-php-apache:${PHP_VERSION}
+  services:
+    - name: postgres:16
+      alias: postgres
+      variables:
+        POSTGRES_USER: "postgres"
+        POSTGRES_HOST_AUTH_METHOD: "trust"
+
+  before_script:
+    # Move repository to plugin subdirectory
+    - mkdir -p /tmp/moodleci
+    - mv "$CI_PROJECT_DIR" /tmp/moodleci/plugin
+    - mkdir -p "$CI_PROJECT_DIR"
+    - mv /tmp/moodleci/plugin "$CI_PROJECT_DIR"
+    - cd "$CI_PROJECT_DIR"
+
+    # Install software dependencies
+    - apt-get update
+    - apt-get install -y npm postgresql-client openjdk-17-jre-headless
+
+    # Install Composer and Node Version Manager (nvm)
+    - curl -sS https://getcomposer.org/installer | php
+    - mv composer.phar /usr/local/bin/composer
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+    - export NVM_DIR="$HOME/.nvm"
+    - "$NVM_DIR/nvm.sh"
+
+    # Prepare Moodle Plugin CI
+    - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+    #- locale-gen en_AU.UTF-8
+    - export PATH="$PATH:$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd)"
+    - moodle-plugin-ci install --plugin ./plugin --db-host=postgres
+
+    # Output color helpers
+    - TXT_RED="\e[31m"
+    - TXT_GREEN="\e[32m"
+    - TXT_CLEAR="\e[0m"
+
+  script: |
+    echo "Executing moodle-plugin-ci checks ..."
+    moodle-plugin-ci phplint || res_phplint=$?
+    moodle-plugin-ci phpmd || res_phpmd=$?
+    moodle-plugin-ci phpcs --max-warnings 0 || res_phpcs=$?
+    moodle-plugin-ci phpdoc --max-warnings 0 || res_phpdoc=$?
+    moodle-plugin-ci validate || res_validate=$?
+    moodle-plugin-ci savepoints || res_savepoints=$?
+    moodle-plugin-ci mustache || res_mustache=$?
+    moodle-plugin-ci grunt --max-lint-warnings 0 || res_grunt=$?
+    moodle-plugin-ci phpunit --fail-on-warning || res_phpunit=$?
+    moodle-plugin-ci behat --profile chrome --scss-deprecations || res_behat=$?
+    
+    # Report results
+    echo "------------------------------------------------------------------------------------------------------------------------------------"
+    echo "Stage results:"
+    echo -e "  -> PHP Lint: $( [[ $res_phplint -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> PHP Mess Detector: $( [[ $res_phpmd -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Moodle Code Sniffer: $( [[ $res_phpcs -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Moodle PHPDoc Checker: $( [[ $res_phpdoc -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Validating: $( [[ $res_validate -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Check upgrade savepoints: $( [[ $res_savepoints -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Mustache Lint: $( [[ $res_mustache -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Grunt: $( [[ $res_grunt -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> PHPUnit tests: $( [[ $res_phpunit -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo -e "  -> Behat features: $( [[ $res_behat -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
+    echo "------------------------------------------------------------------------------------------------------------------------------------"
+    
+    # Exit with error code if any of the checks failed
+    exit $((res_phplint || res_phpmd || res_phpcs || res_phpdoc || res_validate || res_savepoints || res_mustache || res_grunt || res_phpunit || res_behat))
+    
+
+###########################
+# Moodle Plugin CI - Jobs #
+###########################
+
+moodle-plugin-ci-M405:
+  <<: *stage-pluginci-common
+  variables:
+    MOODLE_BRANCH: "MOODLE_405_STABLE"
+    PHP_VERSION: "8.1"
+    DB: "pgsql"
+
+moodle-plugin-ci-M500:
+  <<: *stage-pluginci-common
+  variables:
+    MOODLE_BRANCH: "MOODLE_500_STABLE"
+    PHP_VERSION: "8.2"
+    DB: "pgsql"
+
+moodle-plugin-ci-M501:
+  <<: *stage-pluginci-common
+  variables:
+    MOODLE_BRANCH: "MOODLE_501_STABLE"
+    PHP_VERSION: "8.3"
+    DB: "pgsql"
+
+moodle-plugin-ci-M502:
+  <<: *stage-pluginci-common
+  variables:
+    MOODLE_BRANCH: "MOODLE_502_STABLE"
+    PHP_VERSION: "8.4"
+    DB: "pgsql"
