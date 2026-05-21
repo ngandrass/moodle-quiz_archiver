@@ -151,6 +151,13 @@ final class report_test extends \advanced_testcase {
             'Overall feedback header not found'
         );
 
+        // Verify quiz grade.
+        $this->assertMatchesRegularExpression(
+            '/<th[^<>]*>\s*' . preg_quote(get_string('gradenoun'), '/') . '\s*<\/th>/',
+            $html,
+            'Quiz grade header not found'
+        );
+
         // Verify questions.
         foreach ($this->getDataGenerator()::QUESTION_TYPES_IN_REFERENCE_QUIZ as $qtype) {
             $this->assertMatchesRegularExpression(
@@ -159,6 +166,16 @@ final class report_test extends \advanced_testcase {
                 'Question of type ' . $qtype . ' not found'
             );
         }
+
+        // Verify correctness indicators.
+        // TODO (MDL-0): Add marks to reference quiz.
+
+        // Verify question marks.
+        $this->assertStringContainsString(
+            get_string('mark', 'question'),
+            $html,
+            'Question marks not found'
+        );
 
         // Verify individual question feedback.
         $this->assertMatchesRegularExpression(
