@@ -51,7 +51,10 @@ class Report {
     public const SECTIONS = [
         "header",
         "quiz_feedback",
+        "quiz_grade",
         "question",
+        "question_correctness",
+        "question_marks",
         "question_feedback",
         "general_feedback",
         "rightanswer",
@@ -64,6 +67,9 @@ class Report {
         "header" => [],
         "question" => [],
         "quiz_feedback" => ["header"],
+        "quiz_grade" => ["header"],
+        "question_correctness" => ["question"],
+        "question_marks" => ["question"],
         "question_feedback" => ["question"],
         "general_feedback" => ["question"],
         "rightanswer" => ["question"],
@@ -457,40 +463,42 @@ class Report {
 
             // Grades.
             $grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
-            if (quiz_has_grades($quiz)) {
-                if (is_null($grade)) {
-                    $quizheaderdata['grade'] = [
-                        'title' => get_string('gradenoun'),
-                        'content' => get_string('notyetgraded', 'quiz'),
-                    ];
-                }
-
-                if ($attempt->state == quiz_attempt::FINISHED) {
-                    // Show raw marks only if they are different from the grade (like on the view page).
-                    if ($quiz->grade != $quiz->sumgrades) {
-                        $a = new \stdClass();
-                        $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
-                        $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
-                        $quizheaderdata['marks'] = [
-                            'title' => get_string('marks', 'quiz'),
-                            'content' => get_string('outofshort', 'quiz', $a),
+            if ($sections['quiz_grade']) {
+                if (quiz_has_grades($quiz)) {
+                    if (is_null($grade)) {
+                        $quizheaderdata['grade'] = [
+                            'title' => get_string('gradenoun'),
+                            'content' => get_string('notyetgraded', 'quiz'),
                         ];
                     }
 
-                    // Now the scaled grade.
-                    $a = new \stdClass();
-                    $a->grade = \html_writer::tag('b', quiz_format_grade($quiz, $grade));
-                    $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
-                    if ($quiz->grade != 100) {
-                        $a->percent = \html_writer::tag('b', format_float($attempt->sumgrades * 100 / $quiz->sumgrades, 0));
-                        $formattedgrade = get_string('outofpercent', 'quiz', $a);
-                    } else {
-                        $formattedgrade = get_string('outof', 'quiz', $a);
+                    if ($attempt->state == quiz_attempt::FINISHED) {
+                        // Show raw marks only if they are different from the grade (like on the view page).
+                        if ($quiz->grade != $quiz->sumgrades) {
+                            $a = new \stdClass();
+                            $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
+                            $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
+                            $quizheaderdata['marks'] = [
+                                'title' => get_string('marks', 'quiz'),
+                                'content' => get_string('outofshort', 'quiz', $a),
+                            ];
+                        }
+
+                        // Now the scaled grade.
+                        $a = new \stdClass();
+                        $a->grade = \html_writer::tag('b', quiz_format_grade($quiz, $grade));
+                        $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
+                        if ($quiz->grade != 100) {
+                            $a->percent = \html_writer::tag('b', format_float($attempt->sumgrades * 100 / $quiz->sumgrades, 0));
+                            $formattedgrade = get_string('outofpercent', 'quiz', $a);
+                        } else {
+                            $formattedgrade = get_string('outof', 'quiz', $a);
+                        }
+                        $quizheaderdata['grade'] = [
+                            'title' => get_string('gradenoun'),
+                            'content' => $formattedgrade,
+                        ];
                     }
-                    $quizheaderdata['grade'] = [
-                        'title' => get_string('gradenoun'),
-                        'content' => $formattedgrade,
-                    ];
                 }
             }
 
@@ -529,16 +537,29 @@ class Report {
                 $number = $attemptobj->get_question_number($originalslot);
                 $displayoptions = $attemptobj->get_display_options_with_edit_link(true, $slot, "");
                 $displayoptions->readonly = true;
-                $displayoptions->marks = 2;
                 $displayoptions->manualcomment = 1;
                 $displayoptions->rightanswer = $sections['rightanswer'];
                 $displayoptions->feedback = $sections['question_feedback'];
                 $displayoptions->generalfeedback = $sections['general_feedback'];
                 $displayoptions->history = $sections['history'];
-                $displayoptions->correctness = 1;
-                $displayoptions->numpartscorrect = 1;
                 $displayoptions->flags = 1;
                 $displayoptions->manualcommentlink = 0;
+
+                // Handle question correctness.
+                if ($sections['question_correctness']) {
+                    $displayoptions->correctness = \question_display_options::VISIBLE;
+                    $displayoptions->numpartscorrect = \question_display_options::VISIBLE;
+                } else {
+                    $displayoptions->correctness = \question_display_options::HIDDEN;
+                    $displayoptions->numpartscorrect = \question_display_options::HIDDEN;
+                }
+
+                // Handle question marks display option.
+                if ($sections['question_marks']) {
+                    $displayoptions->marks = \question_display_options::MARK_AND_MAX;
+                } else {
+                    $displayoptions->marks = \question_display_options::HIDDEN;
+                }
 
                 // Render question as HTML.
                 if ($slot != $originalslot) {
