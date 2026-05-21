@@ -5,6 +5,7 @@
 - Add attempt report setting for showing / hiding overall quiz grade
 - Add attempt report setting for showing / hiding question correctness indicators
 - Add attempt report setting for showing / hiding raw marks for questions
+- Migrate quiz attempt renderer to new quiz attempt summary API
 
 
 ## Version 4.0.0 (2026040100)

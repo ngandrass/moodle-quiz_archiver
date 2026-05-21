@@ -368,7 +368,8 @@ class Report {
      * @throws \moodle_exception
      */
     public function generate(int $attemptid, array $sections): string {
-        global $CFG, $DB, $PAGE;
+        global $DB, $OUTPUT, $PAGE;
+
         $ctx = \context_module::instance($this->cm->id);
         $renderer = $PAGE->get_renderer('mod_quiz');
         $html = '';
@@ -399,7 +400,7 @@ class Report {
 
         // Section: Quiz header.
         if ($sections['header']) {
-            $quizheaderdata = [];
+            $summaryinfo = new \mod_quiz\output\attempt_summary_information();
 
             // User name and link.
             $attemptuser = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
@@ -409,56 +410,52 @@ class Report {
                 new \moodle_url('/user/view.php', ['id' => $attemptuser->id, 'course' => $attemptobj->get_courseid()]),
                 fullname($attemptuser, true)
             );
-            global $OUTPUT;
-            $quizheaderdata['user'] = [
-                'title' => get_string('user'),
-                'content' => $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink),
-            ];
+            $summaryinfo->add_item(
+                'user',
+                get_string('user'),
+                $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink)
+            );
 
             // User ID number.
-            $quizheaderdata['useridnumber'] = [
-                'title' => get_string('idnumber'),
-                'content' => $attemptuser->idnumber ?: '<i>' . get_string('none') . '</i>',
-            ];
+            $summaryinfo->add_item(
+                'useridnumber',
+                get_string('idnumber'),
+                $attemptuser->idnumber ?: '<i>' . get_string('none') . '</i>'
+            );
 
             // Quiz metadata.
-            $quizheaderdata['course'] = [
-                'title' => get_string('course'),
-                'content' => $this->course->fullname . ' (Course-ID: ' . $this->course->id . ')',
-            ];
+            $summaryinfo->add_item(
+                'course',
+                get_string('course'),
+                $this->course->fullname . ' (Course-ID: ' . $this->course->id . ')'
+            );
 
-            $quizheaderdata['quiz'] = [
-                'title' => get_string('modulename', 'quiz'),
-                'content' => $this->quiz->name . ' (Quiz-ID: ' . $this->quiz->id . ')',
-            ];
+            $summaryinfo->add_item(
+                'quiz',
+                get_string('modulename', 'quiz'),
+                $this->quiz->name . ' (Quiz-ID: ' . $this->quiz->id . ')'
+            );
 
             // Timing information.
-            $quizheaderdata['startedon'] = [
-                'title' => get_string('startedon', 'quiz'),
-                'content' => userdate($attempt->timestart),
-            ];
+            $summaryinfo->add_item(
+                'startedon',
+                get_string('startedon', 'quiz'),
+                userdate($attempt->timestart)
+            );
 
-            $quizheaderdata['state'] = [
-                'title' => get_string('attemptstate', 'quiz'),
-                'content' => quiz_attempt::state_name($attempt->state),
-            ];
+            $summaryinfo->add_item(
+                'state',
+                get_string('attemptstate', 'quiz'),
+                quiz_attempt::state_name($attempt->state)
+            );
 
             if ($attempt->state == quiz_attempt::FINISHED) {
-                $quizheaderdata['completedon'] = [
-                    'title' => get_string('completedon', 'quiz'),
-                    'content' => userdate($attempt->timefinish),
-                ];
-                $quizheaderdata['timetaken'] = [
-                    'title' => get_string('attemptduration', 'quiz'),
-                    'content' => $timetaken,
-                ];
+                $summaryinfo->add_item('completedon', get_string('completedon', 'quiz'), userdate($attempt->timefinish));
+                $summaryinfo->add_item('timetaken', get_string('attemptduration', 'quiz'), $timetaken);
             }
 
             if (!empty($overtime)) {
-                $quizheaderdata['overdue'] = [
-                    'title' => get_string('overdue', 'quiz'),
-                    'content' => $overtime,
-                ];
+                $summaryinfo->add_item('overdue', get_string('overdue', 'quiz'), $overtime);
             }
 
             // Grades.
@@ -466,10 +463,7 @@ class Report {
             if ($sections['quiz_grade']) {
                 if (quiz_has_grades($quiz)) {
                     if (is_null($grade)) {
-                        $quizheaderdata['grade'] = [
-                            'title' => get_string('gradenoun'),
-                            'content' => get_string('notyetgraded', 'quiz'),
-                        ];
+                        $summaryinfo->add_item('grade', get_string('gradenoun'), get_string('notyetgraded', 'quiz'));
                     }
 
                     if ($attempt->state == quiz_attempt::FINISHED) {
@@ -478,10 +472,7 @@ class Report {
                             $a = new \stdClass();
                             $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
                             $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
-                            $quizheaderdata['marks'] = [
-                                'title' => get_string('marks', 'quiz'),
-                                'content' => get_string('outofshort', 'quiz', $a),
-                            ];
+                            $summaryinfo->add_item('marks', get_string('marks', 'quiz'), get_string('outofshort', 'quiz', $a));
                         }
 
                         // Now the scaled grade.
@@ -494,38 +485,30 @@ class Report {
                         } else {
                             $formattedgrade = get_string('outof', 'quiz', $a);
                         }
-                        $quizheaderdata['grade'] = [
-                            'title' => get_string('gradenoun'),
-                            'content' => $formattedgrade,
-                        ];
+                        $summaryinfo->add_item('grade', get_string('gradenoun'), $formattedgrade);
                     }
                 }
             }
 
             // Any additional summary data from the behaviour.
-            $quizheaderdata = array_merge($quizheaderdata, $attemptobj->get_additional_summary_data($options));
+            foreach ($attemptobj->get_additional_summary_data($options) as $shortname => $data) {
+                $summaryinfo->add_item($shortname, $data['title'], $data['content']);
+            }
 
             // Feedback if there is any, and the user is allowed to see it now.
             if ($sections['quiz_feedback']) {
                 $feedback = $attemptobj->get_overall_feedback($grade);
-                $quizheaderdata['feedback'] = [
-                    'title' => get_string('feedback', 'quiz'),
-                    'content' => $feedback ?: '<i>' . get_string('none') . '</i>',
-                ];
+                $summaryinfo->add_item(
+                    'feedback',
+                    get_string('feedback', 'quiz'),
+                    $feedback ?: '<i>' . get_string('none') . '</i>'
+                );
             }
 
             // Add export date.
-            $quizheaderdata['exportdate'] = [
-                'title' => get_string('archived', 'quiz_archiver'),
-                'content' => userdate(time()),
-            ];
+            $summaryinfo->add_item('exportdate', get_string('archived', 'quiz_archiver'), userdate(time()));
 
-            // Add summary table to the html.
-            // TODO (MDL-0): Rework into proper use of new 4.4 API but create appropriate test cases first.
-            $html .= $renderer->review_attempt_summary(
-                \mod_quiz\output\attempt_summary_information::create_from_legacy_array($quizheaderdata),
-                0
-            );
+            $html .= $renderer->review_attempt_summary($summaryinfo, 0);
         }
 
         // Section: Quiz questions.
