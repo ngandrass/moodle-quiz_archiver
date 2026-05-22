@@ -1,5 +1,13 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Add attempt report setting for showing / hiding overall quiz grade
+- Add attempt report setting for showing / hiding question correctness indicators
+- Add attempt report setting for showing / hiding raw marks for questions
+- Migrate quiz attempt renderer to new quiz attempt summary API
+
+
 ## Version 4.0.0 (2026040100)
 
 **🚨 BREAKING 🚨** This version **requires at least Moodle 4.5 (LTS) and PHP 8.1**. If you are still using an older Moodle
