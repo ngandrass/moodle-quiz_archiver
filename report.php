@@ -240,6 +240,7 @@ class quiz_archiver_report extends report_base {
      * @param string $paperformat Paper format to use for attempt report generation
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
+     * @param string $flattenarchive Exported archive will not have any directory structure if true
      * @param string $archivefilenamepattern Filename pattern to use for archive generation
      * @param string $attemptsfoldernamepattern Folder name pattern to use for attempt report generation
      * @param string $attemptsfilenamepattern Filename pattern to use for attempt report generation
@@ -261,6 +262,7 @@ class quiz_archiver_report extends report_base {
         string $paperformat,
         bool $exportquizbackup,
         bool $exportcoursebackup,
+        bool $flattenarchive,
         string $archivefilenamepattern,
         string $attemptsfoldernamepattern,
         string $attemptsfilenamepattern,
@@ -299,6 +301,7 @@ class quiz_archiver_report extends report_base {
                 'sections' => $reportsections,
                 'paper_format' => $paperformat,
                 'keep_html_files' => $reportkeephtmlfiles,
+                'flatten_archive' => $flattenarchive,
                 'foldername_pattern' => $attemptsfoldernamepattern,
                 'filename_pattern' => $attemptsfilenamepattern,
                 'image_optimize' => $imageoptimize ?? false,
@@ -534,6 +537,7 @@ class quiz_archiver_report extends report_base {
                         $formdata->export_attempts_paper_format,
                         $formdata->export_quiz_backup,
                         $formdata->export_course_backup,
+                        $formdata->export_flat_archive,
                         $formdata->archive_filename_pattern,
                         $formdata->export_attempts_foldername_pattern,
                         $formdata->export_attempts_filename_pattern,

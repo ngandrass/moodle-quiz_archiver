@@ -186,6 +186,17 @@ class archive_quiz_form extends \moodleform {
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
 
+        // Advanced option: Flat archive export.
+        $mform->addElement(
+            'advcheckbox',
+            'export_flat_archive',
+            get_string('export_flat_archive', 'quiz_archiver'),
+            get_string('enable'),
+            $config->job_preset_export_flat_archive_locked ? 'disabled' : null,
+        );
+        $mform->addHelpButton('export_flat_archive', 'export_flat_archive', 'quiz_archiver');
+        $mform->setDefault('export_flat_archive', $config->{'job_preset_export_flat_archive'});
+
         // Advanced options: Attempt folder name pattern.
         $mform->addElement(
             'text',
@@ -214,6 +225,7 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('export_attempts_foldername_pattern', PARAM_TEXT);
         $mform->setDefault('export_attempts_foldername_pattern', $config->job_preset_export_attempts_foldername_pattern);
         $mform->addRule('export_attempts_foldername_pattern', null, 'maxlength', 255, 'client');
+        $mform->hideIf('export_attempts_foldername_pattern', 'export_flat_archive', 'checked');
 
         // Advanced options: Attempts filename pattern.
         $mform->addElement(
