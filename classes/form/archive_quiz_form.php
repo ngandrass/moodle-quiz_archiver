@@ -75,12 +75,11 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'mode', 'archiver');
         $mform->setType('mode', PARAM_TEXT);
+        $mform->addElement('hidden', 'quiz_name', $this->quizname);
+        $mform->setType('quiz_name', PARAM_TEXT);
 
         // Options.
         $mform->addElement('header', 'header_settings', get_string('settings'));
-
-        // Options: Test.
-        $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quizname);
 
         // Options: Attempts.
         $mform->addElement(
