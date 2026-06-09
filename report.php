@@ -232,7 +232,8 @@ class quiz_archiver_report extends report_base {
     /**
      * Initiates a new archive job for this quiz
      *
-     * @param bool $exportattempts Quiz attempts will be archives if true
+     * @param bool $exportattempts Quiz attempts will be archived if true
+     * @param bool $exportmetadata Metadata file of quiz attempts will be included if true
      * @param array $reportsections Sections to export during attempt report generation
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
      * within the created archive
@@ -254,6 +255,7 @@ class quiz_archiver_report extends report_base {
      */
     protected function initiate_archive_job(
         bool $exportattempts,
+        bool $exportmetadata,
         array $reportsections,
         bool $reportkeephtmlfiles,
         string $paperformat,
@@ -293,7 +295,7 @@ class quiz_archiver_report extends report_base {
         if ($exportattempts) {
             $taskarchivequizattempts = [
                 'attemptids' => array_values(array_keys($attempts)),
-                'fetch_metadata' => true,
+                'fetch_metadata' => $exportmetadata,
                 'sections' => $reportsections,
                 'paper_format' => $paperformat,
                 'keep_html_files' => $reportkeephtmlfiles,
@@ -526,6 +528,7 @@ class quiz_archiver_report extends report_base {
                     $formdata = $archivequizform->get_data();
                     $job = $this->initiate_archive_job(
                         $formdata->export_attempts,
+                        $formdata->export_attempts_metadata,
                         Report::build_report_sections_from_formdata($formdata),
                         $formdata->export_attempts_keep_html_files,
                         $formdata->export_attempts_paper_format,

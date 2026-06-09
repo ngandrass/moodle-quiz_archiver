@@ -133,6 +133,16 @@ if ($hassiteconfig) {
             '1',
         ));
 
+        // Export attempts metadata.
+        $set = new admin_setting_configcheckbox(
+            'quiz_archiver/job_preset_export_attempts_metadata',
+            get_string('export_attempts_metadata', 'quiz_archiver'),
+            get_string('export_attempts_metadata_help', 'quiz_archiver'),
+            '1',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
         // Attempt report sections.
         foreach (Report::SECTIONS as $section) {
             $set = new admin_setting_configcheckbox(
