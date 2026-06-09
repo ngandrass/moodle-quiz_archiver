@@ -103,11 +103,11 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_metadata', 'export_attempts_metadata', 'quiz_archiver');
         $mform->setDefault('export_attempts_metadata', $config->{'job_preset_export_attempts_metadata'});
 
-        foreach (Report::SECTIONS as $section) {
+        foreach (Report::SECTIONS as $i => $section) {
             $mform->addElement(
                 'advcheckbox',
                 'export_report_section_' . $section,
-                '&nbsp;',
+                $i == 0 ? get_string('export_report_section', 'quiz_archiver') : '&nbsp;',
                 get_string('export_report_section_' . $section, 'quiz_archiver'),
                 $config->{'job_preset_export_report_section_' . $section . '_locked'} ? 'disabled' : null
             );

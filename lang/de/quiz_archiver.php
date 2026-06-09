@@ -103,6 +103,7 @@ $string['export_course_backup'] = 'Vollständiges Moodle Kursbackup (.mbz) erzeu
 $string['export_course_backup_help'] = 'Erzeugt ein vollständiges Moodle Kursbackup (.mbz) mit allen Kursinhalten und -einstellungen. Dies kann genutzt werden, um den gesamten Kurs in einem anderen Moodle-System zu importieren.';
 $string['export_quiz_backup'] = 'Moodle Testbackup (.mbz) erzeugen';
 $string['export_quiz_backup_help'] = 'Erzeugt ein Moodle Testbackup (.mbz) mit allen Testinhalten und Fragen. Dies kann genutzt werden, um den Test unabhängig von diesem Kurs in einem anderen Moodle-System zu importieren.';
+$string['export_report_section'] = 'Abschnitte';
 $string['export_report_section_header'] = 'Test-Metadaten einschließen';
 $string['export_report_section_header_help'] = 'Metadaten des Versuchs (z.B. Teilnehmender, Startzeitpunkt, Endzeitpunkt, Bewertung, ...) im Bericht einschließen';
 $string['export_report_section_question'] = 'Fragen einschließen';

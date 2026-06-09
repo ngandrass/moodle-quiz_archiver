@@ -103,6 +103,7 @@ $string['export_course_backup'] = 'Export full Moodle course backup (.mbz)';
 $string['export_course_backup_help'] = 'This will export a full Moodle course backup (.mbz) including everything inside this course. This can be useful if you want to import this course into another Moodle instance.';
 $string['export_quiz_backup'] = 'Export Moodle quiz backup (.mbz)';
 $string['export_quiz_backup_help'] = 'This will export a Moodle quiz backup (.mbz) including questions used inside this quiz. This can be useful if you want to import this quiz independent of this course into another Moodle instance.';
+$string['export_report_section'] = 'Sections';
 $string['export_report_section_header'] = 'Include quiz header';
 $string['export_report_section_header_help'] = 'Display quiz metadata (e.g., user, time taken, grade, ...) inside the attempt report.';
 $string['export_report_section_question'] = 'Include questions';
