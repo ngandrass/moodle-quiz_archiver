@@ -83,6 +83,12 @@ class Report {
         'Letter', 'Legal', 'Tabloid', 'Ledger',
     ];
 
+
+    /** @var array Filters that can be applied to attemps collection */
+    public const FILTERS = [
+        'latest',
+    ];
+
     /**
      * Creates a new Report
      *
@@ -241,6 +247,32 @@ class Report {
     }
 
     /**
+     * Returns a list of IDs of the latest attempt for each user on this quiz,
+     * excluding previews.
+     *
+     * @return array List with IDs of each users last attempt, null if none found.
+     *
+     * @throws \dml_exception
+     */
+    public function get_latest_attempt_of_each_user(): ?array {
+        global $DB;
+
+        $res = $DB->get_records_sql(
+            "SELECT MAX(id) AS maxid " .
+            "FROM {quiz_attempts} " .
+            "WHERE preview = 0 AND quiz = :quizid " .
+            "GROUP BY userid",
+            [ "quizid" => $this->quiz->id ]
+        );
+
+        if (empty($res)) {
+            return null;
+        }
+
+        return array_map(fn($v): int => $v->maxid, $res);
+    }
+
+    /**
      * Checks if an attempt with the given ID exists inside this quiz
      *
      * @param int $attemptid ID of the attempt to check for existence
@@ -280,6 +312,25 @@ class Report {
         }
 
         return $reportsections;
+    }
+
+    /**
+     * Builds the filter selection array based on the given archive quiz form
+     * data.
+     *
+     * @param object $archivequizformdata Data object from a submitted archive_quiz_form
+     * @return array Array containing the selected filters for attempts
+     */
+    public static function build_attempts_filters_from_formdata(object $archivequizformdata): array {
+        // Extract attempt filters from form data object.
+        $attemptfilters = [];
+        foreach (self::FILTERS as $filter) {
+            if ($archivequizformdata->{'export_attempts_filter_' . $filter}) {
+                array_push($attemptfilters, $filter);
+            }
+        }
+
+        return $attemptfilters;
     }
 
     /**

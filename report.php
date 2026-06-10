@@ -235,6 +235,7 @@ class quiz_archiver_report extends report_base {
      * @param bool $exportattempts Quiz attempts will be archived if true
      * @param bool $exportmetadata Metadata file of quiz attempts will be included if true
      * @param array $reportsections Sections to export during attempt report generation
+     * @param array $attemptfilters Filters to apply to attempt collection
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
      * within the created archive
      * @param string $paperformat Paper format to use for attempt report generation
@@ -258,6 +259,7 @@ class quiz_archiver_report extends report_base {
         bool $exportattempts,
         bool $exportmetadata,
         array $reportsections,
+        array $attemptfilters,
         bool $reportkeephtmlfiles,
         string $paperformat,
         bool $exportquizbackup,
@@ -290,13 +292,45 @@ class quiz_archiver_report extends report_base {
         );
 
         // Get attempt metadata.
-        $attempts = $this->report->get_attempts();
+        $attempts = null;
+        $filtercount = count($attemptfilters);
+        if ($filtercount == 0) {
+            $attempts = $this->report->get_attempts();
+        } else {
+            $filterids = [];
+            foreach ($attemptfilters as $i => $filter) {
+                switch ($filter) {
+                    case Report::FILTERS[0]: // Is "latest".
+                        array_push($filterids, $this->report->get_latest_attempt_of_each_user());
+                        break;
+                }
+            }
+
+            // Intersect different filter results for and-operator combination.
+            $filteridsmerge = $filterids[0];
+            if ($filtercount > 1) {
+                for ($i = 1; $i < $filtercount; $i++) {
+                    if ($filterids[$i]) {
+                        $filteridsmerge = array_intersect(
+                            $filteridsmerge,
+                            $filterids[$i]
+                        );
+                    }
+                }
+            }
+
+            if (count($filteridsmerge) == 0) {
+                throw new \RuntimeException(get_string('error_no_attempts_left_after_filtering', 'quiz_archiver'));
+            }
+
+            $attempts = array_values($filteridsmerge);
+        }
 
         // Prepare task: Export quiz attempts.
         $taskarchivequizattempts = null;
         if ($exportattempts) {
             $taskarchivequizattempts = [
-                'attemptids' => array_values(array_keys($attempts)),
+                'attemptids' => $attempts,
                 'fetch_metadata' => $exportmetadata,
                 'sections' => $reportsections,
                 'paper_format' => $paperformat,
@@ -533,6 +567,7 @@ class quiz_archiver_report extends report_base {
                         $formdata->export_attempts,
                         $formdata->export_attempts_metadata,
                         Report::build_report_sections_from_formdata($formdata),
+                        Report::build_attempts_filters_from_formdata($formdata),
                         $formdata->export_attempts_keep_html_files,
                         $formdata->export_attempts_paper_format,
                         $formdata->export_quiz_backup,

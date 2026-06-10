@@ -121,6 +121,19 @@ class archive_quiz_form extends \moodleform {
             }
         }
 
+        // Options: Filters.
+        foreach (Report::FILTERS as $i => $filter) {
+            $mform->addElement(
+                'advcheckbox',
+                'export_attempts_filter_' . $filter,
+                $i == 0 ? get_string('export_attempts_filter', 'quiz_archiver') : '&nbsp;',
+                get_string('export_attempts_filter_' . $filter, 'quiz_archiver'),
+                $config->{'job_preset_export_attempts_filter_' . $filter . '_locked'} ? 'disabled' : null
+            );
+            $mform->addHelpButton('export_attempts_filter_' . $filter, 'export_attempts_filter_' . $filter, 'quiz_archiver');
+            $mform->setDefault('export_attempts_filter_' . $filter, $config->{'job_preset_export_attempts_filter_' . $filter});
+        }
+
         // Options: Backups.
         $mform->addElement(
             'advcheckbox',
