@@ -257,19 +257,13 @@ class Report {
     public function get_latest_attempt_of_each_user(): ?array {
         global $DB;
 
-        $res = $DB->get_records_sql(
-            "SELECT MAX(id) AS maxid " .
+        return $DB->get_records_sql(
+            "SELECT MAX(id) AS attemptid, userid " .
             "FROM {quiz_attempts} " .
             "WHERE preview = 0 AND quiz = :quizid " .
             "GROUP BY userid",
             [ "quizid" => $this->quiz->id ]
         );
-
-        if (empty($res)) {
-            return null;
-        }
-
-        return array_map(fn($v): int => $v->maxid, $res);
     }
 
     /**
