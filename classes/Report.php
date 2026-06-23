@@ -643,11 +643,6 @@ class Report {
                     overflow: visible !important;
                     white-space: pre-wrap !important;
                 }
-
-                /* Remove padding from codebox comments to prevent them from drawing over student code */
-                code .token.comment {
-                    padding: 0.5rem !important;
-                }
             ");
             $dom->getElementsByTagName('head')[0]->appendChild($csshacksnode);
         }
