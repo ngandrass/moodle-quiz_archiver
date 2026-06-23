@@ -297,25 +297,27 @@ class quiz_archiver_report extends report_base {
         if ($filtercount == 0) {
             $attempts = $this->report->get_attempts();
         } else {
-            $filterids = [];
+            $filterattempts = [];
             foreach ($attemptfilters as $i => $filter) {
                 switch ($filter) {
                     case Report::FILTERS[0]: // Is "latest".
-                        array_push($filterids, $this->report->get_latest_attempt_of_each_user());
+                        array_push($filterattempts, $this->report->get_latest_attempt_of_each_user());
                         break;
                 }
             }
 
             // Intersect different filter results for and-operator combination.
-            $filteridsmerge = $filterids[0];
+            // NOTE: For this to work, filter results must map their attempts id
+            // to the database row, containing at least (again) the attempts id
+            // as well as the users id.
+            // Example: `[123 => (object) ['attemptid' => 123, 'userid' => 4]]`.
+            $filteridsmerge = $filterattempts[0];
             if ($filtercount > 1) {
                 for ($i = 1; $i < $filtercount; $i++) {
-                    if ($filterids[$i]) {
-                        $filteridsmerge = array_intersect(
-                            $filteridsmerge,
-                            $filterids[$i]
-                        );
-                    }
+                    $filteridsmerge = array_intersect_key(
+                        $filteridsmerge,
+                        $filterattempts[$i],
+                    );
                 }
             }
 
