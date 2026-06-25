@@ -648,6 +648,11 @@ class Report {
                 code .token.comment {
                     padding: 0.5rem !important;
                 }
+
+                /* Expand qtype JACK text areas to dynamically fit content */
+                .que.jack textarea.qtype_jack_response.qtype_jack_plain {
+                    field-sizing: content !important;
+                }
             ");
             $dom->getElementsByTagName('head')[0]->appendChild($csshacksnode);
         }
