@@ -295,7 +295,7 @@ class quiz_archiver_report extends report_base {
         $attempts = null;
         $filtercount = count($attemptfilters);
         if ($filtercount == 0) {
-            $attempts = $this->report->get_attempts();
+            $attempts = array_values($this->report->get_attempts());
         } else {
             $filterattempts = [];
             foreach ($attemptfilters as $i => $filter) {
@@ -332,7 +332,10 @@ class quiz_archiver_report extends report_base {
         $taskarchivequizattempts = null;
         if ($exportattempts) {
             $taskarchivequizattempts = [
-                'attemptids' => $attempts,
+                'attemptids' => array_map(
+                    fn($v): int => $v->attemptid,
+                    $attempts,
+                ),
                 'fetch_metadata' => $exportmetadata,
                 'sections' => $reportsections,
                 'paper_format' => $paperformat,
