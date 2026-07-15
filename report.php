@@ -344,6 +344,7 @@ class quiz_archiver_report extends report_base {
                 'foldername_pattern' => $attemptsfoldernamepattern,
                 'filename_pattern' => $attemptsfilenamepattern,
                 'image_optimize' => $imageoptimize ?? false,
+                'include_filehashes' => true,
             ];
         }
 
