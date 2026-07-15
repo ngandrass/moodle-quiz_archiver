@@ -309,6 +309,30 @@ class Report {
                     'usageid' => $qa->get_usage_id(),
                     'slot' => $slot,
                     'file' => $qafile,
+                    'itemid' => "{$qa->get_usage_id()}/{$slot}/{$qafile->get_itemid()}",
+                    /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
+                       creates while eating innocent programmers for breakfast ... */
+                ];
+            }
+
+            // NOTE: Code template files of qType JACK questions are not considered attachments by
+            // NOTE: moodle itself but for archiving they should be included as such.
+            if (get_class($qa->get_question()->qtype) == 'qtype_jack') {
+                // NOTE: From https://github.com/Wunderbyte-GmbH/moodle_qtype_jack/blob/main/renderer.php#L82 .
+                $jackcodetemplatefiles = get_file_storage()->get_area_files(
+                    $qa->get_question()->contextid,
+                    'qtype_jack',
+                    'responsefiletemplate',
+                    $qa->get_question()->id,
+                );
+                // NOTE: There can only be one template and the directory entry can be ignored.
+                $storedfile = array_pop($jackcodetemplatefiles);
+
+                $files[] = [
+                    'usageid' => $qa->get_usage_id(),
+                    'slot' => $slot,
+                    'file' => $storedfile,
+                    'itemid' => $storedfile->get_itemid(),
                 ];
             }
         }
@@ -335,9 +359,7 @@ class Report {
                 $attachment['file']->get_contextid(),
                 $attachment['file']->get_component(),
                 $attachment['file']->get_filearea(),
-                "{$attachment['usageid']}/{$attachment['slot']}/{$attachment['file']->get_itemid()}",
-                /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
-                   creates while eating innocent programmers for breakfast ... */
+                $attachment['itemid'],
                 $attachment['file']->get_filepath(),
                 $attachment['file']->get_filename()
             ));
