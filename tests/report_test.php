@@ -70,6 +70,18 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Checks if question type JACK is installed and skips test if not.
+
+     * @return void
+     */
+    protected function require_qtype_jack(): void {
+        if (!\core_component::get_plugin_directory('qtype', 'jack')) {
+            $this->markTestSkipped('qtype_jack is not installed.');
+        }
+    }
+
+
+    /**
      * Tests validation of webservice tokens
      *
      * @covers \quiz_archiver\Report::has_access
@@ -658,6 +670,38 @@ final class report_test extends \advanced_testcase {
                 fn($a) => $a['file']->get_filename() === 'cake.md'
             ),
             'cake.md attachment not found'
+        );
+    }
+
+    /**
+     * Tests to get qType JACK specific code template files as attachments.
+     *
+     * @covers \quiz_archiver\Report::get_attempt_attachments
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_get_qtype_jack_code_templates_as_attachments(): void {
+        $this->require_qtype_jack();
+
+        $this->resetAfterTest();
+        $rc = $this->getDataGenerator()->import_reference_course(
+            "/../fixtures/referencequiz_qType-JACK.mbz",
+            "qType JACK Reference Quiz",
+        );
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $attachments = $report->get_attempt_attachments($rc->attemptids[0]);
+        $this->assertNotEmpty($attachments, 'No attachments found');
+
+        // Find code template `CodeTemplateClass.java` attachment.
+        $this->assertNotEmpty(
+            array_filter(
+                $attachments,
+                fn($a) => $a['file']->get_filename() === 'CodeTemplateClass.java'
+            ),
+            'CodeTemplateClass.java code template not found'
         );
     }
 
