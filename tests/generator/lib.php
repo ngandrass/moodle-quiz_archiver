@@ -156,6 +156,8 @@ class quiz_archiver_generator extends \testing_data_generator {
      * Imports the reference course into a new course and returns the reference
      * quiz, the respective cm, and the course itself.
      *
+     * @param string $referencequizbackuppath Path of reference quiz backup
+     * @param string $referencequizname Name of quiz to import from backup
      * @return \stdClass Object with keys 'quiz' (the reference quiz), 'cm' (the
      * respective cm), 'course' (the course itself), 'attemptids' (array of all
      * attempt ids inside the reference quiz), 'userids' (array of all user ids
@@ -165,14 +167,14 @@ class quiz_archiver_generator extends \testing_data_generator {
      * @throws \restore_controller_exception
      * @throws Exception
      */
-    public function import_reference_course(): \stdClass {
+    public function import_reference_course(string $referencequizbackuppath, string $referencequizname): \stdClass {
         global $DB;
 
         // Prepare backup of reference course for restore.
         $backupid = 'referencequiz';
         $backuppath = make_backup_temp_directory($backupid);
         get_file_packer('application/vnd.moodle.backup')->extract_to_pathname(
-            __DIR__ . "/../fixtures/referencequiz.mbz",
+            __DIR__ . $referencequizbackuppath,
             $backuppath
         );
 
@@ -216,7 +218,7 @@ class quiz_archiver_generator extends \testing_data_generator {
         $cms = $modinfo->get_cms();
         $cm = null;
         foreach ($cms as $curcm) {
-            if ($curcm->modname == 'quiz' && strpos($curcm->name, 'Reference Quiz') === 0) {
+            if ($curcm->modname == 'quiz' && $curcm->name == $referencequizname) {
                 $cm = $curcm;
                 break;
             }

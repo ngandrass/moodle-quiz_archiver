@@ -56,7 +56,10 @@ final class archive_contents_table_test extends \advanced_testcase {
 
         // Create a mock job to render inside the table.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $rc = $this->getDataGenerator()->import_reference_course(
+            "/../fixtures/referencequiz.mbz",
+            "Reference Quiz (standard question types)",
+        );
         $job = ArchiveJob::create(
             '00000000000000000000000001',
             $rc->course->id,

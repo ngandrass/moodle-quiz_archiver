@@ -158,7 +158,10 @@ final class generator_test extends \advanced_testcase {
         // Import reference course.
         $generator = self::getDataGenerator();
         $this->resetAfterTest();
-        $rc = $generator->import_reference_course();
+        $rc = $generator->import_reference_course(
+            "/../fixtures/referencequiz.mbz",
+            "Reference Quiz (standard question types)",
+        );
 
         // Verify reference quiz.
         $this->assertNotEmpty($rc, 'The reference quiz was not imported');
