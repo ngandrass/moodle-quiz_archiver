@@ -63,6 +63,7 @@ Use the following buttons to jump to the desired section:
 - Support for complex content and question types, including Drag and Drop, MathJax
   formulas, STACK plots, and other question / content types that require JavaScript
   processing
+- Support for question type [JACK](https://github.com/Wunderbyte-GmbH/moodle_qtype_jack)
 - Quiz attempt reports are fully text-searchable, including mathematical formulas
 - Moodle backups (`.mbz`) of both the quiz and the whole course are supported
 - Generation of checksums for every file within the archive and the archive itself
