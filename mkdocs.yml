@@ -8,7 +8,7 @@ copyright: "Copyright &copy; 2023 - 2026 Niels Gandraß<br>License: GNU General 
 extra:
   social:
     - icon: simple/moodle
-      link: https://moodle.org/plugins/quiz_archiver
+      link: https://marketplace.moodle.com/plugins/quiz_archiver
       name: "Moodle Plugin Directory: quiz_archiver"
     - icon: fontawesome/brands/github
       link: https://github.com/ngandrass/moodle-quiz_archiver
