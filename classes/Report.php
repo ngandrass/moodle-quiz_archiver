@@ -324,16 +324,18 @@ class Report {
                     'qtype_jack',
                     'responsefiletemplate',
                     $qa->get_question()->id,
+                    includedirs: false,
                 );
-                // NOTE: There can only be one template and the directory entry can be ignored.
-                $storedfile = array_pop($jackcodetemplatefiles);
 
-                $files[] = [
-                    'usageid' => $qa->get_usage_id(),
-                    'slot' => $slot,
-                    'file' => $storedfile,
-                    'itemid' => $storedfile->get_itemid(),
-                ];
+                // NOTE: Currently there can only be one or none code template file. Keep the loop for the future.
+                foreach ($jackcodetemplatefiles as $jacktemplatefile) {
+                    $files[] = [
+                        'usageid' => $qa->get_usage_id(),
+                        'slot' => $slot,
+                        'file' => $jacktemplatefile,
+                        'itemid' => $jacktemplatefile->get_itemid(),
+                    ];
+                }
             }
         }
 
