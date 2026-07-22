@@ -317,7 +317,7 @@ class Report {
 
             // NOTE: Code template files of qType JACK questions are not considered attachments by
             // NOTE: moodle itself but for archiving they should be included as such.
-            if (get_class($qa->get_question()->qtype) == 'qtype_jack') {
+            if ($qa->get_question()->qtype->plugin_name() == 'qtype_jack') {
                 // NOTE: From https://github.com/Wunderbyte-GmbH/moodle_qtype_jack/blob/main/renderer.php#L82 .
                 $jackcodetemplatefiles = get_file_storage()->get_area_files(
                     $qa->get_question()->contextid,
