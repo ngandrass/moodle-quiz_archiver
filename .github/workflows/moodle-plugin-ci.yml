@@ -88,6 +88,9 @@ jobs:
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
+      - name: Install optional plugin dependencies
+        run: moodle-plugin-ci add-plugin Wunderbyte-GmbH/moodle_qtype_jack
+
       - name: Install moodle-plugin-ci
         run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
