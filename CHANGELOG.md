@@ -1,8 +1,9 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version X.Y.Z (YYYYMMDDXX)
 
-- Add support for question type [JACK](https://github.com/Wunderbyte-GmbH/moodle_qtype_jack).
+- Add support (custom rendering rules) for question type [JACK](https://github.com/Wunderbyte-GmbH/moodle_qtype_jack)
+- Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
 
 
 ## Version 4.1.0 (2026052200)
