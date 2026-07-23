@@ -340,11 +340,9 @@ class quiz_archiver_report extends report_base {
                 'sections' => $reportsections,
                 'paper_format' => $paperformat,
                 'keep_html_files' => $reportkeephtmlfiles,
-                'flatten_archive' => $flattenarchive,
                 'foldername_pattern' => $attemptsfoldernamepattern,
                 'filename_pattern' => $attemptsfilenamepattern,
                 'image_optimize' => $imageoptimize ?? false,
-                'include_filehashes' => true,
             ];
         }
 
@@ -393,6 +391,8 @@ class quiz_archiver_report extends report_base {
                         $this->quiz,
                         $archivefilenamepattern
                     ),
+                    'archive_flatten' => $flattenarchive,
+                    'archive_filehashes' => true,
                 ],
                 $taskarchivequizattempts,
                 $taskmoodlebackups,
