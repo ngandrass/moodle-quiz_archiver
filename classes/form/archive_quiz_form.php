@@ -83,15 +83,11 @@ class archive_quiz_form extends \moodleform {
 
         // Options: Attempts.
         $mform->addElement(
-            'advcheckbox',
-            'export_attempts',
+            'static',
+            'export_attempts_num',
             get_string('attempts', 'mod_quiz'),
             get_string('export_attempts_num', 'quiz_archiver', $this->numattempts),
-            ['disabled' => 'disabled'],
-            ['1', '1']
         );
-        $mform->addHelpButton('export_attempts', 'export_attempts', 'quiz_archiver');
-        $mform->setDefault('export_attempts', true);
 
         $mform->addElement(
             'advcheckbox',
