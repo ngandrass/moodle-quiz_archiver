@@ -32,7 +32,6 @@ use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_foldername_pattern;
-use quiz_archiver\local\admin\setting\admin_setting_configcheckbox_alwaystrue;
 use quiz_archiver\local\autoinstall;
 use quiz_archiver\Report;
 
@@ -123,14 +122,6 @@ if ($hassiteconfig) {
             'quiz_archiver/header_job_presets',
             get_string('setting_header_job_presets', 'quiz_archiver'),
             get_string('setting_header_job_presets_desc', 'quiz_archiver'),
-        ));
-
-        // Export Attempts.
-        $settings->add(new admin_setting_configcheckbox_alwaystrue(
-            'quiz_archiver/job_preset_export_attempts',
-            get_string('export_attempts', 'quiz_archiver'),
-            get_string('export_attempts_help', 'quiz_archiver'),
-            '1',
         ));
 
         // Export attempts metadata.

@@ -260,7 +260,6 @@ final class archive_quiz_form_test extends \advanced_testcase {
      */
     public static function get_data_data_provider(): array {
         return [
-            'Job preset locked: Export quiz attempts' => ['export_attempts', '1', '0'],
             'Job preset locked: Include correct answers' => ['export_report_section_rightanswer', '0', '1'],
             'Job preset locked: Include answer history' => ['export_report_section_history', '0', '1'],
             'Job preset locked: Include file attachments' => ['export_report_section_attachments', '1', '0'],

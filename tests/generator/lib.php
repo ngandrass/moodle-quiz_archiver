@@ -76,7 +76,6 @@ class quiz_archiver_generator extends \testing_data_generator {
             ],
             'settings' => [
                 'num_attempts' => 3,
-                'export_attempts' => 1,
                 'export_report_section_header' => 1,
                 'export_report_section_quiz_feedback' => 1,
                 'export_report_section_question' => 1,
