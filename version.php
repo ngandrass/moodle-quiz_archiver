@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $plugin->component = 'quiz_archiver';
 $plugin->release = '4.1.0';
-$plugin->version = 2026052201;
+$plugin->version = 2026052202;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 502]; // X meta-supported-moodle{4.5 - 5.2} meta-supported-php{8.1 - 8.4}.
 $plugin->maturity = MATURITY_STABLE;
