@@ -51,7 +51,10 @@ class Report {
     public const SECTIONS = [
         "header",
         "quiz_feedback",
+        "quiz_grade",
         "question",
+        "question_correctness",
+        "question_marks",
         "question_feedback",
         "general_feedback",
         "rightanswer",
@@ -64,6 +67,9 @@ class Report {
         "header" => [],
         "question" => [],
         "quiz_feedback" => ["header"],
+        "quiz_grade" => ["header"],
+        "question_correctness" => ["question"],
+        "question_marks" => ["question"],
         "question_feedback" => ["question"],
         "general_feedback" => ["question"],
         "rightanswer" => ["question"],
@@ -362,7 +368,8 @@ class Report {
      * @throws \moodle_exception
      */
     public function generate(int $attemptid, array $sections): string {
-        global $CFG, $DB, $PAGE;
+        global $DB, $OUTPUT, $PAGE;
+
         $ctx = \context_module::instance($this->cm->id);
         $renderer = $PAGE->get_renderer('mod_quiz');
         $html = '';
@@ -393,7 +400,7 @@ class Report {
 
         // Section: Quiz header.
         if ($sections['header']) {
-            $quizheaderdata = [];
+            $summaryinfo = new \mod_quiz\output\attempt_summary_information();
 
             // User name and link.
             $attemptuser = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
@@ -403,121 +410,105 @@ class Report {
                 new \moodle_url('/user/view.php', ['id' => $attemptuser->id, 'course' => $attemptobj->get_courseid()]),
                 fullname($attemptuser, true)
             );
-            global $OUTPUT;
-            $quizheaderdata['user'] = [
-                'title' => get_string('user'),
-                'content' => $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink),
-            ];
+            $summaryinfo->add_item(
+                'user',
+                get_string('user'),
+                $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink)
+            );
 
             // User ID number.
-            $quizheaderdata['useridnumber'] = [
-                'title' => get_string('idnumber'),
-                'content' => $attemptuser->idnumber ?: '<i>' . get_string('none') . '</i>',
-            ];
+            $summaryinfo->add_item(
+                'useridnumber',
+                get_string('idnumber'),
+                $attemptuser->idnumber ?: '<i>' . get_string('none') . '</i>'
+            );
 
             // Quiz metadata.
-            $quizheaderdata['course'] = [
-                'title' => get_string('course'),
-                'content' => $this->course->fullname . ' (Course-ID: ' . $this->course->id . ')',
-            ];
+            $summaryinfo->add_item(
+                'course',
+                get_string('course'),
+                $this->course->fullname . ' (Course-ID: ' . $this->course->id . ')'
+            );
 
-            $quizheaderdata['quiz'] = [
-                'title' => get_string('modulename', 'quiz'),
-                'content' => $this->quiz->name . ' (Quiz-ID: ' . $this->quiz->id . ')',
-            ];
+            $summaryinfo->add_item(
+                'quiz',
+                get_string('modulename', 'quiz'),
+                $this->quiz->name . ' (Quiz-ID: ' . $this->quiz->id . ')'
+            );
 
             // Timing information.
-            $quizheaderdata['startedon'] = [
-                'title' => get_string('startedon', 'quiz'),
-                'content' => userdate($attempt->timestart),
-            ];
+            $summaryinfo->add_item(
+                'startedon',
+                get_string('startedon', 'quiz'),
+                userdate($attempt->timestart)
+            );
 
-            $quizheaderdata['state'] = [
-                'title' => get_string('attemptstate', 'quiz'),
-                'content' => quiz_attempt::state_name($attempt->state),
-            ];
+            $summaryinfo->add_item(
+                'state',
+                get_string('attemptstate', 'quiz'),
+                quiz_attempt::state_name($attempt->state)
+            );
 
             if ($attempt->state == quiz_attempt::FINISHED) {
-                $quizheaderdata['completedon'] = [
-                    'title' => get_string('completedon', 'quiz'),
-                    'content' => userdate($attempt->timefinish),
-                ];
-                $quizheaderdata['timetaken'] = [
-                    'title' => get_string('attemptduration', 'quiz'),
-                    'content' => $timetaken,
-                ];
+                $summaryinfo->add_item('completedon', get_string('completedon', 'quiz'), userdate($attempt->timefinish));
+                $summaryinfo->add_item('timetaken', get_string('attemptduration', 'quiz'), $timetaken);
             }
 
             if (!empty($overtime)) {
-                $quizheaderdata['overdue'] = [
-                    'title' => get_string('overdue', 'quiz'),
-                    'content' => $overtime,
-                ];
+                $summaryinfo->add_item('overdue', get_string('overdue', 'quiz'), $overtime);
             }
 
             // Grades.
             $grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
-            if (quiz_has_grades($quiz)) {
-                if (is_null($grade)) {
-                    $quizheaderdata['grade'] = [
-                        'title' => get_string('gradenoun'),
-                        'content' => get_string('notyetgraded', 'quiz'),
-                    ];
-                }
+            if ($sections['quiz_grade']) {
+                if (quiz_has_grades($quiz)) {
+                    if (is_null($grade)) {
+                        $summaryinfo->add_item('grade', get_string('gradenoun'), get_string('notyetgraded', 'quiz'));
+                    }
 
-                if ($attempt->state == quiz_attempt::FINISHED) {
-                    // Show raw marks only if they are different from the grade (like on the view page).
-                    if ($quiz->grade != $quiz->sumgrades) {
+                    if ($attempt->state == quiz_attempt::FINISHED) {
+                        // Show raw marks only if they are different from the grade (like on the view page).
+                        if ($quiz->grade != $quiz->sumgrades) {
+                            $a = new \stdClass();
+                            $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
+                            $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
+                            $summaryinfo->add_item('marks', get_string('marks', 'quiz'), get_string('outofshort', 'quiz', $a));
+                        }
+
+                        // Now the scaled grade.
                         $a = new \stdClass();
-                        $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
-                        $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
-                        $quizheaderdata['marks'] = [
-                            'title' => get_string('marks', 'quiz'),
-                            'content' => get_string('outofshort', 'quiz', $a),
-                        ];
+                        $a->grade = \html_writer::tag('b', quiz_format_grade($quiz, $grade));
+                        $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
+                        if ($quiz->grade != 100) {
+                            $a->percent = \html_writer::tag('b', format_float($attempt->sumgrades * 100 / $quiz->sumgrades, 0));
+                            $formattedgrade = get_string('outofpercent', 'quiz', $a);
+                        } else {
+                            $formattedgrade = get_string('outof', 'quiz', $a);
+                        }
+                        $summaryinfo->add_item('grade', get_string('gradenoun'), $formattedgrade);
                     }
-
-                    // Now the scaled grade.
-                    $a = new \stdClass();
-                    $a->grade = \html_writer::tag('b', quiz_format_grade($quiz, $grade));
-                    $a->maxgrade = quiz_format_grade($quiz, $quiz->grade);
-                    if ($quiz->grade != 100) {
-                        $a->percent = \html_writer::tag('b', format_float($attempt->sumgrades * 100 / $quiz->sumgrades, 0));
-                        $formattedgrade = get_string('outofpercent', 'quiz', $a);
-                    } else {
-                        $formattedgrade = get_string('outof', 'quiz', $a);
-                    }
-                    $quizheaderdata['grade'] = [
-                        'title' => get_string('gradenoun'),
-                        'content' => $formattedgrade,
-                    ];
                 }
             }
 
             // Any additional summary data from the behaviour.
-            $quizheaderdata = array_merge($quizheaderdata, $attemptobj->get_additional_summary_data($options));
+            foreach ($attemptobj->get_additional_summary_data($options) as $shortname => $data) {
+                $summaryinfo->add_item($shortname, $data['title'], $data['content']);
+            }
 
             // Feedback if there is any, and the user is allowed to see it now.
             if ($sections['quiz_feedback']) {
                 $feedback = $attemptobj->get_overall_feedback($grade);
-                $quizheaderdata['feedback'] = [
-                    'title' => get_string('feedback', 'quiz'),
-                    'content' => $feedback ?: '<i>' . get_string('none') . '</i>',
-                ];
+                $summaryinfo->add_item(
+                    'feedback',
+                    get_string('feedback', 'quiz'),
+                    $feedback ?: '<i>' . get_string('none') . '</i>'
+                );
             }
 
             // Add export date.
-            $quizheaderdata['exportdate'] = [
-                'title' => get_string('archived', 'quiz_archiver'),
-                'content' => userdate(time()),
-            ];
+            $summaryinfo->add_item('exportdate', get_string('archived', 'quiz_archiver'), userdate(time()));
 
-            // Add summary table to the html.
-            // TODO (MDL-0): Rework into proper use of new 4.4 API but create appropriate test cases first.
-            $html .= $renderer->review_attempt_summary(
-                \mod_quiz\output\attempt_summary_information::create_from_legacy_array($quizheaderdata),
-                0
-            );
+            $html .= $renderer->review_attempt_summary($summaryinfo, 0);
         }
 
         // Section: Quiz questions.
@@ -529,16 +520,29 @@ class Report {
                 $number = $attemptobj->get_question_number($originalslot);
                 $displayoptions = $attemptobj->get_display_options_with_edit_link(true, $slot, "");
                 $displayoptions->readonly = true;
-                $displayoptions->marks = 2;
                 $displayoptions->manualcomment = 1;
                 $displayoptions->rightanswer = $sections['rightanswer'];
                 $displayoptions->feedback = $sections['question_feedback'];
                 $displayoptions->generalfeedback = $sections['general_feedback'];
                 $displayoptions->history = $sections['history'];
-                $displayoptions->correctness = 1;
-                $displayoptions->numpartscorrect = 1;
                 $displayoptions->flags = 1;
                 $displayoptions->manualcommentlink = 0;
+
+                // Handle question correctness.
+                if ($sections['question_correctness']) {
+                    $displayoptions->correctness = \question_display_options::VISIBLE;
+                    $displayoptions->numpartscorrect = \question_display_options::VISIBLE;
+                } else {
+                    $displayoptions->correctness = \question_display_options::HIDDEN;
+                    $displayoptions->numpartscorrect = \question_display_options::HIDDEN;
+                }
+
+                // Handle question marks display option.
+                if ($sections['question_marks']) {
+                    $displayoptions->marks = \question_display_options::MARK_AND_MAX;
+                } else {
+                    $displayoptions->marks = \question_display_options::HIDDEN;
+                }
 
                 // Render question as HTML.
                 if ($slot != $originalslot) {
@@ -611,18 +615,23 @@ class Report {
             // We need to inject custom CSS to hide elements since the DOM generated by.
             // Moodle can be corrupt which causes the PHP DOMDocument parser to die...
             $csshacksnode = $dom->createElement("style", "
-                nav.navbar {
-                    display: none !important;
+                /* Hide everything except the main page region */
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+
+                    #region-main,
+                    #region-main * {
+                        visibility: visible;
+                    }
                 }
 
-                footer {
-                    display: none !important;
-                }
-
-                div#page {
-                    margin-top: 0 !important;
-                    padding-left: 0 !important;
-                    padding-right: 0 !important;
+                /* Ensure that parent container (invisible) does not cause additional margings or paddings */
+                div#page,
+                div.main-inner {
+                    margin: 0 !important;
+                    padding: 0 !important;
                     height: initial !important;
                 }
 
@@ -630,6 +639,7 @@ class Report {
                     height: initial !important;
                 }
 
+                /* Prevent STACK input errors breaking the page */
                 .stackinputerror {
                     display: none !important;
                 }

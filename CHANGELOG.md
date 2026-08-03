@@ -1,5 +1,18 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
+
+
+## Version 4.1.0 (2026052200)
+
+- Add attempt report setting for showing / hiding overall quiz grade
+- Add attempt report setting for showing / hiding question correctness indicators
+- Add attempt report setting for showing / hiding raw marks for questions
+- Migrate quiz attempt renderer to new quiz attempt summary API
+
+
 ## Version 4.0.0 (2026040100)
 
 **🚨 BREAKING 🚨** This version **requires at least Moodle 4.5 (LTS) and PHP 8.1**. If you are still using an older Moodle
