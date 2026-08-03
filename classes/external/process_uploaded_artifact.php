@@ -90,6 +90,11 @@ class process_uploaded_artifact extends external_api {
                 'SHA256 checksum of the file',
                 VALUE_REQUIRED
             ),
+            'artifact_count' => new external_value(
+                PARAM_INT,
+                'Number of individually uploaded files to process',
+                VALUE_REQUIRED
+            ),
         ]);
     }
 
@@ -118,6 +123,7 @@ class process_uploaded_artifact extends external_api {
      * @param string $artifactfilepathraw
      * @param int $artifactitemidraw
      * @param string $artifactsha256sumraw
+     * @param int $artifactcountraw
      * @return array
      * @throws \coding_exception
      * @throws \dml_exception
@@ -133,7 +139,8 @@ class process_uploaded_artifact extends external_api {
         string $artifactfilenameraw,
         string $artifactfilepathraw,
         int $artifactitemidraw,
-        string $artifactsha256sumraw
+        string $artifactsha256sumraw,
+        int $artifactcountraw,
     ): array {
         // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
@@ -146,6 +153,7 @@ class process_uploaded_artifact extends external_api {
             'artifact_filepath' => $artifactfilepathraw,
             'artifact_itemid' => $artifactitemidraw,
             'artifact_sha256sum' => $artifactsha256sumraw,
+            'artifact_count' => $artifactcountraw,
         ]);
 
         // Validate that the jobid exists and no artifact was uploaded previously.
@@ -173,22 +181,47 @@ class process_uploaded_artifact extends external_api {
         $context = \context_module::instance($job->get_cmid());
         require_capability('quiz/archiver:use_webservice', $context);
 
-        // Validate uploaded file.
-        // Note: We use SHA256 instead of Moodle sha1, since SHA1 is prone to.
-        // hash collisions!
-        $draftfile = FileManager::get_draft_file(
-            $params['artifact_contextid'],
-            $params['artifact_itemid'],
-            $params['artifact_filepath'],
-            $params['artifact_filename'],
-        );
-        if (!$draftfile) {
+        // Get or reconstruct uploaded file/-s.
+        $draftfile = null;
+        if ($params['artifact_count'] == 1) {
+            // Find previously uploaded file.
+            $draftfile = FileManager::get_draft_file(
+                $params['artifact_contextid'],
+                $params['artifact_itemid'],
+                $params['artifact_filepath'],
+                $params['artifact_filename'],
+            );
+            if (!$draftfile) {
+                $job->set_status(ArchiveJob::STATUS_FAILED);
+                return [
+                    'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND',
+                ];
+            }
+        } else if ($params['artifact_count'] > 1) {
+            // Reasabmle orgininal file.
+            $draftfile = FileManager::reasamble_chunked_file(
+                $params['artifact_contextid'],
+                $params['artifact_itemid'],
+                $params['artifact_filepath'],
+                $params['artifact_filename'],
+                $params['artifact_count']
+            );
+            if (!$draftfile) {
+                $job->set_status(ArchiveJob::STATUS_FAILED);
+                return [
+                    'status' => 'E_CHUNK_REASSEMBLY_FAILED',
+                ];
+            }
+        } else {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             return [
-                'status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND',
+                'status' => 'E_INVALID_ARTIFACT_COUNT',
             ];
         }
 
+        // Validate uploaded file.
+        // Note: We use SHA256 instead of Moodle sha1, since SHA1 is prone to.
+        // hash collisions!
         if ($params['artifact_sha256sum'] != FileManager::hash_file($draftfile)) {
             $job->set_status(ArchiveJob::STATUS_FAILED);
             $draftfile->delete();

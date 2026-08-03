@@ -27,7 +27,7 @@ generated reports on a fine-granular level (e.g., exclude example solutions,
 include answer history, ...).
 
 Generated quiz attempt reports include all elements of the test, even complex
-ones like [MathJax](https://www.mathjax.org/) formulas, [STACK](https://moodle.org/plugins/qtype_stack)
+ones like [MathJax](https://www.mathjax.org/) formulas, [STACK](https://marketplace.moodle.com/plugins/qtype_stack)
 plots, [GeoGebra](https://www.geogebra.org/) applets, and other question /
 content types that require JavaScript processing. All PDF and HTML files are
 fully text-searchable, including rendered MathJax formulas. Content is saved
@@ -39,8 +39,8 @@ service to remove load from Moodle and to eliminate the need to install a large
 number of software dependencies on the webserver. It can easily be [deployed
 using Docker](https://github.com/ngandrass/moodle-quiz-archive-worker#installation).
 
-The Quiz Archiver is available via the [Moodle Plugin Directory](https://moodle.org/plugins/quiz_archiver):\
-[![Moodle Plugin Directory](docs/assets/moodle-plugin-directory-button.png)](https://moodle.org/plugins/quiz_archiver)
+The Quiz Archiver is available via the [Moodle Plugin Directory](https://marketplace.moodle.com/plugins/quiz_archiver):\
+[![Moodle Plugin Directory](docs/assets/moodle-plugin-directory-button.png)](https://marketplace.moodle.com/plugins/quiz_archiver)
 
 More information and detailed installation / setup instructions can be found in
 the [official documentation](https://quizarchiver.gandrass.de/):
