@@ -153,7 +153,7 @@ class quiz_archiver_report extends report_base {
         // Quiz archive form. Logic is handled in handle_posted_forms() above.
         $archivequizform = new archive_quiz_form(
             $this->quiz->name,
-            count($this->report->get_attempts())
+            count($this->report->get_all_attempts())
         );
 
         // Job overview table.
@@ -290,40 +290,9 @@ class quiz_archiver_report extends report_base {
         );
 
         // Get attempt metadata.
-        $attempts = null;
-        $filtercount = count($attemptfilters);
-        if ($filtercount == 0) {
-            $attempts = array_values($this->report->get_attempts());
-        } else {
-            $filterattempts = [];
-            foreach ($attemptfilters as $i => $filter) {
-                switch ($filter) {
-                    case Report::FILTERS[0]: // Is "latest".
-                        array_push($filterattempts, $this->report->get_latest_attempt_of_each_user());
-                        break;
-                }
-            }
-
-            // Intersect different filter results for and-operator combination.
-            // NOTE: For this to work, filter results must map their attempts id
-            // to the database row, containing at least (again) the attempts id
-            // as well as the users id.
-            // Example: `[123 => (object) ['attemptid' => 123, 'userid' => 4]]`.
-            $filteridsmerge = $filterattempts[0];
-            if ($filtercount > 1) {
-                for ($i = 1; $i < $filtercount; $i++) {
-                    $filteridsmerge = array_intersect_key(
-                        $filteridsmerge,
-                        $filterattempts[$i],
-                    );
-                }
-            }
-
-            if (count($filteridsmerge) == 0) {
-                throw new \RuntimeException(get_string('error_no_attempts_left_after_filtering', 'quiz_archiver'));
-            }
-
-            $attempts = array_values($filteridsmerge);
+        $attempts = $this->report->get_filtered_attempts($attemptfilters);
+        if (count($attempts) == 0) {
+            throw new \RuntimeException(get_string('error_no_attempts_left_after_filtering', 'quiz_archiver'));
         }
 
         // Prepare task: Export quiz attempts.
@@ -551,7 +520,7 @@ class quiz_archiver_report extends report_base {
         if (self::quiz_can_be_archived($this->quiz->id)) {
             $archivequizform = new archive_quiz_form(
                 $this->quiz->name,
-                count($this->report->get_attempts())
+                count($this->report->get_all_attempts())
             );
 
             if ($archivequizform->is_submitted()) {

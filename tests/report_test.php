@@ -655,21 +655,21 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
-     * Tests to get the attempts of a quiz
+     * Tests to get all the attempts of a quiz
      *
-     * @covers \quiz_archiver\Report::get_attempts
+     * @covers \quiz_archiver\Report::get_all_attempts
      *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_attempts(): void {
+    public function test_get_all_attempts(): void {
         $this->resetAfterTest();
         $rc = $this->getDataGenerator()->import_reference_course();
 
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $attempts = $report->get_attempts();
+        $attempts = $report->get_all_attempts();
 
         $this->assertNotEmpty($attempts, 'No attempts found');
         $this->assertCount(count($rc->attemptids), $attempts, 'Incorrect number of attempts found');

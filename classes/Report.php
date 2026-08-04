@@ -147,7 +147,7 @@ class Report {
      *
      * @throws \dml_exception
      */
-    public function get_attempts(): array {
+    public function get_all_attempts(): array {
         global $DB;
 
         return $DB->get_records_sql(
@@ -158,6 +158,57 @@ class Report {
                 "quizid" => $this->quiz->id,
             ]
         );
+    }
+
+    /**
+     * Get filtered attempts for this quiz, excluding previews
+     *
+     * @param array $filterkeys List of filter keys to filter attempts by.
+     * @return array Array of all attempt IDs together with the userid that were
+     * made inside this quiz.
+     *
+     * @throws \dml_exception
+     */
+    public function get_filtered_attempts(array $filterkeys): array {
+
+        $attempts = [];
+
+        $filtercount = count($filterkeys);
+        if ($filtercount == 0) {
+            $attempts = array_values($this->get_all_attempts());
+        } else {
+            $filterattempts = [];
+            foreach (array_unique($filterkeys) as $i => $filter) {
+                switch ($filter) {
+                    case self::FILTERS[0]: // Is "latest".
+                        array_push($filterattempts, $this->get_latest_attempt_of_each_user());
+                        break;
+                }
+            }
+
+            // Intersect different filter results for and-operator combination.
+            // NOTE: For this to work, filter results must map their attempts id
+            // to the database row, containing at least (again) the attempts id
+            // as well as the users id.
+            // Example: `[123 => (object) ['attemptid' => 123, 'userid' => 4]]`.
+            $filteridsmerge = $filterattempts[0];
+            if ($filtercount > 1) {
+                // NOTE: Only one filter option available for now.
+                // TODO (MDL-0): Remove when adding other filter options.
+                // @codeCoverageIgnoreStart
+                for ($i = 1; $i < $filtercount; $i++) {
+                    $filteridsmerge = array_intersect_key(
+                        $filteridsmerge,
+                        $filterattempts[$i],
+                    );
+                }
+                // @codeCoverageIgnoreEnd
+            }
+
+            $attempts = array_values($filteridsmerge);
+        }
+
+        return $attempts;
     }
 
     /**
