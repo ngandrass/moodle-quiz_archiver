@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="MoodleCore">
+  <rule ref="moodle"/>
+  <rule ref="moodle-extra"/>
+  <config name="testVersion" value="8.1-"/>
+</ruleset>

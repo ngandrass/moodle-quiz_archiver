@@ -128,12 +128,20 @@ class quiz_archiver_generator extends \testing_data_generator {
      *
      * @param string $filename Name of the file to create
      * @param string $filearea Filearea to store the file in
+     * @param ?int $userid ID of user to create draft file for. Unique user is created if not provided.
      * @return \stored_file The created file handle
      * @throws \file_exception
      * @throws \stored_file_creation_exception
      */
-    public function create_draft_file(string $filename, string $filearea = 'draft'): \stored_file {
-        $ctx = context_user::instance($this->create_user()->id);
+    public function create_draft_file(string $filename, string $filearea = 'draft', ?int $userid = null): \stored_file {
+
+        if ($userid === null) {
+            $userid = $this->create_user()->id;
+        }
+        $ctx = \context_user::instance($userid);
+
+        $text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' .
+            'eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
         return get_file_storage()->create_file_from_string(
             [
@@ -146,8 +154,7 @@ class quiz_archiver_generator extends \testing_data_generator {
                 'timecreated'  => time(),
                 'timemodified' => time(),
             ],
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' .
-            'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+            $text
         );
     }
 
