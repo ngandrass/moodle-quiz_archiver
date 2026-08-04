@@ -27,7 +27,7 @@ generated reports on a fine-granular level (e.g., exclude example solutions,
 include answer history, ...).
 
 Generated quiz attempt reports include all elements of the test, even complex
-ones like [MathJax](https://www.mathjax.org/) formulas, [STACK](https://moodle.org/plugins/qtype_stack)
+ones like [MathJax](https://www.mathjax.org/) formulas, [STACK](https://marketplace.moodle.com/plugins/qtype_stack)
 plots, [GeoGebra](https://www.geogebra.org/) applets, and other question /
 content types that require JavaScript processing. All PDF and HTML files are
 fully text-searchable, including rendered MathJax formulas. Content is saved
@@ -80,7 +80,7 @@ Use the following buttons to jump to the desired section:
 - Data-minimising and security driven design
 
 <br>
-[:simple-moodle: Moodle Plugin Directory](https://moodle.org/plugins/quiz_archiver){ .md-button }
+[:simple-moodle: Moodle Plugin Directory](https://marketplace.moodle.com/plugins/quiz_archiver){ .md-button }
 &nbsp; &nbsp; &nbsp;
 [:simple-github: GitHub](https://github.com/ngandrass/moodle-quiz_archiver){ .md-button }
 &nbsp; &nbsp; &nbsp;

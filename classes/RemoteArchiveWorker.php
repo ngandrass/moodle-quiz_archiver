@@ -91,6 +91,12 @@ class RemoteArchiveWorker {
         global $CFG;
         $moodleurlbase = rtrim($this->config->internal_wwwroot ?: $CFG->wwwroot, '/');
 
+        // Determine maximal upload byte size.
+        $maxbytes = intval(get_config('core', 'maxbytes'));
+        if ($maxbytes == 0) {
+            $maxbytes = get_max_upload_file_size();
+        }
+
         // Prepare request payload.
         $payload = json_encode(array_merge(
             [
@@ -98,6 +104,7 @@ class RemoteArchiveWorker {
                 "moodle_base_url" => $moodleurlbase,
                 "moodle_ws_url" => $moodleurlbase . '/webservice/rest/server.php',
                 "moodle_upload_url" => $moodleurlbase . '/webservice/upload.php',
+                "moodle_max_upload_bytes" => $maxbytes,
                 "wstoken" => $wstoken,
                 "courseid" => $courseid,
                 "cmid" => $cmid,

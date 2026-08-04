@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDXX)
+
+- Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
+
+
 ## Version 4.1.0 (2026052200)
 
 - Add attempt report setting for showing / hiding overall quiz grade
