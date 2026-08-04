@@ -310,7 +310,7 @@ class Report {
 
         return $DB->get_records_sql(
             "SELECT MAX(id) AS attemptid, userid " .
-            "FROM mdl_quiz_attempts " .
+            "FROM {quiz_attempts} " .
             "WHERE preview = 0 AND quiz = :quizid " .
             "GROUP BY userid",
             [ "quizid" => $this->quiz->id ]
