@@ -240,7 +240,7 @@ class quiz_archiver_report extends report_base {
      * @param string $paperformat Paper format to use for attempt report generation
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
-     * @param string $flattenarchive Exported archive will not have any directory structure if true
+     * @param bool $flattenarchive Exported archive will not have any directory structure if true
      * @param string $archivefilenamepattern Filename pattern to use for archive generation
      * @param string $attemptsfoldernamepattern Folder name pattern to use for attempt report generation
      * @param string $attemptsfilenamepattern Filename pattern to use for attempt report generation
