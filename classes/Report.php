@@ -195,6 +195,7 @@ class Report {
             if ($filtercount > 1) {
                 // NOTE: Only one filter option available for now.
                 // TODO (MDL-0): Remove when adding other filter options.
+
                 // @codeCoverageIgnoreStart
                 for ($i = 1; $i < $filtercount; $i++) {
                     $filteridsmerge = array_intersect_key(
