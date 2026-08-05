@@ -70,6 +70,17 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Checks if question type JACK is installed and skips test if not.
+     *
+     * @return void
+     */
+    protected function require_qtype_jack(): void {
+        if (!\core_component::get_plugin_directory('qtype', 'jack')) {
+            $this->markTestSkipped('qtype_jack is not installed.');
+        }
+    }
+
+    /**
      * Tests validation of webservice tokens
      *
      * @covers \quiz_archiver\Report::has_access
@@ -81,7 +92,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_webservice_token_access_validation(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $validtoken = md5("VALID-TEST-TOKEN");
         $invalidtoken = md5("INVALID-TEST-TOKEN");
@@ -119,7 +131,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_full_report(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate full report with all sections.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -222,7 +235,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_full_page_stub(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $html = $report->generate_full_page(
             $rc->attemptids[0],
@@ -246,7 +260,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_header(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without a header.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -283,7 +298,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_quiz_feedback(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without quiz feedback.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -319,7 +335,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_quiz_grade(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without quiz grade.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -356,7 +373,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_questions(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without questions.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -408,7 +426,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_question_correctness(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without question correctness.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -446,7 +465,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_question_marks(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without question marks.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -484,7 +504,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_question_feedback(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without question feedback.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -515,7 +536,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_general_feedback(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without general feedback.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -545,7 +567,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_rightanswers(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without right answers.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -575,7 +598,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_generate_report_no_history(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Generate report without answer history.
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
@@ -604,7 +628,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_get_attempt_attachments(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attachments = $report->get_attempt_attachments($rc->attemptids[0]);
         $this->assertNotEmpty($attachments, 'No attachments found');
@@ -620,6 +645,36 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Tests to get qType JACK specific code template files as attachments.
+     *
+     * @covers \quiz_archiver\Report::get_attempt_attachments
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_get_qtype_jack_code_templates_as_attachments(): void {
+        $this->require_qtype_jack();
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['qtype_jack']);
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $attachments = $report->get_attempt_attachments($rc->attemptids[0]);
+        $this->assertNotEmpty($attachments, 'No attachments found');
+
+        // Find code template `CodeTemplateClass.java` attachment.
+        $this->assertNotEmpty(
+            array_filter(
+                $attachments,
+                fn($a) => $a['file']->get_filename() === 'CodeTemplateClass.java'
+            ),
+            'CodeTemplateClass.java code template not found'
+        );
+    }
+
+    /**
      * Tests metadata retrieval for attempt attachments
      *
      * @covers \quiz_archiver\Report::get_attempt_attachments_metadata
@@ -631,7 +686,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_get_attempt_attachments_metadata(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attachments = $report->get_attempt_attachments_metadata($rc->attemptids[0]);
         $this->assertNotEmpty($attachments, 'No attachments found');
@@ -666,7 +722,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_get_attempts(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attempts = $report->get_attempts();
@@ -687,7 +744,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_get_attempts_metadata(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         // Test without filters.
@@ -732,7 +790,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_get_users_with_attempts(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         $users = $report->get_users_with_attempts();
@@ -752,7 +811,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_get_latest_attempt_for_user(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         $latestattempt = $report->get_latest_attempt_for_user($rc->userids[0]);
@@ -774,7 +834,8 @@ final class report_test extends \advanced_testcase {
      */
     public function test_attempt_exists(): void {
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
         $this->assertTrue($report->attempt_exists($rc->attemptids[0]), 'Existing attempt not found');

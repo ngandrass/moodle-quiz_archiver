@@ -148,9 +148,7 @@ class archive_contents_table extends \table_sql {
                         $file->get_contextid(),
                         $file->get_component(),
                         $file->get_filearea(),
-                        "{$attachment['usageid']}/{$attachment['slot']}/{$attachment['file']->get_itemid()}",
-                        /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
-                           creates while eating innocent programmers for breakfast ... */
+                        $attachment['itemid'],
                         $file->get_filepath(),
                         $file->get_filename(),
                         true,

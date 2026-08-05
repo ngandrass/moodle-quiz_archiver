@@ -1331,7 +1331,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_foldername(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Full pattern.
         $fullpattern = 'attempt';
@@ -1371,7 +1372,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_foldername_without_variables(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         $foldername = ArchiveJob::generate_attempt_foldername(
             $rc->course,
@@ -1397,7 +1399,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_foldername_invalid_pattern(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
@@ -1424,7 +1427,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_foldername_invalid_variables(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
@@ -1452,7 +1456,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_filename(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Full pattern.
         $fullpattern = 'attempt';
@@ -1491,7 +1496,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_filename_without_variables(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         $filename = ArchiveJob::generate_attempt_filename(
             $rc->course,
@@ -1517,7 +1523,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_filename_invalid_pattern(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
@@ -1544,7 +1551,8 @@ final class archivejob_test extends \advanced_testcase {
     public function test_generate_attempt_filename_invalid_variables(): void {
         // Generate data.
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         // Test filename generation.
         $this->expectException(\invalid_parameter_exception::class);
