@@ -817,14 +817,31 @@ final class report_test extends \advanced_testcase {
      * @throws \restore_controller_exception
      */
     public function test_get_latest_attempt_of_each_user(): void {
+        global $DB;
+
         $this->resetAfterTest();
-        $rc = $this->getDataGenerator()->import_reference_course();
+        $rc = $this->getDataGenerator()->import_reference_course('referencequiz-multiattempt.mbz');
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
 
+        // Retrieve latest attempts and assert that we have the expected number of attempts.
         $latestattempts = $report->get_latest_attempt_of_each_user();
         $this->assertNotEmpty($latestattempts, 'No latest attempts found for users');
+        $this->assertCount(2, $latestattempts, 'Expected 2 of 3 attempts from 2 users here');
 
-        // TODO (MDL-0): Update reference course to properly test this.
+        // Assert that actually the latest attempt is retrieved.
+        $latestattemptbyuserid = array_reduce($latestattempts, function ($carry, $attempt) {
+            $carry[$attempt->userid] = $attempt->attemptid;
+            return $carry;
+        }, []);
+
+        foreach ($rc->userids as $userid) {
+            $userattempts = $DB->get_records('quiz_attempts', ['userid' => $userid], 'attempt DESC', 'id, userid');
+            $this->assertSame(
+                reset($userattempts)->id,
+                $latestattemptbyuserid[$userid],
+                'Latest attempt for user ' . $userid . ' does not match expected latest attempt'
+            );
+        }
     }
 
     /**
