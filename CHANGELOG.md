@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Add support (custom rendering rules) for question type [JACK](https://github.com/Wunderbyte-GmbH/moodle_qtype_jack)
 - Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
 
 
@@ -182,11 +183,11 @@ version, please upgrade to at least Moodle 4.5 (LTS) or stick to the latest avai
 - Full code overhaul to comply with the [Moodle Coding Style](https://moodledev.io/general/development/policies/codingstyle)
 - Enforce strict coding style checks during CI runs / prior to any new releases
 - Improve English and German translations
- 
+
 
 ## Version 1.2.9 (2024070800)
 
-- Synchronize default job timeout setting with quiz archive worker and add hint about the additional timeout inside the 
+- Synchronize default job timeout setting with quiz archive worker and add hint about the additional timeout inside the
   archive worker config
 - Describe different job timeout settings inside the "Known Pitfalls" section of
   the README file.

@@ -52,6 +52,11 @@ stages:
     - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
     #- locale-gen en_AU.UTF-8
     - export PATH="$PATH:$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd)"
+
+    # Add plugin dependencies
+    - moodle-plugin-ci add-plugin Wunderbyte-GmbH/moodle_qtype_jack
+
+    # Install moodle
     - moodle-plugin-ci install --plugin ./plugin --db-host=postgres
 
     # Output color helpers
@@ -71,7 +76,7 @@ stages:
     moodle-plugin-ci grunt --max-lint-warnings 0 || res_grunt=$?
     moodle-plugin-ci phpunit --fail-on-warning || res_phpunit=$?
     moodle-plugin-ci behat --profile chrome --scss-deprecations || res_behat=$?
-    
+
     # Report results
     echo "------------------------------------------------------------------------------------------------------------------------------------"
     echo "Stage results:"
@@ -86,10 +91,10 @@ stages:
     echo -e "  -> PHPUnit tests: $( [[ $res_phpunit -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
     echo -e "  -> Behat features: $( [[ $res_behat -ne 0 ]] && echo "${TXT_RED}FAIL${TXT_CLEAR}" || echo "${TXT_GREEN}OK${TXT_CLEAR}" )"
     echo "------------------------------------------------------------------------------------------------------------------------------------"
-    
+
     # Exit with error code if any of the checks failed
     exit $((res_phplint || res_phpmd || res_phpcs || res_phpdoc || res_validate || res_savepoints || res_mustache || res_grunt || res_phpunit || res_behat))
-    
+
 
 ###########################
 # Moodle Plugin CI - Jobs #
