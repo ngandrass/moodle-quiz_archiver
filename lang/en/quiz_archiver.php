@@ -79,6 +79,7 @@ $string['error_archive_quiz_form_validation_failed'] = 'Form data validation fai
 $string['error_plugin_is_not_configured'] = 'Error: The quiz archiver plugin is not configured yet. Please contact your site administrator.';
 $string['error_quiz_cannot_be_archived_unknown'] = 'This quiz can not be archived due to an unknown error. Please report this problem to the plugin developers.';
 $string['error_no_attempts_left_after_filtering'] = 'Due to the filters applied, no export attempts remained.';
+$string['export_attempts'] = 'Export quiz attempts';
 $string['export_attempts_help'] = 'Quiz attempts will always be exported';
 $string['export_attempts_num'] = 'Count of all available attempts: {$a}';
 $string['export_attempts_metadata'] = 'Export attempts metadata';

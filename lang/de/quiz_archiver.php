@@ -79,6 +79,7 @@ $string['error_archive_quiz_form_validation_failed'] = 'Validierung der gesendet
 $string['error_plugin_is_not_configured'] = 'Fehler: Das Quiz Archiver Plugin ist noch nicht konfiguriert. Bitte kontaktieren Sie Ihren Website-Administrator.';
 $string['error_quiz_cannot_be_archived_unknown'] = 'Dieser Test kann aufgrund eines unbekannten Fehlers nicht archiviert werden. Bitte melden Sie dieses Problem an die Plugin-Entwickler.';
 $string['error_no_attempts_left_after_filtering'] = 'Aufgrund der angewendeten Filter wurden keine Versuche zum Exportieren übrig gelassen.';
+$string['export_attempts'] = 'Testversuche exportieren';
 $string['export_attempts_help'] = 'Es werden stets alle Testversuche exportiert';
 $string['export_attempts_num'] = 'Anzahl aller verfügbaren Testversuche: {$a}';
 $string['export_attempts_metadata'] = 'Metadaten exportieren';
