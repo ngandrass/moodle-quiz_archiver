@@ -766,7 +766,7 @@ final class report_test extends \advanced_testcase {
 
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
-        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['multiattempt']);
 
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
         $attempts = $report->get_all_attempts();
