@@ -406,7 +406,33 @@ class Report {
                     'usageid' => $qa->get_usage_id(),
                     'slot' => $slot,
                     'file' => $qafile,
+                    'itemid' => "{$qa->get_usage_id()}/{$slot}/{$qafile->get_itemid()}",
+                    /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
+                       creates while eating innocent programmers for breakfast ... */
                 ];
+            }
+
+            // NOTE: Code template files of qType JACK questions are not considered attachments by
+            // NOTE: moodle itself but for archiving they should be included as such.
+            if ($qa->get_question()->qtype->plugin_name() == 'qtype_jack') {
+                // NOTE: From https://github.com/Wunderbyte-GmbH/moodle_qtype_jack/blob/main/renderer.php#L82 .
+                $jackcodetemplatefiles = get_file_storage()->get_area_files(
+                    $qa->get_question()->contextid,
+                    'qtype_jack',
+                    'responsefiletemplate',
+                    $qa->get_question()->id,
+                    includedirs: false,
+                );
+
+                // NOTE: Currently there can only be one or none code template file. Keep the loop for the future.
+                foreach ($jackcodetemplatefiles as $jacktemplatefile) {
+                    $files[] = [
+                        'usageid' => $qa->get_usage_id(),
+                        'slot' => $slot,
+                        'file' => $jacktemplatefile,
+                        'itemid' => $jacktemplatefile->get_itemid(),
+                    ];
+                }
             }
         }
 
@@ -432,9 +458,7 @@ class Report {
                 $attachment['file']->get_contextid(),
                 $attachment['file']->get_component(),
                 $attachment['file']->get_filearea(),
-                "{$attachment['usageid']}/{$attachment['slot']}/{$attachment['file']->get_itemid()}",
-                /* ^-- YES, this is the abomination of a non-numeric itemid that question_attempt::get_response_file_url()
-                   creates while eating innocent programmers for breakfast ... */
+                $attachment['itemid'],
                 $attachment['file']->get_filepath(),
                 $attachment['file']->get_filename()
             ));
@@ -750,6 +774,14 @@ class Report {
                 /* Remove padding from codebox comments to prevent them from drawing over student code */
                 code .token.comment {
                     padding: 0.5rem !important;
+                }
+
+                /* Expand qtype JACK text areas to dynamically fit content */
+                .que.jack textarea.qtype_jack_response[class*='qtype_jack_'] {
+                    field-sizing: content !important;
+                    white-space: pre-wrap !important;
+                    overflow: hidden !important;
+                    resize: none !important;
                 }
             ");
             $dom->getElementsByTagName('head')[0]->appendChild($csshacksnode);
