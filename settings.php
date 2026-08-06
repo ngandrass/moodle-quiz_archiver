@@ -242,6 +242,7 @@ if ($hassiteconfig) {
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $set->add_dependent_on('quiz_archiver/job_preset_export_flat_archive');
         $settings->add($set);
 
         // Attempt filename pattern.
