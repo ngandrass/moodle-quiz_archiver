@@ -70,10 +70,10 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
-    * Checks if question type JACK is installed and skips test if not.
-    *
-    * @return void
-    */
+     * Checks if question type JACK is installed and skips test if not.
+     *
+     * @return void
+     */
     protected function require_qtype_jack(): void {
         if (!\core_component::get_plugin_directory('qtype', 'jack')) {
             $this->markTestSkipped('qtype_jack is not installed.');
