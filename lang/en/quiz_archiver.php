@@ -81,7 +81,7 @@ $string['error_quiz_cannot_be_archived_unknown'] = 'This quiz can not be archive
 $string['error_no_attempts_left_after_filtering'] = 'Due to the filters applied, no export attempts remained.';
 $string['export_attempts'] = 'Export quiz attempts';
 $string['export_attempts_help'] = 'Quiz attempts will always be exported';
-$string['export_attempts_num'] = 'Count of all available attempts: {$a}';
+$string['export_attempts_num'] = 'Existing attempts: <span class="badge badge-primary badge-pill">{$a}</span>';
 $string['export_attempts_metadata'] = 'Export attempts metadata';
 $string['export_attempts_metadata_help'] = 'A tabular file containing the metadata of all the exported attempts will be exported.';
 $string['export_attempts_image_optimize'] = 'Optimize images';

@@ -81,7 +81,7 @@ $string['error_quiz_cannot_be_archived_unknown'] = 'Dieser Test kann aufgrund ei
 $string['error_no_attempts_left_after_filtering'] = 'Aufgrund der angewendeten Filter wurden keine Versuche zum Exportieren übrig gelassen.';
 $string['export_attempts'] = 'Testversuche exportieren';
 $string['export_attempts_help'] = 'Es werden stets alle Testversuche exportiert';
-$string['export_attempts_num'] = 'Anzahl aller verfügbaren Testversuche: {$a}';
+$string['export_attempts_num'] = 'Vorhandene Testversuche: <span class="badge badge-primary badge-pill">{$a}</span>';
 $string['export_attempts_metadata'] = 'Metadaten exportieren';
 $string['export_attempts_metadata_help'] = 'Es wird eine tabellarische Datei exportiert, die die Metadaten aller exportierten Versuche enthält.';
 $string['export_attempts_image_optimize'] = 'Bilder optimieren';
@@ -297,7 +297,7 @@ $string['task_autodelete_job_artifacts_report'] = '{$a} Testarchive gelöscht.';
 $string['autoinstall_already_configured'] = 'Plugin ist bereits konfiguriert';
 $string['autoinstall_already_configured_long'] = 'Das Quiz Archiver Plugin ist bereits konfiguriert. Eine erneute automatische Konfiguration ist nicht möglich.';
 $string['autoinstall_cancelled'] = 'Die automatische Konfiguration des Quiz Archiver Plugins wurde abgebrochen. Es wurden keine Einstellungen verändert.';
-$string['autoinstall_explanation'] = 'Das Quiz Archiver Plugin erfordert anfangs einige Konfigurationsschritte, um zu funktionieren (siehe  <a href="https://quizarchiver.gandrass.de/configuration/" target="_blank">Konfiguration</a>). Sie können diese Einstellungen entweder manuell vornehmen, oder die automatische Konfigurationsfunktion verwenden um alle Moodle-bezogenen Einstellungen zu setzen.';
+$string['autoinstall_explanation'] = 'Das Quiz Archiver Plugin erfordert anfangs einige Konfigurationsschritte, um zu funktionieren (siehe <a href="https://quizarchiver.gandrass.de/configuration/" target="_blank">Konfiguration</a>). Sie können diese Einstellungen entweder manuell vornehmen, oder die automatische Konfigurationsfunktion verwenden um alle Moodle-bezogenen Einstellungen zu setzen.';
 $string['autoinstall_explanation_details'] = 'Die automatische Konfiguration übernimmt die folgenden Schritte:<ul><li>Setzen aller Plugin-Einstellungen auf ihre Standardwerte</li><li>Aktivieren von Webservices und dem REST-Protokoll</li><li>Erstellen einer Quiz Archiver Service Rolle und eines entsprechenden Nutzers</li><li>Erstellen eines neuen Webservices mit allen erforderlichen Webservice-Funktionen</li><li>Autorisieren des Nutzers zur Nutzung des Webservices</li></ul>';
 $string['autoinstall_failure'] = 'Die automatische Konfiguration des Quiz Archiver Plugins ist <b>fehlgeschlagen</b>.';
 $string['autoinstall_plugin'] = 'Quiz Archiver: Automatische Konfiguration';
