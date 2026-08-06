@@ -170,9 +170,6 @@ class Report {
      * @throws \dml_exception
      */
     public function get_filtered_attempts(array $filterkeys): array {
-
-        $attempts = [];
-
         $filtercount = count($filterkeys);
         if ($filtercount == 0) {
             $attempts = array_values($this->get_all_attempts());
