@@ -99,11 +99,25 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_metadata', 'export_attempts_metadata', 'quiz_archiver');
         $mform->setDefault('export_attempts_metadata', $config->{'job_preset_export_attempts_metadata'});
 
+        // Options: Filters.
+        foreach (Report::FILTERS as $i => $filter) {
+            $mform->addElement(
+                'advcheckbox',
+                'export_attempts_filter_' . $filter,
+                '&nbsp;', /* phpcs:ignore $i == 0 ? get_string('export_attempts_filter', 'quiz_archiver') : '&nbsp;', */
+                get_string('export_attempts_filter_' . $filter, 'quiz_archiver'),
+                $config->{'job_preset_export_attempts_filter_' . $filter . '_locked'} ? 'disabled' : null
+            );
+            $mform->addHelpButton('export_attempts_filter_' . $filter, 'export_attempts_filter_' . $filter, 'quiz_archiver');
+            $mform->setDefault('export_attempts_filter_' . $filter, $config->{'job_preset_export_attempts_filter_' . $filter});
+        }
+
+        // Options: Sections.
         foreach (Report::SECTIONS as $i => $section) {
             $mform->addElement(
                 'advcheckbox',
                 'export_report_section_' . $section,
-                $i == 0 ? get_string('export_report_section', 'quiz_archiver') : '&nbsp;',
+                '&nbsp;', /* phpcs:ignore $i == 0 ? get_string('export_report_section', 'quiz_archiver') : '&nbsp;', */
                 get_string('export_report_section_' . $section, 'quiz_archiver'),
                 $config->{'job_preset_export_report_section_' . $section . '_locked'} ? 'disabled' : null
             );
@@ -115,19 +129,6 @@ class archive_quiz_form extends \moodleform {
                     $mform->disabledIf('export_report_section_' . $section, 'export_report_section_' . $dependency, 'notchecked');
                 }
             }
-        }
-
-        // Options: Filters.
-        foreach (Report::FILTERS as $i => $filter) {
-            $mform->addElement(
-                'advcheckbox',
-                'export_attempts_filter_' . $filter,
-                $i == 0 ? get_string('export_attempts_filter', 'quiz_archiver') : '&nbsp;',
-                get_string('export_attempts_filter_' . $filter, 'quiz_archiver'),
-                $config->{'job_preset_export_attempts_filter_' . $filter . '_locked'} ? 'disabled' : null
-            );
-            $mform->addHelpButton('export_attempts_filter_' . $filter, 'export_attempts_filter_' . $filter, 'quiz_archiver');
-            $mform->setDefault('export_attempts_filter_' . $filter, $config->{'job_preset_export_attempts_filter_' . $filter});
         }
 
         // Options: Backups.
