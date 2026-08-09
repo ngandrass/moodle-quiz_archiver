@@ -2,7 +2,7 @@
 
 Quiz archives can be automatically deleted after a specified retention period.
 Automatic deletion can either be controlled on a per-archive basis or globally
-via the [archive job presets](/configuration/policies).
+via the [archive job presets](/configuration/presets).
 
 Archives with expired lifetimes are deleted by an asynchronous task that is, by
 default, scheduled to run every hour. Only the archived user data (attempt PDFs,
@@ -17,7 +17,7 @@ shown in the job details modal, as depict above. You can access it via the
 _Show details_ button on the quiz archiver overview page. Once deleted, archives
 change their status from `Finished` to `Deleted`.
 
-!!! info 
+!!! info
     If you try to delete an archive that is scheduled for automatic deletion
     before its retention period expired, an extra warning message will be shown
     to prevent accidental deletions.
