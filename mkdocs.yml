@@ -108,6 +108,7 @@ nav:
   - "Usage":
       - usage/index.md
       - "Creating Quiz Archives": usage/archivingbasic.md
+      - "Archive Structure": usage/archivestructure.md
       - "Automatic Deletion (GDPR)": usage/automaticdeletion.md
       - "Image Optimization": usage/imageoptimization.md
       - "Quiz Archive Signing (TSP)": usage/tsp.md
