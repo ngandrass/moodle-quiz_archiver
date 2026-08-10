@@ -2,7 +2,7 @@
 
 This section discusses the usage of the quiz archiver plugin. It covers the
 [basic creation of quiz archives](/usage/archivingbasic) as well as advanced
-topics, such as [automatic deletion](/usage/imageoptimization),
+topics, such as [automatic deletion](/usage/automaticdeletion),
 [image optimization](/usage/imageoptimization),
 [archive structure](/usage/archivestructure) or
 [quiz archive signing](/usage/tsp).
