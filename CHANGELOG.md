@@ -2,12 +2,11 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
-
 - **🚨 BREAKING 🚨** The companion service was renamed from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker"
-  - New Docker image: `ngandrass/moodle-archiving-worker` (update your `docker-compose.yml` / `docker run` commands)
-  - New repository: [ngandrass/moodle-archiving-worker](https://github.com/ngandrass/moodle-archiving-worker) (old URLs redirect automatically)
-  - All `QUIZ_ARCHIVER_*` environment variables of the worker service were renamed to `MOODLE_ARCHIVER_*`
-  - Please refer to the full [archive worker changelog](https://github.com/ngandrass/moodle-archiving-worker/blob/main/CHANGELOG.md) for further details
+    - New Docker image: `ngandrass/moodle-archiving-worker` (update your `docker-compose.yml` / `docker run` commands)
+    - New repository: [ngandrass/moodle-archiving-worker](https://github.com/ngandrass/moodle-archiving-worker) (old URLs redirect automatically)
+    - All `QUIZ_ARCHIVER_*` environment variables of the worker service were renamed to `MOODLE_ARCHIVER_*`
+    - Please refer to the full [archive worker changelog](https://github.com/ngandrass/moodle-archiving-worker/blob/main/CHANGELOG.md) for further details
 - Allow exporting only the latest attempts of each user in the generated archive
 - Add an option to flatten the archive structure, placing all files directly in the root directory of the archive.
 - Add an option to include or exclude the attempts metadata CSV file
@@ -99,9 +98,9 @@ version, please upgrade to at least Moodle 4.5 (LTS) or stick to the latest avai
 ## Version 2.3.2 (2025040100)
 
 - Add new `QUIZ_ARCHIVER_SKIP_HTTPS_CERT_VALIDATION` environment variable to docs
-  - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
+    - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
 - Fix download of Moodle backups by the archive worker for specific webserver and proxy setups
-  - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
+    - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.3.0`
 - Fix privacy metadata provider to include attempts metadata table
 
 
@@ -116,7 +115,7 @@ version, please upgrade to at least Moodle 4.5 (LTS) or stick to the latest avai
 - Fix opening job details modal for quizzes with single quotes in their names
 - Prepare backup creation routine for Moodle 4.6 and above
 - Add support for HTTP and SOCKS proxy servers
-  - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.2.0`
+    - Starting with [moodle-quiz-archive-worker](https://github.com/ngandrass/moodle-quiz-archive-worker) version `>= v2.2.0`
 - Add [instructions for configuring proxy server usage](https://quizarchiver.gandrass.de/installation/archiveworker/#proxy-servers) to the documentation
 - Add [troubleshooting tips for font rendering problems](https://quizarchiver.gandrass.de/configuration/initialconfig/pitfalls/#text-is-not-rendered-correctly) to the documentation
 
