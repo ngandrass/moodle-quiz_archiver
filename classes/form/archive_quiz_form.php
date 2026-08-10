@@ -79,26 +79,43 @@ class archive_quiz_form extends \moodleform {
         // Options.
         $mform->addElement('header', 'header_settings', get_string('settings'));
 
-        // Options: Test.
-        $mform->addElement('static', 'quiz_name', get_string('modulename', 'mod_quiz'), $this->quizname);
-
         // Options: Attempts.
         $mform->addElement(
-            'advcheckbox',
-            'export_attempts',
+            'static',
+            'export_attempts_num',
             get_string('attempts', 'mod_quiz'),
             get_string('export_attempts_num', 'quiz_archiver', $this->numattempts),
-            ['disabled' => 'disabled'],
-            ['1', '1']
         );
-        $mform->addHelpButton('export_attempts', 'export_attempts', 'quiz_archiver');
-        $mform->setDefault('export_attempts', true);
 
-        foreach (Report::SECTIONS as $section) {
+        $mform->addElement(
+            'advcheckbox',
+            'export_attempts_metadata',
+            '&nbsp;',
+            get_string('export_attempts_metadata', 'quiz_archiver'),
+            $config->job_preset_export_attempts_metadata_locked ? 'disabled' : null
+        );
+        $mform->addHelpButton('export_attempts_metadata', 'export_attempts_metadata', 'quiz_archiver');
+        $mform->setDefault('export_attempts_metadata', $config->{'job_preset_export_attempts_metadata'});
+
+        // Options: Filters.
+        foreach (Report::FILTERS as $i => $filter) {
+            $mform->addElement(
+                'advcheckbox',
+                'export_attempts_filter_' . $filter,
+                '&nbsp;', /* phpcs:ignore $i == 0 ? get_string('export_attempts_filter', 'quiz_archiver') : '&nbsp;', */
+                get_string('export_attempts_filter_' . $filter, 'quiz_archiver'),
+                $config->{'job_preset_export_attempts_filter_' . $filter . '_locked'} ? 'disabled' : null
+            );
+            $mform->addHelpButton('export_attempts_filter_' . $filter, 'export_attempts_filter_' . $filter, 'quiz_archiver');
+            $mform->setDefault('export_attempts_filter_' . $filter, $config->{'job_preset_export_attempts_filter_' . $filter});
+        }
+
+        // Options: Sections.
+        foreach (Report::SECTIONS as $i => $section) {
             $mform->addElement(
                 'advcheckbox',
                 'export_report_section_' . $section,
-                '&nbsp;',
+                '&nbsp;', /* phpcs:ignore $i == 0 ? get_string('export_report_section', 'quiz_archiver') : '&nbsp;', */
                 get_string('export_report_section_' . $section, 'quiz_archiver'),
                 $config->{'job_preset_export_report_section_' . $section . '_locked'} ? 'disabled' : null
             );
@@ -177,6 +194,17 @@ class archive_quiz_form extends \moodleform {
         $mform->setDefault('archive_filename_pattern', $config->job_preset_archive_filename_pattern);
         $mform->addRule('archive_filename_pattern', null, 'maxlength', 255, 'client');
 
+        // Advanced option: Flat archive export.
+        $mform->addElement(
+            'advcheckbox',
+            'export_flat_archive',
+            get_string('export_flat_archive', 'quiz_archiver'),
+            get_string('enable'),
+            $config->job_preset_export_flat_archive_locked ? 'disabled' : null,
+        );
+        $mform->addHelpButton('export_flat_archive', 'export_flat_archive', 'quiz_archiver');
+        $mform->setDefault('export_flat_archive', $config->{'job_preset_export_flat_archive'});
+
         // Advanced options: Attempt folder name pattern.
         $mform->addElement(
             'text',
@@ -205,6 +233,7 @@ class archive_quiz_form extends \moodleform {
         $mform->setType('export_attempts_foldername_pattern', PARAM_TEXT);
         $mform->setDefault('export_attempts_foldername_pattern', $config->job_preset_export_attempts_foldername_pattern);
         $mform->addRule('export_attempts_foldername_pattern', null, 'maxlength', 255, 'client');
+        $mform->hideIf('export_attempts_foldername_pattern', 'export_flat_archive', 'checked');
 
         // Advanced options: Attempts filename pattern.
         $mform->addElement(

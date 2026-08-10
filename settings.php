@@ -32,7 +32,6 @@ use quiz_archiver\ArchiveJob;
 use quiz_archiver\local\admin\setting\admin_setting_archive_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_filename_pattern;
 use quiz_archiver\local\admin\setting\admin_setting_attempt_foldername_pattern;
-use quiz_archiver\local\admin\setting\admin_setting_configcheckbox_alwaystrue;
 use quiz_archiver\local\autoinstall;
 use quiz_archiver\Report;
 
@@ -125,13 +124,15 @@ if ($hassiteconfig) {
             get_string('setting_header_job_presets_desc', 'quiz_archiver'),
         ));
 
-        // Export Attempts.
-        $settings->add(new admin_setting_configcheckbox_alwaystrue(
-            'quiz_archiver/job_preset_export_attempts',
-            get_string('export_attempts', 'quiz_archiver'),
-            get_string('export_attempts_help', 'quiz_archiver'),
+        // Export attempts metadata.
+        $set = new admin_setting_configcheckbox(
+            'quiz_archiver/job_preset_export_attempts_metadata',
+            get_string('export_attempts_metadata', 'quiz_archiver'),
+            get_string('export_attempts_metadata_help', 'quiz_archiver'),
             '1',
-        ));
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
 
         // Attempt report sections.
         foreach (Report::SECTIONS as $section) {
@@ -147,6 +148,18 @@ if ($hassiteconfig) {
                 $set->add_dependent_on('quiz_archiver/job_preset_export_report_section_' . $dependency);
             }
 
+            $settings->add($set);
+        }
+
+        // Attempt filters.
+        foreach (Report::FILTERS as $filter) {
+            $set = new admin_setting_configcheckbox(
+                'quiz_archiver/job_preset_export_attempts_filter_' . $filter,
+                get_string('export_attempts_filter_' . $filter, 'quiz_archiver'),
+                get_string('export_attempts_filter_' . $filter . '_help', 'quiz_archiver'),
+                '0',
+            );
+            $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
             $settings->add($set);
         }
 
@@ -201,6 +214,16 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Flatten export archive.
+        $set = new admin_setting_configcheckbox(
+            'quiz_archiver/job_preset_export_flat_archive',
+            get_string('export_flat_archive', 'quiz_archiver'),
+            get_string('export_flat_archive_help', 'quiz_archiver'),
+            '0',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
         // Attempt folder pattern.
         $set = new admin_setting_attempt_foldername_pattern(
             'quiz_archiver/job_preset_export_attempts_foldername_pattern',
@@ -219,6 +242,7 @@ if ($hassiteconfig) {
             PARAM_TEXT,
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $set->add_dependent_on('quiz_archiver/job_preset_export_flat_archive');
         $settings->add($set);
 
         // Attempt filename pattern.

@@ -153,7 +153,7 @@ class quiz_archiver_report extends report_base {
         // Quiz archive form. Logic is handled in handle_posted_forms() above.
         $archivequizform = new archive_quiz_form(
             $this->quiz->name,
-            count($this->report->get_attempts())
+            count($this->report->get_all_attempts())
         );
 
         // Job overview table.
@@ -232,13 +232,15 @@ class quiz_archiver_report extends report_base {
     /**
      * Initiates a new archive job for this quiz
      *
-     * @param bool $exportattempts Quiz attempts will be archives if true
+     * @param bool $exportmetadata Metadata file of quiz attempts will be included if true
      * @param array $reportsections Sections to export during attempt report generation
+     * @param array $attemptfilters Filters to apply to attempt collection
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
      * within the created archive
      * @param string $paperformat Paper format to use for attempt report generation
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
+     * @param bool $flattenarchive Exported archive will not have any directory structure if true
      * @param string $archivefilenamepattern Filename pattern to use for archive generation
      * @param string $attemptsfoldernamepattern Folder name pattern to use for attempt report generation
      * @param string $attemptsfilenamepattern Filename pattern to use for attempt report generation
@@ -253,12 +255,14 @@ class quiz_archiver_report extends report_base {
      * @throws RuntimeException Used to signal a soft failure to calling context
      */
     protected function initiate_archive_job(
-        bool $exportattempts,
+        bool $exportmetadata,
         array $reportsections,
+        array $attemptfilters,
         bool $reportkeephtmlfiles,
         string $paperformat,
         bool $exportquizbackup,
         bool $exportcoursebackup,
+        bool $flattenarchive,
         string $archivefilenamepattern,
         string $attemptsfoldernamepattern,
         string $attemptsfilenamepattern,
@@ -286,22 +290,25 @@ class quiz_archiver_report extends report_base {
         );
 
         // Get attempt metadata.
-        $attempts = $this->report->get_attempts();
+        $attempts = $this->report->get_filtered_attempts($attemptfilters);
+        if (count($attempts) == 0) {
+            throw new \RuntimeException(get_string('error_no_attempts_left_after_filtering', 'quiz_archiver'));
+        }
 
         // Prepare task: Export quiz attempts.
-        $taskarchivequizattempts = null;
-        if ($exportattempts) {
-            $taskarchivequizattempts = [
-                'attemptids' => array_values(array_keys($attempts)),
-                'fetch_metadata' => true,
-                'sections' => $reportsections,
-                'paper_format' => $paperformat,
-                'keep_html_files' => $reportkeephtmlfiles,
-                'foldername_pattern' => $attemptsfoldernamepattern,
-                'filename_pattern' => $attemptsfilenamepattern,
-                'image_optimize' => $imageoptimize ?? false,
-            ];
-        }
+        $taskarchivequizattempts = [
+            'attemptids' => array_map(
+                fn($v): int => $v->attemptid,
+                $attempts,
+            ),
+            'fetch_metadata' => $exportmetadata,
+            'sections' => $reportsections,
+            'paper_format' => $paperformat,
+            'keep_html_files' => $reportkeephtmlfiles,
+            'foldername_pattern' => $attemptsfoldernamepattern,
+            'filename_pattern' => $attemptsfilenamepattern,
+            'image_optimize' => $imageoptimize ?? false,
+        ];
 
         // Prepare task: Moodle backups.
         $taskmoodlebackups = null;
@@ -320,12 +327,10 @@ class quiz_archiver_report extends report_base {
         // Generate job settings array.
         $jobsettings = [];
         $jobsettings['num_attempts'] = count($attempts);
-        $jobsettings['export_attempts'] = $exportattempts;
-        if ($exportattempts) {
-            foreach ($reportsections as $name => $value) {
-                $jobsettings["export_report_section_$name"] = $value;
-            }
+        foreach ($reportsections as $name => $value) {
+            $jobsettings["export_report_section_$name"] = $value;
         }
+
         $jobsettings['export_quiz_backup'] = $exportquizbackup ? '1' : '0';
         $jobsettings['export_course_backup'] = $exportcoursebackup ? '1' : '0';
         $jobsettings['archive_autodelete'] = $retentionseconds ? '1' : '0';
@@ -348,6 +353,8 @@ class quiz_archiver_report extends report_base {
                         $this->quiz,
                         $archivefilenamepattern
                     ),
+                    'archive_flatten' => $flattenarchive,
+                    'archive_filehashes' => true,
                 ],
                 $taskarchivequizattempts,
                 $taskmoodlebackups,
@@ -513,7 +520,7 @@ class quiz_archiver_report extends report_base {
         if (self::quiz_can_be_archived($this->quiz->id)) {
             $archivequizform = new archive_quiz_form(
                 $this->quiz->name,
-                count($this->report->get_attempts())
+                count($this->report->get_all_attempts())
             );
 
             if ($archivequizform->is_submitted()) {
@@ -525,12 +532,14 @@ class quiz_archiver_report extends report_base {
 
                     $formdata = $archivequizform->get_data();
                     $job = $this->initiate_archive_job(
-                        $formdata->export_attempts,
+                        $formdata->export_attempts_metadata,
                         Report::build_report_sections_from_formdata($formdata),
+                        Report::build_attempts_filters_from_formdata($formdata),
                         $formdata->export_attempts_keep_html_files,
                         $formdata->export_attempts_paper_format,
                         $formdata->export_quiz_backup,
                         $formdata->export_course_backup,
+                        $formdata->export_flat_archive,
                         $formdata->archive_filename_pattern,
                         $formdata->export_attempts_foldername_pattern,
                         $formdata->export_attempts_filename_pattern,

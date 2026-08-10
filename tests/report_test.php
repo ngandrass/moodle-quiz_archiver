@@ -81,6 +81,19 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Generates an archive_form formdata object with all filters enabled
+     *
+     * @return \stdClass That emulates the data received from the archive_form
+     */
+    protected static function get_formdata_all_filters_enabled(): object {
+        $formdata = new \stdClass();
+        foreach (Report::FILTERS as $filter) {
+            $formdata->{'export_attempts_filter_' . $filter} = 1;
+        }
+        return $formdata;
+    }
+
+    /**
      * Tests validation of webservice tokens
      *
      * @covers \quiz_archiver\Report::has_access
@@ -711,25 +724,57 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
-     * Tests to get the attempts of a quiz
+     * Tests to get all the attempts of a quiz
      *
-     * @covers \quiz_archiver\Report::get_attempts
+     * @covers \quiz_archiver\Report::get_all_attempts
      *
      * @return void
      * @throws \dml_exception
      * @throws \moodle_exception
      * @throws \restore_controller_exception
      */
-    public function test_get_attempts(): void {
+    public function test_get_all_attempts(): void {
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
 
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
-        $attempts = $report->get_attempts();
+        $attempts = $report->get_all_attempts();
 
         $this->assertNotEmpty($attempts, 'No attempts found');
         $this->assertCount(count($rc->attemptids), $attempts, 'Incorrect number of attempts found');
+    }
+
+    /**
+     * Tests to get filtered attempts of a quiz
+     *
+     * @covers \quiz_archiver\Report::get_filtered_attempts
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_get_filtered_attempts(): void {
+
+        // NOTE: Because there is currently only one filter available
+        // NOTE: the combination of different filter results can not be properly
+        // NOTE: tested, without adding mock filters to business logic code.
+        // NOTE: Therefore provided combination logic was tested manually.
+        // TODO (MDL-0): Expand test suite to feature filter combinations when
+        // TODO (MDL-0): adding new filter options.
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['multiattempt']);
+
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $attempts = $report->get_all_attempts();
+        $filteredattempts = $report->get_filtered_attempts([Report::FILTERS[0]]);
+
+        $this->assertNotEmpty($attempts, 'No attempts found');
+        $this->assertNotEmpty($filteredattempts, 'No attempts found for filter');
+        $this->assertTrue(count($attempts) > count($filteredattempts), 'Filtering should reduce number of attempts');
     }
 
     /**
@@ -823,6 +868,45 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Tests to retrieve the latest attempt's id of each user
+     *
+     * @covers \quiz_archiver\Report::get_latest_attempt_of_each_user
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_get_latest_attempt_of_each_user(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['multiattempt']);
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+
+        // Retrieve latest attempts and assert that we have the expected number of attempts.
+        $latestattempts = $report->get_latest_attempt_of_each_user();
+        $this->assertNotEmpty($latestattempts, 'No latest attempts found for users');
+        $this->assertCount(2, $latestattempts, 'Expected 2 of 3 attempts from 2 users here');
+
+        // Assert that actually the latest attempt is retrieved.
+        $latestattemptbyuserid = array_reduce($latestattempts, function ($carry, $attempt) {
+            $carry[$attempt->userid] = $attempt->attemptid;
+            return $carry;
+        }, []);
+
+        foreach ($rc->userids as $userid) {
+            $userattempts = $DB->get_records('quiz_attempts', ['userid' => $userid], 'attempt DESC', 'id, userid');
+            $this->assertSame(
+                reset($userattempts)->id,
+                $latestattemptbyuserid[$userid],
+                'Latest attempt for user ' . $userid . ' does not match expected latest attempt'
+            );
+        }
+    }
+
+    /**
      * Tests to retrieve existing and nonexisting attempts
      *
      * @covers \quiz_archiver\Report::attempt_exists
@@ -875,5 +959,24 @@ final class report_test extends \advanced_testcase {
         $formdata->export_report_section_superfluous = 1;
         $sections = Report::build_report_sections_from_formdata($formdata);
         $this->assertEquals(self::get_all_report_sections_enabled(), $sections, 'Superfluous section not removed correctly');
+    }
+
+
+    /**
+     * Tests conversion formdata to report filter list
+     *
+     * @covers \quiz_archiver\Report::build_attempts_filters_from_formdata
+     *
+     * @return void
+     */
+    public function test_build_attempts_filters_from_formdata(): void {
+        // Test all filters enabled.
+        $formdata = self::get_formdata_all_filters_enabled();
+        $filters = Report::build_attempts_filters_from_formdata($formdata);
+        $this->assertEquals(
+            Report::FILTERS,
+            $filters,
+            'Full formdata not correctly converted to filters list'
+        );
     }
 }

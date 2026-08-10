@@ -83,6 +83,12 @@ class Report {
         'Letter', 'Legal', 'Tabloid', 'Ledger',
     ];
 
+
+    /** @var array Filters that can be applied to attemps collection */
+    public const FILTERS = [
+        'latest',
+    ];
+
     /**
      * Creates a new Report
      *
@@ -141,7 +147,7 @@ class Report {
      *
      * @throws \dml_exception
      */
-    public function get_attempts(): array {
+    public function get_all_attempts(): array {
         global $DB;
 
         return $DB->get_records_sql(
@@ -152,6 +158,44 @@ class Report {
                 "quizid" => $this->quiz->id,
             ]
         );
+    }
+
+    /**
+     * Get filtered attempts for this quiz, excluding previews
+     *
+     * @param array $filterkeys List of filter keys to filter attempts by.
+     * @return array Array of all attempt IDs together with the userid that were
+     * made inside this quiz.
+     *
+     * @throws \dml_exception
+     */
+    public function get_filtered_attempts(array $filterkeys): array {
+        // Exit early if we have no filters given.
+        if (empty($filterkeys)) {
+            return array_values($this->get_all_attempts());
+        }
+
+        // Perform the actual filtering, de-duplicating requested filters.
+        $filterattempts = [];
+        foreach (array_unique($filterkeys) as $filter) {
+            switch ($filter) {
+                case self::FILTERS[0]: // Is "latest".
+                    $filterattempts[] = $this->get_latest_attempt_of_each_user();
+                    break;
+            }
+        }
+
+        // Intersect different filter results for and-operator combination.
+        // NOTE: For this to work, filter results must map their attempts id
+        // to the database row, containing at least (again) the attempts id
+        // as well as the users id.
+        // Example: `[123 => (object) ['attemptid' => 123, 'userid' => 4]]`.
+        $filteridsmerge = array_shift($filterattempts);
+        foreach ($filterattempts as $attempts) {
+            $filteridsmerge = array_intersect_key($filteridsmerge, $attempts);
+        }
+
+        return array_values($filteridsmerge);
     }
 
     /**
@@ -241,6 +285,26 @@ class Report {
     }
 
     /**
+     * Returns a list of IDs of the latest attempt for each user on this quiz,
+     * excluding previews.
+     *
+     * @return array List with IDs of each users last attempt, null if none found.
+     *
+     * @throws \dml_exception
+     */
+    public function get_latest_attempt_of_each_user(): ?array {
+        global $DB;
+
+        return $DB->get_records_sql(
+            "SELECT MAX(id) AS attemptid, userid " .
+            "FROM {quiz_attempts} " .
+            "WHERE preview = 0 AND quiz = :quizid " .
+            "GROUP BY userid",
+            [ "quizid" => $this->quiz->id ]
+        );
+    }
+
+    /**
      * Checks if an attempt with the given ID exists inside this quiz
      *
      * @param int $attemptid ID of the attempt to check for existence
@@ -280,6 +344,25 @@ class Report {
         }
 
         return $reportsections;
+    }
+
+    /**
+     * Builds the filter selection array based on the given archive quiz form
+     * data.
+     *
+     * @param object $archivequizformdata Data object from a submitted archive_quiz_form
+     * @return array Array containing the selected filters for attempts
+     */
+    public static function build_attempts_filters_from_formdata(object $archivequizformdata): array {
+        // Extract attempt filters from form data object.
+        $attemptfilters = [];
+        foreach (self::FILTERS as $filter) {
+            if ($archivequizformdata->{'export_attempts_filter_' . $filter}) {
+                array_push($attemptfilters, $filter);
+            }
+        }
+
+        return $attemptfilters;
     }
 
     /**

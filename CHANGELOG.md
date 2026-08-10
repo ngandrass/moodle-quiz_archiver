@@ -2,8 +2,13 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+- Allow exporting only the latest attempts of each user in the generated archive
+- Add an option to flatten the archive structure, placing all files directly in the root directory of the archive.
+- Add an option to include or exclude the attempts metadata CSV file
 - Add support (custom rendering rules) for question type [JACK](https://github.com/Wunderbyte-GmbH/moodle_qtype_jack)
 - Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
+- Improve display of the number of attempts in the quiz archive creation form
+- Improve handling of duplicate files in archives
 
 
 ## Version 4.1.0 (2026052200)
