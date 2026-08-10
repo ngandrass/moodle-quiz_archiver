@@ -7,13 +7,13 @@ archive creation or globally using
 
 ## Artifact naming
 
-The _Advanced settings_ section contains three options for naming the files
-inside an archive and the archive itself:
+When creating a new quiz archive, the _Advanced settings_ section contains three
+options for naming the files inside an archive and the archive itself:
 
-- _Archive name_ controls the name of the final archive file.
-- _Attempt folder name_ controls the folder in which each attempt's reports are
+- **Archive name** controls the name of the final archive file.
+- **Attempt folder name** controls the folder in which each attempt's reports are
 stored when using the hierarchical file structure.
-- _Attempt name_ controls the names of the PDF reports generated for individual
+- **Attempt name** controls the names of the PDF reports generated for individual
 quiz attempts. If HTML source files are kept, they use the same base name.
 
 Patterns may contain plain text and variables. Variables must use the
@@ -21,9 +21,9 @@ Patterns may contain plain text and variables. Variables must use the
 _Archive name_ and _Attempt name_; do not add an extension yourself.
 
 !!! warning
-      _Attempt folder name_ has no effect when the _Flatten export archive_
-      option is enabled because all files are placed in the root of the
-      resulting archive. See [File structure](#file-structure) for details.
+    _Attempt folder name_ has no effect when the _Flatten export archive_
+    option is enabled because all files are placed in the root of the
+    resulting archive. See [File structure](#file-structure) for details.
 
 ### Available variables
 
@@ -31,26 +31,31 @@ The following table lists all variables available to the naming options. A
 variable is only expanded when it is supported by the selected option.
 
 | Variable             | Description                        | Archive name | Attempt folder name | Attempt name |
-| -------------------- | ---------------------------------- | :----------: | :-----------------: | :----------: |
-| `${courseid}`        | Course ID                          |     Yes      |         Yes         |     Yes      |
-| `${coursename}`      | Course name                        |     Yes      |         Yes         |     Yes      |
-| `${courseshortname}` | Course short name                  |     Yes      |         Yes         |     Yes      |
-| `${cmid}`            | Course module ID                   |     Yes      |         Yes         |     Yes      |
-| `${groupids}`        | IDs of the student's groups        |      No      |         Yes         |     Yes      |
-| `${groupidnumbers}`  | ID numbers of the student's groups |      No      |         Yes         |     Yes      |
-| `${groupnames}`      | Names of the student's groups      |      No      |         Yes         |     Yes      |
-| `${quizid}`          | Quiz ID                            |     Yes      |         Yes         |     Yes      |
-| `${quizname}`        | Quiz name                          |     Yes      |         Yes         |     Yes      |
-| `${attemptid}`       | Attempt ID                         |      No      |         Yes         |     Yes      |
-| `${username}`        | Student username                   |      No      |         Yes         |     Yes      |
-| `${firstname}`       | Student first name                 |      No      |         Yes         |     Yes      |
-| `${lastname}`        | Student last name                  |      No      |         Yes         |     Yes      |
-| `${idnumber}`        | Student ID number                  |      No      |         Yes         |     Yes      |
-| `${timestart}`       | Attempt start Unix timestamp       |      No      |         Yes         |     Yes      |
-| `${timefinish}`      | Attempt finish Unix timestamp      |      No      |         Yes         |     Yes      |
-| `${date}`            | Current date (`YYYY-MM-DD`)        |     Yes      |         Yes         |     Yes      |
-| `${time}`            | Current time (`HH-MM-SS`)          |     Yes      |         Yes         |     Yes      |
-| `${timestamp}`       | Current Unix timestamp             |     Yes      |         Yes         |     Yes      |
+|----------------------|------------------------------------|:------------:|:-------------------:|:------------:|
+| `${courseid}`        | Course ID                          |      ✅      |         ✅          |      ✅      |
+| `${coursename}`      | Course name                        |      ✅      |         ✅          |      ✅      |
+| `${courseshortname}` | Course short name                  |      ✅      |         ✅          |      ✅      |
+| `${cmid}`            | Course module ID                   |      ✅      |         ✅          |      ✅      |
+| `${groupids}`        | IDs of the student's groups        |      ❌      |         ✅          |      ✅      |
+| `${groupidnumbers}`  | ID numbers of the student's groups |      ❌      |         ✅          |      ✅      |
+| `${groupnames}`      | Names of the student's groups      |      ❌      |         ✅          |      ✅      |
+| `${quizid}`          | Quiz ID                            |      ✅      |         ✅          |      ✅      |
+| `${quizname}`        | Quiz name                          |      ✅      |         ✅          |      ✅      |
+| `${attemptid}`       | Attempt ID                         |      ❌      |         ✅          |      ✅      |
+| `${username}`        | Student username                   |      ❌      |         ✅          |      ✅      |
+| `${firstname}`       | Student first name                 |      ❌      |         ✅          |      ✅      |
+| `${lastname}`        | Student last name                  |      ❌      |         ✅          |      ✅      |
+| `${idnumber}`        | Student ID number                  |      ❌      |         ✅          |      ✅      |
+| `${timestart}`       | Attempt start Unix timestamp       |      ❌      |         ✅          |      ✅      |
+| `${timefinish}`      | Attempt finish Unix timestamp      |      ❌      |         ✅          |      ✅      |
+| `${date}`            | Current date (`YYYY-MM-DD`)        |      ✅      |         ✅          |      ✅      |
+| `${time}`            | Current time (`HH-MM-SS`)          |      ✅      |         ✅          |      ✅      |
+| `${timestamp}`       | Current Unix timestamp             |      ✅      |         ✅          |      ✅      |
+
+!!! info
+    This list may not be exhaustive. Please check the help text of the
+    respective option in Moodle itself. It will always contain an up-to-date
+    list of all variables that your current plugin version supports.
 
 
 ### Naming rules
