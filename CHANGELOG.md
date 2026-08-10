@@ -2,6 +2,12 @@
 
 ## Version X.Y.Z (YYYYMMDDXX)
 
+
+- **🚨 BREAKING 🚨** The companion service was renamed from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker"
+  - New Docker image: `ngandrass/moodle-archiving-worker` (update your `docker-compose.yml` / `docker run` commands)
+  - New repository: [ngandrass/moodle-archiving-worker](https://github.com/ngandrass/moodle-archiving-worker) (old URLs redirect automatically)
+  - All `QUIZ_ARCHIVER_*` environment variables of the worker service were renamed to `MOODLE_ARCHIVER_*`
+  - Please refer to the full [archive worker changelog](https://github.com/ngandrass/moodle-archiving-worker/blob/main/CHANGELOG.md) for further details
 - Allow exporting only the latest attempts of each user in the generated archive
 - Add an option to flatten the archive structure, placing all files directly in the root directory of the archive.
 - Add an option to include or exclude the attempts metadata CSV file
@@ -9,6 +15,8 @@
 - Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
 - Improve display of the number of attempts in the quiz archive creation form
 - Improve handling of duplicate files in archives
+
+**Note:** Use of [moodle-archiving-worker](https://github.com/ngandrass/moodle-archiving-worker) `>= v5.0.0` is required.
 
 
 ## Version 4.1.0 (2026052200)

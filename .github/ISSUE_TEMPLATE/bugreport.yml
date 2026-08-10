@@ -147,7 +147,7 @@ body:
       label: Relevant quiz archive worker service log output (if applicable)
       description: |
         Please copy and paste any relevant log output from the quiz archive worker service. Ideadly set your `LOG_LEVEL` to `DEBUG` when capturing the logs.
-        See [Quiz Archive Worker -> Configuration](https://github.com/ngandrass/moodle-quiz-archive-worker?tab=readme-ov-file#configuration) for more details.
+        See [Moodle Archiving Worker -> Configuration](https://github.com/ngandrass/moodle-archiving-worker?tab=readme-ov-file#configuration) for more details.
       render: text
     validations:
       required: false

@@ -34,7 +34,7 @@ fully text-searchable, including rendered MathJax formulas. Content is saved
 vector based, whenever possible, to allow high-quality printing and zooming
 while keeping the file size down.
 
-Quiz archives are created by an external [quiz archive worker](https://github.com/ngandrass/moodle-quiz-archive-worker)
+Quiz archives are created by an external [Moodle Archiving Worker](https://github.com/ngandrass/moodle-archiving-worker)
 service to remove load from Moodle and to eliminate the need to install a large
 number of software dependencies on the webserver. It can easily be deployed
 using Docker.

@@ -8,7 +8,7 @@ up or using the quiz archiver plugin.
 
 Be aware that there is a configurable job timeout within the Moodle plugin
 settings (`quiz_archiver | job_timeout_min`) as well as one within the quiz
-archive worker service (`QUIZ_ARCHIVER_REQUEST_TIMEOUT_SEC`).
+archive worker service (`MOODLE_ARCHIVER_REQUEST_TIMEOUT_SEC`).
 
 !!! warning
     Since the shortest timeout always takes precedence, make sure to adjust
@@ -109,10 +109,10 @@ messages like `Ready signal not received ` or similar.
 
 At this point you can try increasing the number of seconds the archive worker
 waits before considering the check to have failed via
-[`QUIZ_ARCHIVER_WAIT_FOR_READY_SIGNAL_TIMEOUT_SEC`](../../installation/archiveworker.md).
+[`MOODLE_ARCHIVER_WAIT_FOR_READY_SIGNAL_TIMEOUT_SEC`](../../installation/archiveworker.md).
 If desired, you can also make the archive worker simply continue after the
 timeout is reached and generating the PDF as is by setting
-[`QUIZ_ARCHIVER_CONTINUE_AFTER_READY_SIGNAL_TIMEOUT=True`](../..//installation/archiveworker.md).
+[`MOODLE_ARCHIVER_CONTINUE_AFTER_READY_SIGNAL_TIMEOUT=True`](../..//installation/archiveworker.md).
 
 If you believe that the readiness probe failure is caused by a bug, please do
 not hesitate to [open a bug report](https://github.com/ngandrass/moodle-quiz_archiver/issues).

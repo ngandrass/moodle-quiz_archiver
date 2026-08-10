@@ -113,7 +113,7 @@ the quiz archiver plugin to use the created webservice and user.
 1. Navigate to _Site Administration_ > _Plugins_ {{n1}} > _Activity modules_ >
    _Quiz_ > _Quiz Archiver_ {{n2}}
 2. Set `worker_url` {{n3}} to the URL under which the quiz archive worker can be
-   reached (e.g., `http://quiz-archive-worker:5000` or `http://127.0.0.1:5000`)
+   reached (e.g., `http://moodle-archiving-worker:5000` or `http://127.0.0.1:5000`)
 3. Select the previously created `quiz_archiver` webservice for `webservice_id` {{n4}}
    from the drop-down menu
 4. Enter the user ID of the previously created Moodle user for `webservice_userid` {{n5}}.

@@ -34,10 +34,10 @@ fully text-searchable, including rendered MathJax formulas. Content is saved
 vector based, whenever possible, to allow high-quality printing and zooming
 while keeping the file size down.
 
-Quiz archives are created by an external [quiz archive worker](https://github.com/ngandrass/moodle-quiz-archive-worker)
+Quiz archives are created by an external [Moodle Archiving Worker](https://github.com/ngandrass/moodle-archiving-worker)
 service to remove load from Moodle and to eliminate the need to install a large
 number of software dependencies on the webserver. It can easily be [deployed
-using Docker](https://github.com/ngandrass/moodle-quiz-archive-worker#installation).
+using Docker](https://github.com/ngandrass/moodle-archiving-worker#installation).
 
 The Quiz Archiver is available via the [Moodle Plugin Directory](https://marketplace.moodle.com/plugins/quiz_archiver):\
 [![Moodle Plugin Directory](docs/assets/moodle-plugin-directory-button.png)](https://marketplace.moodle.com/plugins/quiz_archiver)
@@ -114,7 +114,7 @@ please feel free to open an issue within the
 ## Versioning and Compatibility
 
 The [quiz_archiver Moodle Plugin](https://github.com/ngandrass/moodle-quiz_archiver)
-and its corresponding [Quiz Archive Worker](https://github.com/ngandrass/moodle-quiz-archive-worker)
+and its corresponding [Moodle Archiving Worker](https://github.com/ngandrass/moodle-archiving-worker)
 both use [Semantic Versioning 2.0.0](https://semver.org/).
 
 This means that their version numbers are structured as `MAJOR.MINOR.PATCH`. The

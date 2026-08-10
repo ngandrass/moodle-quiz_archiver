@@ -15,10 +15,10 @@ extra:
       link: https://github.com/ngandrass/moodle-quiz_archiver
       name: "GitHub: moodle-quiz_archiver"
     - icon: fontawesome/brands/github
-      link: https://github.com/ngandrass/moodle-quiz-archive-worker
-      name: "GitHub: moodle-quiz-archive-worker"
+      link: https://github.com/ngandrass/moodle-archiving-worker
+      name: "GitHub: moodle-archiving-worker"
     - icon: fontawesome/brands/docker
-      link: https://hub.docker.com/r/ngandrass/moodle-quiz-archive-worker
+      link: https://hub.docker.com/r/ngandrass/moodle-archiving-worker
     - icon: fontawesome/solid/bug
       link: https://github.com/ngandrass/moodle-quiz_archiver/issues
       name: "Report a Bug"
@@ -94,7 +94,7 @@ nav:
   - "Installation":
     - installation/index.md
     - "Moodle Plugin": installation/moodleplugin.md
-    - "Archive Worker Service": installation/archiveworker.md
+    - "Archiving Worker Service": installation/archiveworker.md
 
   - "Configuration":
       - configuration/index.md

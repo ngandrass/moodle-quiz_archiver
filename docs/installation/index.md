@@ -48,7 +48,7 @@ prerequisites met:
 ## Versioning and Compatibility
 
 The [quiz_archiver Moodle Plugin](https://github.com/ngandrass/moodle-quiz_archiver)
-and its corresponding [Quiz Archive Worker](https://github.com/ngandrass/moodle-quiz-archive-worker)
+and its corresponding [Moodle Archiving Worker](https://github.com/ngandrass/moodle-archiving-worker)
 both use [Semantic Versioning 2.0.0](https://semver.org/).
 
 This means that their version numbers are structured as `MAJOR.MINOR.PATCH`. The
