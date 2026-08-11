@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDXX)
+## Version 5.0.0 (2026081100)
 
 - **🚨 BREAKING 🚨** The companion service was renamed from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker"
     - New Docker image: `ngandrass/moodle-archiving-worker` (update your `docker-compose.yml` / `docker run` commands)
