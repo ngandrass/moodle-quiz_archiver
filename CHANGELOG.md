@@ -9,6 +9,10 @@
     - Please refer to the full [archive worker changelog](https://github.com/ngandrass/moodle-archiving-worker/blob/main/CHANGELOG.md) for further details
 - Allow exporting only the latest attempts of each user in the generated archive
 - Add an option to flatten the archive structure, placing all files directly in the root directory of the archive.
+- Add support for chunked uploads to eliminate the need for increasing the maximum upload filesize of Moodle
+    - Archives larger than the maximum upload filesize of Moodle will be split into multiple chunks
+    - Maximum upload filesize is automatically detected
+    - Uploaded chunks will automatically be reassembled by the Moodle plugin
 - Add an option to include or exclude the attempts metadata CSV file
 - Add support (custom rendering rules) for question type [JACK](https://github.com/Wunderbyte-GmbH/moodle_qtype_jack)
 - Prevent instance-specific modifications to Moodle header and footer from leaking into printed PDFs (thanks to @abias !)
