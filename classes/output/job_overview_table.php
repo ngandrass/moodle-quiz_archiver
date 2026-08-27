@@ -108,25 +108,20 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_status($values) {
-        $html = '';
+        global $OUTPUT;
+
         $s = ArchiveJob::get_status_display_args(
             $values->status,
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top"' .
-                             'title="' . $s['help'] . '"';
-        $html .= '<span class="badge badge-' . $s['color'] . '" ' . $statustooltiphtml . '>' . $s['text'] . '</span><br/>';
-
-        if (isset($s['statusextras']['progress'])) {
-            $html .= '<span title="' . get_string('progress', 'quiz_archiver') . '">';
-            $html .= '<i class="fa fa-spinner"></i>&nbsp;' . $s['statusextras']['progress'] . '%';
-            $html .= '</span><br/>';
-        }
-
-        $html .= '<small>' . date('H:i:s', $values->timemodified) . '</small>';
-
-        return $html;
+        return $OUTPUT->render_from_template('quiz_archiver/job_overview_table_col_status', [
+            'badge_text' => $s['text'],
+            'badge_color' => $s['color'],
+            'tooltip_text' => $s['help'],
+            'progress' => isset($s['statusextras']['progress']) ? $s['statusextras']['progress'] : null,
+            'time_modified' => $values->timemodified,
+        ]);
     }
 
     /**
