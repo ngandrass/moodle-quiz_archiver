@@ -165,7 +165,7 @@ class quiz_archiver_report extends report_base {
         ob_end_clean();
 
         // Render output.
-        echo $OUTPUT->render_from_template('quiz_archiver/overview', [
+        echo $OUTPUT->render_from_template('quiz_archiver/job_overview', [
             'archiveQuizForm' => $archivequizform->render(),
             'baseurl' => $this->base_url(),
             'jobOverviewTable' => $jobtblhtml,

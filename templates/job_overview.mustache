@@ -15,9 +15,10 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template quiz_archiver/overview
+    @template quiz_archiver/job_overview
 
-    Template purpose and description.
+    This template renders an overview of all previous archive jobs relating to a
+    specific quiz on its report page.
 
     Example context (json):
     {
@@ -74,7 +75,7 @@
             $('#job-details-{{jobid}}').click(async() => {
                 await Modal.create({
                     title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
-                    body: Templates.render('quiz_archiver/job_details', JSON.parse(atob('{{{base64Data}}}'))),
+                    body: Templates.render('quiz_archiver/job_overview_table_col_actions_details', JSON.parse(atob('{{{base64Data}}}'))),
                     show: true,
                     large: true,
                 });
