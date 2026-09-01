@@ -155,13 +155,10 @@ class job_overview_table extends \table_sql {
      * @throws \moodle_exception
      */
     public function col_actions($values) {
-        $html = '';
-
-        // Action: Show details.
-        // @codingStandardsIgnoreLine
-        $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
+        global $OUTPUT;
 
         // Action: Show content.
+        $showcontentsurl = null;
         if ($values->pathnamehash) {
             $showcontentsurl = new \moodle_url('', [
                 'id' => optional_param('id', null, PARAM_INT),
@@ -169,14 +166,10 @@ class job_overview_table extends \table_sql {
                 'action' => 'showcontents',
                 'jobid' => $values->id,
             ]);
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="'.$showcontentsurl.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('inspect_archive_contents', 'quiz_archiver').'" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'"><i class="fa fa-magnifying-glass"></i></a>';
-        } else {
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="#" class="btn btn-outline-primary disabled mx-1" role="button" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'" disabled aria-disabled="true"><i class="fa fa-magnifying-glass"></i></a>';
         }
 
         // Action: Download.
+        $artifacturl = null;
         if ($values->pathnamehash) {
             $artifactfile = get_file_storage()->get_file_by_hash($values->pathnamehash);
             $artifacturl = \moodle_url::make_pluginfile_url(
@@ -188,12 +181,6 @@ class job_overview_table extends \table_sql {
                 $artifactfile->get_filename(),
                 true,
             );
-
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('download').'" alt="'.get_string('download').'"><i class="fa fa-download"></i></a>';
-        } else {
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }
 
         // Action: Delete.
@@ -203,9 +190,15 @@ class job_overview_table extends \table_sql {
             'action' => 'delete_job',
             'jobid' => $values->jobid,
         ]);
-        // @codingStandardsIgnoreLine
-        $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('delete').'" alt="'.get_string('delete').'"><i class="fa fa-times"></i></a>';
 
-        return $html;
+        return $OUTPUT->render_from_template(
+            'quiz_archiver/job_overview_table_col_actions',
+            [
+                'job_id' => $values->jobid,
+                'show_content_url' => $showcontentsurl ? $showcontentsurl->out(false) : null,
+                'artifact_url' => $artifacturl ? $artifacturl->out(false) : null,
+                'delete_url' => $deleteurl ? $deleteurl->out(false) : null,
+            ]
+        );
     }
 }
