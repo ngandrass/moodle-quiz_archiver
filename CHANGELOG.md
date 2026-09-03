@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Display attempt user email address in attempt report header section
+
+
 ## Version 5.0.0 (2026081100)
 
 - **🚨 BREAKING 🚨** The companion service was renamed from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker"

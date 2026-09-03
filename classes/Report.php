@@ -523,6 +523,13 @@ class Report {
                 $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink)
             );
 
+            // User email.
+            $summaryinfo->add_item(
+                'useremail',
+                get_string('email'),
+                $attemptuser->email ?: '<i>' . get_string('none') . '</i>'
+            );
+
             // User ID number.
             $summaryinfo->add_item(
                 'useridnumber',
