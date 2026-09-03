@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Display attempt user email address in attempt report header section
+- Add `${email}` variable to filename patterns. Dots inside email addresses are automatically replaced with underscores.
+- Add email field to exported `attempts_metadata.csv` file inside quiz archives
+
+
 ## Version 5.0.0 (2026081100)
 
 - **🚨 BREAKING 🚨** The companion service was renamed from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker"
