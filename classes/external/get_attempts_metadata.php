@@ -132,6 +132,11 @@ class get_attempts_metadata extends external_api {
                         'Last name for this quiz attempt',
                         VALUE_REQUIRED
                     ),
+                    'email' => new external_value(
+                        PARAM_TEXT,
+                        'Email address for this quiz attempt',
+                        VALUE_REQUIRED
+                    ),
                     'idnumber' => new external_value(
                         PARAM_TEXT,
                         'ID number of the user for this quiz attempt',
