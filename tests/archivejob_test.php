@@ -1329,6 +1329,8 @@ final class archivejob_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_generate_attempt_foldername(): void {
+        global $DB;
+
         // Generate data.
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -1355,6 +1357,12 @@ final class archivejob_test extends \advanced_testcase {
         // TODO: (MDL-0) Update reference course to cover groups and check for these.
         $this->assertStringContainsString('nogroup', $foldername, 'Group name placeholder was not found in folder name');
         $this->assertStringContainsString($rc->attemptids[0], $foldername, 'Attempt ID was not found in folder name');
+
+        // Email placeholder must be sanitized (dots replaced with underscores).
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $rc->attemptids[0]], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $expectedemail = str_replace('.', '_', $userinfo->email);
+        $this->assertStringContainsString($expectedemail, $foldername, 'Email was not found in folder name');
     }
 
     /**
@@ -1454,6 +1462,8 @@ final class archivejob_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_generate_attempt_filename(): void {
+        global $DB;
+
         // Generate data.
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
@@ -1480,6 +1490,12 @@ final class archivejob_test extends \advanced_testcase {
         // TODO: (MDL-0) Update reference course to cover groups and check for these.
         $this->assertStringContainsString('nogroup', $filename, 'Group name placeholder was not found in filename');
         $this->assertStringContainsString($rc->attemptids[0], $filename, 'Attempt ID was not found in filename');
+
+        // Email placeholder must be sanitized (dots replaced with underscores).
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $rc->attemptids[0]], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $expectedemail = str_replace('.', '_', $userinfo->email);
+        $this->assertStringContainsString($expectedemail, $filename, 'Email was not found in filename');
     }
 
     /**

@@ -116,6 +116,7 @@ class ArchiveJob {
         'username',
         'firstname',
         'lastname',
+        'email',
         'idnumber',
         'timestart',
         'timefinish',
@@ -1338,6 +1339,7 @@ class ArchiveJob {
             'username' => $userinfo->username ?: 'null',
             'firstname' => $userinfo->firstname ?: 'null',
             'lastname' => $userinfo->lastname ?: 'null',
+            'email' => str_replace('.', '_', $userinfo->email) ?: 'null',
             'idnumber' => $userinfo->idnumber ?: 'null',
         ];
 
@@ -1399,6 +1401,7 @@ class ArchiveJob {
             'username' => $userinfo->username ?: 'null',
             'firstname' => $userinfo->firstname ?: 'null',
             'lastname' => $userinfo->lastname ?: 'null',
+            'email' => str_replace('.', '_', $userinfo->email) ?: 'null',
             'idnumber' => $userinfo->idnumber ?: 'null',
         ];
 

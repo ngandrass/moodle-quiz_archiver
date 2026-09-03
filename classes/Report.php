@@ -219,7 +219,7 @@ class Report {
         // Get all requested attempts.
         return $DB->get_records_sql(
             "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, " .
-            "       u.username, u.firstname, u.lastname, u.idnumber " .
+            "       u.username, u.firstname, u.lastname, u.email, u.idnumber " .
             "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id " .
             "WHERE qa.preview = 0 AND qa.quiz = :quizid " . ($filterwhereclause ?? ''),
             [
