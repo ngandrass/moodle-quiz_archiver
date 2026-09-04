@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 5.1.0 (2026090400)
 
 - Introduce "question internals" section that includes question metadata (question id, version, id number, tags) inside attempt reports
 - Display attempt user email address in attempt report header section
