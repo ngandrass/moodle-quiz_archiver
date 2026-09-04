@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDNN)
 
+- Introduce "question internals" section that includes question metadata (question id, version, id number, tags) inside attempt reports
 - Display attempt user email address in attempt report header section
 - Add `${email}` variable to filename patterns. Dots inside email addresses are automatically replaced with underscores.
 - Add email field to exported `attempts_metadata.csv` file inside quiz archives
