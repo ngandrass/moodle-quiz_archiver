@@ -55,6 +55,7 @@ class Report {
         "question",
         "question_correctness",
         "question_marks",
+        "question_internals",
         "question_feedback",
         "general_feedback",
         "rightanswer",
@@ -70,6 +71,7 @@ class Report {
         "quiz_grade" => ["header"],
         "question_correctness" => ["question"],
         "question_marks" => ["question"],
+        "question_internals" => ["question"],
         "question_feedback" => ["question"],
         "general_feedback" => ["question"],
         "rightanswer" => ["question"],
@@ -658,17 +660,52 @@ class Report {
                     $displayoptions->marks = \question_display_options::HIDDEN;
                 }
 
-                // Render question as HTML.
+                // Handle questions that have been moved around in the quiz after the attempt.
                 if ($slot != $originalslot) {
                     $attemptobj->get_question_attempt($slot)->set_max_mark(
                         $attemptobj->get_question_attempt($originalslot)->get_max_mark()
                     );
                 }
+
+                // Section: Question internals (ID, ID number, tags, version).
+                if ($sections['question_internals']) {
+                    $html .= $this->render_question_internals($attemptobj->get_question_attempt($slot)->get_question());
+                }
+
+                // Render question as HTML.
                 $html .= $quba->render_question($slot, $displayoptions, $number);
             }
         }
 
         return $html;
+    }
+
+    /**
+     * Renders an inline metadata block for the given question, containing its
+     * ID, ID number, tags, and question bank version. Used by the
+     * question_internals report section.
+     *
+     * @param \question_definition $question Question to render the metadata for
+     * @return string HTML DOM of the rendered question metadata block
+     *
+     * @throws \coding_exception
+     */
+    protected function render_question_internals(\question_definition $question): string {
+        global $OUTPUT;
+
+        // ID number: show placeholder if unset.
+        $idnumber = ($question->idnumber !== null && $question->idnumber !== '') ? s($question->idnumber) : null;
+
+        // Tags: rendered as pill badges via core's tag renderer.
+        $tagobjects = \core_tag_tag::get_item_tags('core_question', 'question', $question->id);
+        $tagshtml = !empty($tagobjects) ? $OUTPUT->tag_list($tagobjects, null, 'd-inline', 0, null, true) : null;
+
+        return $OUTPUT->render_from_template('quiz_archiver/components/question_internals', [
+            'id' => $question->id,
+            'version' => $question->version,
+            'idnumber' => $idnumber,
+            'tags' => $tagshtml,
+        ]);
     }
 
     /**

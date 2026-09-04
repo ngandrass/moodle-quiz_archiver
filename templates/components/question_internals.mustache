@@ -1,0 +1,69 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template quiz_archiver/components/question_internals
+
+    Template purpose and description.
+
+    Example context (json):
+    {
+        "id": 1234,
+        "version": 2,
+        "idnumber": 42,
+        "tags": "<div>HTML rendering of tags from core renderer</div>"
+    }
+}}
+
+<div class="quiz_archiver-question-internals card bg-light mb-2" style="border-radius: 2px; font-size: 0.8em;">
+    <div class="card-body p-2">
+        <ul class="list-inline mb-0">
+            <li class="list-inline-item me-1">
+                <i class="fa-solid fa-hashtag"></i>
+                {{#str}} question_id, quiz_archiver {{/str}}:&nbsp;
+                {{id}}
+            </li>
+            <li class="list-inline-item me-1 text-muted">|</li>
+            <li class="list-inline-item me-1">
+                <i class="fa-solid fa-code-commit"></i>
+                {{#str}} version, moodle {{/str}}:&nbsp;
+                v{{version}}
+            </li>
+            <li class="list-inline-item me-1 text-muted">|</li>
+            <li class="list-inline-item me-1">
+                <i class="fa-solid fa-clipboard-question"></i>
+                {{#str}} idnumber, moodle {{/str}}:&nbsp;
+                {{#idnumber}}
+                     {{idnumber}}
+                {{/idnumber}}
+                {{^idnumber}}
+                    <span class="text-muted">&ndash;</span>
+                {{/idnumber}}
+            </li>
+            <li class="list-inline-item me-1 text-muted">|</li>
+            <li class="list-inline-item">
+                <i class="fa-solid fa-tags"></i>
+                {{#str}} tags, moodle {{/str}}:&nbsp;
+                {{#tags}}
+                    {{{tags}}}
+                {{/tags}}
+                {{^tags}}
+                    <span class="text-muted">&ndash;</span>
+                {{/tags}}
+            </li>
+        </ul>
+    </div>
+</div>
