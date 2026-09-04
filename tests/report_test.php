@@ -230,6 +230,13 @@ final class report_test extends \advanced_testcase {
             $html,
             'Answer history not found'
         );
+
+        // Verify question internals.
+        $this->assertMatchesRegularExpression(
+            '/<div[^<>]*class="[^"<>]*quiz_archiver-question-internals[^"<>]*"[^<>]*>/',
+            $html,
+            'Question internals block not found'
+        );
     }
 
     /**
@@ -630,6 +637,111 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Tests generation of a report with question internals
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_generate_report_question_internals(): void {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+
+        // Generate report with question internals.
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $sections = self::get_all_report_sections_enabled();
+        $sections['header'] = false;
+        $html = $report->generate($rc->attemptids[0], $sections);
+        $this->assertNotEmpty($html, 'Generated report is empty');
+
+        // Verify that the question internals block is present.
+        $this->assertMatchesRegularExpression(
+            '/<div[^<>]*class="[^"<>]*quiz_archiver-question-internals[^"<>]*"[^<>]*>/',
+            $html,
+            'Question internals block not found'
+        );
+
+        // Verify that the actual metadata of every question in the attempt is rendered correctly.
+        $attemptobj = quiz_create_attempt_handling_errors($rc->attemptids[0], $rc->cm->id);
+        foreach ($attemptobj->get_slots() as $slot) {
+            $question = $attemptobj->get_question_attempt($slot)->get_question();
+
+            $this->assertStringContainsString(
+                $question->id,
+                $html,
+                'Question ID not found for question ' . $question->id
+            );
+
+            $this->assertStringContainsString(
+                "v{$question->version}",
+                $html,
+                'Question version not found for question ' . $question->id
+            );
+
+            if ($question->idnumber !== null && $question->idnumber !== '') {
+                $this->assertStringContainsString(
+                    s($question->idnumber),
+                    $html,
+                    'Question idnumber not found for question ' . $question->id
+                );
+            }
+
+            $tags = \core_tag_tag::get_item_tags_array('core_question', 'question', $question->id);
+            foreach ($tags as $tagname) {
+                $this->assertStringContainsString(
+                    $tagname,
+                    $html,
+                    'Question tag "' . $tagname . '" not found for question ' . $question->id
+                );
+            }
+        }
+    }
+
+    /**
+     * Tests generation of a report without question internals
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_generate_report_no_question_internals(): void {
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+
+        // Generate report without question internals.
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $sections = self::get_all_report_sections_enabled();
+        $sections['header'] = false;
+        $sections['question_internals'] = false;
+        $html = $report->generate($rc->attemptids[0], $sections);
+        $this->assertNotEmpty($html, 'Generated report is empty');
+
+        // Questions should still be present.
+        $this->assertMatchesRegularExpression(
+            '/<[^<>]*class="[^"<>]*que[^"<>]*"[^<>]*>/',
+            $html,
+            'Questions not found'
+        );
+
+        // Verify that the question internals block is absent.
+        $this->assertDoesNotMatchRegularExpression(
+            '/<div[^<>]*class="[^"<>]*quiz_archiver-question-internals[^"<>]*"[^<>]*>/',
+            $html,
+            'Question internals block found when it should be absent'
+        );
+    }
+
+    /**
      * Tests to get the attachments of an attempt
      *
      * @covers \quiz_archiver\Report::get_attempt_attachments
@@ -954,6 +1066,7 @@ final class report_test extends \advanced_testcase {
         $this->assertEmpty($sections['rightanswer'], 'Dependent section rightanswer not removed correctly');
         $this->assertEmpty($sections['history'], 'Dependent section history not removed correctly');
         $this->assertEmpty($sections['attachments'], 'Dependent section attachments not removed correctly');
+        $this->assertEmpty($sections['question_internals'], 'Dependent section question_internals not removed correctly');
 
         // Test removal of superfluous sections.
         $formdata = self::get_formdata_all_reports_sections_enabled();
