@@ -115,12 +115,12 @@ class job_overview_table extends \table_sql {
         );
 
         $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top"' .
-                             'title="' . $s['help'] . '"';
-        $html .= '<span class="badge badge-' . $s['color'] . '" ' . $statustooltiphtml . '>' . $s['text'] . '</span><br/>';
+                             'title="' . s($s['help']) . '"';
+        $html .= '<span class="badge badge-' . s($s['color']) . '" ' . $statustooltiphtml . '>' . s($s['text']) . '</span><br/>';
 
         if (isset($s['statusextras']['progress'])) {
             $html .= '<span title="' . get_string('progress', 'quiz_archiver') . '">';
-            $html .= '<i class="fa fa-spinner"></i>&nbsp;' . $s['statusextras']['progress'] . '%';
+            $html .= '<i class="fa fa-spinner"></i>&nbsp;' . s($s['statusextras']['progress']) . '%';
             $html .= '</span><br/>';
         }
 
