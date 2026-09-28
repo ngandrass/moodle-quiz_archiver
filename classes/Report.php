@@ -720,6 +720,8 @@ class Report {
      * stripped from the generated HTML DOM
      * @param bool $inlineimages If true, all images will be inlined as base64
      * to prevent rendering issues on user side
+     * @param int $marginpercent Percentage of correction margin to add to the
+     * right of the report
      *
      * @return string HTML DOM of the rendered quiz attempt report
      *
@@ -733,7 +735,8 @@ class Report {
         array $sections,
         bool $fixrelativeurls = true,
         bool $minimal = true,
-        bool $inlineimages = true
+        bool $inlineimages = true,
+        int $marginpercent = 0,
     ): string {
         global $CFG, $OUTPUT, $PAGE;
 
@@ -824,6 +827,20 @@ class Report {
                     $img->setAttribute('x-debug-inlining-failed', 'true');
                 }
             }
+        }
+
+        // Add correction margin if desired.
+        if ($marginpercent > 0) {
+            $correctionmargincssnode = $dom->createElement("style", "
+                /* Add correction margin to the right of the page */
+                body {
+                    margin-right: {$marginpercent}%;
+                }
+            ");
+            $dom->getElementsByTagName('head')[0]->appendChild($correctionmargincssnode);
+        }
+        if ($marginpercent > 100 || $marginpercent < 0) {
+            throw new \coding_exception('Correction margin percent must be between 0 and 100');
         }
 
         return $dom->saveHTML();
@@ -1051,5 +1068,24 @@ class Report {
 
         // Absolute URL is ready!
         return $scheme . '://' . $abs;
+    }
+
+    /**
+     * Selects an appropriate correction margin size (percent) based on the
+     * given paper format.
+     *
+     * @param string $paperformat Percent of correction margin (0 - 100) to add
+     * @return int
+     */
+    public static function get_correction_margin_percent(string $paperformat): int {
+        return match ($paperformat) {
+            'A6' => 15,
+            'A5' => 20,
+            'A4', 'Letter', 'Legal' => 25,
+            'A3', 'Ledger' => 20,
+            'A2' => 15,
+            'A1', 'A0' => 10,
+            default => 0,
+        };
     }
 }

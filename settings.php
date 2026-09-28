@@ -194,6 +194,16 @@ if ($hassiteconfig) {
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);
 
+        // Export correction margin.
+        $set = new admin_setting_configcheckbox(
+            'quiz_archiver/job_preset_export_attempts_correction_margin',
+            get_string('export_attempts_correction_margin', 'quiz_archiver'),
+            get_string('export_attempts_correction_margin_help', 'quiz_archiver'),
+            '0',
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
         // Archive filename pattern.
         $set = new admin_setting_archive_filename_pattern(
             'quiz_archiver/job_preset_archive_filename_pattern',
