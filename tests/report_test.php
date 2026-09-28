@@ -381,6 +381,74 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Tests generation of a report for a quiz with multiple grade items
+     *
+     * @covers \quiz_archiver\Report::generate
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_generate_report_with_grade_items(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $quizgenerator = $generator->get_plugin_generator('mod_quiz');
+        $questiongenerator = $generator->get_plugin_generator('core_question');
+
+        // Create a quiz with two true/false questions, each assigned to its own grade item.
+        $course = $generator->create_course();
+        $quiz = $quizgenerator->create_instance(['course' => $course->id, 'grade' => 100, 'sumgrades' => 2]);
+        $cm = get_coursemodule_from_instance('quiz', $quiz->id, $course->id);
+        $category = $questiongenerator->create_question_category();
+        $gradeitems = [
+            1 => $quizgenerator->create_grade_item(['quizid' => $quiz->id, 'name' => 'Grade item A']),
+            2 => $quizgenerator->create_grade_item(['quizid' => $quiz->id, 'name' => 'Grade item B']),
+        ];
+        foreach ($gradeitems as $slot => $gradeitem) {
+            $question = $questiongenerator->create_question('truefalse', null, ['category' => $category->id]);
+            quiz_add_quiz_question($question->id, $quiz, 0, 1);
+            $DB->set_field('quiz_slots', 'quizgradeitemid', $gradeitem->id, ['quizid' => $quiz->id, 'slot' => $slot]);
+        }
+
+        // Create a finished attempt. First question is answered correctly, second one wrong.
+        $student = $generator->create_and_enrol($course, 'student');
+        $this->setUser($student);
+        $attempt = $quizgenerator->create_attempt($quiz->id, $student->id);
+        $quizgenerator->submit_responses($attempt->id, [1 => 'True', 2 => 'False'], false, true);
+        $this->setAdminUser();
+
+        // Generate report with only the header and quiz grade and verify that all grade items are present.
+        $report = new Report($course, $cm, $quiz);
+        $sections = array_fill_keys(Report::SECTIONS, false);
+        $sections['header'] = true;
+        $sections['quiz_grade'] = true;
+        $html = $report->generate($attempt->id, $sections);
+        $this->assertNotEmpty($html, 'Generated report is empty');
+        foreach ($gradeitems as $gradeitem) {
+            $this->assertMatchesRegularExpression(
+                '/<th[^<>]*>\s*' . preg_quote($gradeitem->name, '/') . '\s*<\/th>/',
+                $html,
+                'Grade item "' . $gradeitem->name . '" not found'
+            );
+        }
+
+        // Generate report with only the header (no quiz grade) and verify that grade items are absent.
+        $sections['quiz_grade'] = false;
+        $html = $report->generate($attempt->id, $sections);
+        $this->assertNotEmpty($html, 'Generated report is empty');
+        foreach ($gradeitems as $gradeitem) {
+            $this->assertStringNotContainsString(
+                $gradeitem->name,
+                $html,
+                'Grade item "' . $gradeitem->name . '" found when it should be absent'
+            );
+        }
+    }
+
+    /**
      * Tests generation of a report with no questions
      *
      * @covers \quiz_archiver\Report::generate

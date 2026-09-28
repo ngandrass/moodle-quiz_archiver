@@ -2,6 +2,7 @@
 
 ## Version X.Y.Z (YYYYMMDDNN)
 
+- List all defined grade items individually below the overall quiz grade in attempt report headers
 - Create advanced settings option to add correction margins to the right side of generated attempt reports
 - Escape job status description in job overview table (Thanks to @PM84)
 
