@@ -83,6 +83,8 @@ $string['error_no_attempts_left_after_filtering'] = 'Nach Anwendung der ausgewä
 $string['export_attempts'] = 'Testversuche exportieren';
 $string['export_attempts_help'] = 'Es werden stets alle Testversuche exportiert';
 $string['export_attempts_num'] = 'Vorhandene Testversuche: <span class="badge badge-primary badge-pill">{$a}</span>';
+$string['export_attempts_correction_margin'] = 'Korrekturrand';
+$string['export_attempts_correction_margin_help'] = 'Wenn aktiviert, wird ein Korrekturrand auf der rechten Seite der Versuchsberichte hinzugefügt. Die Größe des Randes skaliert automatisch mit dem ausgewählten Papierformat.';
 $string['export_attempts_metadata'] = 'Versuchs-Metadaten exportieren';
 $string['export_attempts_metadata_help'] = 'Eine tabellarische Datei mit Metadaten zu den archivierten Testversuchen wird innerhalb des Archivs angelegt.';
 $string['export_attempts_image_optimize'] = 'Bilder optimieren';
