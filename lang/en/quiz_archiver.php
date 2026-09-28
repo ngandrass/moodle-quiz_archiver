@@ -83,6 +83,8 @@ $string['error_no_attempts_left_after_filtering'] = 'No quiz attempts were left 
 $string['export_attempts'] = 'Export quiz attempts';
 $string['export_attempts_help'] = 'Quiz attempts will always be exported';
 $string['export_attempts_num'] = 'Existing attempts: <span class="badge badge-primary badge-pill">{$a}</span>';
+$string['export_attempts_correction_margin'] = 'Correction margin';
+$string['export_attempts_correction_margin_help'] = 'When enabled, a correction margin will be added to the right side of attempt reports. The size of the margin scales automatically with the selected paper size.';
 $string['export_attempts_metadata'] = 'Export attempts metadata';
 $string['export_attempts_metadata_help'] = 'A tabular file containing the metadata of all the exported attempts will be created inside the quiz archive.';
 $string['export_attempts_image_optimize'] = 'Optimize images';

@@ -238,6 +238,7 @@ class quiz_archiver_report extends report_base {
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
      * within the created archive
      * @param string $paperformat Paper format to use for attempt report generation
+     * @param bool $correctionmargin If true, a correction margin will be added to the reports
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
      * @param bool $flattenarchive Exported archive will not have any directory structure if true
@@ -260,6 +261,7 @@ class quiz_archiver_report extends report_base {
         array $attemptfilters,
         bool $reportkeephtmlfiles,
         string $paperformat,
+        bool $correctionmargin,
         bool $exportquizbackup,
         bool $exportcoursebackup,
         bool $flattenarchive,
@@ -269,7 +271,7 @@ class quiz_archiver_report extends report_base {
         ?array $imageoptimize = null,
         ?int $retentionseconds = null
     ): ?ArchiveJob {
-        global $CFG, $USER;
+        global $USER;
 
         // Check permissions.
         require_capability('quiz/archiver:create', $this->context);
@@ -331,6 +333,8 @@ class quiz_archiver_report extends report_base {
             $jobsettings["export_report_section_$name"] = $value;
         }
 
+        $jobsettings['export_attempts_paper_format'] = $paperformat;
+        $jobsettings['export_attempts_correction_margin'] = $correctionmargin;
         $jobsettings['export_quiz_backup'] = $exportquizbackup ? '1' : '0';
         $jobsettings['export_course_backup'] = $exportcoursebackup ? '1' : '0';
         $jobsettings['archive_autodelete'] = $retentionseconds ? '1' : '0';
@@ -537,6 +541,7 @@ class quiz_archiver_report extends report_base {
                         Report::build_attempts_filters_from_formdata($formdata),
                         $formdata->export_attempts_keep_html_files,
                         $formdata->export_attempts_paper_format,
+                        $formdata->export_attempts_correction_margin,
                         $formdata->export_quiz_backup,
                         $formdata->export_course_backup,
                         $formdata->export_flat_archive,

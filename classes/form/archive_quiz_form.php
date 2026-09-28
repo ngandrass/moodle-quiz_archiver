@@ -165,6 +165,17 @@ class archive_quiz_form extends \moodleform {
         $mform->addHelpButton('export_attempts_paper_format', 'export_attempts_paper_format', 'quiz_archiver');
         $mform->setDefault('export_attempts_paper_format', $config->job_preset_export_attempts_paper_format);
 
+        // Advanced options: Correction margin.
+        $mform->addElement(
+            'advcheckbox',
+            'export_attempts_correction_margin',
+            get_string('export_attempts_correction_margin', 'quiz_archiver'),
+            get_string('enable'),
+            $config->job_preset_export_attempts_correction_margin_locked ? 'disabled' : null
+        );
+        $mform->addHelpButton('export_attempts_correction_margin', 'export_attempts_correction_margin', 'quiz_archiver');
+        $mform->setDefault('export_attempts_correction_margin', $config->job_preset_export_attempts_correction_margin);
+
         // Advanced options: Archive filename pattern.
         $mform->addElement(
             'text',
