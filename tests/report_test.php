@@ -417,7 +417,7 @@ final class report_test extends \advanced_testcase {
         $student = $generator->create_and_enrol($course, 'student');
         $this->setUser($student);
         $attempt = $quizgenerator->create_attempt($quiz->id, $student->id);
-        $quizgenerator->submit_responses($attempt->id, [1 => ['answer' => 'True'], 2 => ['answer' => 'False']], false, true);
+        $quizgenerator->submit_responses($attempt->id, [1 => 'True', 2 => 'False'], false, true);
         $this->setAdminUser();
 
         // Generate report with only the header and quiz grade and verify that all grade items are present.
