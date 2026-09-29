@@ -283,6 +283,7 @@ class generate_attempt_report extends external_api {
 
         // Forcefully set URL in $PAGE to the webservice handler to prevent further warnings.
         $PAGE->set_url(new \moodle_url('/webservice/rest/server.php', ['wsfunction' => 'quiz_archiver_generate_attempt_report']));
+        $PAGE->set_cm($cm, $course);
 
         // The following code is tested covered by more specific tests.
         // @codingStandardsIgnoreLine
