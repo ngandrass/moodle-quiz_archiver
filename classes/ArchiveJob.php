@@ -30,7 +30,6 @@ use quiz_archiver\local\util;
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
-
 /**
  * A single quiz archive job
  */
@@ -96,6 +95,8 @@ class ArchiveJob {
         'cmid',
         'quizid',
         'quizname',
+        'opendatetime',
+        'closedatetime',
         'date',
         'time',
         'timestamp',
@@ -112,6 +113,8 @@ class ArchiveJob {
         'groupnames',
         'quizid',
         'quizname',
+        'opendatetime',
+        'closedatetime',
         'attemptid',
         'username',
         'firstname',
@@ -120,10 +123,15 @@ class ArchiveJob {
         'idnumber',
         'timestart',
         'timefinish',
+        'startdatetime',
+        'finishdatetime',
         'date',
         'time',
         'timestamp',
     ];
+
+    /** @var string Date format used for human-readable datetime pattern variables */
+    public const DATETIME_FORMAT = 'Y-m-d_H-i-s';
 
     /** @var int Number of characters a string variable will be cut off after expansion */
     public const FILENAME_VARIABLE_MAX_LENGTH = 128;
@@ -1276,6 +1284,8 @@ class ArchiveJob {
             'coursename' => $course->fullname ?: 'null',
             'courseshortname' => $course->shortname ?: 'null',
             'quizname' => $quiz->name ?: 'null',
+            'opendatetime' => !empty($quiz->timeopen) ? date(self::DATETIME_FORMAT, $quiz->timeopen) : 'null',
+            'closedatetime' => !empty($quiz->timeclose) ? date(self::DATETIME_FORMAT, $quiz->timeclose) : 'null',
             'timestamp' => time(),
             'date' => date('Y-m-d'),
             'time' => date('H-i-s'),
@@ -1331,11 +1341,15 @@ class ArchiveJob {
             'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
             'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
             'quizname' => $quiz->name ?: 'null',
+            'opendatetime' => !empty($quiz->timeopen) ? date(self::DATETIME_FORMAT, $quiz->timeopen) : 'null',
+            'closedatetime' => !empty($quiz->timeclose) ? date(self::DATETIME_FORMAT, $quiz->timeclose) : 'null',
             'timestamp' => time(),
             'date' => date('Y-m-d'),
             'time' => date('H-i-s'),
             'timestart' => $attemptinfo->timestart ?: 0,
             'timefinish' => $attemptinfo->timefinish ?: 0,
+            'startdatetime' => $attemptinfo->timestart ? date(self::DATETIME_FORMAT, $attemptinfo->timestart) : 'null',
+            'finishdatetime' => $attemptinfo->timefinish ? date(self::DATETIME_FORMAT, $attemptinfo->timefinish) : 'null',
             'username' => $userinfo->username ?: 'null',
             'firstname' => $userinfo->firstname ?: 'null',
             'lastname' => $userinfo->lastname ?: 'null',
@@ -1393,11 +1407,15 @@ class ArchiveJob {
             'groupidnumbers' => join('-', array_map(fn($group) => $group->idnumber ?: 'null', $usergroups)) ?: 0,
             'groupnames' => join('-', array_map(fn($group) => $group->name, $usergroups)) ?: 'nogroup',
             'quizname' => $quiz->name ?: 'null',
+            'opendatetime' => !empty($quiz->timeopen) ? date(self::DATETIME_FORMAT, $quiz->timeopen) : 'null',
+            'closedatetime' => !empty($quiz->timeclose) ? date(self::DATETIME_FORMAT, $quiz->timeclose) : 'null',
             'timestamp' => time(),
             'date' => date('Y-m-d'),
             'time' => date('H-i-s'),
             'timestart' => $attemptinfo->timestart ?: 0,
             'timefinish' => $attemptinfo->timefinish ?: 0,
+            'startdatetime' => $attemptinfo->timestart ? date(self::DATETIME_FORMAT, $attemptinfo->timestart) : 'null',
+            'finishdatetime' => $attemptinfo->timefinish ? date(self::DATETIME_FORMAT, $attemptinfo->timefinish) : 'null',
             'username' => $userinfo->username ?: 'null',
             'firstname' => $userinfo->firstname ?: 'null',
             'lastname' => $userinfo->lastname ?: 'null',

@@ -4,6 +4,11 @@
 
 - List all defined grade items individually below the overall quiz grade in attempt report headers
 - Create advanced settings option to add correction margins to the right side of generated attempt reports
+- Add human-readable date and time variables (`YYYY-MM-DD_HH-MM-SS`) for file and folder name patterns:
+    - `${opendatetime}`: Quiz opening date and time
+    - `${closedatetime}`: Quiz closing date and time
+    - `${startdatetime}`: Attempt start date and time
+    - `${finishdatetime}`: Attempt finish date and time
 - Escape job status description in job overview table (Thanks to @PM84)
 
 
