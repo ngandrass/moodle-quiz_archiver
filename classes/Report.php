@@ -764,6 +764,8 @@ class Report {
         // for example by specifying additional (s)css in the theme scss setting in the moodle administration.
         $PAGE->add_body_class('quiz-archiver-report');
 
+        $PAGE->activityheader->disable();
+
         // Build HTML tree.
         $html = "";
         $html .= $OUTPUT->header();
