@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 5.2.0 (2026100200)
 
 - List all defined grade items individually below the overall quiz grade in attempt report headers
 - Create advanced settings option to add correction margins to the right side of generated attempt reports
