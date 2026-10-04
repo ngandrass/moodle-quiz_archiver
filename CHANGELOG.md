@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDNN)
 
 - Ensure compatibility with Moodle 5.3
+- Fix autoinstall helper script for Moodle 5.3
 
 
 ## Version 5.2.0 (2026100200)
