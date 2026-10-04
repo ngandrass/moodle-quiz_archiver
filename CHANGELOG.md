@@ -1,5 +1,15 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Ensure compatibility with Moodle 5.3
+- Hide course navigation popover footer in Moodle 5.3 attempt reports
+- Force white page background color on attempt reports in Moodle 5.3
+- Fix autoinstall helper script for Moodle 5.3
+
+**Note:** Please also update your [moodle-archiving-worker](https://github.com/ngandrass/moodle-archiving-worker) to the latest version to ensure full compatibility with Moodle 5.3.
+
+
 ## Version 5.2.0 (2026100200)
 
 - List all defined grade items individually below the overall quiz grade in attempt report headers

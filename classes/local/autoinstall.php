@@ -174,7 +174,7 @@ class autoinstall {
 
             // Create a web service user.
             try {
-                $webserviceuserid = user_create_user([
+                $userrecord = [
                     'auth' => 'manual',
                     'username' => $username,
                     'password' => bin2hex(random_bytes(28)) . "#1A",
@@ -185,7 +185,14 @@ class autoinstall {
                     'deleted' => 0,
                     'policyagreed' => 1,
                     'mnethostid' => $CFG->mnet_localhost_id,
-                ]);
+                ];
+
+                if ($CFG->branch <= 502) {
+                    $webserviceuserid = user_create_user($userrecord);
+                } else {
+                    $webserviceuserid = \core\user::create_user((object) $userrecord);
+                }
+
                 $webserviceuser = \core_user::get_user($webserviceuserid);
                 $log[] = "  -> Web service user '{$webserviceuser->username}' with ID {$webserviceuser->id} created.";
             } catch (dml_exception $e) {
