@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Ensure compatibility with Moodle 5.3
+
+
 ## Version 5.2.0 (2026100200)
 
 - List all defined grade items individually below the overall quiz grade in attempt report headers
