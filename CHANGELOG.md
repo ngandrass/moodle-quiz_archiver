@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDNN)
 
 - Ensure compatibility with Moodle 5.3
+- Hide course navigation popover footer in Moodle 5.3 attempt reports
 - Fix autoinstall helper script for Moodle 5.3
 
 
