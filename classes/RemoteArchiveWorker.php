@@ -120,6 +120,7 @@ class RemoteArchiveWorker {
         // Ignore URL filter since we require custom ports and the URL is only configurable by admins.
         $c = new curl(['ignoresecurity' => true]);
         $result = $c->post($this->serverurl, $payload, [
+            'CURLOPT_SSL_VERIFYPEER' => true,
             'CURLOPT_CONNECTTIMEOUT' => $this->connectiontimeout,
             'CURLOPT_TIMEOUT' => $this->requesttimeout,
             'CURLOPT_HTTPHEADER' => [
