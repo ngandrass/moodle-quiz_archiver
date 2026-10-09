@@ -975,6 +975,12 @@ class Report {
                 // Decode RFC 3986 URL escaped sequences.
                 $regexmatches['filename'] = urldecode($regexmatches['filename']);
 
+                // Only inline files from this course or from questions used in an attempt of this quiz.
+                if (!$this->is_file_context_allowed($regexmatches)) {
+                    $img->setAttribute('x-debug-notice', 'file outside quiz context');
+                    return false;
+                }
+
                 // Get file content via Moodle File API.
                 $fs = get_file_storage();
                 $file = $fs->get_file(
@@ -1052,6 +1058,52 @@ class Report {
         $img->setAttribute('src', 'data:' . $imgmime . ';base64,' . $imgbase64);
 
         return true;
+    }
+
+    /**
+     * Checks whether a file referenced by a pluginfile URL may be inlined into a report of this quiz
+     *
+     * Allowed are files within the course of this quiz and question files from the context of a
+     * question that is used in an attempt of this quiz (e.g., a shared question bank in another course).
+     *
+     * @param array $regexmatches Matches of REGEX_MOODLE_URL_PLUGINFILE(_QUESTION_AND_QTYPE)
+     * @return bool True if the file may be inlined
+     * @throws \dml_exception
+     */
+    protected function is_file_context_allowed(array $regexmatches): bool {
+        global $DB;
+
+        $contextid = clean_param($regexmatches['contextid'], PARAM_INT);
+        $filecontext = $contextid ? \context::instance_by_id($contextid, IGNORE_MISSING) : false;
+        if (!$filecontext) {
+            return false;
+        }
+
+        $coursecontext = $filecontext->get_course_context(false);
+        if ($coursecontext && $coursecontext->instanceid == $this->course->id) {
+            return true;
+        }
+
+        if (empty($regexmatches['questionbank_id'])) {
+            return false;
+        }
+
+        return $DB->record_exists_sql(
+            "SELECT 1
+               FROM {quiz_attempts} quiza
+               JOIN {question_attempts} qa ON qa.questionusageid = quiza.uniqueid
+               JOIN {question_versions} qv ON qv.questionid = qa.questionid
+               JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+               JOIN {question_categories} qc ON qc.id = qbe.questioncategoryid
+              WHERE quiza.quiz = :quizid
+                AND quiza.uniqueid = :qubaid
+                AND qc.contextid = :contextid",
+            [
+                'quizid' => $this->quiz->id,
+                'qubaid' => clean_param($regexmatches['questionbank_id'], PARAM_INT),
+                'contextid' => $filecontext->id,
+            ]
+        );
     }
 
     /**

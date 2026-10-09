@@ -269,6 +269,82 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Inlines an image with the given src via Report::convert_image_to_base64 of a new quiz
+     *
+     * @param \stdClass $course Course to create the quiz in
+     * @param string $src Value of the src attribute
+     * @return array [bool $success, \DOMElement $img]
+     */
+    protected static function inline_image(\stdClass $course, string $src): array {
+        $quiz = parent::getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        $report = new Report($course, get_coursemodule_from_instance('quiz', $quiz->id), $quiz);
+        $img = (new \DOMDocument())->createElement('img');
+        $img->setAttribute('src', $src);
+        $success = (new \ReflectionMethod(Report::class, 'convert_image_to_base64'))->invoke($report, $img);
+        return [$success, $img];
+    }
+
+    #[\PHPUnit\Framework\Attributes\Group('baseline')]
+    /**
+     * Tests that images from contexts outside the quiz course are not inlined
+     *
+     * @covers \quiz_archiver\Report::convert_image_to_base64
+     * @covers \quiz_archiver\Report::is_file_context_allowed
+     *
+     * @return void
+     */
+    public function test_inline_image_outside_course_rejected(): void {
+        $this->resetAfterTest();
+        $course = parent::getDataGenerator()->create_course();
+        $victim = parent::getDataGenerator()->create_user();
+        $usercontext = \context_user::instance($victim->id);
+        get_file_storage()->create_file_from_string([
+            'contextid' => $usercontext->id,
+            'component' => 'user',
+            'filearea' => 'private',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'scan.png',
+        ], 'PRIVATE-IMAGE-DATA');
+        $url = \moodle_url::make_pluginfile_url($usercontext->id, 'user', 'private', 0, '/', 'scan.png')->out(false);
+
+        [$success, $img] = self::inline_image($course, $url);
+
+        $this->assertFalse($success);
+        $this->assertSame($url, $img->getAttribute('src'));
+        $this->assertSame('file outside quiz context', $img->getAttribute('x-debug-notice'));
+    }
+
+    #[\PHPUnit\Framework\Attributes\Group('baseline')]
+    /**
+     * Tests that images from the quiz course are still inlined
+     *
+     * @covers \quiz_archiver\Report::convert_image_to_base64
+     * @covers \quiz_archiver\Report::is_file_context_allowed
+     *
+     * @return void
+     */
+    public function test_inline_image_inside_course_allowed(): void {
+        $this->resetAfterTest();
+        $course = parent::getDataGenerator()->create_course();
+        $coursecontext = \context_course::instance($course->id);
+        get_file_storage()->create_file_from_string([
+            'contextid' => $coursecontext->id,
+            'component' => 'course',
+            'filearea' => 'summary',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'pic.png',
+        ], 'COURSE-IMAGE-DATA');
+        $url = \moodle_url::make_pluginfile_url($coursecontext->id, 'course', 'summary', 0, '/', 'pic.png')->out(false);
+
+        [$success, $img] = self::inline_image($course, $url);
+
+        $this->assertTrue($success);
+        $this->assertSame('data:image/png;base64,' . base64_encode('COURSE-IMAGE-DATA'), $img->getAttribute('src'));
+    }
+
+    /**
      * Tests generation of a report with no header
      *
      * @covers \quiz_archiver\Report::generate
