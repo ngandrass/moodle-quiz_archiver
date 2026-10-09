@@ -1386,7 +1386,8 @@ final class archivejob_test extends \advanced_testcase {
             $rc->cm,
             $rc->quiz,
             $rc->attemptids[0],
-            $fullpattern
+            $fullpattern,
+            Report::IDENTITY_FIELDS
         );
         $this->assertStringContainsString($rc->course->id, $foldername, 'Course ID was not found in folder name');
         $this->assertStringContainsString($rc->cm->id, $foldername, 'Course module ID was not found in folder name');
@@ -1449,6 +1450,40 @@ final class archivejob_test extends \advanced_testcase {
             'attempt'
         );
         $this->assertSame('attempt', $foldername, 'Folder name was not generated correctly');
+    }
+
+    /**
+     * Test that user identity fields are only used in folder- and filenames if visible
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_foldername
+     * @covers \quiz_archiver\ArchiveJob::generate_attempt_filename
+     */
+    public function test_generate_attempt_names_identity_field_visibility(): void {
+        global $DB;
+
+        // Generate data.
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $attemptuserid = $DB->get_field('quiz_attempts', 'userid', ['id' => $rc->attemptids[0]], MUST_EXIST);
+        $DB->set_field('user', 'idnumber', 'SECRETID', ['id' => $attemptuserid]);
+        $DB->set_field('user', 'email', 'secret@example.com', ['id' => $attemptuserid]);
+        $pattern = 'attempt-${email}-${idnumber}';
+
+        // Hidden by default.
+        $args = [$rc->course, $rc->cm, $rc->quiz, $rc->attemptids[0], $pattern];
+        $this->assertSame('attempt-null-null', ArchiveJob::generate_attempt_foldername(...$args));
+        $this->assertSame('attempt-null-null', ArchiveJob::generate_attempt_filename(...$args));
+
+        // Only ID number visible.
+        $args[] = ['idnumber'];
+        $this->assertSame('attempt-null-SECRETID', ArchiveJob::generate_attempt_foldername(...$args));
+        $this->assertSame('attempt-null-SECRETID', ArchiveJob::generate_attempt_filename(...$args));
+
+        // Both visible.
+        $args[5] = ['email', 'idnumber'];
+        $this->assertSame('attempt-secret@example_com-SECRETID', ArchiveJob::generate_attempt_foldername(...$args));
+        $this->assertSame('attempt-secret@example_com-SECRETID', ArchiveJob::generate_attempt_filename(...$args));
     }
 
     /**
@@ -1539,7 +1574,8 @@ final class archivejob_test extends \advanced_testcase {
             $rc->cm,
             $rc->quiz,
             $rc->attemptids[0],
-            $fullpattern
+            $fullpattern,
+            Report::IDENTITY_FIELDS
         );
         $this->assertStringContainsString($rc->course->id, $filename, 'Course ID was not found in filename');
         $this->assertStringContainsString($rc->cm->id, $filename, 'Course module ID was not found in filename');

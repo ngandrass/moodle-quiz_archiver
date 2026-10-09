@@ -48,6 +48,14 @@ class Report {
     protected object $cm;
     /** @var object Quiz the attempt is part of */
     protected object $quiz;
+    /** @var string[] User identity fields of the attempt user that may be included */
+    protected array $visibleidentityfields = [];
+
+    /** @var string[] User identity fields that are governed by the showuseridentity setting */
+    public const IDENTITY_FIELDS = [
+        'email',
+        'idnumber',
+    ];
 
     /** @var array Sections that can be included in the report */
     public const SECTIONS = [
@@ -106,6 +114,46 @@ class Report {
         $this->cm = $cm;
         $this->quiz = $quiz;
         $this->config = get_config('quiz_archiver');
+    }
+
+    /**
+     * Determines which user identity fields (see self::IDENTITY_FIELDS) the
+     * given user may see for other users inside the given context.
+     *
+     * This mirrors the behaviour of \core_user\fields::get_identity_fields(),
+     * which is also used by the quiz overview reports: A field is only visible
+     * if it is configured as an identity field (showuseridentity) and the user
+     * holds the capability moodle/site:viewuseridentity. In contrast to the
+     * core function, this allows checking for a user other than the current
+     * one, which is required since archive jobs are processed by the
+     * webservice user on behalf of the job creator.
+     *
+     * @param \context $context Context to check the capability in
+     * @param int|null $userid ID of the user to check for. Null for current user.
+     * @return string[] List of visible identity fields
+     * @throws \coding_exception
+     */
+    public static function get_visible_identity_fields(\context $context, ?int $userid = null): array {
+        global $CFG;
+
+        if (!has_capability('moodle/site:viewuseridentity', $context, $userid)) {
+            return [];
+        }
+
+        $configuredfields = array_filter(explode(',', $CFG->showuseridentity ?? ''));
+
+        return array_values(array_intersect(self::IDENTITY_FIELDS, $configuredfields));
+    }
+
+    /**
+     * Sets the user identity fields of the attempt user that may be included
+     * in generated reports and attempt metadata.
+     *
+     * @param string[] $fields List of visible identity fields (see self::IDENTITY_FIELDS)
+     * @return void
+     */
+    public function set_visible_identity_fields(array $fields): void {
+        $this->visibleidentityfields = array_values(array_intersect(self::IDENTITY_FIELDS, $fields));
     }
 
     /**
@@ -221,7 +269,7 @@ class Report {
         }
 
         // Get all requested attempts.
-        return $DB->get_records_sql(
+        $records = $DB->get_records_sql(
             "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, " .
             "       u.username, u.firstname, u.lastname, u.email, u.idnumber " .
             "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id " .
@@ -230,6 +278,15 @@ class Report {
                 "quizid" => $this->quiz->id,
             ]
         );
+
+        // Strip user identity fields that must not be exposed.
+        foreach (array_diff(self::IDENTITY_FIELDS, $this->visibleidentityfields) as $hiddenfield) {
+            foreach ($records as $record) {
+                $record->{$hiddenfield} = '';
+            }
+        }
+
+        return $records;
     }
 
     /**
@@ -527,19 +584,23 @@ class Report {
                 $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink)
             );
 
-            // User email.
-            $summaryinfo->add_item(
-                'useremail',
-                get_string('email'),
-                $attemptuser->email ?: '<i>' . get_string('none') . '</i>'
-            );
+            // User email. Only if visible as identity field for the job creator.
+            if (in_array('email', $this->visibleidentityfields, true)) {
+                $summaryinfo->add_item(
+                    'useremail',
+                    get_string('email'),
+                    $attemptuser->email ? s($attemptuser->email) : '<i>' . get_string('none') . '</i>'
+                );
+            }
 
-            // User ID number.
-            $summaryinfo->add_item(
-                'useridnumber',
-                get_string('idnumber'),
-                $attemptuser->idnumber ?: '<i>' . get_string('none') . '</i>'
-            );
+            // User ID number. Only if visible as identity field for the job creator.
+            if (in_array('idnumber', $this->visibleidentityfields, true)) {
+                $summaryinfo->add_item(
+                    'useridnumber',
+                    get_string('idnumber'),
+                    $attemptuser->idnumber ? s($attemptuser->idnumber) : '<i>' . get_string('none') . '</i>'
+                );
+            }
 
             // Quiz metadata.
             $summaryinfo->add_item(
