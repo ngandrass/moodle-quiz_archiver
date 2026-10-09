@@ -398,6 +398,26 @@ class quiz_archiver_report extends report_base {
     }
 
     /**
+     * Loads the job with the given jobid and ensures that it belongs to this quiz
+     *
+     * @param string $jobid UUID of the job to load
+     * @return ArchiveJob Job that belongs to this quiz
+     * @throws dml_exception If no job with the given jobid exists
+     * @throws moodle_exception If the job does not belong to this quiz
+     */
+    protected function get_job_in_context(string $jobid): ArchiveJob {
+        $job = ArchiveJob::get_by_jobid($jobid);
+        if (
+            $job->get_courseid() != $this->course->id ||
+            $job->get_cmid() != $this->cm->id ||
+            $job->get_quizid() != $this->quiz->id
+        ) {
+            throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver', $this->base_url());
+        }
+        return $job;
+    }
+
+    /**
      * Handles submitted forms.
      *
      * @return string|null HTML form rendering to display, if required.
@@ -422,7 +442,7 @@ class quiz_archiver_report extends report_base {
 
                 // Execute deletion.
                 $formdata = $jobdeleteform->get_data();
-                ArchiveJob::get_by_jobid($formdata->jobid)->delete();
+                $this->get_job_in_context($formdata->jobid)->delete();
 
                 redirect($this->base_url_with_alert(
                     \core\output\notification::NOTIFY_SUCCESS,
@@ -449,7 +469,7 @@ class quiz_archiver_report extends report_base {
 
                 // Execute deletion.
                 $formdata = $artifactdeleteform->get_data();
-                ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
+                $this->get_job_in_context($formdata->jobid)->delete_artifact();
 
                 redirect($this->base_url_with_alert(
                     \core\output\notification::NOTIFY_SUCCESS,
@@ -476,7 +496,7 @@ class quiz_archiver_report extends report_base {
 
                 // Execute signing.
                 $formdata = $jobsignform->get_data();
-                $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
+                $tspmanager = $this->get_job_in_context($formdata->jobid)->tspmanager();
                 $jobidlogstr = ' (' . get_string('jobid', 'quiz_archiver') . ': ' . $formdata->jobid . ')';
                 if ($tspmanager->has_tsp_timestamp()) {
                     redirect($this->base_url_with_alert(
