@@ -972,6 +972,7 @@ final class report_test extends \advanced_testcase {
         $generator = $this->getDataGenerator();
         $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
         $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $report->set_visible_identity_fields(Report::IDENTITY_FIELDS);
 
         // Test without filters.
         $attempts = $report->get_attempts_metadata();
@@ -1002,6 +1003,106 @@ final class report_test extends \advanced_testcase {
 
         $attemptsfilterednonexisting = $report->get_attempts_metadata([-1, -2, -3]);
         $this->assertEmpty($attemptsfilterednonexisting, 'Attempts found for non-existing attempt ids');
+    }
+
+    /**
+     * Tests that the visible user identity fields follow the identity field configuration
+     *
+     * @covers \quiz_archiver\Report::get_visible_identity_fields
+     */
+    public function test_get_visible_identity_fields(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        $context = \context_module::instance($quiz->cmid);
+        $teacher = $this->getDataGenerator()->create_and_enrol($course, 'editingteacher');
+
+        // No identity fields configured.
+        set_config('showuseridentity', '');
+        $this->assertSame([], Report::get_visible_identity_fields($context, $teacher->id));
+
+        // Only email configured.
+        set_config('showuseridentity', 'email,phone1');
+        $this->assertSame(['email'], Report::get_visible_identity_fields($context, $teacher->id));
+
+        // Email and ID number configured and capability granted by default.
+        set_config('showuseridentity', 'idnumber,email');
+        $this->assertSame(['email', 'idnumber'], Report::get_visible_identity_fields($context, $teacher->id));
+
+        // Fields configured but capability prohibited.
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'editingteacher'], MUST_EXIST);
+        assign_capability('moodle/site:viewuseridentity', CAP_PROHIBIT, $roleid, $context->id, true);
+        $this->assertSame([], Report::get_visible_identity_fields($context, $teacher->id));
+    }
+
+    /**
+     * Tests that user identity fields are only exposed in attempt metadata if allowed
+     *
+     * @covers \quiz_archiver\Report::get_attempts_metadata
+     * @covers \quiz_archiver\Report::set_visible_identity_fields
+     */
+    public function test_get_attempts_metadata_identity_field_visibility(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+
+        // Give the attempt user an ID number and email.
+        $attemptuserid = $DB->get_field('quiz_attempts', 'userid', ['id' => $rc->attemptids[0]], MUST_EXIST);
+        $DB->set_field('user', 'idnumber', 'SECRET-IDNUMBER', ['id' => $attemptuserid]);
+        $DB->set_field('user', 'email', 'secret@example.com', ['id' => $attemptuserid]);
+
+        // Hidden by default.
+        $attempts = $report->get_attempts_metadata([$rc->attemptids[0]]);
+        $attempt = array_shift($attempts);
+        $this->assertSame('', $attempt->idnumber, 'ID number exposed without permission');
+        $this->assertSame('', $attempt->email, 'Email exposed without permission');
+
+        // Only email visible.
+        $report->set_visible_identity_fields(['email']);
+        $attempts = $report->get_attempts_metadata([$rc->attemptids[0]]);
+        $attempt = array_shift($attempts);
+        $this->assertSame('', $attempt->idnumber, 'ID number exposed without permission');
+        $this->assertSame('secret@example.com', $attempt->email, 'Email missing although allowed');
+
+        // Both visible.
+        $report->set_visible_identity_fields(['email', 'idnumber']);
+        $attempts = $report->get_attempts_metadata([$rc->attemptids[0]]);
+        $attempt = array_shift($attempts);
+        $this->assertSame('SECRET-IDNUMBER', $attempt->idnumber, 'ID number missing although allowed');
+        $this->assertSame('secret@example.com', $attempt->email, 'Email missing although allowed');
+    }
+
+    /**
+     * Tests that user identity fields are only shown in the report header if allowed
+     *
+     * @covers \quiz_archiver\Report::generate
+     */
+    public function test_generate_report_identity_field_visibility(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        $sections = self::get_all_report_sections_enabled();
+
+        $attemptuserid = $DB->get_field('quiz_attempts', 'userid', ['id' => $rc->attemptids[0]], MUST_EXIST);
+        $DB->set_field('user', 'idnumber', 'SECRET-IDNUMBER', ['id' => $attemptuserid]);
+        $DB->set_field('user', 'email', 'secret@example.com', ['id' => $attemptuserid]);
+
+        // Hidden by default.
+        $html = $report->generate($rc->attemptids[0], $sections);
+        $this->assertStringNotContainsString('SECRET-IDNUMBER', $html, 'ID number exposed without permission');
+        $this->assertStringNotContainsString('secret@example.com', $html, 'Email exposed without permission');
+
+        // Visible if allowed.
+        $report->set_visible_identity_fields(['email', 'idnumber']);
+        $html = $report->generate($rc->attemptids[0], $sections);
+        $this->assertStringContainsString('SECRET-IDNUMBER', $html, 'ID number missing although allowed');
+        $this->assertStringContainsString('secret@example.com', $html, 'Email missing although allowed');
     }
 
     /**

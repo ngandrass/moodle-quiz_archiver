@@ -1312,12 +1312,21 @@ class ArchiveJob {
      * @param mixed $quiz Quiz object
      * @param int $attemptid ID of the attempt
      * @param string $pattern Filename pattern to use
+     * @param string[] $identityfields Visible user identity fields (see Report::IDENTITY_FIELDS).
+     *  Identity fields not contained in this list are substituted with 'null'.
      * @return string Attempt report filename
      * @throws \dml_exception If the attempt or user could not be found in the database
      * @throws \invalid_parameter_exception If the pattern is invalid
      * @throws \coding_exception
      */
-    public static function generate_attempt_filename($course, $cm, $quiz, int $attemptid, string $pattern): string {
+    public static function generate_attempt_filename(
+        $course,
+        $cm,
+        $quiz,
+        int $attemptid,
+        string $pattern,
+        array $identityfields = []
+    ): string {
         global $DB;
 
         // Validate pattern.
@@ -1353,8 +1362,10 @@ class ArchiveJob {
             'username' => $userinfo->username ?: 'null',
             'firstname' => $userinfo->firstname ?: 'null',
             'lastname' => $userinfo->lastname ?: 'null',
-            'email' => str_replace('.', '_', $userinfo->email) ?: 'null',
-            'idnumber' => $userinfo->idnumber ?: 'null',
+            'email' => (in_array('email', $identityfields, true) && $userinfo->email)
+                ? str_replace('.', '_', $userinfo->email) : 'null',
+            'idnumber' => (in_array('idnumber', $identityfields, true) && $userinfo->idnumber)
+                ? $userinfo->idnumber : 'null',
         ];
 
         // Substitute variables.
@@ -1378,12 +1389,21 @@ class ArchiveJob {
      * @param mixed $quiz Quiz object
      * @param int $attemptid ID of the attempt
      * @param string $pattern Filename pattern to use
+     * @param string[] $identityfields Visible user identity fields (see Report::IDENTITY_FIELDS).
+     *  Identity fields not contained in this list are substituted with 'null'.
      * @return string Attempt folder name
      * @throws \dml_exception If the attempt or user could not be found in the database
      * @throws \invalid_parameter_exception If the pattern is invalid
      * @throws \coding_exception
      */
-    public static function generate_attempt_foldername($course, $cm, $quiz, int $attemptid, string $pattern): string {
+    public static function generate_attempt_foldername(
+        $course,
+        $cm,
+        $quiz,
+        int $attemptid,
+        string $pattern,
+        array $identityfields = []
+    ): string {
         global $DB;
 
         // Validate pattern.
@@ -1419,8 +1439,10 @@ class ArchiveJob {
             'username' => $userinfo->username ?: 'null',
             'firstname' => $userinfo->firstname ?: 'null',
             'lastname' => $userinfo->lastname ?: 'null',
-            'email' => str_replace('.', '_', $userinfo->email) ?: 'null',
-            'idnumber' => $userinfo->idnumber ?: 'null',
+            'email' => (in_array('email', $identityfields, true) && $userinfo->email)
+                ? str_replace('.', '_', $userinfo->email) : 'null',
+            'idnumber' => (in_array('idnumber', $identityfields, true) && $userinfo->idnumber)
+                ? $userinfo->idnumber : 'null',
         ];
 
         // Substitute variables.
