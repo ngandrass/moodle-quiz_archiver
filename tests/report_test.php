@@ -314,7 +314,7 @@ final class report_test extends \advanced_testcase {
 
         $this->assertFalse($success);
         $this->assertSame($url, $img->getAttribute('src'));
-        $this->assertSame('file outside quiz context', $img->getAttribute('x-debug-notice'));
+        $this->assertSame('file access denied', $img->getAttribute('x-debug-notice'));
     }
 
     #[\PHPUnit\Framework\Attributes\Group('baseline')]

@@ -971,8 +971,9 @@ class Report {
                 // inserting questionbank_id and question_slot after filearea ...
                 if ($regexmatches['component'] == 'question' || strpos($regexmatches['component'], 'qtype_') === 0) {
                     $regexmatches = null;
+                    $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
                     if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $imgsrcurl, $regexmatches)) {
-                        $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
+                        $img->setAttribute('x-debug-notice', 'malformed pluginfile URL for question/qtype file');
                         return false;
                     }
                 }
@@ -982,7 +983,7 @@ class Report {
 
                 // Only inline images from allowed contexts (e.g., questions of this attempt).
                 if (!$this->is_pluginfile_access_allowed($regexmatches, $quba)) {
-                    $img->setAttribute('x-debug-notice', 'file outside quiz context');
+                    $img->setAttribute('x-debug-notice', 'file access denied');
                     return false;
                 }
 
