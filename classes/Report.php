@@ -981,7 +981,7 @@ class Report {
                 $regexmatches['filename'] = urldecode($regexmatches['filename']);
 
                 // Only inline images from allowed contexts (e.g., questions of this attempt).
-                if (!$this->is_file_context_allowed($regexmatches, $quba)) {
+                if (!$this->is_pluginfile_access_allowed($regexmatches, $quba)) {
                     $img->setAttribute('x-debug-notice', 'file outside quiz context');
                     return false;
                 }
@@ -1070,13 +1070,14 @@ class Report {
      *
      * Allowed are files within the course of this quiz and question files from the context of a
      * question that is used in an attempt of this quiz (e.g., a shared question bank in another course).
+     * The check for question-related files is delegated to the question's own file access check logic.
      *
      * @param array $urlparts Matched named regex groups of REGEX_MOODLE_URL_PLUGINFILE(_QUESTION_AND_QTYPE)
      * @param \question_usage_by_activity $quba The question usage by activity of the attempt this report is for
      * @return bool True if the file may be inlined
      * @throws \coding_exception
      */
-    protected function is_file_context_allowed(array $urlparts, \question_usage_by_activity $quba): bool {
+    protected function is_pluginfile_access_allowed(array $urlparts, \question_usage_by_activity $quba): bool {
         // Parse commong URL parts.
         $contextid = clean_param($urlparts['contextid'], PARAM_INT);
         $component = clean_param($urlparts['component'], PARAM_TEXT);

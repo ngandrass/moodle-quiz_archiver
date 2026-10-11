@@ -291,7 +291,7 @@ final class report_test extends \advanced_testcase {
      * Tests that images from contexts outside the quiz course are not inlined
      *
      * @covers \quiz_archiver\Report::convert_image_to_base64
-     * @covers \quiz_archiver\Report::is_file_context_allowed
+     * @covers \quiz_archiver\Report::is_pluginfile_access_allowed
      *
      * @return void
      */
@@ -322,7 +322,7 @@ final class report_test extends \advanced_testcase {
      * Tests that images from the quiz course are still inlined
      *
      * @covers \quiz_archiver\Report::convert_image_to_base64
-     * @covers \quiz_archiver\Report::is_file_context_allowed
+     * @covers \quiz_archiver\Report::is_pluginfile_access_allowed
      *
      * @return void
      */
