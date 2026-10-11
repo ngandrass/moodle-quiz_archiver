@@ -277,10 +277,12 @@ final class report_test extends \advanced_testcase {
      */
     protected static function inline_image(\stdClass $course, string $src): array {
         $quiz = parent::getDataGenerator()->create_module('quiz', ['course' => $course->id]);
-        $report = new Report($course, get_coursemodule_from_instance('quiz', $quiz->id), $quiz);
+        $cm = get_coursemodule_from_instance('quiz', $quiz->id);
+        $report = new Report($course, $cm, $quiz);
+        $quba = \question_engine::make_questions_usage_by_activity('mod_quiz', \context_module::instance($cm->id));
         $img = (new \DOMDocument())->createElement('img');
         $img->setAttribute('src', $src);
-        $success = (new \ReflectionMethod(Report::class, 'convert_image_to_base64'))->invoke($report, $img);
+        $success = (new \ReflectionMethod(Report::class, 'convert_image_to_base64'))->invoke($report, $img, $quba);
         return [$success, $img];
     }
 
