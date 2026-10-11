@@ -249,4 +249,44 @@ final class generator_test extends \advanced_testcase {
             'The temp file has the wrong content'
         );
     }
+
+    /**
+     * Tests the creation of the question image file that is missing from the reference quiz backup
+     *
+     * @covers \quiz_archiver_generator::create_reference_question_image
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_create_reference_question_image(): void {
+        // Import reference course and create the question image.
+        $generator = self::getDataGenerator();
+        $this->resetAfterTest();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        [$quba, $slot, $question] = $generator->create_reference_question_image($rc->attemptids[0], $rc->cm->id);
+
+        // Verify located question.
+        $this->assertContains($slot, $quba->get_slots(), 'The returned slot is not part of the question usage');
+        $this->assertEquals($question->id, $quba->get_question($slot, false)->id, 'The returned question is not in the slot');
+        $this->assertStringContainsString(
+            $generator::REFERENCE_QUIZ_QUESTION_IMAGE,
+            $question->questiontext,
+            'The returned question does not embed the reference image'
+        );
+
+        // Verify image file.
+        $this->assertTrue(
+            get_file_storage()->file_exists(
+                $question->contextid,
+                'question',
+                'questiontext',
+                $question->id,
+                '/',
+                $generator::REFERENCE_QUIZ_QUESTION_IMAGE
+            ),
+            'The reference question image file was not created'
+        );
+    }
 }

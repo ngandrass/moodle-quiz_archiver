@@ -1099,7 +1099,7 @@ class Report {
             $slot = clean_param($urlparts['question_slot'], PARAM_INT);
 
             // File must match attempt quba and one slot.
-            if ($qubaid !== $quba->get_id()) {
+            if ($qubaid !== (int) $quba->get_id()) {
                 return false;
             }
 
