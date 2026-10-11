@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 5.2.2 (2026101100)
 
 - Allow site administrators to configure TLS certificate validation behavior. Default: Always validate. (Thanks to @PM84 !)
 - Harden image inlining logic during attempt report generation (Thanks to @PM84 !)
