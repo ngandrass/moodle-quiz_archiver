@@ -117,6 +117,14 @@ if ($hassiteconfig) {
             PARAM_TEXT
         ));
 
+        // Skip TLS certificate verification.
+        $settings->add(new admin_setting_configcheckbox(
+            'quiz_archiver/skip_tls_verification',
+            get_string('setting_skip_tls_verification', 'quiz_archiver'),
+            get_string('setting_skip_tls_verification_desc', 'quiz_archiver'),
+            '0'
+        ));
+
         // Job Presets.
         $settings->add(new admin_setting_heading(
             'quiz_archiver/header_job_presets',

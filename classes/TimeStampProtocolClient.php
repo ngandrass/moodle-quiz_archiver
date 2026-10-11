@@ -80,7 +80,7 @@ class TimeStampProtocolClient {
         // Send TimeStampRequest to TSP server.
         $c = new curl();
         $tsresp = $c->post($this->serverurl, $tsreq, [
-            'CURLOPT_SSL_VERIFYPEER' => true,
+            'CURLOPT_SSL_VERIFYPEER' => empty(get_config('quiz_archiver', 'skip_tls_verification')),
             'CURLOPT_CONNECTTIMEOUT' => 15,
             'CURLOPT_TIMEOUT' => 15,
             'CURLOPT_HTTPHEADER' => [
