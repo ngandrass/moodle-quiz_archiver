@@ -134,12 +134,12 @@ class get_attempts_metadata extends external_api {
                     ),
                     'email' => new external_value(
                         PARAM_TEXT,
-                        'Email address for this quiz attempt',
+                        'Email address for this quiz attempt. Empty if not visible to the job creator',
                         VALUE_REQUIRED
                     ),
                     'idnumber' => new external_value(
                         PARAM_TEXT,
-                        'ID number of the user for this quiz attempt',
+                        'ID number of the user for this quiz attempt. Empty if not visible to the job creator',
                         VALUE_REQUIRED
                     ),
                     'timestart' => new external_value(
@@ -243,6 +243,8 @@ class get_attempts_metadata extends external_api {
                 'status' => 'E_ACCESS_DENIED',
             ];
         }
+        // Only expose user identity fields the job creator is allowed to see.
+        $report->set_visible_identity_fields(Report::get_visible_identity_fields($context, $job->get_userid()));
         $attemptmetadata = $report->get_attempts_metadata($params['attemptids']);
 
         return [
