@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Allow site administrators to configure TLS certificate validation behavior. Default: Always validate. (Thanks to @PM84 !)
+- Harden image inlining logic during attempt report generation (Thanks to @PM84 !)
+- Prevent privileged users from deleting archive jobs from other quizzes by their UUID v4 (Thanks to @PM84 !)
+
+
 ## Version 5.2.1 (2026100400)
 
 - Ensure compatibility with Moodle 5.3
