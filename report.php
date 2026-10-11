@@ -407,13 +407,15 @@ class quiz_archiver_report extends report_base {
      */
     protected function get_job_in_context(string $jobid): ArchiveJob {
         $job = ArchiveJob::get_by_jobid($jobid);
+
         if (
             $job->get_courseid() != $this->course->id ||
             $job->get_cmid() != $this->cm->id ||
             $job->get_quizid() != $this->quiz->id
         ) {
-            throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver', $this->base_url());
+            throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver');
         }
+
         return $job;
     }
 
