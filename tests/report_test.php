@@ -94,6 +94,70 @@ final class report_test extends \advanced_testcase {
     }
 
     /**
+     * Creates a new quiz inside the given course and a report for it
+     *
+     * @param \stdClass $course Course to create the quiz in
+     * @return array [Report $report, \stdClass $cm]
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    protected static function create_blank_quiz_report(\stdClass $course): array {
+        $quiz = parent::getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+        $cm = get_coursemodule_from_instance('quiz', $quiz->id);
+        return [new Report($course, $cm, $quiz), $cm];
+    }
+
+    /**
+     * Inlines an image with the given src via Report::convert_image_to_base64
+     *
+     * @param Report $report Report to use for inlining
+     * @param string $src Value of the src attribute
+     * @param \question_usage_by_activity|null $quba Question usage of the attempt the report is generated for. An empty
+     * one is used if omitted.
+     * @return array [bool $success, \DOMElement $img]
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     */
+    protected static function inline_image(Report $report, string $src, ?\question_usage_by_activity $quba = null): array {
+        $quba ??= \question_engine::make_questions_usage_by_activity('mod_quiz', \context_system::instance());
+        $img = (new \DOMDocument())->createElement('img');
+        $img->setAttribute('src', $src);
+        $success = (new \ReflectionMethod(Report::class, 'convert_image_to_base64'))->invoke($report, $img, $quba);
+        return [$success, $img];
+    }
+
+    /**
+     * Stores an image file with the given content and returns its pluginfile URL
+     *
+     * @param int $contextid Context ID of the file
+     * @param string $component Component of the file
+     * @param string $filearea Filearea of the file
+     * @param string $content Content of the file
+     * @param string $filename Name of the file
+     * @return string Pluginfile URL of the created file
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    protected static function create_image_with_pluginfile_url(
+        int $contextid,
+        string $component,
+        string $filearea,
+        string $content,
+        string $filename = 'pic.png'
+    ): string {
+        get_file_storage()->create_file_from_string([
+            'contextid' => $contextid,
+            'component' => $component,
+            'filearea' => $filearea,
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => $filename,
+        ], $content);
+        return \moodle_url::make_pluginfile_url($contextid, $component, $filearea, 0, '/', $filename)->out(false);
+    }
+
+    /**
      * Tests validation of webservice tokens
      *
      * @covers \quiz_archiver\Report::has_access
@@ -266,6 +330,277 @@ final class report_test extends \advanced_testcase {
             true
         );
         $this->assertNotEmpty($html, 'Generated report is empty');
+    }
+
+    /**
+     * Tests that images from the quiz context itself are inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_inline_image_quiz_context_allowed(): void {
+        $this->resetAfterTest();
+        $course = self::getDataGenerator()->create_course();
+        [$report, $cm] = self::create_blank_quiz_report($course);
+        $url = self::create_image_with_pluginfile_url(
+            contextid: \context_module::instance($cm->id)->id,
+            component: 'mod_quiz',
+            filearea: 'intro',
+            content: 'QUIZ-IMAGE-DATA'
+        );
+
+        [$success, $img] = self::inline_image($report, $url);
+
+        $this->assertTrue($success);
+        $this->assertSame('data:image/png;base64,' . base64_encode('QUIZ-IMAGE-DATA'), $img->getAttribute('src'));
+    }
+
+    /**
+     * Tests that images from the quiz course are inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_inline_image_inside_course_allowed(): void {
+        $this->resetAfterTest();
+        $course = self::getDataGenerator()->create_course();
+        $url = self::create_image_with_pluginfile_url(
+            contextid: \context_course::instance($course->id)->id,
+            component: 'course',
+            filearea: 'summary',
+            content: 'COURSE-IMAGE-DATA'
+        );
+
+        [$report] = self::create_blank_quiz_report($course);
+        [$success, $img] = self::inline_image($report, $url);
+
+        $this->assertTrue($success);
+        $this->assertSame('data:image/png;base64,' . base64_encode('COURSE-IMAGE-DATA'), $img->getAttribute('src'));
+    }
+
+    /**
+     * Tests that question images of a question used in the attempt are inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     */
+    public function test_inline_image_question_file_allowed(): void {
+        $this->resetAfterTest();
+        $generator = self::getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        [$quba, $slot, $question] = $generator->create_reference_question_image($rc->attemptids[0], $rc->cm->id);
+        $url = \moodle_url::make_pluginfile_url(
+            $question->contextid,
+            'question',
+            'questiontext',
+            "{$quba->get_id()}/{$slot}/{$question->id}",
+            '/',
+            $generator::REFERENCE_QUIZ_QUESTION_IMAGE
+        )->out(false);
+
+        [$success, $img] = self::inline_image($report, $url, $quba);
+
+        $this->assertTrue($success, 'Question image not inlined: ' . $img->getAttribute('x-debug-notice'));
+        $this->assertStringStartsWith('data:image/png;base64,', $img->getAttribute('src'));
+    }
+
+    /**
+     * Tests that images from contexts outside the quiz course are not inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_inline_image_outside_course_rejected(): void {
+        $this->resetAfterTest();
+        $generator = self::getDataGenerator();
+        $course = $generator->create_course();
+        $victim = $generator->create_user();
+        $url = self::create_image_with_pluginfile_url(
+            \context_user::instance($victim->id)->id,
+            'user',
+            'private',
+            'PRIVATE-IMAGE-DATA',
+            'scan.png'
+        );
+
+        [$report] = self::create_blank_quiz_report($course);
+        [$success, $img] = self::inline_image($report, $url);
+
+        $this->assertFalse($success);
+        $this->assertSame($url, $img->getAttribute('src'));
+        $this->assertSame('file access denied', $img->getAttribute('x-debug-notice'));
+    }
+
+    /**
+     * Tests that images from another course are not inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_inline_image_other_course_rejected(): void {
+        $this->resetAfterTest();
+        $generator = self::getDataGenerator();
+        $course = $generator->create_course();
+        $othercourse = $generator->create_course();
+        $url = self::create_image_with_pluginfile_url(
+            contextid: \context_course::instance($othercourse->id)->id,
+            component: 'course',
+            filearea: 'summary',
+            content: 'OTHER-COURSE'
+        );
+
+        [$report] = self::create_blank_quiz_report($course);
+        [$success, $img] = self::inline_image($report, $url);
+
+        $this->assertFalse($success);
+        $this->assertSame($url, $img->getAttribute('src'));
+        $this->assertSame('file access denied', $img->getAttribute('x-debug-notice'));
+    }
+
+    /**
+     * Tests that images from other activities inside the quiz course are not inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_inline_image_other_module_in_course_rejected(): void {
+        $this->resetAfterTest();
+        $generator = self::getDataGenerator();
+        $course = $generator->create_course();
+        $page = $generator->create_module('page', ['course' => $course->id]);
+        $url = self::create_image_with_pluginfile_url(
+            contextid: \context_module::instance($page->cmid)->id,
+            component: 'mod_page',
+            filearea: 'intro',
+            content: 'PAGE-IMAGE-DATA'
+        );
+
+        [$report] = self::create_blank_quiz_report($course);
+        [$success, $img] = self::inline_image($report, $url);
+
+        $this->assertFalse($success);
+        $this->assertSame($url, $img->getAttribute('src'));
+        $this->assertSame('file access denied', $img->getAttribute('x-debug-notice'));
+    }
+
+    /**
+     * Tests that images referencing a non-existing context are not inlined
+     *
+     * @covers \quiz_archiver\Report
+     *
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function test_inline_image_invalid_context_rejected(): void {
+        $this->resetAfterTest();
+        $course = self::getDataGenerator()->create_course();
+        $url = \moodle_url::make_pluginfile_url(999999999, 'course', 'summary', 0, '/', 'pic.png')->out(false);
+
+        [$report] = self::create_blank_quiz_report($course);
+        [$success, $img] = self::inline_image($report, $url);
+
+        $this->assertFalse($success);
+        $this->assertSame('file access denied', $img->getAttribute('x-debug-notice'));
+    }
+
+    /**
+     * Tests that question images not matching a question of the attempt are not inlined
+     *
+     * @covers       \quiz_archiver\Report
+     * @dataProvider inline_image_question_file_rejected_data_provider
+     *
+     * @param int $qubaidoffset Offset added to the question usage ID inside the URL
+     * @param int $slotoffset Offset added to the question slot inside the URL
+     * @param int $questionidoffset Offset added to the question ID inside the URL
+     * @return void
+     * @throws \DOMException
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \moodle_exception
+     * @throws \restore_controller_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_inline_image_question_file_rejected(int $qubaidoffset, int $slotoffset, int $questionidoffset): void {
+        $this->resetAfterTest();
+        $generator = self::getDataGenerator();
+        $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $report = new Report($rc->course, $rc->cm, $rc->quiz);
+        [$quba, $slot, $question] = $generator->create_reference_question_image($rc->attemptids[0], $rc->cm->id);
+        $qubaid = $quba->get_id() + $qubaidoffset;
+        $slot += $slotoffset;
+        $questionid = $question->id + $questionidoffset;
+        $url = \moodle_url::make_pluginfile_url(
+            $question->contextid,
+            'question',
+            'questiontext',
+            "{$qubaid}/{$slot}/{$questionid}",
+            '/',
+            $generator::REFERENCE_QUIZ_QUESTION_IMAGE
+        )->out(false);
+
+        [$success, $img] = self::inline_image($report, $url, $quba);
+
+        $this->assertFalse($success);
+        $this->assertSame($url, $img->getAttribute('src'));
+        $this->assertSame('file access denied', $img->getAttribute('x-debug-notice'));
+    }
+
+    /**
+     * Data provider for test_inline_image_question_file_rejected
+     *
+     * @return array Offsets to apply to the question usage ID, slot, and question ID of the valid question image URL
+     */
+    public static function inline_image_question_file_rejected_data_provider(): array {
+        return [
+            'Question usage not matching the attempt' => [1000, 0, 0],
+            'Slot not part of the question usage' => [0, 9999, 0],
+            'Question not placed inside the slot' => [0, 0, 1000],
+        ];
     }
 
     /**

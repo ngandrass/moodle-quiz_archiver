@@ -853,8 +853,11 @@ class Report {
 
         // Convert all local images to base64 if desired.
         if ($inlineimages) {
+            $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
+            $quba = \question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
+
             foreach ($dom->getElementsByTagName('img') as $img) {
-                if (!$this->convert_image_to_base64($img)) {
+                if (!$this->convert_image_to_base64($img, $quba)) {
                     $img->setAttribute('x-debug-inlining-failed', 'true');
                 }
             }
@@ -885,7 +888,7 @@ class Report {
     const REGEX_MOODLE_URL_PLUGINFILE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle file API URLs of specific types: component=(question|qtype_.*) */
-    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))$/m';
+    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<qubaid>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle theme image files */
     const REGEX_MOODLE_URL_THEME_IMAGE = '/^(?P<wwwroot>https?:\/\/.+)?(\/theme\/image\.php\/)(?P<themename>[^\/]+)\/(?P<component>[^\/]+)\/(?P<rev>[^\/]+)\/(?P<image>.+)$/m';
@@ -909,10 +912,12 @@ class Report {
      * happens in-place.
      *
      * @param \DOMElement $img The <img> element to process
+     * @param \question_usage_by_activity $quba The question usage by activity object to use for context checks
      * @return bool true on success
+     * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function convert_image_to_base64(\DOMElement $img): bool {
+    protected function convert_image_to_base64(\DOMElement $img, \question_usage_by_activity $quba): bool {
         global $CFG;
 
         // Only process images with src attribute.
@@ -935,7 +940,7 @@ class Report {
         $imgsrcurl = $this->ensure_absolute_url($imgsrc, $moodlebaseurl);
 
         // Make sure to only process web URLs and nothing that somehow remained a valid local filepath.
-        if (!substr($imgsrcurl, 0, 4) === "http") { // Yes, this includes https as well ;).
+        if (!str_starts_with($imgsrcurl, 'http')) { // Yes, this includes https as well ;).
             $img->setAttribute('x-debug-notice', 'not a web URL');
             return false;
         }
@@ -966,14 +971,21 @@ class Report {
                 // inserting questionbank_id and question_slot after filearea ...
                 if ($regexmatches['component'] == 'question' || strpos($regexmatches['component'], 'qtype_') === 0) {
                     $regexmatches = null;
+                    $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
                     if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $imgsrcurl, $regexmatches)) {
-                        $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
+                        $img->setAttribute('x-debug-notice', 'malformed pluginfile URL for question/qtype file');
                         return false;
                     }
                 }
 
                 // Decode RFC 3986 URL escaped sequences.
                 $regexmatches['filename'] = urldecode($regexmatches['filename']);
+
+                // Only inline images from allowed contexts (e.g., questions of this attempt).
+                if (!$this->is_pluginfile_access_allowed($regexmatches, $quba)) {
+                    $img->setAttribute('x-debug-notice', 'file access denied');
+                    return false;
+                }
 
                 // Get file content via Moodle File API.
                 $fs = get_file_storage();
@@ -1052,6 +1064,70 @@ class Report {
         $img->setAttribute('src', 'data:' . $imgmime . ';base64,' . $imgbase64);
 
         return true;
+    }
+
+    /**
+     * Checks whether a file referenced by a pluginfile URL may be inlined into a report of this quiz
+     *
+     * Allowed are files within the course of this quiz and question files from the context of a
+     * question that is used in an attempt of this quiz (e.g., a shared question bank in another course).
+     * The check for question-related files is delegated to the question's own file access check logic.
+     *
+     * @param array $urlparts Matched named regex groups of REGEX_MOODLE_URL_PLUGINFILE(_QUESTION_AND_QTYPE)
+     * @param \question_usage_by_activity $quba The question usage by activity of the attempt this report is for
+     * @return bool True if the file may be inlined
+     * @throws \coding_exception
+     */
+    protected function is_pluginfile_access_allowed(array $urlparts, \question_usage_by_activity $quba): bool {
+        // Parse commong URL parts.
+        $contextid = clean_param($urlparts['contextid'], PARAM_INT);
+        $component = clean_param($urlparts['component'], PARAM_TEXT);
+        $filearea = clean_param($urlparts['filearea'], PARAM_TEXT);
+
+        // Validate file context.
+        $filectx = $contextid ? \context::instance_by_id($contextid, IGNORE_MISSING) : null;
+        if (!$filectx) {
+            return false;
+        }
+
+        $quizctx = \context_module::instance($this->cm->id);
+        $coursectx = $quizctx->get_course_context();
+
+        // Validate question files: Must belong to a question of this attempt and pass the question's own access checks.
+        if ($component === 'question' || str_starts_with($component, 'qtype_')) {
+            $qubaid = clean_param($urlparts['qubaid'], PARAM_INT);
+            $slot = clean_param($urlparts['question_slot'], PARAM_INT);
+
+            // File must match attempt quba and one slot.
+            if ($qubaid !== (int) $quba->get_id()) {
+                return false;
+            }
+
+            if (!in_array($slot, $quba->get_slots())) {
+                return false;
+            }
+
+            // Delegate access check to the question's own file access check logic.
+            $options = new \question_display_options();
+            $options->readonly = true;
+            $options->history = \question_display_options::VISIBLE;
+
+            return $quba->check_file_access(
+                $slot,
+                $options,
+                $component,
+                $filearea,
+                [$urlparts['itemid'], $urlparts['filename']],
+                false
+            );
+        }
+
+        // Allow files directly inside the quiz and course.
+        if ($filectx->id === $quizctx->id || $filectx->id === $coursectx->id) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
