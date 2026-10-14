@@ -49,6 +49,8 @@ class ArchiveJob {
     protected int $userid;
     /** @var int Unix timestamp of job creation */
     protected int $timecreated;
+    /** @var int Unix timestamp of last job update */
+    protected int $timemodified;
     /** @var int|null Unix timestamp after which this jobs artifacts will be deleted automatically. Null indicates no deletion.*/
     protected ?int $retentiontime;
     /** @var string The webservice token that is allowed to write to this job via API */
@@ -149,6 +151,7 @@ class ArchiveJob {
      * @param int $quizid ID of the quiz this job is associated with
      * @param int $userid ID of the user that owns this job
      * @param int $timecreated Unix timestamp of job creation
+     * @param int $timemodified Unix timestamp of last job modification
      * @param ?int $retentiontime Unix timestamp after which this jobs
      * artifacts will be deleted automatically. Null indicates no deletion.
      * @param string $wstoken The webservice token that is allowed to write to this job via API
@@ -161,6 +164,7 @@ class ArchiveJob {
         int $quizid,
         int $userid,
         int $timecreated,
+        int $timemodified,
         ?int $retentiontime,
         string $wstoken
     ) {
@@ -171,6 +175,7 @@ class ArchiveJob {
         $this->quizid = $quizid;
         $this->userid = $userid;
         $this->timecreated = $timecreated;
+        $this->timemodified = $timemodified;
         $this->retentiontime = $retentiontime;
         $this->wstoken = $wstoken;
         $this->tspmanager = null; // Lazy initialization.
@@ -263,7 +268,18 @@ class ArchiveJob {
             ];
         }, $attempts));
 
-        return new ArchiveJob($id, $jobid, $courseid, $cmid, $quizid, $userid, $now, $retentiontime, $wstoken);
+        return new ArchiveJob(
+            $id,
+            $jobid,
+            $courseid,
+            $cmid,
+            $quizid,
+            $userid,
+            $now,
+            $now,
+            $retentiontime,
+            $wstoken
+        );
     }
 
     /**
@@ -284,6 +300,7 @@ class ArchiveJob {
             $jobdata->quizid,
             $jobdata->userid,
             $jobdata->timecreated,
+            $jobdata->timemodified,
             $jobdata->retentiontime,
             $jobdata->wstoken
         );
@@ -307,6 +324,7 @@ class ArchiveJob {
             $jobdata->quizid,
             $jobdata->userid,
             $jobdata->timecreated,
+            $jobdata->timemodified,
             $jobdata->retentiontime,
             $jobdata->wstoken
         );
@@ -352,6 +370,7 @@ class ArchiveJob {
             $dbdata->quizid,
             $dbdata->userid,
             $dbdata->timecreated,
+            $dbdata->timemodified,
             $dbdata->retentiontime,
             $dbdata->wstoken
         ), $records);
@@ -502,7 +521,7 @@ class ArchiveJob {
                 'artifactfile' => $artifactfilemetadata,
                 'tsp' => $tspdata,
                 'settings' => self::convert_archive_settings_for_display(
-                    (new self($j->id, '', -1, -1, -1, -1, -1, null, ''))->get_settings()
+                    (new self($j->id, '', -1, -1, -1, -1, -1, -1, null, ''))->get_settings()
                 ),
             ];
         }, $records));
@@ -670,13 +689,12 @@ class ArchiveJob {
     }
 
     /**
-     * Determines if the job as reached one of its final states and is considered
-     * as completed
-     *
-     * @return bool True if job is completed, regardless of success or error
+     * Determines if a job status is considered a final job state.
+     * @param string $status Job status enum string to be checked
+     * @return bool True if status represents final job state
      */
-    public function is_complete(): bool {
-        switch ($this->get_status()) {
+    public static function is_final_job_status(string $status): bool {
+        switch ($status) {
             case self::STATUS_FINISHED:
             case self::STATUS_FAILED:
             case self::STATUS_TIMEOUT:
@@ -685,6 +703,16 @@ class ArchiveJob {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Determines if the job as reached one of its final states and is considered
+     * as completed
+     *
+     * @return bool True if job is completed, regardless of success or error
+     */
+    public function is_complete(): bool {
+        return self::is_final_job_status($this->get_status());
     }
 
     /**
@@ -739,6 +767,26 @@ class ArchiveJob {
      */
     public function get_userid(): int {
         return $this->userid;
+    }
+
+    /**
+     * Returns the retention time of this job, if enabled
+     *
+     * @return int|null Unix timestamp after which this jobs artifact will be
+     * deleted automatically. Null indicates no automatic deletion.
+     */
+    public function get_timecreated(): int {
+        return $this->timecreated;
+    }
+
+    /**
+     * Returns the retention time of this job, if enabled
+     *
+     * @return int|null Unix timestamp after which this jobs artifact will be
+     * deleted automatically. Null indicates no automatic deletion.
+     */
+    public function get_timemodified(): ?int {
+        return $this->timemodified;
     }
 
     /**
@@ -995,6 +1043,74 @@ class ArchiveJob {
      */
     public function has_artifact(): bool {
         return $this->get_artifact() !== null;
+    }
+
+    /**
+     * Returns the URL of the quiz report page (archiver mode) associated with
+     * this job, optionally augmented with additional query parameters.
+     *
+     * @param array $params Additional query parameters to append to the URL
+     * @return string Absolute URL of the quiz report page for this job
+     */
+    public function get_report_url(array $params = []): string {
+        $urlparams = array_merge([
+            'id' => $this->cmid,
+            'mode' => 'archiver',
+        ], $params);
+
+        return (new \moodle_url('/mod/quiz/report.php', $urlparams))->out(false);
+    }
+
+    /**
+     * Returns the URL to view the archive contents of this job.
+     *
+     * The report page resolves the job by its internal ID via
+     * ArchiveJob::get_by_id(), so this URL carries the numeric job ID.
+     *
+     * @return string Absolute URL to the archive contents view for this job
+     */
+    public function get_showcontents_url(): string {
+        return $this->get_report_url([
+            'action' => 'showcontents',
+            'jobid' => $this->id,
+        ]);
+    }
+
+    /**
+     * Returns the URL to the job deletion confirmation form.
+     *
+     * The delete form resolves the job by its UUID via
+     * ArchiveJob::get_by_jobid(), so this URL carries the job UUID.
+     *
+     * @return string Absolute URL to the job deletion view for this job
+     */
+    public function get_delete_job_url(): string {
+        return $this->get_report_url([
+            'action' => 'delete_job',
+            'jobid' => $this->jobid,
+        ]);
+    }
+
+    /**
+     * Returns the direct download URL for this job's artifact file.
+     *
+     * @return string|null Absolute pluginfile URL if an artifact is present,
+     * else null
+     */
+    public function get_artifact_download_url(): ?string {
+        if ($artifact = $this->get_artifact()) {
+            return \moodle_url::make_pluginfile_url(
+                $artifact->get_contextid(),
+                $artifact->get_component(),
+                $artifact->get_filearea(),
+                $artifact->get_itemid(),
+                $artifact->get_filepath(),
+                $artifact->get_filename(),
+                true
+            )->out(false);
+        }
+
+        return null;
     }
 
     /**
