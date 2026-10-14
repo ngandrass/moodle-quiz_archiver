@@ -1,4 +1,4 @@
-{{{{{!
+{{!
     This file is part of Moodle - https://moodle.org/
 
     Moodle is free software: you can redistribute it and/or modify
@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-}}}
-{{{{{!
+}}
+{{!
     @template quiz_archiver/job_overview_table_col_actions
 
     This template renders the content of the action columns in the job overview
@@ -28,9 +28,9 @@
         "artifact_url": "https://moodle.example/..."
         "delete_url": "https://moodle.example/..."
     }
-}}}
+}}
 
-{{{{{! Action: Show details. }}}
+{{! Action: Show details. }}
 <a
     href="#"
     id="job-details-{{job_id}}"
@@ -47,7 +47,7 @@
 </a>
 
 
-{{{! Action: Show content. }}}
+{{! Action: Show content. }}
 <a
     {{#show_content_url}}
         href="{{show_content_url}}"
@@ -71,7 +71,7 @@
     <i class="fa fa-magnifying-glass"></i>
 </a>
 
-{{{! Action: Download. }}}
+{{! Action: Download. }}
 <a
     {{#artifact_url}}
         href="{{artifact_url}}"
@@ -95,7 +95,7 @@
     <i class="fa fa-download"></i>
 </a>
 
-{{{! Action: Delete. }}}
+{{! Action: Delete. }}
 <a
     href="{{delete_url}}"
     class="btn btn-danger mx-1"
