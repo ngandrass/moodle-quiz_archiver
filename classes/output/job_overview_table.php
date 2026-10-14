@@ -115,13 +115,23 @@ class job_overview_table extends \table_sql {
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        return $OUTPUT->render_from_template('quiz_archiver/job_overview_table_col_status', [
-            'badge_text' => $s['text'],
-            'badge_color' => $s['color'],
-            'tooltip_text' => $s['help'],
-            'progress' => isset($s['statusextras']['progress']) ? $s['statusextras']['progress'] : null,
-            'time_modified' => $values->timemodified,
-        ]);
+        $spanattributes = 'column="status" jobid="' . $values->jobid . '"';
+        if (ArchiveJob::is_final_job_status($values->status)) {
+            $spanattributes .= ' has_finalized';
+        }
+
+        return '<span ' . $spanattributes . '>' .
+            $OUTPUT->render_from_template(
+                'quiz_archiver/job_overview_table_col_status',
+                [
+                    'badge_text' => $s['text'],
+                    'badge_color' => $s['color'],
+                    'tooltip_text' => $s['help'],
+                    'progress' => isset($s['statusextras']['progress']) ? $s['statusextras']['progress'] : null,
+                    'time_modified' => $values->timemodified,
+                ]
+            ) .
+            '</span>';
     }
 
     /**
@@ -143,7 +153,10 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_filesize($values) {
-        return $values->filesize !== null ? display_size($values->filesize) : '';
+        $html = '<span column="filesize" jobid="' . $values->jobid . '">';
+        $html .= $values->filesize !== null ? display_size($values->filesize) : '';
+        $html .= '</span>';
+        return $html;
     }
 
     /**
@@ -191,14 +204,16 @@ class job_overview_table extends \table_sql {
             'jobid' => $values->jobid,
         ]);
 
-        return $OUTPUT->render_from_template(
-            'quiz_archiver/job_overview_table_col_actions',
-            [
-                'job_id' => $values->jobid,
-                'show_content_url' => $showcontentsurl ? $showcontentsurl->out(false) : null,
-                'artifact_url' => $artifacturl ? $artifacturl->out(false) : null,
-                'delete_url' => $deleteurl ? $deleteurl->out(false) : null,
-            ]
-        );
+        return '<span column="actions" jobid="' . $values->jobid . '">' .
+            $OUTPUT->render_from_template(
+                'quiz_archiver/job_overview_table_col_actions',
+                [
+                    'job_id' => $values->jobid,
+                    'show_content_url' => $showcontentsurl ? $showcontentsurl->out(false) : null,
+                    'artifact_url' => $artifacturl ? $artifacturl->out(false) : null,
+                    'delete_url' => $deleteurl ? $deleteurl->out(false) : null,
+                ]
+            ) .
+            '</span>';
     }
 }

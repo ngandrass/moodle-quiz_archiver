@@ -70,8 +70,20 @@
 </div>
 
 {{#js}}
-    require(['jquery', 'core/modal', 'core/templates'], function($, Modal, Templates) {
-        {{#jobs}}
+    require(
+        [
+            'jquery',
+            'core/modal',
+            'core/templates',
+            'quiz_archiver/jobupdate',
+        ],
+        function(
+            $,
+            Modal,
+            Templates,
+            JobUpdate
+        ) {
+            {{#jobs}}
             $('#job-details-{{jobid}}').click(async() => {
                 await Modal.create({
                     title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
@@ -80,7 +92,10 @@
                     large: true,
                 });
             });
-        {{/jobs}}
-    });
+            {{/jobs}}
+
+            JobUpdate.init();
+        }
+    );
 {{/js}}
 {{/jobOverviewTable}}
