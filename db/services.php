@@ -51,6 +51,14 @@ $functions = [
         'services' => [],
         'capabilities' => 'quiz/archiver:use_webservice',
     ],
+    'quiz_archiver_get_job_ajax' => [
+        'classname' => 'quiz_archiver\external\get_job_ajax',
+        'description' => 'Returns the current status of a job for client-side polling.',
+        'type' => 'read',
+        'ajax' => true,
+        'services' => [],
+        'capabilities' => 'quiz/archiver:use_webservice',
+    ],
     'quiz_archiver_process_uploaded_artifact' => [
         'classname' => 'quiz_archiver\external\process_uploaded_artifact',
         'description' => 'Called by the quiz archiver worker to process a previously uploaded artifact',
