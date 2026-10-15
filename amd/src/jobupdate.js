@@ -40,16 +40,17 @@ export const init = () => {
 };
 
 /**
- * Builds a CSS selector that targets a specific cell in the job overview table.
+ * Builds a CSS selector that targets a specific updatable span element on the
+ * job overview page.
  *
  * Each rendered table cell carries the table column name and the job ID as
  * custom HTML attributes, which are used to address it precisely.
  *
- * @param {string} jobId The ID of the job the cell belongs to
- * @param {string} column The table column the cell belongs to
- * @returns {string} A CSS selector matching the requested cell
+ * @param {string} jobId The ID of the job the targeted element belongs to
+ * @param {string} ref The reference of target updatable span element
+ * @returns {string} A CSS selector matching the targeted span
  */
-const getColumnSelector = (jobId, column) => `span[column="${column}"][jobid="${jobId}"]`;
+const getSpanSelector = (jobId, ref) => `span[ref="${ref}"][jobid="${jobId}"]`;
 
 /**
  * Collects the IDs of all jobs whose status is not yet finalized.
@@ -61,7 +62,7 @@ const getColumnSelector = (jobId, column) => `span[column="${column}"][jobid="${
  */
 const getUnfinishedJobIds = () => {
     const statusElements = document.querySelectorAll(
-        'span[column="status"]:not([has_finalized])'
+        'span[ref="status-column"]:not([has_finalized])'
     );
 
     let unfinishedJobIds = [];
@@ -118,7 +119,7 @@ const updateJobs = async (jobIds) => {
 
             // Update filesize column with rendered artifact size.
             document.querySelector(
-                getColumnSelector(jobId, "filesize")
+                getSpanSelector(jobId, "filesize-column")
             ).innerHTML = jobAjax.display_args.filesize;
 
             // Update action buttons.
@@ -187,7 +188,7 @@ const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
     ).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
-                getColumnSelector(jobId, "status"),
+                getSpanSelector(jobId, "status-column"),
                 html,
                 js,
             );
@@ -221,7 +222,7 @@ const renderActionsColumn = async (jobId, urls) => {
     ).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
-                getColumnSelector(jobId, "actions"),
+                getSpanSelector(jobId, "actions-column"),
                 html,
                 js,
             );
