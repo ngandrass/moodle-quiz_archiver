@@ -15,18 +15,19 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template quiz_archiver/job_overview_table_col_status
+    @template quiz_archiver/job_overview/fragment/status
 
-    This template renders the content of the status columns in the job overview
-    table, providing information about the current state of the job, its
-    progress, and the last time it was modified.
+    This template renders a representation of a jobs status, providing
+    information about the current state of the job, its progress, and optionally
+    the last time it was modified.
 
     Example context (json):
     {
         "badge_text": "Running",
         "badge_color": "primary",
         "tooltip_text": "The job is currently ...",
-        "progress": "42"
+        "progress": "42",
+        "time_modified": "1445378400",
     }
 }}
 
@@ -47,6 +48,8 @@
     </span>
     </br>
 {{/progress}}
+{{#time_modified}}
 <small>
     {{#userdate}} {{time_modified}}, %c {{/userdate}}
 </small>
+{{/time_modified}}

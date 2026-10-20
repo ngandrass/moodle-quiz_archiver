@@ -1064,9 +1064,6 @@ class ArchiveJob {
     /**
      * Returns the URL to view the archive contents of this job.
      *
-     * The report page resolves the job by its internal ID via
-     * ArchiveJob::get_by_id(), so this URL carries the numeric job ID.
-     *
      * @return string Absolute URL to the archive contents view for this job
      */
     public function get_showcontents_url(): string {
@@ -1079,14 +1076,35 @@ class ArchiveJob {
     /**
      * Returns the URL to the job deletion confirmation form.
      *
-     * The delete form resolves the job by its UUID via
-     * ArchiveJob::get_by_jobid(), so this URL carries the job UUID.
-     *
      * @return string Absolute URL to the job deletion view for this job
      */
     public function get_delete_job_url(): string {
         return $this->get_report_url([
             'action' => 'delete_job',
+            'jobid' => $this->jobid,
+        ]);
+    }
+
+    /**
+     * Returns the URL to the artifact deletion confirmation form.
+     *
+     * @return string Absolute URL to the artifact deletion view for this job
+     */
+    public function get_delete_artifact_url(): string {
+        return $this->get_report_url([
+            'action' => 'delete_artifact',
+            'jobid' => $this->jobid,
+        ]);
+    }
+
+    /**
+     * Returns the URL to the artifact signing (TSP) confirmation form.
+     *
+     * @return string Absolute URL to the artifact signing view for this job
+     */
+    public function get_sign_artifact_url(): string {
+        return $this->get_report_url([
+            'action' => 'sign_job',
             'jobid' => $this->jobid,
         ]);
     }

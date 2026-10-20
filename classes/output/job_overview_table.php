@@ -122,7 +122,7 @@ class job_overview_table extends \table_sql {
 
         return '<span ' . $spanattributes . '>' .
             $OUTPUT->render_from_template(
-                'quiz_archiver/job_overview_table_col_status',
+                'quiz_archiver/job_overview/fragment/status',
                 [
                     'badge_text' => $s['text'],
                     'badge_color' => $s['color'],
@@ -206,7 +206,7 @@ class job_overview_table extends \table_sql {
 
         return '<span ref="actions-column" jobid="' . $values->jobid . '">' .
             $OUTPUT->render_from_template(
-                'quiz_archiver/job_overview_table_col_actions',
+                'quiz_archiver/job_overview/fragment/actions',
                 [
                     'job_id' => $values->jobid,
                     'show_content_url' => $showcontentsurl ? $showcontentsurl->out(false) : null,

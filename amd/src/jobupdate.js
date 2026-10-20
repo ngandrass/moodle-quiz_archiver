@@ -10,6 +10,8 @@
  */
 
 import Ajax from 'core/ajax';
+import {getString} from 'core/str';
+import UserDate from 'core/user_date';
 import Templates from 'core/templates';
 import Notification from 'core/notification';
 
@@ -32,6 +34,7 @@ let JOB_STATUS_POLLING_MS = 6000;
  * @returns {void}
  */
 export const init = () => {
+
     const jobIds = getUnfinishedJobIds();
 
     if (jobIds) {
@@ -61,6 +64,7 @@ const getSpanSelector = (jobId, ref) => `span[ref="${ref}"][jobid="${jobId}"]`;
  * @returns {string[]|null} Array of unfinished job IDs, or null if none are found
  */
 const getUnfinishedJobIds = () => {
+
     const statusElements = document.querySelectorAll(
         'span[ref="status-column"]:not([has_finalized])'
     );
@@ -115,6 +119,12 @@ const updateJobs = async (jobIds) => {
             jobAjax.display_args.status
         );
 
+        // Update modal if available.
+        const modalElement = document.querySelector(getSpanSelector(jobId, "status-modal"));
+        if (modalElement){
+            await updateModal(jobId, jobAjax);
+        }
+
         if ( jobAjax.job.complete ) {
 
             // Update filesize column with rendered artifact size.
@@ -123,7 +133,7 @@ const updateJobs = async (jobIds) => {
             ).innerHTML = jobAjax.display_args.filesize;
 
             // Update action buttons.
-            await renderActionsColumn(jobId, jobAjax.display_args.actionurls);
+            await renderActionsColumn(jobId, jobAjax.job.actionurls);
 
             // Finally: Delete this job reference so that it is no longer updated.
             jobIds.pop(jobId);
@@ -177,12 +187,12 @@ const getJobAjax = async (job) => {
 const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
 
     await Templates.renderForPromise(
-        'quiz_archiver/job_overview_table_col_status',
+        'quiz_archiver/job_overview/fragment/status',
         {
             "badge_text": statusDisplayArgs.text,
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
-            "progress": job.statusextras ?? null,
+            "progress": job.statusextras?.progress ?? null,
             "time_modified": job.timemodified
         }
     ).then(
@@ -206,18 +216,18 @@ const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
  * completed job.
  *
  * @param {string} jobId The ID of the job whose action cell should be updated
- * @param {object} urls The action URLs (showcontent, artifact, delete) as returned by the webservice
+ * @param {object} urls The action URLs required for rendered action buttons
  * @returns {Promise<void>}
  */
 const renderActionsColumn = async (jobId, urls) => {
 
     await Templates.renderForPromise(
-        'quiz_archiver/job_overview_table_col_actions',
+        'quiz_archiver/job_overview/fragment/actions',
         {
             "job_id": jobId,
             "show_content_url": urls['showcontent'],
-            "artifact_url": urls['artifact'],
-            "delete_url": urls['delete'],
+            "artifact_url": urls['artifact_download'],
+            "delete_url": urls['job_delete'],
         }
     ).then(
         ({html, js}) => {
@@ -230,6 +240,112 @@ const renderActionsColumn = async (jobId, urls) => {
     ). catch(
         (error) => {
             window.console.error("Template render failure for action colum:", error);
+            Notification.exception(error);
+        }
+    );
+};
+
+/**
+ * Re-renders the updatable rows inside the job details modal with provided job
+ * data.
+ *
+ * @param {string} jobId The ID of the job whose modal should be updated
+ * @param {object} jobAjax The webservice response containing "job" and "display_args"
+ * @returns {Promise<void>}
+ */
+const updateModal = async (jobId, jobAjax) => {
+
+    const job = jobAjax.job;
+    const statusDisplayArgs = jobAjax.display_args.status;
+
+    // Render the status row.
+    await Templates.renderForPromise(
+        'quiz_archiver/job_overview/fragment/status',
+        {
+            "badge_text": statusDisplayArgs.text,
+            "badge_color": statusDisplayArgs.color,
+            "tooltip_text": statusDisplayArgs.help,
+            "progress": job.statusextras?.progress ?? null
+        }
+    ).then(
+        ({html, js}) => {
+            Templates.replaceNodeContents(
+                getSpanSelector(jobId, "status-modal"),
+                html,
+                js,
+            );
+        }
+    ). catch(
+        (error) => {
+            window.console.error("Template render failure for modal status row:", error);
+            Notification.exception(error);
+        }
+    );
+
+    // Render the archive and signature cells.
+    // NOTE: Both share the same context, so one object serves them both.
+    const cellContext = {
+        "artifact": job.artifact,
+        "signature": job.signature,
+        "autodelete": job.autodelete,
+        "actionurls": job.actionurls,
+        "display_args": {
+            "filesize": jobAjax.display_args.filesize
+        }
+    };
+    await Promise.all([
+        renderModalCell(
+            jobId,
+            "archive-modal",
+            'quiz_archiver/job_overview/fragment/artifact',
+            cellContext,
+        ),
+        renderModalCell(
+            jobId,
+            "signature-modal",
+            'quiz_archiver/job_overview/fragment/signature',
+            cellContext,
+        ),
+    ]);
+
+    // Update the "last modified" row.
+    getString('strftimedatetimeaccurate', 'core_langconfig').then(
+        (formatString) => UserDate.get(
+            [{'timestamp': job.timemodified, 'format': formatString}]
+        )
+    ).then((formattedDates) => {
+        document.querySelector(
+            getSpanSelector(jobId, "timemodified-modal")
+        ).innerHTML = formattedDates[0];
+    }).catch((error) => {
+        window.console.error("Could not format date:", error);
+        Notification.exception(error);
+    });
+};
+
+/**
+ * Re-renders a single updatable modal cell (e.g. archive or signature) from the
+ * given context.
+ *
+ * @param {string} jobId The ID of the job whose cell should be updated
+ * @param {string} ref The reference of the target cell (e.g. "archive-modal")
+ * @param {string} template The Mustache template to render the cell with
+ * @param {object} context The context to render the template with
+ * @returns {Promise<void>}
+ */
+const renderModalCell = async (jobId, ref, template, context) => {
+
+    await Templates.renderForPromise(template, context).then(
+        ({html, js}) => {
+            Templates.replaceNodeContents(
+                getSpanSelector(jobId, ref),
+                html,
+                js,
+            );
+        }
+    ). catch(
+        (error) => {
+            window.console.error(`Template render failure for modal cell "${ref}":`, error);
             Notification.exception(error);
         }
     );

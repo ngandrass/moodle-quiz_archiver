@@ -15,11 +15,11 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template quiz_archiver/job_overview_table_col_actions
+    @template quiz_archiver/job_overview/fragment/actions
 
-    This template renders the content of the action columns in the job overview
-    table, providing buttons to view job details, inspect artifacts, download
-    their archive or delete the job.
+    This template renders a representation of actions available for a job,
+    providing buttons to view job details, inspect artifacts, download their
+    archive or delete the job.
 
     Example context (json):
     {
@@ -33,7 +33,7 @@
 {{! Action: Show details. }}
 <a
     href="#"
-    id="job-details-{{job_id}}"
+    ref="job-details-action" jobid="{{job_id}}"
     class="btn btn-primary mx-1"
     role="button"
     data-toggle="tooltip"
@@ -109,3 +109,80 @@
 >
     <i class="fa fa-times"></i>
 </a>
+
+{{#js}}
+require(
+    [
+        'jquery',
+        'core/modal',
+        'core/templates',
+        'core/ajax',
+        'core/notification'
+    ],
+    function(
+        $,
+        Modal,
+        Templates,
+        AJAX,
+        notification
+    ) {
+        $('[ref="job-details-action"][jobid="{{job_id}}"]').click(async() => {
+            // Fetch the job's current data, then render the details modal from
+            // it so that it always reflects the job's latest state.
+            let data;
+            try {
+                data = await AJAX.call([{
+                    methodname: 'quiz_archiver_get_job_ajax',
+                    args: {jobid: '{{job_id}}'},
+                }])[0];
+            } catch (e) {
+                notification.exception(e);
+                return;
+            }
+
+            if (data.status !== 'OK' || !data.job) {
+                notification.exception(new Error(data.status || 'Unknown error'));
+                return;
+            }
+
+            // Assemble the modal context from the fetched job data. The shape
+            // matches the webservice exactly, so the modal templates render it
+            // without any further translation.
+            let job = data.job;
+            let status = data.display_args.status;
+            let context = {
+                jobid: job.uuid,
+                status: {
+                    badge_text: status.text,
+                    badge_color: status.color,
+                    tooltip_text: status.help,
+                    progress: job.statusextras && job.statusextras.progress ? job.statusextras.progress : null
+                },
+                timecreated: job.timecreated,
+                timemodified: job.timemodified,
+                user: job.user,
+                course: job.course,
+                quiz: job.quiz,
+                settings: job.settings,
+                signature: job.signature,
+                autodelete: job.autodelete,
+                autodelete_str: data.display_args.autodelete_str,
+                display_args: {
+                    filesize: data.display_args.filesize
+                },
+                actionurls: job.actionurls
+            };
+            if (job.artifact) {
+                context.artifact = job.artifact;
+            }
+
+            await Modal.create({
+                title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
+                body: Templates.render('quiz_archiver/job_overview/modal/job-details', context),
+                show: true,
+                large: true,
+            });
+        });
+    }
+);
+{{/js}}

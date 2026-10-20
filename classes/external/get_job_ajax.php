@@ -15,7 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines the get_job_ajax webservice function
+ * This file defines the get_job_ajax webservice function. It provides any
+ * information of a job that is required to update its different corresponding
+ * UI elements.
  *
  * @package   quiz_archiver
  * @copyright 2026 Niels Gandraß <niels@gandrass.de>
@@ -30,6 +32,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 use core_external\external_api;
 use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
 use quiz_archiver\ArchiveJob;
@@ -47,7 +50,7 @@ class get_job_ajax extends external_api {
             'jobid' => new external_value(
                 PARAM_TEXT,
                 'UUID of the job',
-                VALUE_REQUIRED
+                VALUE_REQUIRED,
             ),
         ]);
     }
@@ -57,81 +60,304 @@ class get_job_ajax extends external_api {
      * @return external_single_structure
      */
     public static function execute_returns(): external_single_structure {
-        return new external_single_structure([
-            'status' => new external_value(
-                PARAM_TEXT,
-                'Status of the executed webservice call',
-                VALUE_REQUIRED
-            ),
-            'job' => new external_single_structure(
-                [
-                    'complete' => new external_value(
-                        PARAM_BOOL,
-                        'Whether the job has reached a final state',
-                        VALUE_REQUIRED
-                    ),
-                    'statusextras' => new external_single_structure(
-                        [
-                            'progress' => new external_value(
-                                PARAM_INT,
-                                'Progress of the job in percent',
-                                VALUE_OPTIONAL
-                            ),
-                        ],
-                        'Additional status information for the job',
-                        VALUE_OPTIONAL
-                    ),
-                    'timemodified' => new external_value(
-                        PARAM_INT,
-                        'Timestamp of the jobs last update',
-                        VALUE_REQUIRED
-                    ),
-                ],
-                'Job data',
-                VALUE_OPTIONAL
-            ),
-            'display_args' => new external_single_structure([
-                'status' => new external_single_structure([
-                    'color' => new external_value(
-                        PARAM_TEXT,
-                        'CSS color variant for the job status badge',
-                        VALUE_OPTIONAL
-                    ),
-                    'text' => new external_value(
-                        PARAM_TEXT,
-                        'Localized human-readable status label',
-                        VALUE_OPTIONAL
-                    ),
-                    'help' => new external_value(
-                        PARAM_TEXT,
-                        'Localized help text for the status badge',
-                        VALUE_OPTIONAL
-                    ),
-                ], 'Display arguments for the current job status', VALUE_OPTIONAL),
-                'filesize' => new external_value(
+        return new external_single_structure(
+            [
+                'status' => new external_value(
                     PARAM_TEXT,
-                    'File size of artifact as formatted string',
-                    VALUE_OPTIONAL
+                    'Status of the executed webservice call',
+                    VALUE_REQUIRED,
                 ),
-                'actionurls' => new external_single_structure([
-                    'showcontent' => new external_value(
-                        PARAM_TEXT,
-                        'URL navigating to archive content view',
-                        VALUE_OPTIONAL
-                    ),
-                    'artifact' => new external_value(
-                        PARAM_TEXT,
-                        'URL downloading archive artifact',
-                        VALUE_OPTIONAL
-                    ),
-                    'delete' => new external_value(
-                        PARAM_TEXT,
-                        'URL navigating to job deletion confirmation view',
-                        VALUE_OPTIONAL
-                    ),
-                ], 'URLs for action buttons', VALUE_REQUIRED),
-            ], 'Display metadata for the current job status', VALUE_OPTIONAL),
-        ]);
+                'job' => new external_single_structure(
+                    [
+                        'uuid' => new external_value(
+                            PARAM_TEXT,
+                            'UUID of the job',
+                            VALUE_REQUIRED,
+                        ),
+                        'complete' => new external_value(
+                            PARAM_BOOL,
+                            'Whether the job has reached a final state',
+                            VALUE_REQUIRED,
+                        ),
+                        'status' => new external_value(
+                            PARAM_TEXT,
+                            'Raw job status enum string',
+                            VALUE_REQUIRED,
+                        ),
+                        'timecreated' => new external_value(
+                            PARAM_INT,
+                            'Timestamp of job creation',
+                            VALUE_REQUIRED,
+                        ),
+                        'timemodified' => new external_value(
+                            PARAM_INT,
+                            'Timestamp of the job\'s last update',
+                            VALUE_REQUIRED,
+                        ),
+                        'user' => new external_single_structure(
+                            [
+                                'id' => new external_value(
+                                    PARAM_INT,
+                                    'User ID',
+                                    VALUE_REQUIRED,
+                                ),
+                                'firstname' => new external_value(
+                                    PARAM_TEXT,
+                                    'First name',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'lastname' => new external_value(
+                                    PARAM_TEXT,
+                                    'Last name',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'username' => new external_value(
+                                    PARAM_TEXT,
+                                    'Username',
+                                    VALUE_REQUIRED,
+                                ),
+                            ],
+                            'User who owns this job',
+                            VALUE_REQUIRED,
+                        ),
+                        'course' => new external_single_structure(
+                            [
+                                'id' => new external_value(
+                                    PARAM_INT,
+                                    'Course ID',
+                                    VALUE_REQUIRED,
+                                ),
+                                'name' => new external_value(
+                                    PARAM_TEXT,
+                                    'Course name',
+                                    VALUE_REQUIRED,
+                                ),
+                            ],
+                            'Course this job belongs to',
+                            VALUE_REQUIRED,
+                        ),
+                        'quiz' => new external_single_structure(
+                            [
+                                'id' => new external_value(
+                                    PARAM_INT,
+                                    'Quiz ID',
+                                    VALUE_REQUIRED,
+                                ),
+                                'cmid' => new external_value(
+                                    PARAM_INT,
+                                    'Course module ID',
+                                    VALUE_REQUIRED,
+                                ),
+                                'name' => new external_value(
+                                    PARAM_TEXT,
+                                    'Quiz name',
+                                    VALUE_REQUIRED,
+                                ),
+                            ],
+                            'Quiz this job belongs to',
+                            VALUE_REQUIRED,
+                        ),
+                        'settings' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'title' => new external_value(
+                                        PARAM_TEXT,
+                                        'Setting label',
+                                        VALUE_REQUIRED,
+                                    ),
+                                    'value' => new external_value(
+                                        PARAM_TEXT,
+                                        'Setting value',
+                                        VALUE_OPTIONAL,
+                                    ),
+                                    'color' => new external_value(
+                                        PARAM_TEXT,
+                                        'Badge color',
+                                        VALUE_OPTIONAL,
+                                    ),
+                                ],
+                                'A single archive setting',
+                                VALUE_REQUIRED,
+                            ),
+                            'List of archive settings captured for this job',
+                            VALUE_REQUIRED,
+                        ),
+                        'statusextras' => new external_single_structure(
+                            [
+                                'progress' => new external_value(
+                                    PARAM_INT,
+                                    'Progress of the job in percent',
+                                    VALUE_OPTIONAL,
+                                ),
+                            ],
+                            'Additional status information for the job',
+                            VALUE_OPTIONAL,
+                        ),
+                        'artifact' => new external_single_structure(
+                            [
+                                'name' => new external_value(
+                                    PARAM_TEXT,
+                                    'Artifact file name',
+                                    VALUE_REQUIRED,
+                                ),
+                                'size' => new external_value(
+                                    PARAM_INT,
+                                    'Artifact file size in bytes',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'checksum' => new external_value(
+                                    PARAM_TEXT,
+                                    'SHA256 checksum of the artifact',
+                                    VALUE_OPTIONAL,
+                                ),
+                            ],
+                            'Artifact file information, present while an artifact is available',
+                            VALUE_OPTIONAL,
+                        ),
+                        'signature' => new external_single_structure(
+                            [
+                                'enabled' => new external_value(
+                                    PARAM_BOOL,
+                                    'Whether TSP signing is enabled globally',
+                                    VALUE_REQUIRED,
+                                ),
+                                'tsp' => new external_single_structure(
+                                    [
+                                        'timecreated' => new external_value(
+                                            PARAM_INT,
+                                            'Timestamp the artifact was signed',
+                                            VALUE_REQUIRED,
+                                        ),
+                                        'server' => new external_value(
+                                            PARAM_TEXT,
+                                            'TSP server that signed the artifact',
+                                            VALUE_OPTIONAL,
+                                        ),
+                                    ],
+                                    'TSP signature information, present when the artifact is signed',
+                                    VALUE_OPTIONAL,
+                                ),
+                            ],
+                            'Signature information for the artifact',
+                            VALUE_REQUIRED,
+                        ),
+                        'autodelete' => new external_single_structure(
+                            [
+                                'enabled' => new external_value(
+                                    PARAM_BOOL,
+                                    'Whether automatic artifact deletion is enabled',
+                                    VALUE_REQUIRED,
+                                ),
+                                'done' => new external_value(
+                                    PARAM_BOOL,
+                                    'Whether the artifact has already been auto-deleted',
+                                    VALUE_REQUIRED,
+                                ),
+                            ],
+                            'Automatic artifact deletion information',
+                            VALUE_REQUIRED,
+                        ),
+                        'actionurls' => new external_single_structure(
+                            [
+                                'showcontent' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to view the archive contents',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'artifact_download' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to download the archive artifact',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'artifact_delete' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to delete the artifact',
+                                    VALUE_REQUIRED,
+                                ),
+                                'artifact_sign' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to sign the artifact',
+                                    VALUE_REQUIRED,
+                                ),
+                                'tsp_query_download' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to download the TSP query file',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'tsp_reply_download' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to download the TSP reply file',
+                                    VALUE_OPTIONAL,
+                                ),
+                                'job_delete' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL to the job deletion confirmation view',
+                                    VALUE_REQUIRED,
+                                ),
+                                'course' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL of the course',
+                                    VALUE_REQUIRED,
+                                ),
+                                'quiz' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL of the quiz',
+                                    VALUE_REQUIRED,
+                                ),
+                                'user' => new external_value(
+                                    PARAM_TEXT,
+                                    'URL of the user profile',
+                                    VALUE_REQUIRED,
+                                ),
+                            ],
+                            'Action and navigation URLs for this job',
+                            VALUE_REQUIRED,
+                        ),
+                    ],
+                    'Complete data about the job, suitable for any client-side consumption',
+                    VALUE_REQUIRED,
+                ),
+                'display_args' => new external_single_structure(
+                    [
+                        'status' => new external_single_structure(
+                            [
+                            'color' => new external_value(
+                                PARAM_TEXT,
+                                'CSS color variant for the job status badge',
+                                VALUE_OPTIONAL,
+                            ),
+                            'text' => new external_value(
+                                PARAM_TEXT,
+                                'Localized human-readable status label',
+                                VALUE_OPTIONAL,
+                            ),
+                            'help' => new external_value(
+                                PARAM_TEXT,
+                                'Localized help text for the status badge',
+                                VALUE_OPTIONAL,
+                            ),
+                            ],
+                            'Display arguments for the current job status',
+                            VALUE_OPTIONAL,
+                        ),
+                        'filesize' => new external_value(
+                            PARAM_TEXT,
+                            'File size of artifact as formatted string',
+                            VALUE_OPTIONAL,
+                        ),
+                        'autodelete_str' => new external_value(
+                            PARAM_TEXT,
+                            'Human readable automatic-deletion status string',
+                            VALUE_REQUIRED,
+                        ),
+                    ],
+                    'Preformatted display values derived from the job',
+                    VALUE_OPTIONAL,
+                ),
+            ],
+            'Job data and display values for client-side polling',
+            VALUE_REQUIRED,
+        );
     }
 
     /**
@@ -162,35 +388,83 @@ class get_job_ajax extends external_api {
             require_capability('quiz/archiver:use_webservice', $context);
 
             // Build response.
+            $config = get_config('quiz_archiver');
+            $metadata = $job->get_metadata();
             $statusextras = $job->get_statusextras();
             $jobdata = [
+                'uuid' => $job->get_jobid(),
                 'complete' => $job->is_complete(),
+                'status' => $job->get_status(),
+                'timecreated' => $job->get_timecreated(),
                 'timemodified' => $job->get_timemodified(),
+                'user' => $metadata['user'],
+                'course' => $metadata['course'],
+                'quiz' => $metadata['quiz'],
+                'settings' => $metadata['settings'],
+                'signature' => [
+                    'enabled' => (bool) $config->tsp_enable,
+                ],
+                'autodelete' => [
+                    'enabled' => (bool) $metadata['autodelete'],
+                    'done' => (bool) $metadata['autodelete_done'],
+                ],
+                'actionurls' => [
+                    'showcontent' => $job->get_showcontents_url(),
+                    'artifact_download' => $job->get_artifact_download_url(),
+                    'artifact_delete' => $job->get_delete_artifact_url(),
+                    'artifact_sign' => $job->get_sign_artifact_url(),
+                    'job_delete' => $job->get_delete_job_url(),
+                    'course' => (new \moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(false),
+                    'quiz' => (new \moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(false),
+                    'user' => (new \moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(false),
+                ],
             ];
+
+            // Optional data, only included while it is present.
             if ($statusextras !== null) {
                 $jobdata['statusextras'] = $statusextras;
+            }
+            if ($metadata['artifactfile'] !== null) {
+                // NOTE: Only the raw artifact facts are exposed here. The human
+                // NOTE: readable file size is a display value
+                // NOTE: (display_args.filesize) and the download URL is an
+                // NOTE: action URL (actionurls.artifact_download), so neither
+                // NOTE: is duplicated.
+                $jobdata['artifact'] = [
+                    'name' => $metadata['artifactfile']['name'],
+                    'size' => $metadata['artifactfile']['size'],
+                    'checksum' => $metadata['artifactfile']['checksum'],
+                ];
+            }
+            if ($metadata['tsp'] !== null) {
+                $jobdata['signature']['tsp'] = [
+                    'timecreated' => $metadata['tsp']['timecreated'],
+                    'server' => $metadata['tsp']['server'],
+                ];
+
+                // NOTE: The query/reply file download URLs are action URLs,
+                // NOTE: therefore they live in actionurls.
+                $jobdata['actionurls']['tsp_query_download'] = $metadata['tsp']['queryfiledownloadurl'];
+                $jobdata['actionurls']['tsp_reply_download'] = $metadata['tsp']['replyfiledownloadurl'];
             }
 
             return [
                 'status' => 'OK',
                 'job' => $jobdata,
                 'display_args' => [
-                    'status' => ArchiveJob::get_status_display_args($job->get_status(), $statusextras),
-                    'filesize' => $job->has_artifact() ? display_size($job->get_artifact()->get_filesize()) : null,
-                    'actionurls' => [
-                        'showcontent' => $job->get_showcontents_url(),
-                        'artifact' => $job->get_artifact_download_url(),
-                        'delete' => $job->get_delete_job_url(),
-                    ],
+                    'status' => ArchiveJob::get_status_display_args(
+                        $job->get_status(),
+                        $statusextras
+                    ),
+                    'filesize' => $job->has_artifact() ?
+                        display_size($job->get_artifact()->get_filesize()) :
+                        null,
+                    'autodelete_str' => $metadata['autodelete_str'],
                 ],
             ];
         } catch (\dml_exception $e) {
             return [
                 'status' => 'E_JOB_NOT_FOUND',
-            ];
-        } catch (\JsonException $e) {
-            return [
-                'status' => 'E_INVALID_STATUSEXTRAS_JSON',
             ];
         }
     }
