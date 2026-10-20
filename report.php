@@ -118,14 +118,22 @@ class quiz_archiver_report extends report_base {
         }
 
         // Handle GET-based alerts.
-        if (optional_param('al', null, PARAM_TEXT) !== null) {
+        $alertlevel = optional_param('al', null, PARAM_ALPHA);
+        $alertlevels = [
+            \core\output\notification::NOTIFY_SUCCESS,
+            \core\output\notification::NOTIFY_INFO,
+            \core\output\notification::NOTIFY_WARNING,
+            \core\output\notification::NOTIFY_ERROR,
+        ];
+        if (in_array($alertlevel, $alertlevels, true)) {
+            $alertadditional = optional_param('aa', null, PARAM_TEXT);
             echo $OUTPUT->notification(
                 get_string(
-                    urldecode(required_param('asid', PARAM_TEXT)),
+                    required_param('asid', PARAM_ALPHANUMEXT),
                     'quiz_archiver',
-                    urldecode(optional_param('aa', null, PARAM_TEXT))
+                    $alertadditional === null ? null : s($alertadditional)
                 ),
-                urldecode(required_param('al', PARAM_TEXT)),
+                $alertlevel,
                 optional_param('ac', 0, PARAM_INT) === 1
             );
         }
@@ -698,11 +706,11 @@ class quiz_archiver_report extends report_base {
         ?string $additional = null
     ): moodle_url {
         $url = $this->base_url();
-        $url->param('al', urlencode($level));
+        $url->param('al', $level);
         $url->param('ac', $closebutton ? '1' : '0');
-        $url->param('asid', urlencode($stridentifier));
+        $url->param('asid', $stridentifier);
         if ($additional !== null) {
-            $url->param('aa', urlencode($additional));
+            $url->param('aa', $additional);
         }
 
         return $url;
