@@ -24,8 +24,8 @@
     Example context (json):
     {
         "job_id": "19b2d386-a233-11f1-b356-88f4dadc5627",
-        "show_content_url": "https://moodle.example/..."
-        "artifact_url": "https://moodle.example/..."
+        "show_content_url": "https://moodle.example/...",
+        "artifact_url": "https://moodle.example/...",
         "delete_url": "https://moodle.example/..."
     }
 }}
@@ -33,7 +33,7 @@
 {{! Action: Show details. }}
 <a
     href="#"
-    ref="job-details-action" jobid="{{job_id}}"
+    data-ref="job-details-action" data-jobid="{{job_id}}"
     class="btn btn-primary mx-1"
     role="button"
     data-toggle="tooltip"
@@ -41,7 +41,7 @@
     data-bs-toggle="tooltip"
     data-bs-placement="top"
     title="{{#str}} showdetails, admin {{/str}}"
-    alt="{{#str}} showdetails, admin {{/str}}"
+    aria-label="{{#str}} showdetails, admin {{/str}}"
 >
     <i class="fa fa-info-circle"></i>
 </a>
@@ -66,7 +66,7 @@
     {{/show_content_url}}
     target="_blank"
     role="button"
-    alt="{{#str}} inspect_archive_contents, quiz_archiver {{/str}}"
+    aria-label="{{#str}} inspect_archive_contents, quiz_archiver {{/str}}"
 >
     <i class="fa fa-magnifying-glass"></i>
 </a>
@@ -90,7 +90,7 @@
     {{/artifact_url}}
     target="_blank"
     role="button"
-    alt="{{#str}} download {{/str}}"
+    aria-label="{{#str}} download {{/str}}"
 >
     <i class="fa fa-download"></i>
 </a>
@@ -105,7 +105,7 @@
     data-bs-toggle="tooltip"
     data-bs-placement="top"
     title="{{#str}} delete {{/str}}"
-    alt="{{#str}} delete {{/str}}"
+    aria-label="{{#str}} delete {{/str}}"
 >
     <i class="fa fa-times"></i>
 </a>
@@ -126,7 +126,7 @@ require(
         AJAX,
         notification
     ) {
-        $('[ref="job-details-action"][jobid="{{job_id}}"]').click(async() => {
+        $('[data-ref="job-details-action"][data-jobid="{{job_id}}"]').click(async() => {
             // Fetch the job's current data, then render the details modal from
             // it so that it always reflects the job's latest state.
             let data;
@@ -153,9 +153,9 @@ require(
             let context = {
                 jobid: job.uuid,
                 status: {
-                    badge_text: status.text,
-                    badge_color: status.color,
-                    tooltip_text: status.help,
+                    "badge_text": status.text,
+                    "badge_color": status.color,
+                    "tooltip_text": status.help,
                     progress: job.statusextras && job.statusextras.progress ? job.statusextras.progress : null
                 },
                 timecreated: job.timecreated,
@@ -166,8 +166,8 @@ require(
                 settings: job.settings,
                 signature: job.signature,
                 autodelete: job.autodelete,
-                autodelete_str: data.display_args.autodelete_str,
-                display_args: {
+                "autodelete_str": data.display_args.autodelete_str,
+                "display_args": {
                     filesize: data.display_args.filesize
                 },
                 actionurls: job.actionurls

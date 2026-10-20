@@ -115,9 +115,9 @@ class job_overview_table extends \table_sql {
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $spanattributes = 'ref="status-column" jobid="' . $values->jobid . '"';
+        $spanattributes = 'data-ref="status-column" data-jobid="' . $values->jobid . '"';
         if (ArchiveJob::is_final_job_status($values->status)) {
-            $spanattributes .= ' has_finalized';
+            $spanattributes .= ' data-finalized="true"';
         }
 
         return '<span ' . $spanattributes . '>' .
@@ -153,7 +153,7 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_filesize($values) {
-        $html = '<span ref="filesize-column" jobid="' . $values->jobid . '">';
+        $html = '<span data-ref="filesize-column" data-jobid="' . $values->jobid . '">';
         $html .= $values->filesize !== null ? display_size($values->filesize) : '';
         $html .= '</span>';
         return $html;
@@ -204,7 +204,7 @@ class job_overview_table extends \table_sql {
             'jobid' => $values->jobid,
         ]);
 
-        return '<span ref="actions-column" jobid="' . $values->jobid . '">' .
+        return '<span data-ref="actions-column" data-jobid="' . $values->jobid . '">' .
             $OUTPUT->render_from_template(
                 'quiz_archiver/job_overview/fragment/actions',
                 [

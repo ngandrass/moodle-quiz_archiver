@@ -53,25 +53,25 @@ export const init = () => {
  * @param {string} ref The reference of target updatable span element
  * @returns {string} A CSS selector matching the targeted span
  */
-const getSpanSelector = (jobId, ref) => `span[ref="${ref}"][jobid="${jobId}"]`;
+const getSpanSelector = (jobId, ref) => `span[data-ref="${ref}"][data-jobid="${jobId}"]`;
 
 /**
  * Collects the IDs of all jobs whose status is not yet finalized.
  *
  * A job is considered unfinished as long as its status cell does not carry
- * the "has_finalized" marker, which is set server-side on initial rendering.
+ * the "data-finalized" marker, which is set server-side on initial rendering.
  *
  * @returns {string[]|null} Array of unfinished job IDs, or null if none are found
  */
 const getUnfinishedJobIds = () => {
 
     const statusElements = document.querySelectorAll(
-        'span[ref="status-column"]:not([has_finalized])'
+        'span[data-ref="status-column"]:not([data-finalized])',
     );
 
     let unfinishedJobIds = [];
     statusElements.forEach(statusElement => {
-        const jobId = statusElement.getAttribute('jobid');
+        const jobId = statusElement.dataset.jobid;
         unfinishedJobIds.push(jobId);
     });
 
@@ -102,13 +102,13 @@ const scheduleJobUpdate = (jobIds) => {
  * @param {string[]} jobIds The IDs of the jobs to update
  * @returns {Promise<void>}
  */
-const updateJobs = async (jobIds) => {
+const updateJobs = async(jobIds) => {
 
     for (const jobId of jobIds) {
 
         // Get latest job data.
         const jobAjax = await getJobAjax(jobId);
-        if (!jobAjax){
+        if (!jobAjax) {
             continue;
         }
 
@@ -116,16 +116,16 @@ const updateJobs = async (jobIds) => {
         await renderStatusColumn(
             jobId,
             jobAjax.job,
-            jobAjax.display_args.status
+            jobAjax.display_args.status,
         );
 
         // Update modal if available.
         const modalElement = document.querySelector(getSpanSelector(jobId, "status-modal"));
-        if (modalElement){
+        if (modalElement) {
             await updateModal(jobId, jobAjax);
         }
 
-        if ( jobAjax.job.complete ) {
+        if (jobAjax.job.complete) {
 
             // Update filesize column with rendered artifact size.
             document.querySelector(
@@ -153,20 +153,21 @@ const updateJobs = async (jobIds) => {
  * @returns {Promise<object|null>} The webservice response containing "status", "job" and "display_args"
  * @throws {Error} If the webservice call fails or returns a non-"OK" status
  */
-const getJobAjax = async (job) => {
+const getJobAjax = async(job) => {
 
     let fetchedData;
 
     await Ajax.call([{
         methodname: 'quiz_archiver_get_job_ajax',
-        args: { jobid: job },
-    }])[0].then( (data) => {
+        args: {jobid: job},
+    }])[0].then((data) => {
 
-        if (data['status'] !== 'OK' || data['job'] === null){
+        if (data.status !== 'OK' || data.job === null) {
             throw Error("failed to retrieve job status");
         }
 
         fetchedData = data;
+        return;
     }).catch((error) => {
         window.console.error('Ajax call failed with error:', error);
         Notification.exception(error);
@@ -184,7 +185,7 @@ const getJobAjax = async (job) => {
  * @param {object} statusDisplayArgs The display arguments (color, text, help) for the status badge
  * @returns {Promise<void>}
  */
-const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
+const renderStatusColumn = async(jobId, job, statusDisplayArgs) => {
 
     await Templates.renderForPromise(
         'quiz_archiver/job_overview/fragment/status',
@@ -193,7 +194,7 @@ const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
             "progress": job.statusextras?.progress ?? null,
-            "time_modified": job.timemodified
+            "time_modified": job.timemodified,
         }
     ).then(
         ({html, js}) => {
@@ -202,8 +203,9 @@ const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
                 html,
                 js,
             );
+            return;
         }
-    ). catch(
+    ).catch(
         (error) => {
             window.console.error("Template render failure for status colum:", error);
             Notification.exception(error);
@@ -219,15 +221,15 @@ const renderStatusColumn = async (jobId, job, statusDisplayArgs) => {
  * @param {object} urls The action URLs required for rendered action buttons
  * @returns {Promise<void>}
  */
-const renderActionsColumn = async (jobId, urls) => {
+const renderActionsColumn = async(jobId, urls) => {
 
     await Templates.renderForPromise(
         'quiz_archiver/job_overview/fragment/actions',
         {
             "job_id": jobId,
-            "show_content_url": urls['showcontent'],
-            "artifact_url": urls['artifact_download'],
-            "delete_url": urls['job_delete'],
+            "show_content_url": urls.showcontent,
+            "artifact_url": urls.artifact_download,
+            "delete_url": urls.job_delete,
         }
     ).then(
         ({html, js}) => {
@@ -236,8 +238,9 @@ const renderActionsColumn = async (jobId, urls) => {
                 html,
                 js,
             );
+            return;
         }
-    ). catch(
+    ).catch(
         (error) => {
             window.console.error("Template render failure for action colum:", error);
             Notification.exception(error);
@@ -253,7 +256,7 @@ const renderActionsColumn = async (jobId, urls) => {
  * @param {object} jobAjax The webservice response containing "job" and "display_args"
  * @returns {Promise<void>}
  */
-const updateModal = async (jobId, jobAjax) => {
+const updateModal = async(jobId, jobAjax) => {
 
     const job = jobAjax.job;
     const statusDisplayArgs = jobAjax.display_args.status;
@@ -265,7 +268,7 @@ const updateModal = async (jobId, jobAjax) => {
             "badge_text": statusDisplayArgs.text,
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
-            "progress": job.statusextras?.progress ?? null
+            "progress": job.statusextras?.progress ?? null,
         }
     ).then(
         ({html, js}) => {
@@ -274,8 +277,9 @@ const updateModal = async (jobId, jobAjax) => {
                 html,
                 js,
             );
+            return;
         }
-    ). catch(
+    ).catch(
         (error) => {
             window.console.error("Template render failure for modal status row:", error);
             Notification.exception(error);
@@ -290,7 +294,7 @@ const updateModal = async (jobId, jobAjax) => {
         "autodelete": job.autodelete,
         "actionurls": job.actionurls,
         "display_args": {
-            "filesize": jobAjax.display_args.filesize
+            "filesize": jobAjax.display_args.filesize,
         }
     };
     await Promise.all([
@@ -317,6 +321,7 @@ const updateModal = async (jobId, jobAjax) => {
         document.querySelector(
             getSpanSelector(jobId, "timemodified-modal")
         ).innerHTML = formattedDates[0];
+        return;
     }).catch((error) => {
         window.console.error("Could not format date:", error);
         Notification.exception(error);
@@ -333,7 +338,7 @@ const updateModal = async (jobId, jobAjax) => {
  * @param {object} context The context to render the template with
  * @returns {Promise<void>}
  */
-const renderModalCell = async (jobId, ref, template, context) => {
+const renderModalCell = async(jobId, ref, template, context) => {
 
     await Templates.renderForPromise(template, context).then(
         ({html, js}) => {
@@ -342,8 +347,9 @@ const renderModalCell = async (jobId, ref, template, context) => {
                 html,
                 js,
             );
+            return;
         }
-    ). catch(
+    ).catch(
         (error) => {
             window.console.error(`Template render failure for modal cell "${ref}":`, error);
             Notification.exception(error);

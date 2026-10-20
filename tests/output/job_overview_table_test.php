@@ -140,10 +140,26 @@ final class job_overview_table_test extends \advanced_testcase {
 
         $this->assertdebuggingcalledcount(2);
 
-        $this->assertStringContainsString('ref="status-column"', $html, 'Status column must use the ref identifier');
-        $this->assertStringContainsString('ref="filesize-column"', $html, 'Filesize column must use the ref identifier');
-        $this->assertStringContainsString('ref="actions-column"', $html, 'Actions column must use the ref identifier');
-        $this->assertStringContainsString('ref="job-details-action"', $html, 'Show details button must use the ref identifier');
+        $this->assertStringContainsString(
+            'data-ref="status-column"',
+            $html,
+            'Status column must use the data-ref identifier'
+        );
+        $this->assertStringContainsString(
+            'data-ref="filesize-column"',
+            $html,
+            'Filesize column must use the data-ref identifier'
+        );
+        $this->assertStringContainsString(
+            'data-ref="actions-column"',
+            $html,
+            'Actions column must use the data-ref identifier'
+        );
+        $this->assertStringContainsString(
+            'data-ref="job-details-action"',
+            $html,
+            'Show details button must use the data-ref identifier'
+        );
     }
 
     /**
@@ -193,8 +209,8 @@ final class job_overview_table_test extends \advanced_testcase {
         $this->assertdebuggingcalledcount(2);
         $this->assertSame(
             1,
-            substr_count($html, 'has_finalized'),
-            'Only finalized jobs must carry the "has_finalized" attribute as marker',
+            substr_count($html, 'data-finalized'),
+            'Only finalized jobs must carry the "data-finalized" attribute as marker',
         );
     }
 }
