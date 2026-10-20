@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Fix double-escape of HTML entities in info notification on quiz archive report page (Thanks to @PM84 !)
+
+
 ## Version 5.2.2 (2026101100)
 
 - Allow site administrators to configure TLS certificate validation behavior. Default: Always validate. (Thanks to @PM84 !)
