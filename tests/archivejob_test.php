@@ -1704,4 +1704,204 @@ final class archivejob_test extends \advanced_testcase {
             'ArchiveJob::tspmanager() did not return an instance of TSPManager'
         );
     }
+
+    /**
+     * Data provider for test_is_final_job_status
+     *
+     * @return array[] Test data
+     */
+    public static function is_final_job_status_data_provider(): array {
+        return [
+            'FINISHED' => [ArchiveJob::STATUS_FINISHED, true],
+            'FAILED' => [ArchiveJob::STATUS_FAILED, true],
+            'TIMEOUT' => [ArchiveJob::STATUS_TIMEOUT, true],
+            'DELETED' => [ArchiveJob::STATUS_DELETED, true],
+            'RUNNING' => [ArchiveJob::STATUS_RUNNING, false],
+            'AWAITING_PROCESSING' => [ArchiveJob::STATUS_AWAITING_PROCESSING, false],
+            'UNKNOWN' => [ArchiveJob::STATUS_UNKNOWN, false],
+        ];
+    }
+
+    /**
+     * Tests the static is_final_job_status helper and the is_complete wrapper
+     *
+     * @dataProvider is_final_job_status_data_provider
+     * @covers \quiz_archiver\ArchiveJob::is_final_job_status
+     * @covers \quiz_archiver\ArchiveJob::is_complete
+     *
+     * @param string $status Job status to evaluate
+     * @param bool $expected Whether the status is a final job state
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_is_final_job_status(string $status, bool $expected): void {
+        $this->assertSame($expected, ArchiveJob::is_final_job_status($status));
+    }
+
+    /**
+     * Tests that is_complete() reflects the underlying job status
+     *
+     * @covers \quiz_archiver\ArchiveJob::is_complete
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_is_complete_reflects_status(): void {
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '2e79fb0d-72ed-43d4-9925-56fea3303358',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings,
+            ArchiveJob::STATUS_RUNNING
+        );
+
+        $this->assertFalse($job->is_complete(), 'A running job must not be complete');
+        $job->set_status(ArchiveJob::STATUS_FINALIZING);
+        $this->assertFalse($job->is_complete(), 'A finalizing job must not be complete');
+        $job->set_status(ArchiveJob::STATUS_FINISHED);
+        $this->assertTrue($job->is_complete(), 'A finished job must be complete');
+    }
+
+    /**
+     * Tests the get_timecreated and get_timemodified accessors
+     *
+     * @covers \quiz_archiver\ArchiveJob::get_timecreated
+     * @covers \quiz_archiver\ArchiveJob::get_timemodified
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_time_accessors(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '338da393-dd15-4031-8606-21a801bba7fd',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        $previouscreatedtime = $job->get_timecreated();
+        $this->assertIsInt($previouscreatedtime);
+        $previousmodifiedtime = $job->get_timemodified();
+        $this->assertIsInt($previousmodifiedtime);
+
+        // A status change should bump timemodified in the DB.
+        sleep(1); // NOTE: Give it one second so the time values are not the same.
+        $job->set_status(ArchiveJob::STATUS_RUNNING);
+        $this->assertSame($previouscreatedtime, $job->get_timecreated(), "Creation time should not be affected by job update.");
+        $this->assertTrue($previousmodifiedtime < $job->get_timemodified(), "Modified time should change on job update.");
+    }
+
+    /**
+     * Tests the report/action URL helpers
+     *
+     * @covers \quiz_archiver\ArchiveJob::get_report_url
+     * @covers \quiz_archiver\ArchiveJob::get_showcontents_url
+     * @covers \quiz_archiver\ArchiveJob::get_delete_job_url
+     * @covers \quiz_archiver\ArchiveJob::get_delete_artifact_url
+     * @covers \quiz_archiver\ArchiveJob::get_sign_artifact_url
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_url_helpers(): void {
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '75d0f4fb-8268-4f89-98ed-6c22fbb14f3a',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings
+        );
+        $uuid = $job->get_jobid();
+
+        $showcontents = $job->get_showcontents_url();
+        $this->assertStringContainsString('/mod/quiz/report.php', $showcontents);
+        $this->assertStringContainsString('mode=archiver', $showcontents);
+        $this->assertStringContainsString('action=showcontents', $showcontents);
+        $this->assertStringContainsString('jobid=' . $job->get_id(), $showcontents);
+        $this->assertStringContainsString('id=' . $mocks->quiz->cmid, $showcontents);
+
+        $deletejob = $job->get_delete_job_url();
+        $this->assertStringContainsString('action=delete_job', $deletejob);
+        $this->assertStringContainsString('jobid=' . $uuid, $deletejob);
+
+        $deleteartifact = $job->get_delete_artifact_url();
+        $this->assertStringContainsString('action=delete_artifact', $deleteartifact);
+        $this->assertStringContainsString('jobid=' . $uuid, $deleteartifact);
+
+        $sign = $job->get_sign_artifact_url();
+        $this->assertStringContainsString('action=sign_job', $sign);
+        $this->assertStringContainsString('jobid=' . $uuid, $sign);
+
+        // The generic helper allows arbitrary extra params.
+        $custom = $job->get_report_url(['action' => 'foo', 'bar' => 'baz']);
+        $this->assertStringContainsString('action=foo', $custom);
+        $this->assertStringContainsString('bar=baz', $custom);
+    }
+
+    /**
+     * Tests the artifact download URL helper with and without an artifact
+     *
+     * @covers \quiz_archiver\ArchiveJob::get_artifact_download_url
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_artifact_download_url(): void {
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '53301dfa-7b0d-4606-8f68-000898a937fc',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            $mocks->attempts,
+            $mocks->settings
+        );
+
+        // Without artifact.
+        $this->assertNull($job->get_artifact_download_url(), 'Null URL expected without artifact');
+
+        // With artifact.
+        $artifactfilename = 'downloadme.tar.gz';
+        $artifact = $this->getDataGenerator()->create_artifact_file(
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $artifactfilename
+        );
+        $job->link_artifact($artifact->get_id(), 'sha256dummy');
+        $url = $job->get_artifact_download_url();
+        $this->assertNotNull($url, 'Download URL expected with artifact');
+        $this->assertStringContainsString('pluginfile.php', $url);
+        $this->assertStringContainsString($artifactfilename, $url);
+    }
 }
