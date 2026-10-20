@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 5.2.3 (2026102000)
 
 - Fix double-escape of HTML entities in info notification on quiz archive report page (Thanks to @PM84 !)
 
