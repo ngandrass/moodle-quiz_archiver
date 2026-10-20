@@ -786,7 +786,12 @@ class ArchiveJob {
      * deleted automatically. Null indicates no automatic deletion.
      */
     public function get_timemodified(): ?int {
-        return $this->timemodified;
+        global $DB;
+        try {
+            return $DB->get_field(self::JOB_TABLE_NAME, 'timemodified', ['jobid' => $this->jobid], MUST_EXIST);
+        } catch (\dml_exception $e) {
+            return null;
+        }
     }
 
     /**
