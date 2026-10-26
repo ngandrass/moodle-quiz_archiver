@@ -142,6 +142,8 @@ class process_uploaded_artifact extends external_api {
         string $artifactsha256sumraw,
         int $artifactcountraw,
     ): array {
+        global $USER;
+
         // Validate request.
         $params = self::validate_parameters(self::execute_parameters(), [
             'jobid' => $jobidraw,
@@ -180,6 +182,18 @@ class process_uploaded_artifact extends external_api {
         // Check capabilities.
         $context = \context_module::instance($job->get_cmid());
         require_capability('quiz/archiver:use_webservice', $context);
+
+        // Ensure that the uploaded artifact is in the draft area of the web service user.
+        if (
+            $params['artifact_component'] !== 'user' ||
+            $params['artifact_filearea'] !== 'draft' ||
+            $params['artifact_userid'] !== (int) $USER->id ||
+            $params['artifact_contextid'] !== (int) \context_user::instance($USER->id)->id
+        ) {
+            return [
+                'status' => 'E_ACCESS_DENIED',
+            ];
+        }
 
         // Get or reconstruct uploaded file/-s.
         $draftfile = null;

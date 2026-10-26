@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Fail artifact uploads early with a descriptive error message if referenced Moodle upload draft file is out of scope
+
+
 ## Version 5.2.3 (2026102000)
 
 - Fix double-escape of HTML entities in info notification on quiz archive report page (Thanks to @PM84 !)
