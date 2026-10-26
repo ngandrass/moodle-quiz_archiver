@@ -132,7 +132,7 @@ require(
             let data;
             try {
                 data = await AJAX.call([{
-                    methodname: 'quiz_archiver_get_job_ajax',
+                    methodname: 'quiz_archiver_get_job_metadata',
                     args: {jobid: '{{job_id}}'},
                 }])[0];
             } catch (e) {

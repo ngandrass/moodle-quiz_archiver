@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file defines the get_job_ajax webservice function. It provides any
+ * This file defines the get_job_metadata webservice function. It provides any
  * information of a job that is required to update its different corresponding
  * UI elements.
  *
@@ -40,7 +40,7 @@ use quiz_archiver\ArchiveJob;
 /**
  * API endpoint to get the status of a quiz archiver job for client-side polling
  */
-class get_job_ajax extends external_api {
+class get_job_metadata extends external_api {
     /**
      * Returns description of method parameters
      * @return external_function_parameters

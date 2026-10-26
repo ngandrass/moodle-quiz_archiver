@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for the get_job_ajax external service
+ * Tests for the get_job_metadata external service
  *
  * @package   quiz_archiver
  * @copyright 2026 Niels Gandraß <niels@gandrass.de>
@@ -28,9 +28,9 @@ use quiz_archiver\ArchiveJob;
 use quiz_archiver\TSPManager;
 
 /**
- * Tests for the get_job_ajax external service
+ * Tests for the get_job_metadata external service
  */
-final class get_job_ajax_test extends \advanced_testcase {
+final class get_job_metadata_test extends \advanced_testcase {
     /**
      * Returns the data generator for the quiz_archiver plugin
      *
@@ -87,7 +87,7 @@ final class get_job_ajax_test extends \advanced_testcase {
     /**
      * Test that users without the required capabilities are rejected
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute
+     * @covers \quiz_archiver\external\get_job_metadata::execute
      *
      * @return void
      * @throws \dml_exception
@@ -104,13 +104,13 @@ final class get_job_ajax_test extends \advanced_testcase {
         // The default (non-privileged) current user must be rejected.
         $this->expectException(\required_capability_exception::class);
         $this->expectExceptionMessageMatches('/.*' . preg_quote(get_string('archiver:use_webservice', 'quiz_archiver')) . '.*/');
-        get_job_ajax::execute($job->get_jobid());
+        get_job_metadata::execute($job->get_jobid());
     }
 
     /**
      * Tests that the parameter spec is specified correctly and produces no exception.
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute_parameters
+     * @covers \quiz_archiver\external\get_job_metadata::execute_parameters
      *
      * @return void
      */
@@ -118,7 +118,7 @@ final class get_job_ajax_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->assertInstanceOf(
             \core_external\external_function_parameters::class,
-            get_job_ajax::execute_parameters(),
+            get_job_metadata::execute_parameters(),
             'The execute_parameters() method should return an external_function_parameters.'
         );
     }
@@ -126,14 +126,14 @@ final class get_job_ajax_test extends \advanced_testcase {
     /**
      * Tests that the return parameters are specified correctly and produce no exception.
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute_returns
+     * @covers \quiz_archiver\external\get_job_metadata::execute_returns
      *
      * @return void
      */
     public function test_assure_return_parameter_spec(): void {
         $this->assertInstanceOf(
             \core_external\external_description::class,
-            get_job_ajax::execute_returns(),
+            get_job_metadata::execute_returns(),
             'The execute_returns() method should return an external_description.'
         );
     }
@@ -142,8 +142,8 @@ final class get_job_ajax_test extends \advanced_testcase {
      * Verifies webservice parameter validation
      *
      * @dataProvider parameter_data_provider
-     * @covers       \quiz_archiver\external\get_job_ajax::execute
-     * @covers       \quiz_archiver\external\get_job_ajax::validate_parameters
+     * @covers       \quiz_archiver\external\get_job_metadata::execute
+     * @covers       \quiz_archiver\external\get_job_metadata::validate_parameters
      *
      * @param string|null $jobid Job ID to check (null -> valid job)
      * @param bool $shouldfail Whether a validation failure is expected
@@ -167,7 +167,7 @@ final class get_job_ajax_test extends \advanced_testcase {
         }
 
         // A valid jobid must be accepted (and return the full job structure).
-        $res = get_job_ajax::execute($jobid === null ? $job->get_jobid() : $jobid);
+        $res = get_job_metadata::execute($jobid === null ? $job->get_jobid() : $jobid);
         if (!$shouldfail) {
             $this->assertSame('OK', $res['status']);
         }
@@ -194,7 +194,7 @@ final class get_job_ajax_test extends \advanced_testcase {
     /**
      * Tests a successful execute() call returning the full job structure
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute
+     * @covers \quiz_archiver\external\get_job_metadata::execute
      *
      * @return void
      * @throws \coding_exception
@@ -210,7 +210,7 @@ final class get_job_ajax_test extends \advanced_testcase {
         $job = $this->make_job($mocks, '30000000-1234-5678-abcd-ef4242424242', ArchiveJob::STATUS_RUNNING);
         $job->set_status(ArchiveJob::STATUS_RUNNING, ['progress' => 42]);
 
-        $res = get_job_ajax::execute($job->get_jobid());
+        $res = get_job_metadata::execute($job->get_jobid());
 
         // Top level.
         $this->assertSame('OK', $res['status']);
@@ -266,7 +266,7 @@ final class get_job_ajax_test extends \advanced_testcase {
     /**
      * Tests execute() for a finished job with an artifact.
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute
+     * @covers \quiz_archiver\external\get_job_metadata::execute
      *
      * @return void
      * @throws \coding_exception
@@ -290,7 +290,7 @@ final class get_job_ajax_test extends \advanced_testcase {
         $job->link_artifact($artifact->get_id(), 'sha256dummy');
         $job->set_status(ArchiveJob::STATUS_FINISHED);
 
-        $res = get_job_ajax::execute($job->get_jobid());
+        $res = get_job_metadata::execute($job->get_jobid());
         $jobdata = $res['job'];
 
         $this->assertTrue($jobdata['complete']);
@@ -315,7 +315,7 @@ final class get_job_ajax_test extends \advanced_testcase {
      * Tests execute() for a finished, TSP-signed job, verifying the signature
      * and TSP download URLs are included.
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute
+     * @covers \quiz_archiver\external\get_job_metadata::execute
      *
      * @return void
      * @throws \coding_exception
@@ -349,7 +349,7 @@ final class get_job_ajax_test extends \advanced_testcase {
             'timestampreply' => 'tspreply',
         ]);
 
-        $res = get_job_ajax::execute($job->get_jobid());
+        $res = get_job_metadata::execute($job->get_jobid());
         $jobdata = $res['job'];
 
         $this->assertTrue($jobdata['signature']['enabled']);
@@ -368,7 +368,7 @@ final class get_job_ajax_test extends \advanced_testcase {
     /**
      * Test that invalid job UUIDs are reported as not found
      *
-     * @covers \quiz_archiver\external\get_job_ajax::execute
+     * @covers \quiz_archiver\external\get_job_metadata::execute
      *
      * @return void
      * @throws \coding_exception
@@ -382,7 +382,7 @@ final class get_job_ajax_test extends \advanced_testcase {
         $this->ensure_config();
         $this->assertSame(
             ['status' => 'E_JOB_NOT_FOUND'],
-            get_job_ajax::execute('00000000-0000-0000-0000-000000000000'),
+            get_job_metadata::execute('00000000-0000-0000-0000-000000000000'),
             'Invalid job ID should return E_JOB_NOT_FOUND'
         );
     }

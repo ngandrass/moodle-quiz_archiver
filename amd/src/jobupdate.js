@@ -122,33 +122,33 @@ const updateJobs = async(jobIds) => {
     for (const jobId of jobIds) {
 
         // Get latest job data.
-        const jobAjax = await getJobAjax(jobId);
-        if (!jobAjax) {
+        const jobMetadata = await getJobMetadata(jobId);
+        if (!jobMetadata) {
             continue;
         }
 
         // Update status colum.
         await renderStatusColumn(
             jobId,
-            jobAjax.job,
-            jobAjax.display_args.status,
+            jobMetadata.job,
+            jobMetadata.display_args.status,
         );
 
         // Update modal if available.
         const modalElement = document.querySelector(getSpanSelector(jobId, "status-modal"));
         if (modalElement) {
-            await updateModal(jobId, jobAjax);
+            await updateModal(jobId, jobMetadata);
         }
 
-        if (jobAjax.job.complete) {
+        if (jobMetadata.job.complete) {
 
             // Update filesize column with rendered artifact size.
             document.querySelector(
                 getSpanSelector(jobId, "filesize-column")
-            ).innerHTML = jobAjax.display_args.filesize;
+            ).innerHTML = jobMetadata.display_args.filesize;
 
             // Update action buttons.
-            await renderActionsColumn(jobId, jobAjax.job.actionurls);
+            await renderActionsColumn(jobId, jobMetadata.job.actionurls);
 
             // Finally: Delete this job reference so that it is no longer updated.
             jobIds.pop(jobId);
@@ -161,19 +161,19 @@ const updateJobs = async(jobIds) => {
 };
 
 /**
- * Fetches the current status of a single job from the "quiz_archiver_get_job_ajax"
+ * Fetches the current status of a single job from the "quiz_archiver_get_job_metadata"
  * webservice.
  *
  * @param {string} job The ID of the job to fetch the status for
  * @returns {Promise<object|null>} The webservice response containing "status", "job" and "display_args"
  * @throws {Error} If the webservice call fails or returns a non-"OK" status
  */
-const getJobAjax = async(job) => {
+const getJobMetadata = async(job) => {
 
     let fetchedData;
 
     await Ajax.call([{
-        methodname: 'quiz_archiver_get_job_ajax',
+        methodname: 'quiz_archiver_get_job_metadata',
         args: {jobid: job},
     }])[0].then((data) => {
 
@@ -268,13 +268,13 @@ const renderActionsColumn = async(jobId, urls) => {
  * data.
  *
  * @param {string} jobId The ID of the job whose modal should be updated
- * @param {object} jobAjax The webservice response containing "job" and "display_args"
+ * @param {object} jobMetadata The webservice response containing "job" and "display_args"
  * @returns {Promise<void>}
  */
-const updateModal = async(jobId, jobAjax) => {
+const updateModal = async(jobId, jobMetadata) => {
 
-    const job = jobAjax.job;
-    const statusDisplayArgs = jobAjax.display_args.status;
+    const job = jobMetadata.job;
+    const statusDisplayArgs = jobMetadata.display_args.status;
 
     // Render the status row.
     await Templates.renderForPromise(
@@ -309,7 +309,7 @@ const updateModal = async(jobId, jobAjax) => {
         "autodelete": job.autodelete,
         "actionurls": job.actionurls,
         "display_args": {
-            "filesize": jobAjax.display_args.filesize,
+            "filesize": jobMetadata.display_args.filesize,
         }
     };
     await Promise.all([
