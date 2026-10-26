@@ -117,14 +117,16 @@ require(
         'core/modal',
         'core/templates',
         'core/ajax',
-        'core/notification'
+        'core/notification',
+        'core/str'
     ],
     function(
         $,
         Modal,
         Templates,
         AJAX,
-        notification
+        notification,
+        Str
     ) {
         $('[data-ref="job-details-action"][data-jobid="{{job_id}}"]').click(async() => {
             // Fetch the job's current data, then render the details modal from
@@ -177,7 +179,7 @@ require(
             }
 
             await Modal.create({
-                title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
+                title: Str.getString('quiz_archive_details', 'quiz_archiver'),
                 body: Templates.render('quiz_archiver/job_overview/modal/job-details', context),
                 show: true,
                 large: true,
