@@ -23,123 +23,74 @@
     is still running.
 
     Example context (json):
-    [
-        {
-            "jobid":"32979c0a-2b97-11ee-b5db-0242ac150004",
-            "status": {
-                "badge_text":"Finished",
-                "badge_color":"success",
-                "tooltip_text":"The archive job completed successfully.",
-                "progress": null,
-                "has_progress": false
-            },
-            "timecreated":"1690363888",
-            "timemodified":"1690364031",
-            "user": {
-                "id":"2",
-                "firstname":"Admin",
-                "lastname":"User",
-                "username":"admin"
-            },
-            "course": {
-                "id":"31",
-                "name":"Example Moodle Course for Quiz Archiver"
-            },
-            "quiz": {
-                "id":"36",
-                "cmid":"108",
-                "name":"Example Quiz"
-            },
-            "artifact": {
-                "name":"quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz",
-                "size":"86915632",
-                "size_human":"82.89 MB",
-                "checksum":"3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
-            },
-            "signature": {
-                "enabled":true,
-                "tsp":{
-                    "timecreated":1690805384,
-                    "server":"https://example.com/tsr"
-                }
-            },
-            "autodelete": {
-                "enabled":true,
-                "done":false,
-                "str":"Automatic deletion in 3 months (01.11.2023, 10:00)"
-            },
-            "actionurls": {
-                "artifact_download":"http:\/\/127.0.0.1\/pluginfile.php\/201\/quiz_archiver\/artifact\/0\/31\/108\/36\/quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz?forcedownload=1",
-                "artifact_delete":"http:\/\/127.0.0.1\/mod\/quiz\/report.php?id=108&mode=archiver&action=delete_artifact&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
-                "artifact_sign":"http:\/\/127.0.0.1\/mod\/quiz\/report.php?id=108&mode=archiver&action=sign_job&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
-                "job_delete":"http:\/\/127.0.0.1\/mod\/quiz\/report.php?id=108&mode=archiver&action=delete_job&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
-                "course":"http:\/\/127.0.0.1\/course\/view.php?id=31",
-                "quiz":"http:\/\/127.0.0.1\/mod\/quiz\/view.php?id=108",
-                "user":"http:\/\/127.0.0.1\/user\/profile.php?id=2",
-                "tsp_query_download":"http:\/\/127.0.0.1\/pluginfile.php\/...",
-                "tsp_reply_download":"http:\/\/127.0.0.1\/pluginfile.php\/..."
-            },
-            "settings": [
-                {
-                    "title":"Demo Title 1",
-                    "value":"Demo Value 1",
-                    "color":"primary"
-                },
-                {
-                    "title":"Demo Title 2",
-                    "value":"Demo Value 2",
-                    "color":"secondary"
-                }
-            ]
+    {
+        "jobid": "32979c0a-2b97-11ee-b5db-0242ac150004",
+        "status": {
+            "badge_text": "Finished",
+            "badge_color": "success",
+            "tooltip_text": "The archive job completed successfully.",
+            "progress": null,
+            "has_progress": false
         },
-        {
-            "jobid":"23008fc4-2f9b-11ee-afb0-0242ac150004",
-            "status": {
-                "badge_text":"Failed",
-                "badge_color":"danger",
-                "tooltip_text":"The archive job failed.",
-                "progress": null,
-                "has_progress": false
+        "timecreated": "1690363888",
+        "timemodified": "1690364031",
+        "user": {
+            "id": "2",
+            "firstname": "Admin",
+            "lastname": "User",
+            "username": "admin"
+        },
+        "course": {
+            "id": "31",
+            "name": "Example Moodle Course for Quiz Archiver"
+        },
+        "quiz": {
+            "id": "36",
+            "cmid": "108",
+            "name": "Example Quiz"
+        },
+        "artifact": {
+            "name": "quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz",
+            "size": "86915632",
+            "size_human": "82.89 MB",
+            "checksum": "3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
+        },
+        "signature": {
+            "enabled": true,
+            "tsp": {
+                "timecreated": 1690805384,
+                "server": "https://example.com/tsr"
+            }
+        },
+        "autodelete": {
+            "enabled": true,
+            "done": false,
+            "str": "Automatic deletion in 3 months (01.11.2023, 10:00)"
+        },
+        "actionurls": {
+            "artifact_download": "http://127.0.0.1/pluginfile.php/201/quiz_archiver/artifact/0/31/108/36/quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz?forcedownload=1",
+            "artifact_delete": "http://127.0.0.1/mod/quiz/report.php?id=108&mode=archiver&action=delete_artifact&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
+            "artifact_sign": "http://127.0.0.1/mod/quiz/report.php?id=108&mode=archiver&action=sign_job&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
+            "job_delete": "http://127.0.0.1/mod/quiz/report.php?id=108&mode=archiver&action=delete_job&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
+            "course": "http://127.0.0.1/course/view.php?id=31",
+            "quiz": "http://127.0.0.1/mod/quiz/view.php?id=108",
+            "user": "http://127.0.0.1/user/profile.php?id=2",
+            "tsp_query_download": "http://127.0.0.1/pluginfile.php/...",
+            "tsp_reply_download": "http://127.0.0.1/pluginfile.php/..."
+        },
+        "settings": [
+            {
+                "title": "Demo Title 1",
+                "value": "Demo Value 1",
+                "color": "primary"
             },
-            "timecreated":"1690805384",
-            "timemodified":"1690805388",
-            "user": {
-                "id":"2",
-                "firstname":"Admin",
-                "lastname":"User",
-                "username":"admin"
-            },
-            "course": {
-                "id":"31",
-                "name":"Example Moodle Course for Quiz Archiver"
-            },
-            "quiz": {
-                "id":"36",
-                "cmid":"108",
-                "name":"Example Quiz"
-            },
-            "signature": {
-                "enabled":false
-            },
-            "autodelete": {
-                "enabled":false,
-                "done":false,
-                "str":"Disabled"
-            },
-            "settings": [
-                {
-                    "title":"Demo Title 1",
-                    "value":"Demo Value 1",
-                    "color":"primary"
-                },
-                {
-                    "title":"Demo Title 2",
-                    "value":"Demo Value 2",
-                    "color":"secondary"
-                }
-            ]
-        }
-    ]
+            {
+                "title": "Demo Title 2",
+                "value": "Demo Value 2",
+                "color": "secondary"
+            }
+        ]
+    }
 }}
 
 <table class="table w-100">
