@@ -177,7 +177,6 @@ class quiz_archiver_report extends report_base {
             'archiveQuizForm' => $archivequizform->render(),
             'baseurl' => $this->base_url(),
             'jobOverviewTable' => $jobtblhtml,
-            'time' => time(),
         ]);
 
         return true;

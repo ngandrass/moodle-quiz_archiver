@@ -26,8 +26,7 @@
     {
         "archiveQuizForm": "<!-- Generated Moodle form HTML -->",
         "baseurl": "https://example.com/mod/quiz/archiver/",
-        "jobOverviewTable": "<!-- Generated Moodle table HTML -->",
-        "time": 0
+        "jobOverviewTable": "<!-- Generated Moodle table HTML -->"
     }
 }}
 
@@ -38,7 +37,7 @@
 
 {{! List of existing archives }}
 {{#jobOverviewTable}}
-<h1>
+<h1 class="mb-3">
     {{#str}} job_overview, quiz_archiver {{/str}}
     <a
         href="{{{baseurl}}}"
@@ -53,10 +52,7 @@
         <i class="fa fa-rotate-right"></i>
     </a>
 </h1>
-<div>
-    {{#str}} last_updated, quiz_archiver {{/str}}:
-    {{#userdate}} {{time}}, %T {{/userdate}}
-</div>
+
 <div class="quiz_archiver-job-overview-table">
     {{{jobOverviewTable}}}
 </div>
