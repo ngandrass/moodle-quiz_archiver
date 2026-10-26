@@ -281,6 +281,10 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
                 'jobid' => '<a href="localhost">Foo</a>',
                 'shouldfail' => true,
             ]),
+            'Invalid characters in jobid' => array_merge($base, [
+                'jobid' => '20000000-1234-5678-abcd-ef4242424242; DROP',
+                'shouldfail' => true,
+            ]),
             'Invalid artifact_component' => array_merge($base, [
                 'artifactcomponent' => '<a href="localhost">Foo</a>',
                 'shouldfail' => true,

@@ -265,7 +265,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
         $this->expectException(\invalid_parameter_exception::class);
         $this->expectExceptionMessageMatches('/.*' . $invalidparameterkey . '.*/');
         get_attempts_metadata::execute(
-            $r['jobid'],
+            $invalidparameterkey == 'jobid' ? '20000000-1234-5678-abcd-ef4242424242; DROP' : $r['jobid'],
             $invalidparameterkey == 'courseid' ? 0 : $r['courseid'],
             $invalidparameterkey == 'cmid' ? 0 : $r['cmid'],
             $invalidparameterkey == 'quizid' ? 0 : $r['quizid'],
@@ -280,6 +280,7 @@ final class get_attempts_metadata_test extends \advanced_testcase {
      */
     public static function parameter_validation_data_provider(): array {
         return [
+            'Invalid jobid' => ['jobid'],
             'Invalid courseid' => ['courseid'],
             'Invalid cmid' => ['cmid'],
             'Invalid quizid' => ['quizid'],

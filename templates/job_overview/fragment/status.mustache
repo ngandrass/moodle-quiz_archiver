@@ -1,0 +1,56 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template quiz_archiver/job_overview/fragment/status
+
+    This template renders a representation of a jobs status, providing
+    information about the current state of the job, its progress, and optionally
+    the last time it was modified.
+
+    Example context (json):
+    {
+        "badge_text": "Running",
+        "badge_color": "primary",
+        "tooltip_text": "The job is currently ...",
+        "progress": "42",
+        "has_progress": true,
+        "time_modified": "1445378400"
+    }
+}}
+
+<span
+    class="badge badge-{{badge_color}}"
+    data-toggle="tooltip"
+    data-placement="top"
+    data-bs-toggle="tooltip"
+    data-bs-placement="top"
+    title="{{tooltip_text}}"
+>
+    {{badge_text}}
+</span>
+<br>
+{{#has_progress}}
+    <span title="{{#str}} progress, quiz_archiver {{/str}}">
+        <i class="fa fa-spinner fa-spin"></i>&nbsp;{{progress}}%
+    </span>
+    <br>
+{{/has_progress}}
+{{#time_modified}}
+<small>
+    {{#userdate}} {{time_modified}}, %H:%M:%S {{/userdate}}
+</small>
+{{/time_modified}}

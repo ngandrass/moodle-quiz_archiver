@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 
 $functions = [
+    // Normal web service functions.
     'quiz_archiver_generate_attempt_report' => [
         'classname' => 'quiz_archiver\external\generate_attempt_report',
         'description' => 'Generates a full HTML DOM containing all report data on the specified attempt',
@@ -66,5 +67,14 @@ $functions = [
         'ajax' => false,
         'services' => [],
         'capabilities' => 'quiz/archiver:use_webservice',
+    ],
+    // AJAX endpoints.
+    'quiz_archiver_get_job_metadata' => [
+        'classname' => 'quiz_archiver\external\get_job_metadata',
+        'description' => 'Returns the current status of a job for client-side polling.',
+        'type' => 'read',
+        'ajax' => true,
+        'services' => [],
+        'capabilities' => 'quiz/archiver:view',
     ],
 ];

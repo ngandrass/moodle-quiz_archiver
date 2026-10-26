@@ -238,7 +238,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
         $this->expectException(\invalid_parameter_exception::class);
         $this->expectExceptionMessageMatches('/.*' . $invalidparameterkey . '.*/');
         generate_attempt_report::execute(
-            $jobid,
+            $invalidparameterkey == 'jobid' ? '20000000-1234-5678-abcd-ef4242424242; DROP' : $jobid,
             $invalidparameterkey == 'courseid' ? 0 : $r['courseid'],
             $invalidparameterkey == 'cmid' ? 0 : $r['cmid'],
             $invalidparameterkey == 'quizid' ? 0 : $r['quizid'],
@@ -257,6 +257,7 @@ final class generate_attempt_report_test extends \advanced_testcase {
      */
     public static function parameter_validation_data_provider(): array {
         return [
+            'Invalid jobid' => ['jobid'],
             'Invalid courseid' => ['courseid'],
             'Invalid cmid' => ['cmid'],
             'Invalid quizid' => ['quizid'],

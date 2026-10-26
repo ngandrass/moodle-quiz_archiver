@@ -173,68 +173,13 @@ class quiz_archiver_report extends report_base {
         ob_end_clean();
 
         // Render output.
-        echo $OUTPUT->render_from_template('quiz_archiver/overview', [
+        echo $OUTPUT->render_from_template('quiz_archiver/job_overview/page', [
             'archiveQuizForm' => $archivequizform->render(),
-            'baseurl' => $this->base_url(),
+            'baseurl' => $this->base_url()->out(false),
             'jobOverviewTable' => $jobtblhtml,
-            'jobs' => $this->generate_job_metadata_tplctx(),
-            'time' => time(),
         ]);
 
         return true;
-    }
-
-    /**
-     * Generates the template context data for all jobs associated with this quiz
-     * to be displayed inside the job details modal dialogs.
-     *
-     * @return array Array of job metadata arrays to be passed to the Mustache template
-     * @throws coding_exception
-     * @throws dml_exception
-     * @throws moodle_exception
-     */
-    protected function generate_job_metadata_tplctx(): array {
-        return array_map(function ($jm): array {
-            // Generate action URLs.
-            $jm['action_urls'] = [
-                'delete_job' => (new moodle_url($this->base_url(), [
-                    'id' => optional_param('id', null, PARAM_INT),
-                    'mode' => 'archiver',
-                    'action' => 'delete_job',
-                    'jobid' => $jm['jobid'],
-                ]))->out(),
-                'delete_artifact' => (new moodle_url($this->base_url(), [
-                    'id' => optional_param('id', null, PARAM_INT),
-                    'mode' => 'archiver',
-                    'action' => 'delete_artifact',
-                    'jobid' => $jm['jobid'],
-                ]))->out(),
-                'sign_artifact' => (new moodle_url('', [
-                    'id' => optional_param('id', null, PARAM_INT),
-                    'mode' => 'archiver',
-                    'action' => 'sign_job',
-                    'jobid' => $jm['jobid'],
-                ]))->out(),
-                'course' => (new moodle_url('/course/view.php', [
-                    'id' => $this->course->id,
-                ]))->out(),
-                'quiz' => (new moodle_url('/mod/quiz/view.php', [
-                    'id' => $this->cm->id,
-                ]))->out(),
-                'user' => (new moodle_url('/user/profile.php', [
-                    'id' => $jm['user']['id'],
-                ]))->out(),
-            ];
-
-            // Inject global TSP settings.
-            // Moodle stores checkbox values as '0' and '1'. Mustache interprets '0' as true.
-            $jm['tsp_enabled'] = ($this->config->tsp_enable == true);
-
-            return [
-                'jobid' => $jm['jobid'],
-                'base64Data' => base64_encode(json_encode($jm)),
-            ];
-        }, ArchiveJob::get_metadata_for_jobs($this->course->id, $this->cm->id, $this->quiz->id));
     }
 
     /**

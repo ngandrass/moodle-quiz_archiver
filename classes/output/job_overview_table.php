@@ -108,25 +108,36 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_status($values) {
-        $html = '';
+        global $OUTPUT;
+
         $s = ArchiveJob::get_status_display_args(
             $values->status,
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $statustooltiphtml = 'data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top"' .
-                             'title="' . s($s['help']) . '"';
-        $html .= '<span class="badge badge-' . s($s['color']) . '" ' . $statustooltiphtml . '>' . s($s['text']) . '</span><br/>';
-
-        if (isset($s['statusextras']['progress'])) {
-            $html .= '<span title="' . get_string('progress', 'quiz_archiver') . '">';
-            $html .= '<i class="fa fa-spinner"></i>&nbsp;' . s($s['statusextras']['progress']) . '%';
-            $html .= '</span><br/>';
+        $spanattributes = [
+            'data-ref' => 'status-column',
+            'data-jobid' => $values->jobid,
+        ];
+        if (ArchiveJob::is_final_job_status($values->status)) {
+            $spanattributes['data-finalized'] = 'true';
         }
 
-        $html .= '<small>' . date('H:i:s', $values->timemodified) . '</small>';
-
-        return $html;
+        return \html_writer::span(
+            $OUTPUT->render_from_template(
+                'quiz_archiver/job_overview/fragment/status',
+                [
+                    'badge_text' => $s['text'],
+                    'badge_color' => $s['color'],
+                    'tooltip_text' => $s['help'],
+                    'progress' => $s['statusextras']['progress'] ?? null,
+                    'has_progress' => isset($s['statusextras']['progress']),
+                    'time_modified' => $values->timemodified,
+                ]
+            ),
+            '',
+            $spanattributes
+        );
     }
 
     /**
@@ -148,7 +159,14 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_filesize($values) {
-        return $values->filesize !== null ? display_size($values->filesize) : '';
+        return \html_writer::span(
+            $values->filesize !== null ? display_size($values->filesize) : '',
+            '',
+            [
+                'data-ref' => 'filesize-column',
+                'data-jobid' => $values->jobid,
+            ]
+        );
     }
 
     /**
@@ -160,13 +178,10 @@ class job_overview_table extends \table_sql {
      * @throws \moodle_exception
      */
     public function col_actions($values) {
-        $html = '';
-
-        // Action: Show details.
-        // @codingStandardsIgnoreLine
-        $html .= '<a href="#" id="job-details-'.$values->jobid.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('showdetails', 'admin').'" alt="'.get_string('showdetails', 'admin').'"><i class="fa fa-info-circle"></i></a>';
+        global $OUTPUT;
 
         // Action: Show content.
+        $showcontentsurl = null;
         if ($values->pathnamehash) {
             $showcontentsurl = new \moodle_url('', [
                 'id' => optional_param('id', null, PARAM_INT),
@@ -174,14 +189,10 @@ class job_overview_table extends \table_sql {
                 'action' => 'showcontents',
                 'jobid' => $values->id,
             ]);
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="'.$showcontentsurl.'" class="btn btn-primary mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('inspect_archive_contents', 'quiz_archiver').'" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'"><i class="fa fa-magnifying-glass"></i></a>';
-        } else {
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="#" class="btn btn-outline-primary disabled mx-1" role="button" alt="'.get_string('inspect_archive_contents', 'quiz_archiver').'" disabled aria-disabled="true"><i class="fa fa-magnifying-glass"></i></a>';
         }
 
         // Action: Download.
+        $artifacturl = null;
         if ($values->pathnamehash) {
             $artifactfile = get_file_storage()->get_file_by_hash($values->pathnamehash);
             $artifacturl = \moodle_url::make_pluginfile_url(
@@ -193,12 +204,6 @@ class job_overview_table extends \table_sql {
                 $artifactfile->get_filename(),
                 true,
             );
-
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="'.$artifacturl.'" target="_blank" class="btn btn-success mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('download').'" alt="'.get_string('download').'"><i class="fa fa-download"></i></a>';
-        } else {
-            // @codingStandardsIgnoreLine
-            $html .= '<a href="#" target="_blank" class="btn btn-outline-success disabled mx-1" role="button" alt="'.get_string('download').'" disabled aria-disabled="true"><i class="fa fa-download"></i></a>';
         }
 
         // Action: Delete.
@@ -208,9 +213,22 @@ class job_overview_table extends \table_sql {
             'action' => 'delete_job',
             'jobid' => $values->jobid,
         ]);
-        // @codingStandardsIgnoreLine
-        $html .= '<a href="'.$deleteurl.'" class="btn btn-danger mx-1" role="button" data-toggle="tooltip" data-placement="top" data-bs-toggle="tooltip" data-bs-placement="top" title="'.get_string('delete').'" alt="'.get_string('delete').'"><i class="fa fa-times"></i></a>';
 
-        return $html;
+        return \html_writer::span(
+            $OUTPUT->render_from_template(
+                'quiz_archiver/job_overview/fragment/actions',
+                [
+                    'job_id' => $values->jobid,
+                    'show_content_url' => $showcontentsurl ? $showcontentsurl->out(false) : null,
+                    'artifact_url' => $artifacturl ? $artifacturl->out(false) : null,
+                    'delete_url' => $deleteurl ? $deleteurl->out(false) : null,
+                ]
+            ),
+            '',
+            [
+                'data-ref' => 'actions-column',
+                'data-jobid' => $values->jobid,
+            ]
+        );
     }
 }

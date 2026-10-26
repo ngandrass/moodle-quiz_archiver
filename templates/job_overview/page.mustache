@@ -15,26 +15,18 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template quiz_archiver/overview
+    @template quiz_archiver/job_overview/page
 
-    Template purpose and description.
+    This template renders an overview of all previous archive jobs relating to a
+    specific quiz on its report page.
+    Any unfinished jobs information is automatically updated, by polling its
+    current state via Ajax and replacing old content until it is finished.
 
     Example context (json):
     {
         "archiveQuizForm": "<!-- Generated Moodle form HTML -->",
         "baseurl": "https://example.com/mod/quiz/archiver/",
-        "jobOverviewTable": "<!-- Generated Moodle table HTML -->",
-        "jobs": [
-            {
-                "jobid": "3e6273fe-3784-11ee-be56-0242ac120002",
-                "base64Data": "{...}"
-            },
-            {
-                "jobid": "45edd9f6-3784-11ee-be56-0242ac120002",
-                "base64Data": "{...}"
-            }
-        ],
-        "time": 0
+        "jobOverviewTable": "<!-- Generated Moodle table HTML -->"
     }
 }}
 
@@ -45,10 +37,10 @@
 
 {{! List of existing archives }}
 {{#jobOverviewTable}}
-<h1>
+<h1 class="mb-3">
     {{#str}} job_overview, quiz_archiver {{/str}}
     <a
-        href="{{{baseurl}}}"
+        href="{{baseurl}}"
         class="small mx-2"
         title="{{#str}} refresh, moodle {{/str}}"
         {{! Remove data-toggle and data-placement after Moodle 4.5 (LTS) deprecation }}
@@ -60,26 +52,13 @@
         <i class="fa fa-rotate-right"></i>
     </a>
 </h1>
-<div>
-    {{#str}} last_updated, quiz_archiver {{/str}}:
-    {{#userdate}} {{time}}, %T {{/userdate}}
-</div>
+
 <div class="quiz_archiver-job-overview-table">
     {{{jobOverviewTable}}}
 </div>
 
 {{#js}}
-    require(['jquery', 'core/modal', 'core/templates'], function($, Modal, Templates) {
-        {{#jobs}}
-            $('#job-details-{{jobid}}').click(async() => {
-                await Modal.create({
-                    title: '{{#str}} quiz_archive_details, quiz_archiver {{/str}}',
-                    body: Templates.render('quiz_archiver/job_details', JSON.parse(atob('{{{base64Data}}}'))),
-                    show: true,
-                    large: true,
-                });
-            });
-        {{/jobs}}
-    });
+    require(['quiz_archiver/jobupdate'], (JobUpdate) => JobUpdate.init());
 {{/js}}
+
 {{/jobOverviewTable}}

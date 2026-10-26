@@ -1,0 +1,214 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template quiz_archiver/job_overview/modal/job-details
+
+    Renders the full job details dialog for a single archive job. The status,
+    modified-time, archive and signature rows are each wrapped in a stable span
+    (ref + jobid) so they can be re-rendered individually via AJAX while the job
+    is still running.
+
+    Example context (json):
+    {
+        "jobid": "32979c0a-2b97-11ee-b5db-0242ac150004",
+        "status": {
+            "badge_text": "Finished",
+            "badge_color": "success",
+            "tooltip_text": "The archive job completed successfully.",
+            "progress": null,
+            "has_progress": false
+        },
+        "timecreated": "1690363888",
+        "timemodified": "1690364031",
+        "user": {
+            "id": "2",
+            "firstname": "Admin",
+            "lastname": "User",
+            "username": "admin"
+        },
+        "course": {
+            "id": "31",
+            "name": "Example Moodle Course for Quiz Archiver"
+        },
+        "quiz": {
+            "id": "36",
+            "cmid": "108",
+            "name": "Example Quiz"
+        },
+        "artifact": {
+            "name": "quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz",
+            "size": "86915632",
+            "size_human": "82.89 MB",
+            "checksum": "3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
+        },
+        "signature": {
+            "enabled": true,
+            "tsp": {
+                "timecreated": 1690805384,
+                "server": "https://example.com/tsr"
+            }
+        },
+        "autodelete": {
+            "enabled": true,
+            "done": false,
+            "str": "Automatic deletion in 3 months (01.11.2023, 10:00)"
+        },
+        "actionurls": {
+            "artifact_download": "http://127.0.0.1/pluginfile.php/201/quiz_archiver/artifact/0/31/108/36/quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz?forcedownload=1",
+            "artifact_delete": "http://127.0.0.1/mod/quiz/report.php?id=108&mode=archiver&action=delete_artifact&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
+            "artifact_sign": "http://127.0.0.1/mod/quiz/report.php?id=108&mode=archiver&action=sign_job&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
+            "job_delete": "http://127.0.0.1/mod/quiz/report.php?id=108&mode=archiver&action=delete_job&jobid=32979c0a-2b97-11ee-b5db-0242ac150004",
+            "course": "http://127.0.0.1/course/view.php?id=31",
+            "quiz": "http://127.0.0.1/mod/quiz/view.php?id=108",
+            "user": "http://127.0.0.1/user/profile.php?id=2",
+            "tsp_query_download": "http://127.0.0.1/pluginfile.php/...",
+            "tsp_reply_download": "http://127.0.0.1/pluginfile.php/..."
+        },
+        "settings": [
+            {
+                "title": "Demo Title 1",
+                "value": "Demo Value 1",
+                "color": "primary"
+            },
+            {
+                "title": "Demo Title 2",
+                "value": "Demo Value 2",
+                "color": "secondary"
+            }
+        ]
+    }
+}}
+
+<table class="table w-100">
+    {{! Row: JobID }}
+    <tr>
+        <td class="border-top-0">{{#str}} jobid, quiz_archiver {{/str}}</td>
+        <td class="border-top-0">{{jobid}}</td>
+    </tr>
+
+    {{! Row: Status }}
+    {{#status}}
+        <tr>
+            <td>{{#str}} status {{/str}}</td>
+            <td>
+                <div data-ref="status-modal" data-jobid="{{jobid}}">
+                    {{> quiz_archiver/job_overview/fragment/status }}
+                </div>
+            </td>
+        </tr>
+    {{/status}}
+
+    {{! Row: Course }}
+    <tr>
+        <td>{{#str}} course {{/str}}</td>
+        <td>
+            <a href="{{actionurls.course}}" target="_blank">
+                {{course.name}}
+            </a>
+        </td>
+    </tr>
+
+    {{! Row: Quiz }}
+    <tr>
+        <td>{{#str}} modulename, mod_quiz {{/str}}</td>
+        <td>
+            <a href="{{actionurls.quiz}}" target="_blank">
+                {{quiz.name}}
+            </a>
+        </td>
+    </tr>
+
+    {{! Row: User }}
+    <tr>
+        <td>{{#str}} user {{/str}}</td>
+        <td>
+            <a href="{{actionurls.user}}" target="_blank">
+                {{user.firstname}} {{user.lastname}} ({{user.username}})
+            </a>
+        </td>
+    </tr>
+
+    {{! Row: Created time }}
+    <tr>
+        <td>{{#str}} timecreated {{/str}}</td>
+        <td>{{#userdate}} {{timecreated}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}</td>
+    </tr>
+
+    {{! Row: Modified time }}
+    <tr>
+        <td>{{#str}} timemodified, reportbuilder {{/str}} </td>
+        <td>
+            <div data-ref="timemodified-modal" data-jobid="{{jobid}}">
+                {{#userdate}} {{timemodified}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}
+            </div>
+        </td>
+    </tr>
+
+    {{! Row: Archive artifact }}
+    <tr>
+        <td class="align-middle">{{#str}} quiz_archive, quiz_archiver {{/str}}</td>
+        <td>
+            <div data-ref="archive-modal" data-jobid="{{jobid}}">
+                {{> quiz_archiver/job_overview/fragment/artifact }}
+            </div>
+        </td>
+    </tr>
+
+    {{! Row: Archive signature }}
+    <tr>
+        <td class="align-middle">{{#str}} archive_signature, quiz_archiver {{/str}}</td>
+        <td>
+            <div data-ref="signature-modal" data-jobid="{{jobid}}">
+                {{> quiz_archiver/job_overview/fragment/signature }}
+            </div>
+        </td>
+    </tr>
+
+    {{! Row: Archive deletion mode }}
+    <tr>
+        <td>{{#str}} archive_autodelete_short, quiz_archiver {{/str}}</td>
+        <td>{{autodelete.str}}</td>
+    </tr>
+
+    {{! Row: Settings }}
+    <tr>
+        <td class="border-bottom-0 align-middle">{{#str}} settings {{/str}}</td>
+        <td class="border-bottom-0">
+            <ul class="list-group small">
+                {{#settings}}
+                    <li class="list-group-item d-flex justify-content-between align-items-center p-2">
+                        {{title}}
+                        <span class="badge badge-{{color}} badge-pill">{{value}}</span>
+                    </li>
+                {{/settings}}
+                {{^settings}}
+                    <li class="list-group-item">{{#str}} not_signed, quiz_archiver {{/str}}</li>
+                {{/settings}}
+            </ul>
+        </td>
+    </tr>
+
+    {{! Row: Delete action button }}
+    <tr>
+        <td class="border-0 py-0"></td>
+        <td class="border-0 py-0 text-right">
+            <a href="{{actionurls.job_delete}}" class="btn btn-danger mx-1" role="button" title="{{#str}} delete {{/str}}">
+                {{#str}} delete {{/str}}
+            </a>
+        </td>
+    </tr>
+</table>

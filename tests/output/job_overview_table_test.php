@@ -90,11 +90,127 @@ final class job_overview_table_test extends \advanced_testcase {
         $job2->link_artifact($artifact->get_id(), 'sha256dummy');
         $job2->set_status(ArchiveJob::STATUS_FINISHED);
 
-        // Create the table and render it.
-        $table = new job_overview_table(100000, $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        // Create the table and render it, capturing the output.
+        $table = new job_overview_table(123456, $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        ob_start();
         $table->out(50, true);
+        $html = (string) ob_get_clean();
 
         $this->assertdebuggingcalledcount(2);
-        $this->expectOutputRegex('/<table.*>.*<\/table>/s');
+
+        // A proper HTML table is produced.
+        $this->assertMatchesRegularExpression('/<table.*>.*<\/table>/s', $html);
+    }
+
+    /**
+     * Tests if all dynamically updatable span objects use the correct
+     * attributes for identifying them.
+     *
+     * @covers \quiz_archiver\output\job_overview_table
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_table_references(): void {
+        // Create a mock job to render inside the table.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $jobid = "53bf0542-9564-44d8-a18e-1803f4be616d";
+        $job = ArchiveJob::create(
+            $jobid,
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            2,
+            0,
+            'wstoken',
+            [],
+            [],
+            ArchiveJob::STATUS_AWAITING_PROCESSING
+        );
+        $job->set_status(ArchiveJob::STATUS_RUNNING, ['progress' => 42]);
+
+        // Create the table and render it, capturing the output.
+        $table = new job_overview_table(987654, $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        ob_start();
+        $table->out(50, true);
+        $html = (string) ob_get_clean();
+
+        $this->assertdebuggingcalledcount(2);
+
+        $this->assertStringContainsString(
+            'data-ref="status-column"',
+            $html,
+            'Status column must use the data-ref identifier'
+        );
+        $this->assertStringContainsString(
+            'data-ref="filesize-column"',
+            $html,
+            'Filesize column must use the data-ref identifier'
+        );
+        $this->assertStringContainsString(
+            'data-ref="actions-column"',
+            $html,
+            'Actions column must use the data-ref identifier'
+        );
+        $this->assertStringContainsString(
+            'data-ref="job-details-action"',
+            $html,
+            'Show details button must use the data-ref identifier'
+        );
+    }
+
+    /**
+     * Tests that a finished job's status cell is marked as finalized so the
+     * client wont start polling it.
+     *
+     * @covers \quiz_archiver\output\job_overview_table::col_status
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public function test_finalized_status_marker(): void {
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '39184ac9-caca-4a46-b133-7f599deb1dde',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            2,
+            0,
+            'wstoken',
+            [],
+            [],
+        );
+        $job->set_status(ArchiveJob::STATUS_FINISHED);
+        $job2 = ArchiveJob::create(
+            '2831a0fb-a935-4b46-a6d2-c03a509e7ec1',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            2,
+            0,
+            'wstoken',
+            [],
+            [],
+        );
+        $job2->set_status(ArchiveJob::STATUS_RUNNING);
+
+        $table = new job_overview_table(654321, $mocks->course->id, $mocks->quiz->cmid, $mocks->quiz->id);
+        ob_start();
+        $table->out(50, true);
+        $html = (string) ob_get_clean();
+
+        $this->assertdebuggingcalledcount(2);
+        $this->assertSame(
+            1,
+            substr_count($html, 'data-finalized'),
+            'Only finalized jobs must carry the "data-finalized" attribute as marker',
+        );
     }
 }

@@ -45,7 +45,7 @@ class update_job_status extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'jobid' => new external_value(
-                PARAM_TEXT,
+                PARAM_ALPHANUMEXT,
                 'UUID of the job this artifact is associated with',
                 VALUE_REQUIRED
             ),

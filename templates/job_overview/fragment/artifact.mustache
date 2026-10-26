@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template quiz_archiver/job_overview/fragment/artifact
+
+    Renders a representation of the archive of a corresponding job.
+    If an artifact is present, shows its detail table (filename, size,
+    checksum, download / delete actions). If not, shows a fallback indicating
+    whether the archive was auto-deleted or is not yet ready.
+
+    Example context (json):
+    {
+        "artifact": {
+            "name": "quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz",
+            "size_human": "82.89 MB",
+            "checksum": "3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
+        },
+        "actionurls": {
+            "artifact_download": "http:\/\/127.0.0.1\/pluginfile.php\/201\/quiz_archiver\/artifact\/0\/31\/108\/36\/quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz?forcedownload=1",
+            "artifact_delete": "http:\/\/127.0.0.1\/mod\/quiz\/report.php?id=108&mode=archiver&action=delete_artifact&jobid=32979c0a-2b97-11ee-b5db-0242ac150004"
+        },
+        "autodelete": {
+            "enabled": true,
+            "done": true
+        }
+    }
+}}
+
+{{#artifact}}
+<table class="table mb-0">
+    <tr>
+        <td class="border-top-0">{{#str}} filename, backup {{/str}}</td>
+        <td class="border-top-0">{{artifact.name}}</td>
+    </tr>
+    <tr>
+        <td>{{#str}} size {{/str}}</td>
+        <td>{{artifact.size_human}}</td>
+    </tr>
+    <tr>
+        <td>{{#str}} checksum, quiz_archiver {{/str}}</td>
+        <td class="word-break-all">sha256:{{artifact.checksum}}</td>
+    </tr>
+    <tr>
+        <td class="border-bottom-0"></td>
+        <td class="border-bottom-0">
+            <a href="{{actionurls.artifact_download}}" target="_blank">
+                {{#pix}} a/download_all, core, {{#str}} downloadfile {{/str}} {{/pix}}{{#str}} downloadfile {{/str}}
+            </a>
+            &nbsp;&ndash;&nbsp;
+            <a href="{{actionurls.artifact_delete}}">
+                {{#pix}} t/delete, core, {{#str}} delete {{/str}} {{/pix}}{{#str}} delete {{/str}}
+            </a>
+        </td>
+    </tr>
+</table>
+{{/artifact}}
+{{^artifact}}
+    {{#autodelete.done}}
+        <i>{{#str}} archive_deleted, quiz_archiver {{/str}}</i>
+    {{/autodelete.done}}
+    {{^autodelete.done}}
+        <i>{{#str}} quiz_archive_not_ready, quiz_archiver {{/str}}</i>
+    {{/autodelete.done}}
+{{/artifact}}

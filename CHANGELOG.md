@@ -2,6 +2,10 @@
 
 ## Version X.Y.Z (YYYYMMDDNN)
 
+- Automatically update status, progress, and details of unfinished archive jobs in the job overview table without requiring a page reload
+- Dynamically render and update job details modal with the latest job information
+- Show spinning progress indicator and dynamically updated progress in percent for running archive jobs
+- Add new AJAX web service function `quiz_archiver_get_job_metadata` to query the current state of an archive job
 - Fail artifact uploads early with a descriptive error message if referenced Moodle upload draft file is out of scope
 - Abort upload file assembly gracefully and return proper error message if any expected file chunk is missing
 

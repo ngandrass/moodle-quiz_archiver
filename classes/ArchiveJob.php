@@ -272,7 +272,17 @@ class ArchiveJob {
             ];
         }, $attempts));
 
-        return new ArchiveJob($id, $jobid, $courseid, $cmid, $quizid, $userid, $now, $retentiontime, $wstoken);
+        return new ArchiveJob(
+            $id,
+            $jobid,
+            $courseid,
+            $cmid,
+            $quizid,
+            $userid,
+            $now,
+            $retentiontime,
+            $wstoken
+        );
     }
 
     /**
@@ -679,13 +689,12 @@ class ArchiveJob {
     }
 
     /**
-     * Determines if the job as reached one of its final states and is considered
-     * as completed
-     *
-     * @return bool True if job is completed, regardless of success or error
+     * Determines if a job status is considered a final job state.
+     * @param string $status Job status enum string to be checked
+     * @return bool True if status represents final job state
      */
-    public function is_complete(): bool {
-        switch ($this->get_status()) {
+    public static function is_final_job_status(string $status): bool {
+        switch ($status) {
             case self::STATUS_FINISHED:
             case self::STATUS_FAILED:
             case self::STATUS_TIMEOUT:
@@ -694,6 +703,16 @@ class ArchiveJob {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Determines if the job as reached one of its final states and is considered
+     * as completed
+     *
+     * @return bool True if job is completed, regardless of success or error
+     */
+    public function is_complete(): bool {
+        return self::is_final_job_status($this->get_status());
     }
 
     /**
@@ -748,6 +767,29 @@ class ArchiveJob {
      */
     public function get_userid(): int {
         return $this->userid;
+    }
+
+    /**
+     * Returns the creation time of this job
+     *
+     * @return int Unix timestamp of job creation
+     */
+    public function get_timecreated(): int {
+        return $this->timecreated;
+    }
+
+    /**
+     * Returns the time of the last modification of this job
+     *
+     * The value is always read from the database, since jobs can be modified
+     * externally (e.g., by the archive worker) at any time.
+     *
+     * @return int Unix timestamp of last job modification
+     * @throws \dml_exception If the job does not exist in the database
+     */
+    public function get_timemodified(): int {
+        global $DB;
+        return (int) $DB->get_field(self::JOB_TABLE_NAME, 'timemodified', ['id' => $this->id], MUST_EXIST);
     }
 
     /**
@@ -1004,6 +1046,92 @@ class ArchiveJob {
      */
     public function has_artifact(): bool {
         return $this->get_artifact() !== null;
+    }
+
+    /**
+     * Returns the URL of the quiz report page (archiver mode) associated with
+     * this job, optionally augmented with additional query parameters.
+     *
+     * @param array $params Additional query parameters to append to the URL
+     * @return string Absolute URL of the quiz report page for this job
+     */
+    public function get_report_url(array $params = []): string {
+        $urlparams = array_merge([
+            'id' => $this->cmid,
+            'mode' => 'archiver',
+        ], $params);
+
+        return (new \moodle_url('/mod/quiz/report.php', $urlparams))->out(false);
+    }
+
+    /**
+     * Returns the URL to view the archive contents of this job.
+     *
+     * @return string Absolute URL to the archive contents view for this job
+     */
+    public function get_showcontents_url(): string {
+        return $this->get_report_url([
+            'action' => 'showcontents',
+            'jobid' => $this->id,
+        ]);
+    }
+
+    /**
+     * Returns the URL to the job deletion confirmation form.
+     *
+     * @return string Absolute URL to the job deletion view for this job
+     */
+    public function get_delete_job_url(): string {
+        return $this->get_report_url([
+            'action' => 'delete_job',
+            'jobid' => $this->jobid,
+        ]);
+    }
+
+    /**
+     * Returns the URL to the artifact deletion confirmation form.
+     *
+     * @return string Absolute URL to the artifact deletion view for this job
+     */
+    public function get_delete_artifact_url(): string {
+        return $this->get_report_url([
+            'action' => 'delete_artifact',
+            'jobid' => $this->jobid,
+        ]);
+    }
+
+    /**
+     * Returns the URL to the artifact signing (TSP) confirmation form.
+     *
+     * @return string Absolute URL to the artifact signing view for this job
+     */
+    public function get_sign_artifact_url(): string {
+        return $this->get_report_url([
+            'action' => 'sign_job',
+            'jobid' => $this->jobid,
+        ]);
+    }
+
+    /**
+     * Returns the direct download URL for this job's artifact file.
+     *
+     * @return string|null Absolute pluginfile URL if an artifact is present,
+     * else null
+     */
+    public function get_artifact_download_url(): ?string {
+        if ($artifact = $this->get_artifact()) {
+            return \moodle_url::make_pluginfile_url(
+                $artifact->get_contextid(),
+                $artifact->get_component(),
+                $artifact->get_filearea(),
+                $artifact->get_itemid(),
+                $artifact->get_filepath(),
+                $artifact->get_filename(),
+                true
+            )->out(false);
+        }
+
+        return null;
     }
 
     /**
