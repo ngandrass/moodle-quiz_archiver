@@ -110,7 +110,9 @@ const scheduleJobUpdate = (jobIds) => {
  *
  * For each job the current status is fetched and the status cell is re-rendered.
  * As soon as a job completed, its filesize and action cells are updated as well.
- * If any jobs are still running, another polling round is scheduled.
+ * If any jobs are still running, another polling round is scheduled. Jobs whose
+ * status could not be retrieved are dropped from polling to prevent repeated
+ * error notifications.
  *
  * @param {string[]} jobIds The IDs of the jobs to update
  * @returns {Promise<void>}
@@ -120,10 +122,9 @@ const updateJobs = async(jobIds) => {
     const pendingJobIds = [];
 
     for (const jobId of jobIds) {
-        // Get latest job data.
+        // Get latest job data. Stop polling this job if it could not be retrieved.
         const jobMetadata = await getJobMetadata(jobId);
         if (!jobMetadata) {
-            pendingJobIds.push(jobId);
             continue;
         }
 
@@ -162,30 +163,29 @@ const updateJobs = async(jobIds) => {
  * Fetches the current status of a single job from the "quiz_archiver_get_job_metadata"
  * webservice.
  *
+ * Failures are reported to the user via a notification.
+ *
  * @param {string} job The ID of the job to fetch the status for
- * @returns {Promise<object|null>} The webservice response containing "status" and "job"
- * @throws {Error} If the webservice call fails or returns a non-"OK" status
+ * @returns {Promise<object|null>} The webservice response containing "status"
+ * and "job", or null if the webservice call failed or returned a non-"OK" status
  */
 const getJobMetadata = async(job) => {
-    let fetchedData;
+    try {
+        const data = await Ajax.call([{
+            methodname: 'quiz_archiver_get_job_metadata',
+            args: {jobid: job},
+        }])[0];
 
-    await Ajax.call([{
-        methodname: 'quiz_archiver_get_job_metadata',
-        args: {jobid: job},
-    }])[0].then((data) => {
         if (data.status !== 'OK' || !data.job) {
-            throw Error("failed to retrieve job status");
+            throw Error(`Failed to retrieve job status: ${data.status}`);
         }
 
-        fetchedData = data;
-        return;
-    }).catch((error) => {
+        return data;
+    } catch (error) {
         window.console.error('Ajax call failed with error:', error);
         Notification.exception(error);
         return null;
-    });
-
-    return fetchedData;
+    }
 };
 
 /**
