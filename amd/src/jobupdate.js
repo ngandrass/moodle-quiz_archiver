@@ -37,7 +37,7 @@ import Notification from 'core/notification';
  * aliasing it polls at double that frequency. It is delibertly a multiple of
  * two seconds, since the spinner animation takes that long for one rotation.
  */
-let JOB_STATUS_POLLING_MS = 6000;
+const JOB_STATUS_POLLING_MS = 6000;
 
 
 /**
@@ -49,7 +49,6 @@ let JOB_STATUS_POLLING_MS = 6000;
  * @returns {void}
  */
 export const init = () => {
-
     const jobIds = getUnfinishedJobIds();
 
     if (jobIds) {
@@ -79,7 +78,6 @@ const getSpanSelector = (jobId, ref) => `span[data-ref="${ref}"][data-jobid="${j
  * @returns {string[]|null} Array of unfinished job IDs, or null if none are found
  */
 const getUnfinishedJobIds = () => {
-
     const statusElements = document.querySelectorAll(
         'span[data-ref="status-column"]:not([data-finalized])',
     );
@@ -118,12 +116,10 @@ const scheduleJobUpdate = (jobIds) => {
  * @returns {Promise<void>}
  */
 const updateJobs = async(jobIds) => {
-
     // Jobs that have not reached a final state yet and need to be polled again.
     const pendingJobIds = [];
 
     for (const jobId of jobIds) {
-
         // Get latest job data.
         const jobMetadata = await getJobMetadata(jobId);
         if (!jobMetadata) {
@@ -134,8 +130,7 @@ const updateJobs = async(jobIds) => {
         // Update status colum.
         await renderStatusColumn(
             jobId,
-            jobMetadata.job,
-            jobMetadata.job.status_display_args,
+            jobMetadata.job
         );
 
         // Update modal if available.
@@ -172,14 +167,12 @@ const updateJobs = async(jobIds) => {
  * @throws {Error} If the webservice call fails or returns a non-"OK" status
  */
 const getJobMetadata = async(job) => {
-
     let fetchedData;
 
     await Ajax.call([{
         methodname: 'quiz_archiver_get_job_metadata',
         args: {jobid: job},
     }])[0].then((data) => {
-
         if (data.status !== 'OK' || !data.job) {
             throw Error("failed to retrieve job status");
         }
@@ -200,10 +193,10 @@ const getJobMetadata = async(job) => {
  *
  * @param {string} jobId The ID of the job whose status cell should be updated
  * @param {object} job The job data as returned by the webservice
- * @param {object} statusDisplayArgs The display arguments (color, text, help, statusextras) for the status badge
  * @returns {Promise<void>}
  */
-const renderStatusColumn = async(jobId, job, statusDisplayArgs) => {
+const renderStatusColumn = async(jobId, job) => {
+    const statusDisplayArgs = job.status_display_args;
 
     await Templates.renderForPromise(
         'quiz_archiver/job_overview/fragment/status',
@@ -240,7 +233,6 @@ const renderStatusColumn = async(jobId, job, statusDisplayArgs) => {
  * @returns {Promise<void>}
  */
 const renderActionsColumn = async(jobId, urls) => {
-
     await Templates.renderForPromise(
         'quiz_archiver/job_overview/fragment/actions',
         {
@@ -275,7 +267,6 @@ const renderActionsColumn = async(jobId, urls) => {
  * @returns {Promise<void>}
  */
 const updateModal = async(jobId, jobMetadata) => {
-
     const job = jobMetadata.job;
     const statusDisplayArgs = job.status_display_args;
 
@@ -354,7 +345,6 @@ const updateModal = async(jobId, jobMetadata) => {
  * @returns {Promise<void>}
  */
 const renderModalCell = async(jobId, ref, template, context) => {
-
     await Templates.renderForPromise(template, context).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
