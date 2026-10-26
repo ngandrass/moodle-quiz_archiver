@@ -122,36 +122,42 @@ const updateJobs = async(jobIds) => {
     const pendingJobIds = [];
 
     for (const jobId of jobIds) {
-        // Get latest job data. Stop polling this job if it could not be retrieved.
-        const jobMetadata = await getJobMetadata(jobId);
-        if (!jobMetadata) {
-            continue;
+        try {
+            // Get latest job data. Stop polling this job if it could not be retrieved.
+            const jobMetadata = await getJobMetadata(jobId);
+            if (!jobMetadata) {
+                continue;
+            }
+
+            // Update status colum.
+            await renderStatusColumn(
+                jobId,
+                jobMetadata.job
+            );
+
+            // Update modal if available.
+            const modalElement = document.querySelector(getSpanSelector(jobId, "status-modal"));
+            if (modalElement) {
+                await updateModal(jobId, jobMetadata);
+            }
+
+            if (!jobMetadata.job.complete) {
+                pendingJobIds.push(jobId);
+                continue;
+            }
+
+            // Update filesize column with rendered artifact size.
+            const filesizeElement = document.querySelector(getSpanSelector(jobId, "filesize-column"));
+            if (filesizeElement) {
+                filesizeElement.textContent = jobMetadata.job.artifact?.size_human ?? '';
+            }
+
+            // Update action buttons.
+            await renderActionsColumn(jobId, jobMetadata.job.actionurls);
+        } catch (error) {
+            window.console.error(`Failed to update job ${jobId}:`, error);
+            Notification.exception(error);
         }
-
-        // Update status colum.
-        await renderStatusColumn(
-            jobId,
-            jobMetadata.job
-        );
-
-        // Update modal if available.
-        const modalElement = document.querySelector(getSpanSelector(jobId, "status-modal"));
-        if (modalElement) {
-            await updateModal(jobId, jobMetadata);
-        }
-
-        if (!jobMetadata.job.complete) {
-            pendingJobIds.push(jobId);
-            continue;
-        }
-
-        // Update filesize column with rendered artifact size.
-        document.querySelector(
-            getSpanSelector(jobId, "filesize-column")
-        ).innerHTML = jobMetadata.job.artifact?.size_human ?? '';
-
-        // Update action buttons.
-        await renderActionsColumn(jobId, jobMetadata.job.actionurls);
     }
 
     if (pendingJobIds.length > 0) {
@@ -333,9 +339,11 @@ const updateModal = async(jobId, jobMetadata) => {
             [{'timestamp': job.timemodified, 'format': formatString}]
         )
     ).then((formattedDates) => {
-        document.querySelector(
-            getSpanSelector(jobId, "timemodified-modal")
-        ).innerHTML = formattedDates[0];
+        // NOTE: The modal could have been closed while the date was formatted.
+        const timemodifiedElement = document.querySelector(getSpanSelector(jobId, "timemodified-modal"));
+        if (timemodifiedElement) {
+            timemodifiedElement.textContent = formattedDates[0];
+        }
         return;
     }).catch((error) => {
         window.console.error("Could not format date:", error);
