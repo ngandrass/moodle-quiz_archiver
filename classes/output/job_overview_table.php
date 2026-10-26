@@ -115,12 +115,15 @@ class job_overview_table extends \table_sql {
             $values->statusextras ? json_decode($values->statusextras, true) : null
         );
 
-        $spanattributes = 'data-ref="status-column" data-jobid="' . $values->jobid . '"';
+        $spanattributes = [
+            'data-ref' => 'status-column',
+            'data-jobid' => $values->jobid,
+        ];
         if (ArchiveJob::is_final_job_status($values->status)) {
-            $spanattributes .= ' data-finalized="true"';
+            $spanattributes['data-finalized'] = 'true';
         }
 
-        return '<span ' . $spanattributes . '>' .
+        return \html_writer::span(
             $OUTPUT->render_from_template(
                 'quiz_archiver/job_overview/fragment/status',
                 [
@@ -131,8 +134,10 @@ class job_overview_table extends \table_sql {
                     'has_progress' => isset($s['statusextras']['progress']),
                     'time_modified' => $values->timemodified,
                 ]
-            ) .
-            '</span>';
+            ),
+            '',
+            $spanattributes
+        );
     }
 
     /**
@@ -154,10 +159,14 @@ class job_overview_table extends \table_sql {
      * @throws \coding_exception
      */
     public function col_filesize($values) {
-        $html = '<span data-ref="filesize-column" data-jobid="' . $values->jobid . '">';
-        $html .= $values->filesize !== null ? display_size($values->filesize) : '';
-        $html .= '</span>';
-        return $html;
+        return \html_writer::span(
+            $values->filesize !== null ? display_size($values->filesize) : '',
+            '',
+            [
+                'data-ref' => 'filesize-column',
+                'data-jobid' => $values->jobid,
+            ]
+        );
     }
 
     /**
@@ -205,7 +214,7 @@ class job_overview_table extends \table_sql {
             'jobid' => $values->jobid,
         ]);
 
-        return '<span data-ref="actions-column" data-jobid="' . $values->jobid . '">' .
+        return \html_writer::span(
             $OUTPUT->render_from_template(
                 'quiz_archiver/job_overview/fragment/actions',
                 [
@@ -214,7 +223,12 @@ class job_overview_table extends \table_sql {
                     'artifact_url' => $artifacturl ? $artifacturl->out(false) : null,
                     'delete_url' => $deleteurl ? $deleteurl->out(false) : null,
                 ]
-            ) .
-            '</span>';
+            ),
+            '',
+            [
+                'data-ref' => 'actions-column',
+                'data-jobid' => $values->jobid,
+            ]
+        );
     }
 }
