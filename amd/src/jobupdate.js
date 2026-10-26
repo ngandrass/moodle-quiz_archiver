@@ -119,11 +119,15 @@ const scheduleJobUpdate = (jobIds) => {
  */
 const updateJobs = async(jobIds) => {
 
+    // Jobs that have not reached a final state yet and need to be polled again.
+    const pendingJobIds = [];
+
     for (const jobId of jobIds) {
 
         // Get latest job data.
         const jobMetadata = await getJobMetadata(jobId);
         if (!jobMetadata) {
+            pendingJobIds.push(jobId);
             continue;
         }
 
@@ -140,23 +144,22 @@ const updateJobs = async(jobIds) => {
             await updateModal(jobId, jobMetadata);
         }
 
-        if (jobMetadata.job.complete) {
-
-            // Update filesize column with rendered artifact size.
-            document.querySelector(
-                getSpanSelector(jobId, "filesize-column")
-            ).innerHTML = jobMetadata.job.artifact?.size_human ?? '';
-
-            // Update action buttons.
-            await renderActionsColumn(jobId, jobMetadata.job.actionurls);
-
-            // Finally: Delete this job reference so that it is no longer updated.
-            jobIds.pop(jobId);
+        if (!jobMetadata.job.complete) {
+            pendingJobIds.push(jobId);
+            continue;
         }
+
+        // Update filesize column with rendered artifact size.
+        document.querySelector(
+            getSpanSelector(jobId, "filesize-column")
+        ).innerHTML = jobMetadata.job.artifact?.size_human ?? '';
+
+        // Update action buttons.
+        await renderActionsColumn(jobId, jobMetadata.job.actionurls);
     }
 
-    if (jobIds.length > 0) {
-        scheduleJobUpdate(jobIds);
+    if (pendingJobIds.length > 0) {
+        scheduleJobUpdate(pendingJobIds);
     }
 };
 
