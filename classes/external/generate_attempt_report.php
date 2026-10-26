@@ -283,6 +283,7 @@ class generate_attempt_report extends external_api {
 
         // Forcefully set URL in $PAGE to the webservice handler to prevent further warnings.
         $PAGE->set_url(new \moodle_url('/webservice/rest/server.php', ['wsfunction' => 'quiz_archiver_generate_attempt_report']));
+        $PAGE->set_cm($cm, $course);
 
         // The following code is tested covered by more specific tests.
         // @codingStandardsIgnoreLine
@@ -299,7 +300,19 @@ class generate_attempt_report extends external_api {
             throw new \invalid_parameter_exception("No attempt with given attemptid found");
         }
 
-        $res['report'] = $report->generate_full_page($params['attemptid'], $params['sections']);
+        // Determine correction margin.
+        $correctionmargin = 0;
+        $settings = $job->get_settings();
+        if (!empty($settings['export_attempts_correction_margin'])) {
+            $correctionmargin = Report::get_correction_margin_percent($settings['export_attempts_paper_format']);
+        }
+
+        // Generate the report.
+        $res['report'] = $report->generate_full_page(
+            $params['attemptid'],
+            $params['sections'],
+            marginpercent: $correctionmargin
+        );
 
         // Check for attachments.
         if ($params['attachments']) {

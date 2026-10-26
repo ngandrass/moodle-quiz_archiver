@@ -1219,6 +1219,8 @@ final class archivejob_test extends \advanced_testcase {
         $this->resetAfterTest();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
         $cm = context_module::instance($mocks->quiz->cmid);
+        $mocks->quiz->timeopen = 1758369600;
+        $mocks->quiz->timeclose = 1758384000;
 
         // Full pattern.
         $fullpattern = 'archive';
@@ -1237,6 +1239,42 @@ final class archivejob_test extends \advanced_testcase {
         $this->assertStringContainsString($mocks->course->fullname, $filename, 'Course name was not found in filename');
         $this->assertStringContainsString($mocks->course->shortname, $filename, 'Course shortname was not found in filename');
         $this->assertStringContainsString($mocks->quiz->name, $filename, 'Quiz name was not found in filename');
+        $this->assertStringContainsString(
+            date('Y-m-d_H-i-s', $mocks->quiz->timeopen),
+            $filename,
+            'Quiz open datetime was not found in filename'
+        );
+        $this->assertStringContainsString(
+            date('Y-m-d_H-i-s', $mocks->quiz->timeclose),
+            $filename,
+            'Quiz close datetime was not found in filename'
+        );
+    }
+
+    /**
+     * Test expansion of datetime variables for quizzes without open and close dates
+     *
+     * @covers \quiz_archiver\ArchiveJob::generate_archive_filename
+     *
+     * @return void
+     * @throws \coding_exception
+     * @throws \invalid_parameter_exception
+     */
+    public function test_generate_archive_filename_unset_datetime_variables(): void {
+        // Generate data.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $cm = context_module::instance($mocks->quiz->cmid);
+        $mocks->quiz->timeopen = 0;
+        $mocks->quiz->timeclose = 0;
+
+        $filename = ArchiveJob::generate_archive_filename(
+            $mocks->course,
+            $cm,
+            $mocks->quiz,
+            'archive-${opendatetime}-${closedatetime}'
+        );
+        $this->assertSame('archive-null-null', $filename, 'Unset datetime variables were not expanded to null');
     }
 
     /**
@@ -1329,10 +1367,14 @@ final class archivejob_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_generate_attempt_foldername(): void {
+        global $DB;
+
         // Generate data.
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $rc->quiz->timeopen = 1758369600;
+        $rc->quiz->timeclose = 1758384000;
 
         // Full pattern.
         $fullpattern = 'attempt';
@@ -1355,6 +1397,30 @@ final class archivejob_test extends \advanced_testcase {
         // TODO: (MDL-0) Update reference course to cover groups and check for these.
         $this->assertStringContainsString('nogroup', $foldername, 'Group name placeholder was not found in folder name');
         $this->assertStringContainsString($rc->attemptids[0], $foldername, 'Attempt ID was not found in folder name');
+
+        // Email placeholder must be sanitized (dots replaced with underscores).
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $rc->attemptids[0]], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $expectedemail = str_replace('.', '_', $userinfo->email);
+        $this->assertStringContainsString($expectedemail, $foldername, 'Email was not found in folder name');
+
+        // Datetime variables must be expanded in human-readable format.
+        // Tested separately because the full pattern exceeds the maximum filename length.
+        $foldername = ArchiveJob::generate_attempt_foldername(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            '${opendatetime}-${closedatetime}-${startdatetime}-${finishdatetime}'
+        );
+        $this->assertSame(
+            date('Y-m-d_H-i-s', $rc->quiz->timeopen) . '-' .
+            date('Y-m-d_H-i-s', $rc->quiz->timeclose) . '-' .
+            date('Y-m-d_H-i-s', $attemptinfo->timestart) . '-' .
+            ($attemptinfo->timefinish ? date('Y-m-d_H-i-s', $attemptinfo->timefinish) : 'null'),
+            $foldername,
+            'Datetime variables were not expanded correctly in folder name'
+        );
     }
 
     /**
@@ -1454,10 +1520,14 @@ final class archivejob_test extends \advanced_testcase {
      * @throws \dml_exception
      */
     public function test_generate_attempt_filename(): void {
+        global $DB;
+
         // Generate data.
         $this->resetAfterTest();
         $generator = $this->getDataGenerator();
         $rc = $generator->import_reference_course(...$generator::QUIZ_FIXTURES['default']);
+        $rc->quiz->timeopen = 1790805783;
+        $rc->quiz->timeclose = 1790892420;
 
         // Full pattern.
         $fullpattern = 'attempt';
@@ -1480,6 +1550,30 @@ final class archivejob_test extends \advanced_testcase {
         // TODO: (MDL-0) Update reference course to cover groups and check for these.
         $this->assertStringContainsString('nogroup', $filename, 'Group name placeholder was not found in filename');
         $this->assertStringContainsString($rc->attemptids[0], $filename, 'Attempt ID was not found in filename');
+
+        // Email placeholder must be sanitized (dots replaced with underscores).
+        $attemptinfo = $DB->get_record('quiz_attempts', ['id' => $rc->attemptids[0]], '*', MUST_EXIST);
+        $userinfo = $DB->get_record('user', ['id' => $attemptinfo->userid], '*', MUST_EXIST);
+        $expectedemail = str_replace('.', '_', $userinfo->email);
+        $this->assertStringContainsString($expectedemail, $filename, 'Email was not found in filename');
+
+        // Datetime variables must be expanded in human-readable format.
+        // Tested separately because the full pattern exceeds the maximum filename length ... woops xD.
+        $filename = ArchiveJob::generate_attempt_filename(
+            $rc->course,
+            $rc->cm,
+            $rc->quiz,
+            $rc->attemptids[0],
+            '${opendatetime}-${closedatetime}-${startdatetime}-${finishdatetime}'
+        );
+        $this->assertSame(
+            date('Y-m-d_H-i-s', $rc->quiz->timeopen) . '-' .
+            date('Y-m-d_H-i-s', $rc->quiz->timeclose) . '-' .
+            date('Y-m-d_H-i-s', $attemptinfo->timestart) . '-' .
+            ($attemptinfo->timefinish ? date('Y-m-d_H-i-s', $attemptinfo->timefinish) : 'null'),
+            $filename,
+            'Datetime variables were not expanded correctly in filename'
+        );
     }
 
     /**

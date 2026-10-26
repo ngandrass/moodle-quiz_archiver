@@ -118,14 +118,22 @@ class quiz_archiver_report extends report_base {
         }
 
         // Handle GET-based alerts.
-        if (optional_param('al', null, PARAM_TEXT) !== null) {
+        $alertlevel = optional_param('al', null, PARAM_ALPHA);
+        $alertlevels = [
+            \core\output\notification::NOTIFY_SUCCESS,
+            \core\output\notification::NOTIFY_INFO,
+            \core\output\notification::NOTIFY_WARNING,
+            \core\output\notification::NOTIFY_ERROR,
+        ];
+        if (in_array($alertlevel, $alertlevels, true)) {
+            $alertadditional = optional_param('aa', null, PARAM_TEXT);
             echo $OUTPUT->notification(
                 get_string(
-                    urldecode(required_param('asid', PARAM_TEXT)),
+                    required_param('asid', PARAM_ALPHANUMEXT),
                     'quiz_archiver',
-                    urldecode(optional_param('aa', null, PARAM_TEXT))
+                    $alertadditional === null ? null : s($alertadditional)
                 ),
-                urldecode(required_param('al', PARAM_TEXT)),
+                $alertlevel,
                 optional_param('ac', 0, PARAM_INT) === 1
             );
         }
@@ -184,6 +192,7 @@ class quiz_archiver_report extends report_base {
      * @param bool $reportkeephtmlfiles If true, HTML files are kept alongside PDFs
      * within the created archive
      * @param string $paperformat Paper format to use for attempt report generation
+     * @param bool $correctionmargin If true, a correction margin will be added to the reports
      * @param bool $exportquizbackup Complete quiz backup will be archived if true
      * @param bool $exportcoursebackup Complete course backup will be archived if true
      * @param bool $flattenarchive Exported archive will not have any directory structure if true
@@ -206,6 +215,7 @@ class quiz_archiver_report extends report_base {
         array $attemptfilters,
         bool $reportkeephtmlfiles,
         string $paperformat,
+        bool $correctionmargin,
         bool $exportquizbackup,
         bool $exportcoursebackup,
         bool $flattenarchive,
@@ -215,7 +225,7 @@ class quiz_archiver_report extends report_base {
         ?array $imageoptimize = null,
         ?int $retentionseconds = null
     ): ?ArchiveJob {
-        global $CFG, $USER;
+        global $USER;
 
         // Check permissions.
         require_capability('quiz/archiver:create', $this->context);
@@ -277,6 +287,8 @@ class quiz_archiver_report extends report_base {
             $jobsettings["export_report_section_$name"] = $value;
         }
 
+        $jobsettings['export_attempts_paper_format'] = $paperformat;
+        $jobsettings['export_attempts_correction_margin'] = $correctionmargin;
         $jobsettings['export_quiz_backup'] = $exportquizbackup ? '1' : '0';
         $jobsettings['export_course_backup'] = $exportcoursebackup ? '1' : '0';
         $jobsettings['archive_autodelete'] = $retentionseconds ? '1' : '0';
@@ -340,6 +352,28 @@ class quiz_archiver_report extends report_base {
     }
 
     /**
+     * Loads the job with the given jobid and ensures that it belongs to this quiz
+     *
+     * @param string $jobid UUID of the job to load
+     * @return ArchiveJob Job that belongs to this quiz
+     * @throws dml_exception If no job with the given jobid exists
+     * @throws moodle_exception If the job does not belong to this quiz
+     */
+    protected function get_job_in_context(string $jobid): ArchiveJob {
+        $job = ArchiveJob::get_by_jobid($jobid);
+
+        if (
+            $job->get_courseid() != $this->course->id ||
+            $job->get_cmid() != $this->cm->id ||
+            $job->get_quizid() != $this->quiz->id
+        ) {
+            throw new \moodle_exception('job_not_found_in_context', 'quiz_archiver');
+        }
+
+        return $job;
+    }
+
+    /**
      * Handles submitted forms.
      *
      * @return string|null HTML form rendering to display, if required.
@@ -364,7 +398,7 @@ class quiz_archiver_report extends report_base {
 
                 // Execute deletion.
                 $formdata = $jobdeleteform->get_data();
-                ArchiveJob::get_by_jobid($formdata->jobid)->delete();
+                $this->get_job_in_context($formdata->jobid)->delete();
 
                 redirect($this->base_url_with_alert(
                     \core\output\notification::NOTIFY_SUCCESS,
@@ -391,7 +425,7 @@ class quiz_archiver_report extends report_base {
 
                 // Execute deletion.
                 $formdata = $artifactdeleteform->get_data();
-                ArchiveJob::get_by_jobid($formdata->jobid)->delete_artifact();
+                $this->get_job_in_context($formdata->jobid)->delete_artifact();
 
                 redirect($this->base_url_with_alert(
                     \core\output\notification::NOTIFY_SUCCESS,
@@ -418,7 +452,7 @@ class quiz_archiver_report extends report_base {
 
                 // Execute signing.
                 $formdata = $jobsignform->get_data();
-                $tspmanager = ArchiveJob::get_by_jobid($formdata->jobid)->tspmanager();
+                $tspmanager = $this->get_job_in_context($formdata->jobid)->tspmanager();
                 $jobidlogstr = ' (' . get_string('jobid', 'quiz_archiver') . ': ' . $formdata->jobid . ')';
                 if ($tspmanager->has_tsp_timestamp()) {
                     redirect($this->base_url_with_alert(
@@ -483,6 +517,7 @@ class quiz_archiver_report extends report_base {
                         Report::build_attempts_filters_from_formdata($formdata),
                         $formdata->export_attempts_keep_html_files,
                         $formdata->export_attempts_paper_format,
+                        $formdata->export_attempts_correction_margin,
                         $formdata->export_quiz_backup,
                         $formdata->export_course_backup,
                         $formdata->export_flat_archive,
@@ -617,11 +652,11 @@ class quiz_archiver_report extends report_base {
         ?string $additional = null
     ): moodle_url {
         $url = $this->base_url();
-        $url->param('al', urlencode($level));
+        $url->param('al', $level);
         $url->param('ac', $closebutton ? '1' : '0');
-        $url->param('asid', urlencode($stridentifier));
+        $url->param('asid', $stridentifier);
         if ($additional !== null) {
-            $url->param('aa', urlencode($additional));
+            $url->param('aa', $additional);
         }
 
         return $url;

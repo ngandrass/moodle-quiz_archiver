@@ -117,6 +117,14 @@ if ($hassiteconfig) {
             PARAM_TEXT
         ));
 
+        // Skip TLS certificate verification.
+        $settings->add(new admin_setting_configcheckbox(
+            'quiz_archiver/skip_tls_verification',
+            get_string('setting_skip_tls_verification', 'quiz_archiver'),
+            get_string('setting_skip_tls_verification_desc', 'quiz_archiver'),
+            '0'
+        ));
+
         // Job Presets.
         $settings->add(new admin_setting_heading(
             'quiz_archiver/header_job_presets',
@@ -190,6 +198,16 @@ if ($hassiteconfig) {
             get_string('export_attempts_paper_format_help', 'quiz_archiver'),
             'A4',
             array_combine(Report::PAPER_FORMATS, Report::PAPER_FORMATS),
+        );
+        $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+        $settings->add($set);
+
+        // Export correction margin.
+        $set = new admin_setting_configcheckbox(
+            'quiz_archiver/job_preset_export_attempts_correction_margin',
+            get_string('export_attempts_correction_margin', 'quiz_archiver'),
+            get_string('export_attempts_correction_margin_help', 'quiz_archiver'),
+            '0',
         );
         $set->set_locked_flag_options(admin_setting_flag::ENABLED, false);
         $settings->add($set);

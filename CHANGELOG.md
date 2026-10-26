@@ -1,5 +1,53 @@
 # Changelog
 
+## Version X.Y.Z (YYYYMMDDNN)
+
+- Fail artifact uploads early with a descriptive error message if referenced Moodle upload draft file is out of scope
+- Abort upload file assembly gracefully and return proper error message if any expected file chunk is missing
+
+
+## Version 5.2.3 (2026102000)
+
+- Fix double-escape of HTML entities in info notification on quiz archive report page (Thanks to @PM84 !)
+
+
+## Version 5.2.2 (2026101100)
+
+- Allow site administrators to configure TLS certificate validation behavior. Default: Always validate. (Thanks to @PM84 !)
+- Harden image inlining logic during attempt report generation (Thanks to @PM84 !)
+- Prevent privileged users from deleting archive jobs from other quizzes by their UUID v4 (Thanks to @PM84 !)
+
+
+## Version 5.2.1 (2026100400)
+
+- Ensure compatibility with Moodle 5.3
+- Hide course navigation popover footer in Moodle 5.3 attempt reports
+- Force white page background color on attempt reports in Moodle 5.3
+- Fix autoinstall helper script for Moodle 5.3
+
+**Note:** Please also update your [moodle-archiving-worker](https://github.com/ngandrass/moodle-archiving-worker) to the latest version to ensure full compatibility with Moodle 5.3.
+
+
+## Version 5.2.0 (2026100200)
+
+- List all defined grade items individually below the overall quiz grade in attempt report headers
+- Create advanced settings option to add correction margins to the right side of generated attempt reports
+- Add human-readable date and time variables (`YYYY-MM-DD_HH-MM-SS`) for file and folder name patterns:
+    - `${opendatetime}`: Quiz opening date and time
+    - `${closedatetime}`: Quiz closing date and time
+    - `${startdatetime}`: Attempt start date and time
+    - `${finishdatetime}`: Attempt finish date and time
+- Escape job status description in job overview table (Thanks to @PM84)
+
+
+## Version 5.1.0 (2026090400)
+
+- Introduce "question internals" section that includes question metadata (question id, version, id number, tags) inside attempt reports
+- Display attempt user email address in attempt report header section
+- Add `${email}` variable to filename patterns. Dots inside email addresses are automatically replaced with underscores.
+- Add email field to exported `attempts_metadata.csv` file inside quiz archives
+
+
 ## Version 5.0.0 (2026081100)
 
 - **🚨 BREAKING 🚨** The companion service was renamed from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker"

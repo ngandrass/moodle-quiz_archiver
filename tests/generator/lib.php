@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 global $CFG; // @codeCoverageIgnore
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php'); // @codeCoverageIgnore
+require_once($CFG->dirroot . '/mod/quiz/locallib.php'); // @codeCoverageIgnore
 
 /**
  * Tests generator for the quiz_archiver plugin
@@ -48,6 +49,9 @@ class quiz_archiver_generator extends \testing_data_generator {
         'multianswer',
         'gapselect',
     ];
+
+    /** @var string Filename of the image embedded in a question text of the default reference quiz (not part of the backup) */
+    const REFERENCE_QUIZ_QUESTION_IMAGE = 'test-pattern-152459_1920.png';
 
     /** @var array<string, array{backupfile: string, quizname: string}> Available quiz fixtures for testing */
     const QUIZ_FIXTURES = [
@@ -162,6 +166,7 @@ class quiz_archiver_generator extends \testing_data_generator {
         return get_file_storage()->create_file_from_string(
             [
                 'contextid'    => $ctx->id,
+                'userid'       => $userid,
                 'component'    => 'user',
                 'filearea'     => $filearea,
                 'itemid'       => 0,
@@ -310,5 +315,44 @@ class quiz_archiver_generator extends \testing_data_generator {
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' .
             'eiusmod tempor incididunt ut labore et dolore magna aliqua.'
         );
+    }
+
+    /**
+     * Locates the question that embeds REFERENCE_QUIZ_QUESTION_IMAGE inside the
+     * given attempt of the default reference quiz and stores the image file for it.
+     *
+     * The image file itself is not part of the reference course backup and
+     * therefore has to be created separately whenever needed.
+     *
+     * @param int $attemptid ID of an attempt of the default reference quiz
+     * @param int $cmid ID of the course module of the reference quiz
+     * @return array [\question_usage_by_activity $quba, int $slot, \question_definition $question]
+     * @throws \coding_exception If no question embeds REFERENCE_QUIZ_QUESTION_IMAGE
+     * @throws \file_exception
+     * @throws \moodle_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function create_reference_question_image(int $attemptid, int $cmid): array {
+        $attemptobj = quiz_create_attempt_handling_errors($attemptid, $cmid);
+        $quba = \question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
+
+        foreach ($quba->get_slots() as $slot) {
+            $question = $quba->get_question($slot, false);
+            if (str_contains($question->questiontext, self::REFERENCE_QUIZ_QUESTION_IMAGE)) {
+                get_file_storage()->create_file_from_string([
+                    'contextid' => $question->contextid,
+                    'component' => 'question',
+                    'filearea' => 'questiontext',
+                    'itemid' => $question->id,
+                    'filepath' => '/',
+                    'filename' => self::REFERENCE_QUIZ_QUESTION_IMAGE,
+                ], 'REFERENCE-QUESTION-IMAGE-DATA');
+                return [$quba, $slot, $question];
+            }
+        }
+
+        // @codeCoverageIgnoreStart
+        throw new \coding_exception('Reference question containing ' . self::REFERENCE_QUIZ_QUESTION_IMAGE . ' not found');
+        // @codeCoverageIgnoreEnd
     }
 }

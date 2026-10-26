@@ -774,4 +774,31 @@ final class filemanager_test extends \advanced_testcase {
             $this->assertNotEmpty(get_file_storage()->get_file_by_id($file->get_id()), 'Active temp file was falsely deleted');
         }
     }
+
+    /**
+     * Test that reassembly is aborted gracefully if a chunk is missing
+     *
+     * @covers \quiz_archiver\FileManager::reasamble_chunked_file
+     *
+     * @return void
+     * @throws \file_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_reasamble_chunked_file_with_missing_chunk(): void {
+        // Prepare mocks.
+        $this->resetAfterTest();
+        $userreference = $this->getDataGenerator()->create_user();
+        $usercontext = \context_user::instance($userreference->id);
+        $originalfilename = 'testfile.tar.gz';
+
+        // Create mock chunk files with the middle one missing.
+        $this->getDataGenerator()->create_draft_file($originalfilename . '.chunk000000000.bin', userid: $userreference->id);
+        $this->getDataGenerator()->create_draft_file($originalfilename . '.chunk000000002.bin', userid: $userreference->id);
+
+        // Try to rassemble individual chunks to the "original file".
+        $this->assertNull(
+            FileManager::reasamble_chunked_file($usercontext->id, 0, '/', $originalfilename, 3),
+            'Reassembly with a missing chunk did not fail'
+        );
+    }
 }

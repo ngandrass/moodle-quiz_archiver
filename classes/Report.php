@@ -25,6 +25,8 @@
 namespace quiz_archiver;
 
 use curl;
+use mod_quiz\grade_calculator;
+use mod_quiz\output\grades\grade_out_of;
 use mod_quiz\quiz_attempt;
 
 // @codingStandardsIgnoreLine
@@ -55,6 +57,7 @@ class Report {
         "question",
         "question_correctness",
         "question_marks",
+        "question_internals",
         "question_feedback",
         "general_feedback",
         "rightanswer",
@@ -70,6 +73,7 @@ class Report {
         "quiz_grade" => ["header"],
         "question_correctness" => ["question"],
         "question_marks" => ["question"],
+        "question_internals" => ["question"],
         "question_feedback" => ["question"],
         "general_feedback" => ["question"],
         "rightanswer" => ["question"],
@@ -219,7 +223,7 @@ class Report {
         // Get all requested attempts.
         return $DB->get_records_sql(
             "SELECT qa.id AS attemptid, qa.userid, qa.attempt, qa.state, qa.timestart, qa.timefinish, " .
-            "       u.username, u.firstname, u.lastname, u.idnumber " .
+            "       u.username, u.firstname, u.lastname, u.email, u.idnumber " .
             "FROM {quiz_attempts} qa LEFT JOIN {user} u ON qa.userid = u.id " .
             "WHERE qa.preview = 0 AND qa.quiz = :quizid " . ($filterwhereclause ?? ''),
             [
@@ -523,6 +527,13 @@ class Report {
                 $OUTPUT->render($userpicture) . '&nbsp;' . $OUTPUT->render($userlink)
             );
 
+            // User email.
+            $summaryinfo->add_item(
+                'useremail',
+                get_string('email'),
+                $attemptuser->email ?: '<i>' . get_string('none') . '</i>'
+            );
+
             // User ID number.
             $summaryinfo->add_item(
                 'useridnumber',
@@ -593,6 +604,23 @@ class Report {
                             $formattedgrade = get_string('outof', 'quiz', $a);
                         }
                         $summaryinfo->add_item('grade', get_string('gradenoun'), $formattedgrade);
+
+                        // Grades for extra grade items, if any.
+                        if (!is_null($grade)) {
+                            foreach ($attemptobj->get_grade_item_totals() as $gradeitemid => $gradeoutof) {
+                                $summaryinfo->add_item(
+                                    'marks' . $gradeitemid,
+                                    format_string($gradeoutof->name),
+                                    new grade_out_of(
+                                        $quiz,
+                                        $gradeoutof->grade,
+                                        $gradeoutof->maxgrade,
+                                        style: abs($gradeoutof->maxgrade - 100) < grade_calculator::ALMOST_ZERO ?
+                                            grade_out_of::NORMAL : grade_out_of::WITH_PERCENT
+                                    )
+                                );
+                            }
+                        }
                     }
                 }
             }
@@ -651,17 +679,52 @@ class Report {
                     $displayoptions->marks = \question_display_options::HIDDEN;
                 }
 
-                // Render question as HTML.
+                // Handle questions that have been moved around in the quiz after the attempt.
                 if ($slot != $originalslot) {
                     $attemptobj->get_question_attempt($slot)->set_max_mark(
                         $attemptobj->get_question_attempt($originalslot)->get_max_mark()
                     );
                 }
+
+                // Section: Question internals (ID, ID number, tags, version).
+                if ($sections['question_internals']) {
+                    $html .= $this->render_question_internals($attemptobj->get_question_attempt($slot)->get_question());
+                }
+
+                // Render question as HTML.
                 $html .= $quba->render_question($slot, $displayoptions, $number);
             }
         }
 
         return $html;
+    }
+
+    /**
+     * Renders an inline metadata block for the given question, containing its
+     * ID, ID number, tags, and question bank version. Used by the
+     * question_internals report section.
+     *
+     * @param \question_definition $question Question to render the metadata for
+     * @return string HTML DOM of the rendered question metadata block
+     *
+     * @throws \coding_exception
+     */
+    protected function render_question_internals(\question_definition $question): string {
+        global $OUTPUT;
+
+        // ID number: show placeholder if unset.
+        $idnumber = ($question->idnumber !== null && $question->idnumber !== '') ? s($question->idnumber) : null;
+
+        // Tags: rendered as pill badges via core's tag renderer.
+        $tagobjects = \core_tag_tag::get_item_tags('core_question', 'question', $question->id);
+        $tagshtml = !empty($tagobjects) ? $OUTPUT->tag_list($tagobjects, null, 'd-inline', 0, null, true) : null;
+
+        return $OUTPUT->render_from_template('quiz_archiver/components/question_internals', [
+            'id' => $question->id,
+            'version' => $question->version,
+            'idnumber' => $idnumber,
+            'tags' => $tagshtml,
+        ]);
     }
 
     /**
@@ -676,6 +739,8 @@ class Report {
      * stripped from the generated HTML DOM
      * @param bool $inlineimages If true, all images will be inlined as base64
      * to prevent rendering issues on user side
+     * @param int $marginpercent Percentage of correction margin to add to the
+     * right of the report
      *
      * @return string HTML DOM of the rendered quiz attempt report
      *
@@ -689,7 +754,8 @@ class Report {
         array $sections,
         bool $fixrelativeurls = true,
         bool $minimal = true,
-        bool $inlineimages = true
+        bool $inlineimages = true,
+        int $marginpercent = 0,
     ): string {
         global $CFG, $OUTPUT, $PAGE;
 
@@ -697,6 +763,8 @@ class Report {
         // This can be used to add additional styling to the quiz report page accessed by the worker,
         // for example by specifying additional (s)css in the theme scss setting in the moodle administration.
         $PAGE->add_body_class('quiz-archiver-report');
+
+        $PAGE->activityheader->disable();
 
         // Build HTML tree.
         $html = "";
@@ -732,6 +800,11 @@ class Report {
                     #region-main * {
                         visibility: visible;
                     }
+
+                    #sticky-footer,
+                    footer {
+                        display: none !important;
+                    }
                 }
 
                 /* Ensure that parent container (invisible) does not cause additional margings or paddings */
@@ -744,6 +817,11 @@ class Report {
 
                 div#page-wrapper {
                     height: initial !important;
+                }
+
+                /* Force white background color of main container (Moodle >= 5.3) */
+                body {
+                    --bs-body-bg: #fff !important;
                 }
 
                 /* Prevent STACK input errors breaking the page */
@@ -775,11 +853,28 @@ class Report {
 
         // Convert all local images to base64 if desired.
         if ($inlineimages) {
+            $attemptobj = quiz_create_attempt_handling_errors($attemptid, $this->cm->id);
+            $quba = \question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
+
             foreach ($dom->getElementsByTagName('img') as $img) {
-                if (!$this->convert_image_to_base64($img)) {
+                if (!$this->convert_image_to_base64($img, $quba)) {
                     $img->setAttribute('x-debug-inlining-failed', 'true');
                 }
             }
+        }
+
+        // Add correction margin if desired.
+        if ($marginpercent > 0) {
+            $correctionmargincssnode = $dom->createElement("style", "
+                /* Add correction margin to the right of the page */
+                #region-main {
+                    margin-right: {$marginpercent}% !important;
+                }
+            ");
+            $dom->getElementsByTagName('head')[0]->appendChild($correctionmargincssnode);
+        }
+        if ($marginpercent > 100 || $marginpercent < 0) {
+            throw new \coding_exception('Correction margin percent must be between 0 and 100');
         }
 
         return $dom->saveHTML();
@@ -793,7 +888,7 @@ class Report {
     const REGEX_MOODLE_URL_PLUGINFILE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)(\/(?P<itemid>\d+))?\/(?P<args>.*)?\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle file API URLs of specific types: component=(question|qtype_.*) */
-    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<questionbank_id>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))$/m';
+    const REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE = '/^(?P<wwwroot>https?:\/\/.+)?(\/pluginfile\.php)(?P<fullpath>\/(?P<contextid>[^\/]+)\/(?P<component>[^\/]+)\/(?P<filearea>[^\/]+)\/(?P<qubaid>[^\/]+)\/(?P<question_slot>[^\/]+)\/(?P<itemid>\d+)\/(?P<filename>[^\/\?\&\#]+))$/m';
 
     /** @var string Regex for Moodle theme image files */
     const REGEX_MOODLE_URL_THEME_IMAGE = '/^(?P<wwwroot>https?:\/\/.+)?(\/theme\/image\.php\/)(?P<themename>[^\/]+)\/(?P<component>[^\/]+)\/(?P<rev>[^\/]+)\/(?P<image>.+)$/m';
@@ -817,10 +912,12 @@ class Report {
      * happens in-place.
      *
      * @param \DOMElement $img The <img> element to process
+     * @param \question_usage_by_activity $quba The question usage by activity object to use for context checks
      * @return bool true on success
+     * @throws \coding_exception
      * @throws \dml_exception
      */
-    protected function convert_image_to_base64(\DOMElement $img): bool {
+    protected function convert_image_to_base64(\DOMElement $img, \question_usage_by_activity $quba): bool {
         global $CFG;
 
         // Only process images with src attribute.
@@ -843,7 +940,7 @@ class Report {
         $imgsrcurl = $this->ensure_absolute_url($imgsrc, $moodlebaseurl);
 
         // Make sure to only process web URLs and nothing that somehow remained a valid local filepath.
-        if (!substr($imgsrcurl, 0, 4) === "http") { // Yes, this includes https as well ;).
+        if (!str_starts_with($imgsrcurl, 'http')) { // Yes, this includes https as well ;).
             $img->setAttribute('x-debug-notice', 'not a web URL');
             return false;
         }
@@ -874,14 +971,21 @@ class Report {
                 // inserting questionbank_id and question_slot after filearea ...
                 if ($regexmatches['component'] == 'question' || strpos($regexmatches['component'], 'qtype_') === 0) {
                     $regexmatches = null;
+                    $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
                     if (!preg_match(self::REGEX_MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE, $imgsrcurl, $regexmatches)) {
-                        $img->setAttribute('x-url-type', 'MOODLE_URL_PLUGINFILE_QUESTION_AND_QTYPE');
+                        $img->setAttribute('x-debug-notice', 'malformed pluginfile URL for question/qtype file');
                         return false;
                     }
                 }
 
                 // Decode RFC 3986 URL escaped sequences.
                 $regexmatches['filename'] = urldecode($regexmatches['filename']);
+
+                // Only inline images from allowed contexts (e.g., questions of this attempt).
+                if (!$this->is_pluginfile_access_allowed($regexmatches, $quba)) {
+                    $img->setAttribute('x-debug-notice', 'file access denied');
+                    return false;
+                }
 
                 // Get file content via Moodle File API.
                 $fs = get_file_storage();
@@ -934,7 +1038,9 @@ class Report {
 
             // No special local file access. Try to download via HTTP request.
             $c = new curl(['ignoresecurity' => $isinternalurl]);
-            $imgdata = $c->get($imgsrcurl);  // Curl handle automatically closed.
+            $imgdata = $c->get($imgsrcurl, [], [  // Curl handle automatically closed.
+                'CURLOPT_SSL_VERIFYPEER' => empty($config->skip_tls_verification),
+            ]);
             if ($c->get_info()['http_code'] !== 200 || $imgdata === false) {
                 $img->setAttribute('x-debug-more', $imgdata);
                 $img->setAttribute('x-debug-notice', 'HTTP request failed');
@@ -960,6 +1066,70 @@ class Report {
         $img->setAttribute('src', 'data:' . $imgmime . ';base64,' . $imgbase64);
 
         return true;
+    }
+
+    /**
+     * Checks whether a file referenced by a pluginfile URL may be inlined into a report of this quiz
+     *
+     * Allowed are files within the course of this quiz and question files from the context of a
+     * question that is used in an attempt of this quiz (e.g., a shared question bank in another course).
+     * The check for question-related files is delegated to the question's own file access check logic.
+     *
+     * @param array $urlparts Matched named regex groups of REGEX_MOODLE_URL_PLUGINFILE(_QUESTION_AND_QTYPE)
+     * @param \question_usage_by_activity $quba The question usage by activity of the attempt this report is for
+     * @return bool True if the file may be inlined
+     * @throws \coding_exception
+     */
+    protected function is_pluginfile_access_allowed(array $urlparts, \question_usage_by_activity $quba): bool {
+        // Parse commong URL parts.
+        $contextid = clean_param($urlparts['contextid'], PARAM_INT);
+        $component = clean_param($urlparts['component'], PARAM_TEXT);
+        $filearea = clean_param($urlparts['filearea'], PARAM_TEXT);
+
+        // Validate file context.
+        $filectx = $contextid ? \context::instance_by_id($contextid, IGNORE_MISSING) : null;
+        if (!$filectx) {
+            return false;
+        }
+
+        $quizctx = \context_module::instance($this->cm->id);
+        $coursectx = $quizctx->get_course_context();
+
+        // Validate question files: Must belong to a question of this attempt and pass the question's own access checks.
+        if ($component === 'question' || str_starts_with($component, 'qtype_')) {
+            $qubaid = clean_param($urlparts['qubaid'], PARAM_INT);
+            $slot = clean_param($urlparts['question_slot'], PARAM_INT);
+
+            // File must match attempt quba and one slot.
+            if ($qubaid !== (int) $quba->get_id()) {
+                return false;
+            }
+
+            if (!in_array($slot, $quba->get_slots())) {
+                return false;
+            }
+
+            // Delegate access check to the question's own file access check logic.
+            $options = new \question_display_options();
+            $options->readonly = true;
+            $options->history = \question_display_options::VISIBLE;
+
+            return $quba->check_file_access(
+                $slot,
+                $options,
+                $component,
+                $filearea,
+                [$urlparts['itemid'], $urlparts['filename']],
+                false
+            );
+        }
+
+        // Allow files directly inside the quiz and course.
+        if ($filectx->id === $quizctx->id || $filectx->id === $coursectx->id) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -1007,5 +1177,24 @@ class Report {
 
         // Absolute URL is ready!
         return $scheme . '://' . $abs;
+    }
+
+    /**
+     * Selects an appropriate correction margin size (percent) based on the
+     * given paper format.
+     *
+     * @param string $paperformat Percent of correction margin (0 - 100) to add
+     * @return int
+     */
+    public static function get_correction_margin_percent(string $paperformat): int {
+        return match ($paperformat) {
+            'A6' => 15,
+            'A5' => 20,
+            'A4', 'Letter', 'Legal' => 25,
+            'A3', 'Ledger' => 20,
+            'A2' => 15,
+            'A1', 'A0' => 10,
+            default => 0,
+        };
     }
 }

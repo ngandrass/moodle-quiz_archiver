@@ -127,7 +127,7 @@ class job_overview_table extends \table_sql {
                     'badge_text' => $s['text'],
                     'badge_color' => $s['color'],
                     'tooltip_text' => $s['help'],
-                    'progress' => isset($s['statusextras']['progress']) ? $s['statusextras']['progress'] : null,
+                    'progress' => $s['statusextras']['progress'] ?? null,
                     'time_modified' => $values->timemodified,
                 ]
             ) .

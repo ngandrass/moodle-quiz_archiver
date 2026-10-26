@@ -47,17 +47,17 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
      *
      * @param string $jobid Job ID
      * @param int $cmid Course module ID
-     * @param int $userid User ID
+     * @param int $userid ID of the user whose draft area the artifact resides in
      * @param int $artifactcount Number of individually uploaded artifacts
      * @return array Valid request parameters
      */
     protected function generate_valid_request(string $jobid, int $cmid, int $userid, int $artifactcount): array {
         return [
             'jobid' => $jobid,
-            'artifact_component' => FileManager::COMPONENT_NAME,
-            'artifact_contextid' => \context_module::instance($cmid)->id,
+            'artifact_component' => 'user',
+            'artifact_contextid' => \context_user::instance($userid)->id,
             'artifact_userid' => $userid,
-            'artifact_filearea' => FileManager::TEMP_FILEAREA_NAME,
+            'artifact_filearea' => 'draft',
             'artifact_filename' => 'artifact.tar.gz',
             'artifact_filepath' => '/',
             'artifact_itemid' => 1,
@@ -397,7 +397,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Execute test call.
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, $artifactcount);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, get_admin()->id, $artifactcount);
         $this->assertSame(
             ['status' => 'E_INVALID_ARTIFACT_COUNT'],
             process_uploaded_artifact::execute(
@@ -448,7 +448,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
         $this->setAdminUser();
 
         // Execute test call.
-        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, $mocks->user->id, 1);
+        $r = $this->generate_valid_request($job->get_jobid(), $mocks->quiz->cmid, get_admin()->id, 1);
         $this->assertSame(['status' => 'E_UPLOADED_ARTIFACT_NOT_FOUND'], process_uploaded_artifact::execute(
             $r['jobid'],
             $r['artifact_component'],
@@ -492,7 +492,7 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             [],
             []
         );
-        $artifact = $this->getDataGenerator()->create_draft_file('testartifact.tar.gz');
+        $artifact = $this->getDataGenerator()->create_draft_file('testartifact.tar.gz', userid: get_admin()->id);
 
         // Gain access.
         $_GET['wstoken'] = 'TEST-WS-TOKEN';
@@ -512,5 +512,90 @@ final class process_uploaded_artifact_test extends \advanced_testcase {
             '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
             $r['artifact_count']
         ));
+    }
+
+    /**
+     * Tests that only artifacts from the draft area of the calling webservice
+     * user are processed and foreign draft files are left untouched
+     *
+     * @dataProvider foreign_draft_file_data_provider
+     * @covers \quiz_archiver\external\process_uploaded_artifact
+     *
+     * @param bool $foreigncontext If true, the artifact resides in the draft area of another user
+     * @param array $overrides Request parameters to override
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws \stored_file_creation_exception
+     */
+    public function test_rejection_of_foreign_draft_file(bool $foreigncontext, array $overrides): void {
+        // Create job and draft artifact.
+        $this->resetAfterTest();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = ArchiveJob::create(
+            '50000000-1234-5678-abcd-ef4242424242',
+            $mocks->course->id,
+            $mocks->quiz->cmid,
+            $mocks->quiz->id,
+            $mocks->user->id,
+            null,
+            'TEST-WS-TOKEN',
+            [],
+            []
+        );
+        $artifact = $this->getDataGenerator()->create_draft_file(
+            'testartifact.tar.gz',
+            userid: $foreigncontext ? $mocks->user->id : get_admin()->id
+        );
+
+        // Gain access.
+        $_GET['wstoken'] = 'TEST-WS-TOKEN';
+        $this->setAdminUser();
+
+        // Execute test call with a mismatching checksum that would delete the draft file if it was processed.
+        $r = array_merge([
+            'artifact_component' => $artifact->get_component(),
+            'artifact_contextid' => $artifact->get_contextid(),
+            'artifact_userid' => (int) $artifact->get_userid(), // Int cast is required since Moodle likes to return strings here...
+            'artifact_filearea' => $artifact->get_filearea(),
+        ], $overrides);
+        $this->assertSame(['status' => 'E_ACCESS_DENIED'], process_uploaded_artifact::execute(
+            $job->get_jobid(),
+            $r['artifact_component'],
+            $r['artifact_contextid'],
+            $r['artifact_userid'],
+            $r['artifact_filearea'],
+            $artifact->get_filename(),
+            $artifact->get_filepath(),
+            $artifact->get_itemid(),
+            '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+            1
+        ));
+
+        // Ensure that neither the draft file nor the job were touched.
+        $this->assertNotEmpty(get_file_storage()->get_file_by_id($artifact->get_id()), 'Draft file was falsely deleted');
+        $this->assertSame(
+            ArchiveJob::STATUS_UNKNOWN,
+            ArchiveJob::get_by_jobid($job->get_jobid())->get_status(),
+            'Job status was falsely changed'
+        );
+    }
+
+    /**
+     * Data provider for test_rejection_of_foreign_draft_file
+     *
+     * @return array[] Test data
+     */
+    public static function foreign_draft_file_data_provider(): array {
+        return [
+            'Draft area of another user' => ['foreigncontext' => true, 'overrides' => []],
+            'Wrong component' => ['foreigncontext' => false, 'overrides' => ['artifact_component' => 'quiz_archiver']],
+            'Wrong filearea' => ['foreigncontext' => false, 'overrides' => ['artifact_filearea' => 'private']],
+            'Wrong userid' => ['foreigncontext' => false, 'overrides' => ['artifact_userid' => -1]],
+        ];
     }
 }
