@@ -175,7 +175,7 @@ class quiz_archiver_report extends report_base {
         // Render output.
         echo $OUTPUT->render_from_template('quiz_archiver/job_overview/page', [
             'archiveQuizForm' => $archivequizform->render(),
-            'baseurl' => $this->base_url(),
+            'baseurl' => $this->base_url()->out(false),
             'jobOverviewTable' => $jobtblhtml,
         ]);
 
