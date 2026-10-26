@@ -35,6 +35,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use core_external\restricted_context_exception;
 use quiz_archiver\ArchiveJob;
 
 /**
@@ -368,6 +369,8 @@ class get_job_metadata extends external_api {
      * @throws \coding_exception
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
+     * @throws \require_login_exception
+     * @throws restricted_context_exception
      */
     public static function execute(
         string $jobidraw,
@@ -382,13 +385,14 @@ class get_job_metadata extends external_api {
 
             // Check capabilities.
             $context = \context_module::instance($job->get_cmid());
-            require_capability('quiz/archiver:use_webservice', $context);
+            self::validate_context($context);
+            require_capability('quiz/archiver:view', $context);
 
             // Housekeeping.
-            $job->timeout_if_overdue(get_config('quiz_archiver')->job_timeout_min);
+            $config = get_config('quiz_archiver');
+            $job->timeout_if_overdue($config->job_timeout_min);
 
             // Build response.
-            $config = get_config('quiz_archiver');
             $metadata = $job->get_metadata();
             $statusextras = $job->get_statusextras();
             $jobdata = [

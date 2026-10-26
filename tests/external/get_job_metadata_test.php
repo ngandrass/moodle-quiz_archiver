@@ -99,12 +99,79 @@ final class get_job_metadata_test extends \advanced_testcase {
         $this->ensure_config();
         $mocks = $this->getDataGenerator()->create_mock_quiz();
         $job = $this->make_job($mocks, '10000000-1234-5678-abcd-ef4242424242');
-        $_GET['wstoken'] = 'TEST-WS-TOKEN';
 
-        // The default (non-privileged) current user must be rejected.
+        // Students can access the course but must not see archive jobs.
+        $student = $this->getDataGenerator()->create_and_enrol($mocks->course, 'student');
+        $this->setUser($student);
+
         $this->expectException(\required_capability_exception::class);
-        $this->expectExceptionMessageMatches('/.*' . preg_quote(get_string('archiver:use_webservice', 'quiz_archiver')) . '.*/');
+        $this->expectExceptionMessageMatches('/.*' . preg_quote(get_string('archiver:view', 'quiz_archiver')) . '.*/');
         get_job_metadata::execute($job->get_jobid());
+    }
+
+    /**
+     * Test that users that can not access the course are rejected
+     *
+     * @covers \quiz_archiver\external\get_job_metadata::execute
+     *
+     * @return void
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws \DOMException
+     */
+    public function test_course_access_requirement(): void {
+        $this->resetAfterTest();
+        $this->ensure_config();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = $this->make_job($mocks, '11000000-1234-5678-abcd-ef4242424242');
+
+        // A user that is not enrolled in the course must be rejected.
+        $this->setUser($this->getDataGenerator()->create_user());
+
+        $this->expectException(\require_login_exception::class);
+        get_job_metadata::execute($job->get_jobid());
+    }
+
+    /**
+     * Test that users with the view capability (but without webservice
+     * capability) are allowed to retrieve job metadata
+     *
+     * @dataProvider privileged_role_data_provider
+     * @covers       \quiz_archiver\external\get_job_metadata::execute
+     *
+     * @param string $role Shortname of the role to enrol the user with
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     */
+    public function test_access_with_view_capability(string $role): void {
+        $this->resetAfterTest();
+        $this->ensure_config();
+        $mocks = $this->getDataGenerator()->create_mock_quiz();
+        $job = $this->make_job($mocks, '12000000-1234-5678-abcd-ef4242424242');
+
+        $user = $this->getDataGenerator()->create_and_enrol($mocks->course, $role);
+        $this->setUser($user);
+
+        $res = get_job_metadata::execute($job->get_jobid());
+        $this->assertSame('OK', $res['status']);
+        $this->assertSame($job->get_jobid(), $res['job']['uuid']);
+    }
+
+    /**
+     * Data provider for test_access_with_view_capability
+     *
+     * @return array[] Test data
+     */
+    public static function privileged_role_data_provider(): array {
+        return [
+            'Non-editing teacher' => ['role' => 'teacher'],
+            'Editing teacher' => ['role' => 'editingteacher'],
+            'Manager' => ['role' => 'manager'],
+        ];
     }
 
     /**
@@ -154,7 +221,7 @@ final class get_job_metadata_test extends \advanced_testcase {
      * @throws \required_capability_exception
      */
     public function test_parameter_validation(?string $jobid, bool $shouldfail): void {
-        // Gain webservice permission.
+        // Gain view permission.
         $this->setAdminUser();
         $this->resetAfterTest();
         $this->ensure_config();
