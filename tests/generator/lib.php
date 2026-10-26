@@ -166,6 +166,7 @@ class quiz_archiver_generator extends \testing_data_generator {
         return get_file_storage()->create_file_from_string(
             [
                 'contextid'    => $ctx->id,
+                'userid'       => $userid,
                 'component'    => 'user',
                 'filearea'     => $filearea,
                 'itemid'       => 0,
