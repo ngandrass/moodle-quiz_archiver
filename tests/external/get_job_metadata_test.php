@@ -278,12 +278,14 @@ final class get_job_metadata_test extends \advanced_testcase {
         $job = $this->make_job($mocks, '30000000-1234-5678-abcd-ef4242424242', ArchiveJob::STATUS_RUNNING);
         $job->set_status(ArchiveJob::STATUS_RUNNING, ['progress' => 42]);
 
-        $res = get_job_metadata::execute($job->get_jobid());
+        $res = external_api::clean_returnvalue(
+            get_job_metadata::execute_returns(),
+            get_job_metadata::execute($job->get_jobid())
+        );
 
         // Top level.
         $this->assertSame('OK', $res['status']);
         $this->assertArrayHasKey('job', $res);
-        $this->assertArrayHasKey('display_args', $res);
 
         // Job core fields.
         $jobdata = $res['job'];
@@ -298,7 +300,6 @@ final class get_job_metadata_test extends \advanced_testcase {
         $this->assertEquals($mocks->quiz->id, $jobdata['quiz']['id']);
         $this->assertEquals($mocks->quiz->cmid, $jobdata['quiz']['cmid']);
         $this->assertIsArray($jobdata['settings']);
-        $this->assertEquals(42, $jobdata['statusextras']['progress']);
 
         // Required action URLs.
         $urls = $jobdata['actionurls'];
@@ -317,15 +318,14 @@ final class get_job_metadata_test extends \advanced_testcase {
         $this->assertTrue($jobdata['signature']['enabled']);
         $this->assertFalse($jobdata['autodelete']['enabled']);
         $this->assertFalse($jobdata['autodelete']['done']);
+        $this->assertIsString($jobdata['autodelete']['str']);
 
-        // Display args.
-        $display = $res['display_args'];
+        // Status display args.
         $this->assertSame(
             ArchiveJob::get_status_display_args(ArchiveJob::STATUS_RUNNING, $job->get_statusextras()),
-            $display['status']
+            $jobdata['status_display_args']
         );
-        $this->assertNull($display['filesize'], 'Filesize must be null without an artifact');
-        $this->assertIsString($display['autodelete_str']);
+        $this->assertEquals(42, $jobdata['status_display_args']['statusextras']['progress']);
 
         // No artifact.
         $this->assertArrayNotHasKey('artifact', $jobdata);
@@ -375,8 +375,8 @@ final class get_job_metadata_test extends \advanced_testcase {
         $this->assertStringContainsString('pluginfile.php', $jobdata['actionurls']['artifact_download']);
         $this->assertStringContainsString($artifactfilename, $jobdata['actionurls']['artifact_download']);
 
-        // Filesize surfaced as a display value.
-        $this->assertSame(display_size($artifact->get_filesize()), $res['display_args']['filesize']);
+        // Human readable filesize.
+        $this->assertSame(display_size($artifact->get_filesize()), $jobdata['artifact']['size_human']);
     }
 
     /**

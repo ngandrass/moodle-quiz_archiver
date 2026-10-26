@@ -149,14 +149,14 @@ require(
             // matches the webservice exactly, so the modal templates render it
             // without any further translation.
             let job = data.job;
-            let status = data.display_args.status;
+            let status = job.status_display_args;
             let context = {
                 jobid: job.uuid,
                 status: {
                     "badge_text": status.text,
                     "badge_color": status.color,
                     "tooltip_text": status.help,
-                    progress: job.statusextras && job.statusextras.progress ? job.statusextras.progress : null
+                    progress: status.statusextras && status.statusextras.progress ? status.statusextras.progress : null
                 },
                 timecreated: job.timecreated,
                 timemodified: job.timemodified,
@@ -166,10 +166,6 @@ require(
                 settings: job.settings,
                 signature: job.signature,
                 autodelete: job.autodelete,
-                "autodelete_str": data.display_args.autodelete_str,
-                "display_args": {
-                    filesize: data.display_args.filesize
-                },
                 actionurls: job.actionurls
             };
             if (job.artifact) {

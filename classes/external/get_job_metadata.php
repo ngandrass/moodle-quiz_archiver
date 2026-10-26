@@ -85,6 +85,38 @@ class get_job_metadata extends external_api {
                             'Raw job status enum string',
                             VALUE_REQUIRED,
                         ),
+                        'status_display_args' => new external_single_structure(
+                            [
+                                'color' => new external_value(
+                                    PARAM_TEXT,
+                                    'CSS color variant for the job status badge',
+                                    VALUE_REQUIRED,
+                                ),
+                                'text' => new external_value(
+                                    PARAM_TEXT,
+                                    'Localized human-readable status label',
+                                    VALUE_REQUIRED,
+                                ),
+                                'help' => new external_value(
+                                    PARAM_TEXT,
+                                    'Localized help text for the status badge',
+                                    VALUE_REQUIRED,
+                                ),
+                                'statusextras' => new external_single_structure(
+                                    [
+                                        'progress' => new external_value(
+                                            PARAM_INT,
+                                            'Progress of the job in percent',
+                                            VALUE_OPTIONAL,
+                                        ),
+                                    ],
+                                    'Additional status information for the job',
+                                    VALUE_REQUIRED,
+                                ),
+                            ],
+                            'Display arguments for the current job status',
+                            VALUE_REQUIRED,
+                        ),
                         'timecreated' => new external_value(
                             PARAM_INT,
                             'Timestamp of job creation',
@@ -183,17 +215,6 @@ class get_job_metadata extends external_api {
                             'List of archive settings captured for this job',
                             VALUE_REQUIRED,
                         ),
-                        'statusextras' => new external_single_structure(
-                            [
-                                'progress' => new external_value(
-                                    PARAM_INT,
-                                    'Progress of the job in percent',
-                                    VALUE_OPTIONAL,
-                                ),
-                            ],
-                            'Additional status information for the job',
-                            VALUE_OPTIONAL,
-                        ),
                         'artifact' => new external_single_structure(
                             [
                                 'name' => new external_value(
@@ -205,6 +226,11 @@ class get_job_metadata extends external_api {
                                     PARAM_INT,
                                     'Artifact file size in bytes',
                                     VALUE_OPTIONAL,
+                                ),
+                                'size_human' => new external_value(
+                                    PARAM_TEXT,
+                                    'Artifact file size as human readable string',
+                                    VALUE_REQUIRED,
                                 ),
                                 'checksum' => new external_value(
                                     PARAM_TEXT,
@@ -252,6 +278,11 @@ class get_job_metadata extends external_api {
                                 'done' => new external_value(
                                     PARAM_BOOL,
                                     'Whether the artifact has already been auto-deleted',
+                                    VALUE_REQUIRED,
+                                ),
+                                'str' => new external_value(
+                                    PARAM_TEXT,
+                                    'Human readable automatic-deletion status string',
                                     VALUE_REQUIRED,
                                 ),
                             ],
@@ -318,45 +349,8 @@ class get_job_metadata extends external_api {
                     'Complete data about the job, suitable for any client-side consumption',
                     VALUE_OPTIONAL,
                 ),
-                'display_args' => new external_single_structure(
-                    [
-                        'status' => new external_single_structure(
-                            [
-                            'color' => new external_value(
-                                PARAM_TEXT,
-                                'CSS color variant for the job status badge',
-                                VALUE_OPTIONAL,
-                            ),
-                            'text' => new external_value(
-                                PARAM_TEXT,
-                                'Localized human-readable status label',
-                                VALUE_OPTIONAL,
-                            ),
-                            'help' => new external_value(
-                                PARAM_TEXT,
-                                'Localized help text for the status badge',
-                                VALUE_OPTIONAL,
-                            ),
-                            ],
-                            'Display arguments for the current job status',
-                            VALUE_OPTIONAL,
-                        ),
-                        'filesize' => new external_value(
-                            PARAM_TEXT,
-                            'File size of artifact as formatted string',
-                            VALUE_OPTIONAL,
-                        ),
-                        'autodelete_str' => new external_value(
-                            PARAM_TEXT,
-                            'Human readable automatic-deletion status string',
-                            VALUE_REQUIRED,
-                        ),
-                    ],
-                    'Preformatted display values derived from the job',
-                    VALUE_OPTIONAL,
-                ),
             ],
-            'Job data and display values for client-side polling',
+            'Job data for client-side polling',
             VALUE_REQUIRED,
         );
     }
@@ -394,11 +388,11 @@ class get_job_metadata extends external_api {
 
             // Build response.
             $metadata = $job->get_metadata();
-            $statusextras = $job->get_statusextras();
             $jobdata = [
                 'uuid' => $job->get_jobid(),
                 'complete' => $job->is_complete(),
                 'status' => $job->get_status(),
+                'status_display_args' => $metadata['status_display_args'],
                 'timecreated' => $job->get_timecreated(),
                 'timemodified' => $job->get_timemodified(),
                 'user' => $metadata['user'],
@@ -411,6 +405,7 @@ class get_job_metadata extends external_api {
                 'autodelete' => [
                     'enabled' => (bool) $metadata['autodelete'],
                     'done' => (bool) $metadata['autodelete_done'],
+                    'str' => $metadata['autodelete_str'],
                 ],
                 'actionurls' => [
                     'showcontent' => $job->get_showcontents_url(),
@@ -425,18 +420,13 @@ class get_job_metadata extends external_api {
             ];
 
             // Optional data, only included while it is present.
-            if ($statusextras !== null) {
-                $jobdata['statusextras'] = $statusextras;
-            }
             if ($metadata['artifactfile'] !== null) {
-                // NOTE: Only the raw artifact facts are exposed here. The human
-                // NOTE: readable file size is a display value
-                // NOTE: (display_args.filesize) and the download URL is an
-                // NOTE: action URL (actionurls.artifact_download), so neither
-                // NOTE: is duplicated.
+                // NOTE: The download URL is an action URL
+                // NOTE: (actionurls.artifact_download), so it is not duplicated.
                 $jobdata['artifact'] = [
                     'name' => $metadata['artifactfile']['name'],
                     'size' => $metadata['artifactfile']['size'],
+                    'size_human' => $metadata['artifactfile']['size_human'],
                     'checksum' => $metadata['artifactfile']['checksum'],
                 ];
             }
@@ -455,16 +445,6 @@ class get_job_metadata extends external_api {
             return [
                 'status' => 'OK',
                 'job' => $jobdata,
-                'display_args' => [
-                    'status' => ArchiveJob::get_status_display_args(
-                        $job->get_status(),
-                        $statusextras
-                    ),
-                    'filesize' => $job->has_artifact() ?
-                        display_size($job->get_artifact()->get_filesize()) :
-                        null,
-                    'autodelete_str' => $metadata['autodelete_str'],
-                ],
             ];
         } catch (\dml_exception $e) {
             return [

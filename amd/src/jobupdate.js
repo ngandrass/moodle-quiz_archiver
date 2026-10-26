@@ -131,7 +131,7 @@ const updateJobs = async(jobIds) => {
         await renderStatusColumn(
             jobId,
             jobMetadata.job,
-            jobMetadata.display_args.status,
+            jobMetadata.job.status_display_args,
         );
 
         // Update modal if available.
@@ -145,7 +145,7 @@ const updateJobs = async(jobIds) => {
             // Update filesize column with rendered artifact size.
             document.querySelector(
                 getSpanSelector(jobId, "filesize-column")
-            ).innerHTML = jobMetadata.display_args.filesize;
+            ).innerHTML = jobMetadata.job.artifact?.size_human ?? '';
 
             // Update action buttons.
             await renderActionsColumn(jobId, jobMetadata.job.actionurls);
@@ -165,7 +165,7 @@ const updateJobs = async(jobIds) => {
  * webservice.
  *
  * @param {string} job The ID of the job to fetch the status for
- * @returns {Promise<object|null>} The webservice response containing "status", "job" and "display_args"
+ * @returns {Promise<object|null>} The webservice response containing "status" and "job"
  * @throws {Error} If the webservice call fails or returns a non-"OK" status
  */
 const getJobMetadata = async(job) => {
@@ -197,7 +197,7 @@ const getJobMetadata = async(job) => {
  *
  * @param {string} jobId The ID of the job whose status cell should be updated
  * @param {object} job The job data as returned by the webservice
- * @param {object} statusDisplayArgs The display arguments (color, text, help) for the status badge
+ * @param {object} statusDisplayArgs The display arguments (color, text, help, statusextras) for the status badge
  * @returns {Promise<void>}
  */
 const renderStatusColumn = async(jobId, job, statusDisplayArgs) => {
@@ -208,7 +208,7 @@ const renderStatusColumn = async(jobId, job, statusDisplayArgs) => {
             "badge_text": statusDisplayArgs.text,
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
-            "progress": job.statusextras?.progress ?? null,
+            "progress": statusDisplayArgs.statusextras?.progress ?? null,
             "time_modified": job.timemodified,
         }
     ).then(
@@ -268,13 +268,13 @@ const renderActionsColumn = async(jobId, urls) => {
  * data.
  *
  * @param {string} jobId The ID of the job whose modal should be updated
- * @param {object} jobMetadata The webservice response containing "job" and "display_args"
+ * @param {object} jobMetadata The webservice response containing "job"
  * @returns {Promise<void>}
  */
 const updateModal = async(jobId, jobMetadata) => {
 
     const job = jobMetadata.job;
-    const statusDisplayArgs = jobMetadata.display_args.status;
+    const statusDisplayArgs = job.status_display_args;
 
     // Render the status row.
     await Templates.renderForPromise(
@@ -283,7 +283,7 @@ const updateModal = async(jobId, jobMetadata) => {
             "badge_text": statusDisplayArgs.text,
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
-            "progress": job.statusextras?.progress ?? null,
+            "progress": statusDisplayArgs.statusextras?.progress ?? null,
         }
     ).then(
         ({html, js}) => {
@@ -308,9 +308,6 @@ const updateModal = async(jobId, jobMetadata) => {
         "signature": job.signature,
         "autodelete": job.autodelete,
         "actionurls": job.actionurls,
-        "display_args": {
-            "filesize": jobMetadata.display_args.filesize,
-        }
     };
     await Promise.all([
         renderModalCell(

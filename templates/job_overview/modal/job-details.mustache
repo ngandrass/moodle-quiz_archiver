@@ -52,6 +52,7 @@
             "artifact": {
                 "name":"quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz",
                 "size":"86915632",
+                "size_human":"82.89 MB",
                 "checksum":"3b837f73ea13991c6aaad9dd13d0c8b57dcaf2571a1d8c7ee1e7fb02b3a06048"
             },
             "signature": {
@@ -63,10 +64,8 @@
             },
             "autodelete": {
                 "enabled":true,
-                "done":false
-            },
-            "display_args": {
-                "filesize":"82.89 MB"
+                "done":false,
+                "str":"Automatic deletion in 3 months (01.11.2023, 10:00)"
             },
             "actionurls": {
                 "artifact_download":"http:\/\/127.0.0.1\/pluginfile.php\/201\/quiz_archiver\/artifact\/0\/31\/108\/36\/quiz_archive_cid31_cmid108_qid36_2023-07-26_113348.tar.gz?forcedownload=1",
@@ -122,7 +121,8 @@
             },
             "autodelete": {
                 "enabled":false,
-                "done":false
+                "done":false,
+                "str":"Disabled"
             },
             "settings": [
                 {
@@ -228,7 +228,7 @@
     {{! Row: Archive deletion mode }}
     <tr>
         <td>{{#str}} archive_autodelete_short, quiz_archiver {{/str}}</td>
-        <td>{{autodelete_str}}</td>
+        <td>{{autodelete.str}}</td>
     </tr>
 
     {{! Row: Settings }}
