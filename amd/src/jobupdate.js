@@ -171,10 +171,17 @@ const updateJobs = async(jobIds) => {
  */
 const getJobMetadata = async(job) => {
     try {
-        const data = await Ajax.call([{
-            methodname: 'quiz_archiver_get_job_metadata',
-            args: {jobid: job},
-        }])[0];
+        // Background polling must not refresh the session. Otherwise, an open
+        // report page would keep the user logged in until all jobs finished.
+        const data = await Ajax.call(
+            [{
+                methodname: 'quiz_archiver_get_job_metadata',
+                args: {jobid: job},
+            }],
+            true, // Async.
+            true, // Login required.
+            true, // No session update.
+        )[0];
 
         if (data.status !== 'OK' || !data.job) {
             throw Error(`Failed to retrieve job status: ${data.status}`);
