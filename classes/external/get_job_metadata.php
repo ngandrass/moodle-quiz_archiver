@@ -361,6 +361,7 @@ class get_job_metadata extends external_api {
      * @param string $jobidraw
      * @return array
      * @throws \coding_exception
+     * @throws \dml_exception
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception
      * @throws \require_login_exception
@@ -374,82 +375,81 @@ class get_job_metadata extends external_api {
             'jobid' => $jobidraw,
         ]);
 
+        // Validate that the jobid exists.
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
+        } catch (\dml_missing_record_exception $e) {
+            return ['status' => 'E_JOB_NOT_FOUND'];
+        }
 
-            // Check capabilities.
-            $context = \context_module::instance($job->get_cmid());
-            self::validate_context($context);
-            require_capability('quiz/archiver:view', $context);
+        // Check capabilities.
+        $context = \context_module::instance($job->get_cmid());
+        self::validate_context($context);
+        require_capability('quiz/archiver:view', $context);
 
-            // Housekeeping.
-            $config = get_config('quiz_archiver');
-            $job->timeout_if_overdue($config->job_timeout_min);
+        // Housekeeping.
+        $config = get_config('quiz_archiver');
+        $job->timeout_if_overdue($config->job_timeout_min);
 
-            // Build response.
-            $metadata = $job->get_metadata();
-            $jobdata = [
-                'uuid' => $job->get_jobid(),
-                'complete' => $job->is_complete(),
-                'status' => $job->get_status(),
-                'status_display_args' => $metadata['status_display_args'],
-                'timecreated' => $job->get_timecreated(),
-                'timemodified' => $job->get_timemodified(),
-                'user' => $metadata['user'],
-                'course' => $metadata['course'],
-                'quiz' => $metadata['quiz'],
-                'settings' => $metadata['settings'],
-                'signature' => [
-                    'enabled' => (bool) $config->tsp_enable,
-                ],
-                'autodelete' => [
-                    'enabled' => (bool) $metadata['autodelete'],
-                    'done' => (bool) $metadata['autodelete_done'],
-                    'str' => $metadata['autodelete_str'],
-                ],
-                'actionurls' => [
-                    'showcontent' => $job->get_showcontents_url(),
-                    'artifact_download' => $job->get_artifact_download_url(),
-                    'artifact_delete' => $job->get_delete_artifact_url(),
-                    'artifact_sign' => $job->get_sign_artifact_url(),
-                    'job_delete' => $job->get_delete_job_url(),
-                    'course' => (new \moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(false),
-                    'quiz' => (new \moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(false),
-                    'user' => (new \moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(false),
-                ],
-            ];
+        // Build response.
+        $metadata = $job->get_metadata();
+        $jobdata = [
+            'uuid' => $job->get_jobid(),
+            'complete' => $job->is_complete(),
+            'status' => $job->get_status(),
+            'status_display_args' => $metadata['status_display_args'],
+            'timecreated' => $job->get_timecreated(),
+            'timemodified' => $job->get_timemodified(),
+            'user' => $metadata['user'],
+            'course' => $metadata['course'],
+            'quiz' => $metadata['quiz'],
+            'settings' => $metadata['settings'],
+            'signature' => [
+                'enabled' => (bool) $config->tsp_enable,
+            ],
+            'autodelete' => [
+                'enabled' => (bool) $metadata['autodelete'],
+                'done' => (bool) $metadata['autodelete_done'],
+                'str' => $metadata['autodelete_str'],
+            ],
+            'actionurls' => [
+                'showcontent' => $job->get_showcontents_url(),
+                'artifact_download' => $job->get_artifact_download_url(),
+                'artifact_delete' => $job->get_delete_artifact_url(),
+                'artifact_sign' => $job->get_sign_artifact_url(),
+                'job_delete' => $job->get_delete_job_url(),
+                'course' => (new \moodle_url('/course/view.php', ['id' => $job->get_courseid()]))->out(false),
+                'quiz' => (new \moodle_url('/mod/quiz/view.php', ['id' => $job->get_cmid()]))->out(false),
+                'user' => (new \moodle_url('/user/profile.php', ['id' => $job->get_userid()]))->out(false),
+            ],
+        ];
 
-            // Optional data, only included while it is present.
-            if ($metadata['artifactfile'] !== null) {
-                // NOTE: The download URL is an action URL
-                // NOTE: (actionurls.artifact_download), so it is not duplicated.
-                $jobdata['artifact'] = [
-                    'name' => $metadata['artifactfile']['name'],
-                    'size' => $metadata['artifactfile']['size'],
-                    'size_human' => $metadata['artifactfile']['size_human'],
-                    'checksum' => $metadata['artifactfile']['checksum'],
-                ];
-            }
-            if ($metadata['tsp'] !== null) {
-                $jobdata['signature']['tsp'] = [
-                    'timecreated' => $metadata['tsp']['timecreated'],
-                    'server' => $metadata['tsp']['server'],
-                ];
-
-                // NOTE: The query/reply file download URLs are action URLs,
-                // NOTE: therefore they live in actionurls.
-                $jobdata['actionurls']['tsp_query_download'] = $metadata['tsp']['queryfiledownloadurl'];
-                $jobdata['actionurls']['tsp_reply_download'] = $metadata['tsp']['replyfiledownloadurl'];
-            }
-
-            return [
-                'status' => 'OK',
-                'job' => $jobdata,
-            ];
-        } catch (\dml_exception $e) {
-            return [
-                'status' => 'E_JOB_NOT_FOUND',
+        // Optional data, only included while it is present.
+        if ($metadata['artifactfile'] !== null) {
+            // NOTE: The download URL is an action URL
+            // NOTE: (actionurls.artifact_download), so it is not duplicated.
+            $jobdata['artifact'] = [
+                'name' => $metadata['artifactfile']['name'],
+                'size' => $metadata['artifactfile']['size'],
+                'size_human' => $metadata['artifactfile']['size_human'],
+                'checksum' => $metadata['artifactfile']['checksum'],
             ];
         }
+        if ($metadata['tsp'] !== null) {
+            $jobdata['signature']['tsp'] = [
+                'timecreated' => $metadata['tsp']['timecreated'],
+                'server' => $metadata['tsp']['server'],
+            ];
+
+            // NOTE: The query/reply file download URLs are action URLs,
+            // NOTE: therefore they live in actionurls.
+            $jobdata['actionurls']['tsp_query_download'] = $metadata['tsp']['queryfiledownloadurl'];
+            $jobdata['actionurls']['tsp_reply_download'] = $metadata['tsp']['replyfiledownloadurl'];
+        }
+
+        return [
+            'status' => 'OK',
+            'job' => $jobdata,
+        ];
     }
 }
