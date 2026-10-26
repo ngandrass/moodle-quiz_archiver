@@ -57,17 +57,17 @@ export const init = () => {
 };
 
 /**
- * Builds a CSS selector that targets a specific updatable span element on the
+ * Builds a CSS selector that targets a specific updatable element on the
  * job overview page.
  *
  * Each rendered table cell carries the table column name and the job ID as
  * custom HTML attributes, which are used to address it precisely.
  *
  * @param {string} jobId The ID of the job the targeted element belongs to
- * @param {string} ref The reference of target updatable span element
- * @returns {string} A CSS selector matching the targeted span
+ * @param {string} ref The reference of target updatable element
+ * @returns {string} A CSS selector matching the targeted element
  */
-const getSpanSelector = (jobId, ref) => `span[data-ref="${ref}"][data-jobid="${jobId}"]`;
+const getElementSelector = (jobId, ref) => `[data-ref="${ref}"][data-jobid="${jobId}"]`;
 
 /**
  * Collects the IDs of all jobs whose status is not yet finalized.
@@ -136,7 +136,7 @@ const updateJobs = async(jobIds) => {
             );
 
             // Update modal if available.
-            const modalElement = document.querySelector(getSpanSelector(jobId, "status-modal"));
+            const modalElement = document.querySelector(getElementSelector(jobId, "status-modal"));
             if (modalElement) {
                 await updateModal(jobId, jobMetadata);
             }
@@ -147,7 +147,7 @@ const updateJobs = async(jobIds) => {
             }
 
             // Update filesize column with rendered artifact size.
-            const filesizeElement = document.querySelector(getSpanSelector(jobId, "filesize-column"));
+            const filesizeElement = document.querySelector(getElementSelector(jobId, "filesize-column"));
             if (filesizeElement) {
                 filesizeElement.textContent = jobMetadata.job.artifact?.size_human ?? '';
             }
@@ -224,7 +224,7 @@ const renderStatusColumn = async(jobId, job) => {
     ).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
-                getSpanSelector(jobId, "status-column"),
+                getElementSelector(jobId, "status-column"),
                 html,
                 js,
             );
@@ -258,7 +258,7 @@ const renderActionsColumn = async(jobId, urls) => {
     ).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
-                getSpanSelector(jobId, "actions-column"),
+                getElementSelector(jobId, "actions-column"),
                 html,
                 js,
             );
@@ -297,7 +297,7 @@ const updateModal = async(jobId, jobMetadata) => {
     ).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
-                getSpanSelector(jobId, "status-modal"),
+                getElementSelector(jobId, "status-modal"),
                 html,
                 js,
             );
@@ -340,7 +340,7 @@ const updateModal = async(jobId, jobMetadata) => {
         )
     ).then((formattedDates) => {
         // NOTE: The modal could have been closed while the date was formatted.
-        const timemodifiedElement = document.querySelector(getSpanSelector(jobId, "timemodified-modal"));
+        const timemodifiedElement = document.querySelector(getElementSelector(jobId, "timemodified-modal"));
         if (timemodifiedElement) {
             timemodifiedElement.textContent = formattedDates[0];
         }
@@ -365,7 +365,7 @@ const renderModalCell = async(jobId, ref, template, context) => {
     await Templates.renderForPromise(template, context).then(
         ({html, js}) => {
             Templates.replaceNodeContents(
-                getSpanSelector(jobId, ref),
+                getElementSelector(jobId, ref),
                 html,
                 js,
             );

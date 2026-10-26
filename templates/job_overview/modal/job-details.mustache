@@ -105,9 +105,9 @@
         <tr>
             <td>{{#str}} status {{/str}}</td>
             <td>
-                <span data-ref="status-modal" data-jobid="{{jobid}}">
-                        {{> quiz_archiver/job_overview/fragment/status }}
-                </span>
+                <div data-ref="status-modal" data-jobid="{{jobid}}">
+                    {{> quiz_archiver/job_overview/fragment/status }}
+                </div>
             </td>
         </tr>
     {{/status}}
@@ -152,9 +152,9 @@
     <tr>
         <td>{{#str}} timemodified, reportbuilder {{/str}} </td>
         <td>
-            <span data-ref="timemodified-modal" data-jobid="{{jobid}}">
-        {{#userdate}} {{timemodified}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}
-        </span>
+            <div data-ref="timemodified-modal" data-jobid="{{jobid}}">
+                {{#userdate}} {{timemodified}}, {{#str}} strftimedatetimeaccurate, core_langconfig {{/str}} {{/userdate}}
+            </div>
         </td>
     </tr>
 
@@ -162,9 +162,9 @@
     <tr>
         <td class="align-middle">{{#str}} quiz_archive, quiz_archiver {{/str}}</td>
         <td>
-            <span data-ref="archive-modal" data-jobid="{{jobid}}">
+            <div data-ref="archive-modal" data-jobid="{{jobid}}">
                 {{> quiz_archiver/job_overview/fragment/artifact }}
-            </span>
+            </div>
         </td>
     </tr>
 
@@ -172,9 +172,9 @@
     <tr>
         <td class="align-middle">{{#str}} archive_signature, quiz_archiver {{/str}}</td>
         <td>
-            <span data-ref="signature-modal" data-jobid="{{jobid}}">
+            <div data-ref="signature-modal" data-jobid="{{jobid}}">
                 {{> quiz_archiver/job_overview/fragment/signature }}
-            </span>
+            </div>
         </td>
     </tr>
 
