@@ -127,14 +127,16 @@ require(
         notification,
         Str
     ) {
-        $('[data-ref="job-details-action"][data-jobid="{{job_id}}"]').click(async() => {
+        const jobId = {{#quote}}{{job_id}}{{/quote}};
+
+        $(`[data-ref="job-details-action"][data-jobid="${jobId}"]`).click(async() => {
             // Fetch the job's current data, then render the details modal from
             // it so that it always reflects the job's latest state.
             let data;
             try {
                 data = await AJAX.call([{
                     methodname: 'quiz_archiver_get_job_metadata',
-                    args: {jobid: '{{job_id}}'},
+                    args: {jobid: jobId},
                 }])[0];
             } catch (e) {
                 notification.exception(e);
