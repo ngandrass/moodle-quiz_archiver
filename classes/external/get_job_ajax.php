@@ -380,12 +380,12 @@ class get_job_ajax extends external_api {
         try {
             $job = ArchiveJob::get_by_jobid($params['jobid']);
 
-            // Housekeeping.
-            $job->timeout_if_overdue(get_config('quiz_archiver')->job_timeout_min);
-
             // Check capabilities.
             $context = \context_module::instance($job->get_cmid());
             require_capability('quiz/archiver:use_webservice', $context);
+
+            // Housekeeping.
+            $job->timeout_if_overdue(get_config('quiz_archiver')->job_timeout_min);
 
             // Build response.
             $config = get_config('quiz_archiver');
