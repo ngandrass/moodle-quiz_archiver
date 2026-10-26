@@ -27,6 +27,7 @@
         "badge_color": "primary",
         "tooltip_text": "The job is currently ...",
         "progress": "42",
+        "has_progress": true,
         "time_modified": "1445378400"
     }
 }}
@@ -42,12 +43,12 @@
     {{badge_text}}
 </span>
 <br/>
-{{#progress}}
+{{#has_progress}}
     <span title="{{#str}} progress, quiz_archiver {{/str}}">
         <i class="fa fa-spinner fa-spin"></i>&nbsp;{{progress}}%
     </span>
     <br/>
-{{/progress}}
+{{/has_progress}}
 {{#time_modified}}
 <small>
     {{#userdate}} {{time_modified}}, %c {{/userdate}}

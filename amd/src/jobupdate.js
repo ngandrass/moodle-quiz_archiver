@@ -205,6 +205,7 @@ const renderStatusColumn = async(jobId, job) => {
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
             "progress": statusDisplayArgs.statusextras?.progress ?? null,
+            "has_progress": (statusDisplayArgs.statusextras?.progress ?? null) !== null,
             "time_modified": job.timemodified,
         }
     ).then(
@@ -278,6 +279,7 @@ const updateModal = async(jobId, jobMetadata) => {
             "badge_color": statusDisplayArgs.color,
             "tooltip_text": statusDisplayArgs.help,
             "progress": statusDisplayArgs.statusextras?.progress ?? null,
+            "has_progress": (statusDisplayArgs.statusextras?.progress ?? null) !== null,
         }
     ).then(
         ({html, js}) => {

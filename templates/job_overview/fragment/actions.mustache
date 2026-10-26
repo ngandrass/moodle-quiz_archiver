@@ -150,13 +150,17 @@ require(
             // without any further translation.
             let job = data.job;
             let status = job.status_display_args;
+            let progress = status.statusextras && status.statusextras.progress !== undefined
+                ? status.statusextras.progress
+                : null;
             let context = {
                 jobid: job.uuid,
                 status: {
                     "badge_text": status.text,
                     "badge_color": status.color,
                     "tooltip_text": status.help,
-                    progress: status.statusextras && status.statusextras.progress ? status.statusextras.progress : null
+                    progress: progress,
+                    "has_progress": progress !== null
                 },
                 timecreated: job.timecreated,
                 timemodified: job.timemodified,
