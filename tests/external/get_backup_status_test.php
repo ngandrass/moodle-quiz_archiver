@@ -174,6 +174,11 @@ final class get_backup_status_test extends \advanced_testcase {
                 'backupid' => null,
                 'shouldfail' => true,
             ]),
+            'Invalid characters in jobid' => array_merge([
+                'jobid' => '20000000-1234-5678-abcd-ef4242424242; DROP',
+                'backupid' => null,
+                'shouldfail' => true,
+            ]),
             'Invalid backupid' => array_merge([
                 'jobid' => null,
                 'backupid' => '<a href="localhost">Bar</a>',

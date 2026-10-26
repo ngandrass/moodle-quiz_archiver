@@ -47,7 +47,7 @@ class artifact_delete_form extends \moodleform {
         $mform = $this->_form;
 
         // Find job.
-        $job = ArchiveJob::get_by_jobid($this->optional_param('jobid', null, PARAM_TEXT));
+        $job = ArchiveJob::get_by_jobid($this->optional_param('jobid', null, PARAM_ALPHANUMEXT));
         $artifactfile = $job->get_artifact();
 
         // Generic warning message.
@@ -94,7 +94,7 @@ class artifact_delete_form extends \moodleform {
             $mform->addElement('hidden', 'action', 'delete_artifact');
             $mform->setType('action', PARAM_TEXT);
             $mform->addElement('hidden', 'jobid', $job->get_jobid());
-            $mform->setType('jobid', PARAM_TEXT);
+            $mform->setType('jobid', PARAM_ALPHANUMEXT);
 
             // Action buttons.
             $this->add_action_buttons(true, get_string('delete', 'moodle'));

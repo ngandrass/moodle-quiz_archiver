@@ -256,6 +256,10 @@ final class get_job_metadata_test extends \advanced_testcase {
                 'jobid' => '<a href="localhost">Foo</a>',
                 'shouldfail' => true,
             ],
+            'Invalid characters in jobid' => [
+                'jobid' => '20000000-1234-5678-abcd-ef4242424242; DROP',
+                'shouldfail' => true,
+            ],
         ];
     }
 

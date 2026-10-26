@@ -192,6 +192,11 @@ final class update_job_status_test extends \advanced_testcase {
                 'status' => ArchiveJob::STATUS_UNINITIALIZED,
                 'shouldfail' => true,
             ],
+            'Invalid characters in jobid' => [
+                'jobid' => '20000000-1234-5678-abcd-ef4242424242; DROP',
+                'status' => ArchiveJob::STATUS_UNINITIALIZED,
+                'shouldfail' => true,
+            ],
             'Invalid status' => [
                 'jobid' => '00000000-1234-5678-abcd-ef4242424242',
                 'status' => '<a href="localhost">Bar</a>',

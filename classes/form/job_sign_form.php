@@ -45,8 +45,8 @@ class job_sign_form extends \moodleform {
 
         // Warning message.
         $warnhead = get_string('areyousure', 'moodle');
-        $warnmsg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_TEXT));
-        $warndetails = get_string('jobid', 'quiz_archiver') . ': ' . $this->optional_param('jobid', null, PARAM_TEXT);
+        $warnmsg = get_string('sign_archive_warning', 'quiz_archiver', $this->optional_param('jobid', null, PARAM_ALPHANUMEXT));
+        $warndetails = get_string('jobid', 'quiz_archiver') . ': ' . $this->optional_param('jobid', null, PARAM_ALPHANUMEXT);
         $mform->addElement('html', $OUTPUT->notification(
             "<h4>$warnhead</h4> $warnmsg <hr/> $warndetails",
             \core\output\notification::NOTIFY_INFO,
@@ -62,8 +62,8 @@ class job_sign_form extends \moodleform {
         // Options.
         $mform->addElement('hidden', 'action', 'sign_job');
         $mform->setType('action', PARAM_TEXT);
-        $mform->addElement('hidden', 'jobid', $this->optional_param('jobid', null, PARAM_TEXT));
-        $mform->setType('jobid', PARAM_TEXT);
+        $mform->addElement('hidden', 'jobid', $this->optional_param('jobid', null, PARAM_ALPHANUMEXT));
+        $mform->setType('jobid', PARAM_ALPHANUMEXT);
 
         // Action buttons.
         $this->add_action_buttons(true, get_string('sign_archive', 'quiz_archiver'));
