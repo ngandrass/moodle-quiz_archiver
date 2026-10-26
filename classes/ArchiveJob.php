@@ -48,8 +48,6 @@ class ArchiveJob {
     protected int $userid;
     /** @var int Unix timestamp of job creation */
     protected int $timecreated;
-    /** @var int Unix timestamp of last job update */
-    protected int $timemodified;
     /** @var int|null Unix timestamp after which this jobs artifacts will be deleted automatically. Null indicates no deletion.*/
     protected ?int $retentiontime;
     /** @var string The webservice token that is allowed to write to this job via API */
@@ -160,7 +158,6 @@ class ArchiveJob {
      * @param int $quizid ID of the quiz this job is associated with
      * @param int $userid ID of the user that owns this job
      * @param int $timecreated Unix timestamp of job creation
-     * @param int $timemodified Unix timestamp of last job modification
      * @param ?int $retentiontime Unix timestamp after which this jobs
      * artifacts will be deleted automatically. Null indicates no deletion.
      * @param string $wstoken The webservice token that is allowed to write to this job via API
@@ -173,7 +170,6 @@ class ArchiveJob {
         int $quizid,
         int $userid,
         int $timecreated,
-        int $timemodified,
         ?int $retentiontime,
         string $wstoken
     ) {
@@ -184,7 +180,6 @@ class ArchiveJob {
         $this->quizid = $quizid;
         $this->userid = $userid;
         $this->timecreated = $timecreated;
-        $this->timemodified = $timemodified;
         $this->retentiontime = $retentiontime;
         $this->wstoken = $wstoken;
         $this->tspmanager = null; // Lazy initialization.
@@ -285,7 +280,6 @@ class ArchiveJob {
             $quizid,
             $userid,
             $now,
-            $now,
             $retentiontime,
             $wstoken
         );
@@ -309,7 +303,6 @@ class ArchiveJob {
             $jobdata->quizid,
             $jobdata->userid,
             $jobdata->timecreated,
-            $jobdata->timemodified,
             $jobdata->retentiontime,
             $jobdata->wstoken
         );
@@ -333,7 +326,6 @@ class ArchiveJob {
             $jobdata->quizid,
             $jobdata->userid,
             $jobdata->timecreated,
-            $jobdata->timemodified,
             $jobdata->retentiontime,
             $jobdata->wstoken
         );
@@ -379,7 +371,6 @@ class ArchiveJob {
             $dbdata->quizid,
             $dbdata->userid,
             $dbdata->timecreated,
-            $dbdata->timemodified,
             $dbdata->retentiontime,
             $dbdata->wstoken
         ), $records);
@@ -530,7 +521,7 @@ class ArchiveJob {
                 'artifactfile' => $artifactfilemetadata,
                 'tsp' => $tspdata,
                 'settings' => self::convert_archive_settings_for_display(
-                    (new self($j->id, '', -1, -1, -1, -1, -1, -1, null, ''))->get_settings()
+                    (new self($j->id, '', -1, -1, -1, -1, -1, null, ''))->get_settings()
                 ),
             ];
         }, $records));
@@ -779,28 +770,26 @@ class ArchiveJob {
     }
 
     /**
-     * Returns the retention time of this job, if enabled
+     * Returns the creation time of this job
      *
-     * @return int|null Unix timestamp after which this jobs artifact will be
-     * deleted automatically. Null indicates no automatic deletion.
+     * @return int Unix timestamp of job creation
      */
     public function get_timecreated(): int {
         return $this->timecreated;
     }
 
     /**
-     * Returns the retention time of this job, if enabled
+     * Returns the time of the last modification of this job
      *
-     * @return int|null Unix timestamp after which this jobs artifact will be
-     * deleted automatically. Null indicates no automatic deletion.
+     * The value is always read from the database, since jobs can be modified
+     * externally (e.g., by the archive worker) at any time.
+     *
+     * @return int Unix timestamp of last job modification
+     * @throws \dml_exception If the job does not exist in the database
      */
-    public function get_timemodified(): ?int {
+    public function get_timemodified(): int {
         global $DB;
-        try {
-            return $DB->get_field(self::JOB_TABLE_NAME, 'timemodified', ['jobid' => $this->jobid], MUST_EXIST);
-        } catch (\dml_exception $e) {
-            return null;
-        }
+        return (int) $DB->get_field(self::JOB_TABLE_NAME, 'timemodified', ['id' => $this->id], MUST_EXIST);
     }
 
     /**
