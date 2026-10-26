@@ -177,7 +177,7 @@ const getJobMetadata = async(job) => {
         args: {jobid: job},
     }])[0].then((data) => {
 
-        if (data.status !== 'OK' || data.job === null) {
+        if (data.status !== 'OK' || !data.job) {
             throw Error("failed to retrieve job status");
         }
 

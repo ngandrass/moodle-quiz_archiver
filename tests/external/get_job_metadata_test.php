@@ -24,6 +24,7 @@
 
 namespace quiz_archiver\external;
 
+use core_external\external_api;
 use quiz_archiver\ArchiveJob;
 use quiz_archiver\TSPManager;
 
@@ -447,9 +448,13 @@ final class get_job_metadata_test extends \advanced_testcase {
         $this->setAdminUser();
         $this->resetAfterTest();
         $this->ensure_config();
+        $res = external_api::clean_returnvalue(
+            get_job_metadata::execute_returns(),
+            get_job_metadata::execute('00000000-0000-0000-0000-000000000000')
+        );
         $this->assertSame(
             ['status' => 'E_JOB_NOT_FOUND'],
-            get_job_metadata::execute('00000000-0000-0000-0000-000000000000'),
+            $res,
             'Invalid job ID should return E_JOB_NOT_FOUND'
         );
     }

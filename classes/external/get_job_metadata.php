@@ -316,7 +316,7 @@ class get_job_metadata extends external_api {
                         ),
                     ],
                     'Complete data about the job, suitable for any client-side consumption',
-                    VALUE_REQUIRED,
+                    VALUE_OPTIONAL,
                 ),
                 'display_args' => new external_single_structure(
                     [
