@@ -192,7 +192,7 @@ class FileManager {
      * @param string $filepath
      * @param string $originalfilename Name of original file to reasamble.
      * @param int $artifactcount Number of chunks original file was split into.
-     * @return stored_file|null
+     * @return stored_file|null Reassembled file or null if any chunk is missing
      * @throws \file_exception If chunk data can not be appended while reassembly.
      */
     public static function reasamble_chunked_file(
@@ -217,6 +217,12 @@ class FileManager {
 
         foreach ($chunkfilenames as $i => $chunkfilename) {
             $chunkfile = get_file_storage()->get_file($contextid, 'user', 'draft', $itemid, $filepath, $chunkfilename);
+            if (!$chunkfile) {
+                // Abort reassembly if any chunk is missing.
+                fclose($temporaryfile);
+                unlink($temporaryfilepath);
+                return null;
+            }
             $chunkfilehandle = $chunkfile->get_content_file_handle(stored_file::FILE_HANDLE_FOPEN);
 
             // Append chunk files content in mini chunks of 4KB.

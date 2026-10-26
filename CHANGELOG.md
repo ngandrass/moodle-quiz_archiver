@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYYMMDDNN)
 
 - Fail artifact uploads early with a descriptive error message if referenced Moodle upload draft file is out of scope
+- Abort upload file assembly gracefully and return proper error message if any expected file chunk is missing
 
 
 ## Version 5.2.3 (2026102000)
