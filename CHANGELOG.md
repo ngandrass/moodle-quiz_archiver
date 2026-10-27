@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYYMMDDNN)
+## Version 5.3.0 (2026102700)
 
 - Automatically update status, progress, and details of unfinished archive jobs in the job overview table without requiring a page reload
 - Dynamically render and update job details modal with the latest job information
