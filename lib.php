@@ -50,7 +50,8 @@ function quiz_archiver_pluginfile($course, $cm, $context, $filearea, $args, $for
     require_login($course, false, $cm);
     require_capability('mod/quiz:grade', $context);
     require_capability('quiz/grading:viewstudentnames', $context);
-    require_capability('quiz/grading:viewidnumber', $context);
+    // User identity fields (e.g., email, ID number) are filtered during archive creation
+    // based on the showuseridentity setting and the job creators permissions.
 
     // Validate course.
     if ($args[1] !== $course->id) {

@@ -300,6 +300,10 @@ class generate_attempt_report extends external_api {
             throw new \invalid_parameter_exception("No attempt with given attemptid found");
         }
 
+        // Only expose user identity fields the job creator is allowed to see.
+        $identityfields = Report::get_visible_identity_fields($context, $job->get_userid());
+        $report->set_visible_identity_fields($identityfields);
+
         // Determine correction margin.
         $correctionmargin = 0;
         $settings = $job->get_settings();
@@ -334,14 +338,16 @@ class generate_attempt_report extends external_api {
             $cm,
             $quiz,
             $params['attemptid'],
-            $params['foldernamepattern']
+            $params['foldernamepattern'],
+            $identityfields
         );
         $res['filename'] = ArchiveJob::generate_attempt_filename(
             $course,
             $cm,
             $quiz,
             $params['attemptid'],
-            $params['filenamepattern']
+            $params['filenamepattern'],
+            $identityfields
         );
 
         // Return response.
